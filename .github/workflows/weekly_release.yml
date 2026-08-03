@@ -1,0 +1,62 @@
+name: weekly_release
+
+on:
+  schedule:
+    - cron: '0 6 * * 6'
+  workflow_dispatch:
+
+jobs:
+  release_pdf:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+
+      - name: Install system dependencies for weasyprint
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf-2.0-0 libffi-dev libcairo2 fonts-noto-cjk
+
+      - name: Generate PDF and HTML
+        id: gen_pdf
+        run: uv run python -m secnews.generate_pdf
+
+      - name: Get current date
+        id: date
+        run: echo "DATE=$(date -u +'%Y-%m-%d')" >> "$GITHUB_OUTPUT"
+
+      - name: Commit and push report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config core.quotepath false
+          # Only commit HTML backups to keep the repo small
+          git add secnews/data/report/*.html secnews/index.html index.html
+          git diff --cached --quiet || git commit -m "generate weekly report ${{ steps.date.outputs.DATE }}"
+          git pull --rebase
+          git push
+
+      - name: Create Release
+        if: hashFiles('output/*.pdf') != '' || hashFiles('output/*.html') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          LANG: C.UTF-8
+        run: |
+          TAG="release-${{ steps.date.outputs.DATE }}"
+          TITLE="${{ steps.gen_pdf.outputs.REPORT_TITLE }}"
+          
+          echo "Debug: Listing files in output/"
+          ls -l output/
+          
+          # Delete existing release/tag if it exists to allow re-run
+          gh release delete "$TAG" -y --cleanup-tag || true
+          
+          # Create new release sourcing assets from the temporary output/ directory
+          gh release create "$TAG" \
+            --title "$TITLE" \
+            --notes "自动生成的 $TITLE PDF 与 HTML。" \
+            output/*.pdf \
+            output/*.html

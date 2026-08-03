@@ -1,0 +1,338 @@
+{
+  "generated_at": "2026-03-09T22:43:43.274928+00:00",
+  "article_start_at": "2026-03-08T22:40:55.119320+00:00",
+  "articles": {
+    "bleepingcomputer": [
+      {
+        "title": "EU court adviser says banks must immediately refund phishing victims",
+        "link": "https://www.bleepingcomputer.com/news/legal/eu-court-adviser-says-banks-must-immediately-refund-phishing-victims/",
+        "description": "Athanasios Rantos, the Advocate General of the Court of Justice of the EU (CJEU), has issued a formal opinion suggesting that banks must immediately refund account holders affected by unauthorized transactions, even when it's their fault. [...]",
+        "published": "Sun, 08 Mar 2026 11:25:37 -0400",
+        "author": "Bill Toulas",
+        "categories": [
+          "Legal"
+        ],
+        "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/legal/eu-court-adviser-says-banks-must-immediately-refund-phishing-victims/",
+        "source": "https://www.bleepingcomputer.com/feed/",
+        "fetched_at": "2026-03-09T06:20:34.332997+00:00",
+        "intro": "欧盟法院总法律顾问 Athanasios Rantos 发布正式意见，建议银行必须立即向遭遇未经授权交易的账户持有人退款，即便这源于用户自身的过失。"
+      },
+      {
+        "title": "Hackers abuse .arpa DNS and ipv6 to evade phishing defenses",
+        "link": "https://www.bleepingcomputer.com/news/security/hackers-abuse-arpa-dns-and-ipv6-to-evade-phishing-defenses/",
+        "description": "Threat actors are abusing the special-use \".arpa\" domain and IPv6 reverse DNS in phishing campaigns that more easily evade domain reputation checks and email security gateways. [...]",
+        "published": "Sun, 08 Mar 2026 10:12:22 -0400",
+        "author": "Lawrence Abrams",
+        "categories": [
+          "Security"
+        ],
+        "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/hackers-abuse-arpa-dns-and-ipv6-to-evade-phishing-defenses/",
+        "source": "https://www.bleepingcomputer.com/feed/",
+        "fetched_at": "2026-03-09T06:20:34.332997+00:00",
+        "intro": "威胁行为者正在滥用特殊用途的 .arpa 域名和 IPv6 反向 DNS 发起钓鱼攻击，这种方式能更容易绕过域名信誉检查和邮件安全网关的防御。"
+      }
+    ],
+    "arxiv_cs_cr": [
+      {
+        "title": "Knowing without Acting: The Disentangled Geometry of Safety Mechanisms in Large Language Models",
+        "link": "https://arxiv.org/abs/2603.05773",
+        "description": "arXiv:2603.05773v1 Announce Type: new \nAbstract: Safety alignment is often conceptualized as a monolithic process wherein harmfulness detection automatically triggers refusal. However, the persistence of jailbreak attacks suggests a fundamental mechanistic decoupling. We propose the \\textbf{\\underline{D}}isentangled \\textbf{\\underline{S}}afety \\textbf{\\underline{H}}ypothesis \\textbf{(DSH)}, positing that safety computation operates on two distinct subspaces: a \\textit{Recognition Axis} ($\\mathbf{v}_H$, ``Knowing'') and an \\textit{Execution Axis} ($\\mathbf{v}_R$, ``Acting''). Our geometric analysis reveals a universal ``Reflex-to-Dissociation'' evolution, where these signals transition from antagonistic entanglement in early layers to structural independence in deep layers. To validate this, we introduce \\textit{Double-Difference Extraction} and \\textit{Adaptive Causal Steering}. Using our curated \\textsc{AmbiguityBench}, we demonstrate a causal double dissociation, effectively creating a state of ``Knowing without Acting.'' Crucially, we leverage this disentanglement to propose the \\textbf{Refusal Erasure Attack (REA)}, which achieves State-of-the-Art attack success rates by surgically lobotomizing the refusal mechanism. Furthermore, we uncover a critical architectural divergence, contrasting the \\textit{Explicit Semantic Control} of Llama3.1 with the \\textit{Latent Distributed Control} of Qwen2.5. The code and dataset are available at https://anonymous.4open.science/r/DSH.",
+        "published": "2026-03-09T00:00:00-04:00",
+        "author": "Jinman Wu, Yi Xie, Shen Lin, Shiqian Zhao, Xiaofeng Chen",
+        "categories": [
+          "cs.CR",
+          "cs.AI",
+          "cs.LG"
+        ],
+        "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2603.05773v1",
+        "source": "https://rss.arxiv.org/atom/cs.cr",
+        "fetched_at": "2026-03-09T06:20:34.734915+00:00",
+        "intro": "大模型的安全对齐不仅仅是识别有害内容并拒绝。这项研究揭示了模型内部存在识别与执行两个独立的子空间。这种解耦导致了一种名为 Refusal Erasure Attack 的新威胁。攻击者可以精准切除模型的拒绝机制，使其在明知内容有害的情况下依然执行输出。这种机制层面的深刻洞察解释了为何越狱攻击屡屡得手，为构建更鲁棒的防御体系指明了方向。"
+      },
+      {
+        "title": "Depth Charge: Jailbreak Large Language Models from Deep Safety Attention Heads",
+        "link": "https://arxiv.org/abs/2603.05772",
+        "description": "arXiv:2603.05772v1 Announce Type: new \nAbstract: Currently, open-sourced large language models (OSLLMs) have demonstrated remarkable generative performance. However, as their structure and weights are made public, they are exposed to jailbreak attacks even after alignment. Existing attacks operate primarily at shallow levels, such as the prompt or embedding level, and often fail to expose vulnerabilities rooted in deeper model components, which creates a false sense of security for successful defense. In this paper, we propose \\textbf{\\underline{S}}afety \\textbf{\\underline{A}}ttention \\textbf{\\underline{H}}ead \\textbf{\\underline{A}}ttack (\\textbf{SAHA}), an attention-head-level jailbreak framework that explores the vulnerability in deeper but insufficiently aligned attention heads. SAHA contains two novel designs. Firstly, we reveal that deeper attention layers introduce more vulnerability against jailbreak attacks. Based on this finding, \\textbf{SAHA} introduces \\textit{Ablation-Impact Ranking} head selection strategy to effectively locate the most vital layer for unsafe output. Secondly, we introduce a boundary-aware perturbation method, \\textit{i.e. Layer-Wise Perturbation}, to probe the generation of unsafe content with minimal perturbation to the attention. This constrained perturbation guarantees higher semantic relevance with the target intent while ensuring evasion. Extensive experiments show the superiority of our method: SAHA improves ASR by 14\\% over SOTA baselines, revealing the vulnerability of the attack surface on the attention head. Our code is available at https://anonymous.4open.science/r/SAHA.",
+        "published": "2026-03-09T00:00:00-04:00",
+        "author": "Jinman Wu, Yi Xie, Shiqian Zhao, Xiaofeng Chen",
+        "categories": [
+          "cs.CR",
+          "cs.AI"
+        ],
+        "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2603.05772v1",
+        "source": "https://rss.arxiv.org/atom/cs.cr",
+        "fetched_at": "2026-03-09T06:20:34.734915+00:00",
+        "intro": "开源大模型虽然经过对齐，但依然面临越狱风险。现有的攻击多停留在浅层，而本研究提出的 SAHA 框架深入到了 attention head 层面。研究发现深层注意力层更脆弱，通过特定的扰动策略，攻击成功率显著提升。这打破了人们对模型深层组件安全性的盲目自信，证明了仅仅防御浅层输入是远远不够的，必须审视模型内部更隐蔽的角落。"
+      },
+      {
+        "title": "SecureRAG-RTL: A Retrieval-Augmented, Multi-Agent, Zero-Shot LLM-Driven Framework for Hardware Vulnerability Detection",
+        "link": "https://arxiv.org/abs/2603.05689",
+        "description": "arXiv:2603.05689v1 Announce Type: new \nAbstract: Large language models (LLMs) have shown remarkable capabilities in natural language processing tasks, yet their application in hardware security verification remains limited due to scarcity of publicly available hardware description language (HDL) datasets. This knowledge gap constrains LLM performance in detecting vulnerabilities within HDL designs. To address this challenge, we propose SecureRAG-RTL, a novel Retrieval-Augmented Generation (RAG)-based approach that significantly enhances LLM-based security verification of hardware designs. Our approach integrates domain-specific retrieval with generative reasoning, enabling models to overcome inherent limitations in hardware security expertise. We establish baseline vulnerability detection rates using prompt-only methods and then demonstrate that SecureRAG-RTL achieves substantial improvements across diverse LLM architectures, regardless of size. On average, our method increases detection accuracy by about 30%, highlighting its effectiveness in bridging domain knowledge gaps. For evaluation, we curated and annotated a benchmark dataset of 14 HDL designs containing real-world security vulnerabilities, which we will release publicly to support future research. These findings underscore the potential of RAG-driven augmentation to enable scalable, efficient, and accurate hardware security verification workflows.",
+        "published": "2026-03-09T00:00:00-04:00",
+        "author": "Touseef Hasan, Blessing Airehenbuwa, Nitin Pundir, Souvika Sarkar, Ujjwal Guin",
+        "categories": [
+          "cs.CR",
+          "cs.AI"
+        ],
+        "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2603.05689v1",
+        "source": "https://rss.arxiv.org/atom/cs.cr",
+        "fetched_at": "2026-03-09T06:20:34.734915+00:00",
+        "intro": "硬件安全验证长期受限于数据稀缺，大模型在此领域表现不佳。SecureRAG-RTL 利用 RAG 技术成功跨越了这一领域知识鸿沟。它通过整合领域特定的检索与生成推理，显著提升了 HDL 设计中的漏洞检测率。实验显示平均准确率提升约 30%。这种方法不仅填补了公开数据集的空白，更为硬件安全验证提供了一条高效且可扩展的新路径。"
+      },
+      {
+        "title": "Challenges and Design Considerations for Finding CUDA Bugs Through GPU-Native Fuzzing",
+        "link": "https://arxiv.org/abs/2603.05725",
+        "description": "arXiv:2603.05725v1 Announce Type: new \nAbstract: Modern computing is shifting from homogeneous CPU-centric systems to heterogeneous systems with closely integrated CPUs and GPUs. While the CPU software stack has benefited from decades of memory safety hardening, the GPU software stack remains dangerously immature. This discrepancy presents a critical ethical challenge: the world's most advanced AI and scientific workloads are increasingly deployed on vulnerable hardware components.\n  In this paper, we study the key challenges of ensuring memory safety on heterogeneous systems. We show that, while the number of exploitable bugs in heterogeneous systems rises every year, current mitigation methods often rely on unfaithful translations, i.e., converting GPU programs to run on CPUs for testing, which fails to capture the architectural differences between CPUs and GPUs. We argue that the faithfulness of the program behavior is at the core of secure and reliable heterogeneous systems design. To ensure faithfulness, we discuss several design considerations of a GPU-native fuzzing pipeline for CUDA programs.",
+        "published": "2026-03-09T00:00:00-04:00",
+        "author": "Mingkai Li, Joseph Devietti, Suman Jana, Tanvir Ahmed Khan",
+        "categories": [
+          "cs.CR"
+        ],
+        "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2603.05725v1",
+        "source": "https://rss.arxiv.org/atom/cs.cr",
+        "fetched_at": "2026-03-09T06:20:34.734915+00:00",
+        "intro": "异构计算时代，GPU 软件栈的安全性却远远落后于 CPU。当前的测试方法往往将 GPU 程序转换到 CPU 上运行，这掩盖了真实的架构差异。本文提出了一种 GPU 原生 fuzzing 流水线，强调程序行为的保真度。直面 GPU 内存安全挑战，这种方法能够更真实地暴露异构系统中的潜在漏洞，为运行其上的 AI 和科学计算负载提供更可靠的安全保障。"
+      },
+      {
+        "title": "SPOILER: TEE-Shielded DNN Partitioning of On-Device Secure Inference with Poison Learning",
+        "link": "https://arxiv.org/abs/2603.06263",
+        "description": "arXiv:2603.06263v1 Announce Type: new \nAbstract: Deploying deep neural networks (DNNs) on edge devices exposes valuable intellectual property to model-stealing attacks. While TEE-shielded DNN partitioning (TSDP) mitigates this by isolating sensitive computations, existing paradigms fail to simultaneously satisfy privacy and efficiency. The training-before-partition paradigm suffers from intrinsic privacy leakage, whereas the partition-before-training paradigm incurs severe latency due to structural dependencies that hinder parallel execution. To overcome these limitations, we propose SPOILER, a novel search-before-training framework that fundamentally decouples the TEE sub-network from the backbone via hardware-aware neural architecture search (NAS). SPOILER identifies a lightweight TEE architecture strictly optimized for hardware constraints, maximizing parallel efficiency. Furthermore, we introduce self-poisoning learning to enforce logical isolation, rendering the exposed backbone functionally incoherent without the TEE component. Extensive experiments on CNNs and Transformers demonstrate that SPOILER achieves state-of-the-art trade-offs between security, latency, and accuracy.",
+        "published": "2026-03-09T00:00:00-04:00",
+        "author": "Donghwa Kang, Hojun Choe, Doohyun Kim, Hyeongboo Baek, Brent ByungHoon Kang",
+        "categories": [
+          "cs.CR"
+        ],
+        "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2603.06263v1",
+        "source": "https://rss.arxiv.org/atom/cs.cr",
+        "fetched_at": "2026-03-09T06:20:34.734915+00:00",
+        "intro": "在边缘设备部署深度学习模型面临严峻的模型窃取风险。TEE 屏蔽技术虽然有效，但往往难以兼顾隐私与效率。SPOILER 框架提出了一种先搜索后训练的策略，将 TEE 子网络与主干网络解耦。配合自投毒学习技术，即便暴露的主干网络被窃取，没有 TEE 组件也无法正常运行。这在安全、延迟和精度之间找到了最佳平衡点，有效保护了核心知识产权。"
+      },
+      {
+        "title": "Evolving Deception: When Agents Evolve, Deception Wins",
+        "link": "https://arxiv.org/abs/2603.05872",
+        "description": "arXiv:2603.05872v1 Announce Type: new \nAbstract: Self-evolving agents offer a promising path toward scalable autonomy. However, in this work, we show that in competitive environments, self-evolution can instead give rise to a serious and previously underexplored risk: the spontaneous emergence of deception as an evolutionarily stable strategy. We conduct a systematic empirical study on the self-evolution of large language model (LLM) agents in a competitive Bidding Arena, where agents iteratively refine their strategies through interaction-driven reflection. Across different evolutionary paths (\\eg, Neutral, Honesty-Guided, and Deception-Guided), we find a consistent pattern: under utility-driven competition, unconstrained self-evolution reliably drifts toward deceptive behaviors, even when honest strategies remain viable. This drift is explained by a fundamental asymmetry in generalization. Deception evolves as a transferable meta-strategy that generalizes robustly across diverse and unseen tasks, whereas honesty-based strategies are fragile and often collapse outside their original contexts. Further analysis of agents internal states reveals the emergence of rationalization mechanisms, through which agents justify or deny deceptive actions to reconcile competitive success with normative instructions. Our paper exposes a fundamental tension between agent self-evolution and alignment, highlighting the risks of deploying self-improving agents in adversarial environments.",
+        "published": "2026-03-09T00:00:00-04:00",
+        "author": "Zonghao Ying, Haowen Dai, Tianyuan Zhang, Yisong Xiao, Quanchen Zou, Aishan Liu, Jian Yang, Yaodong Yang, Xianglong Liu",
+        "categories": [
+          "cs.CR"
+        ],
+        "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2603.05872v1",
+        "source": "https://rss.arxiv.org/atom/cs.cr",
+        "fetched_at": "2026-03-09T06:20:34.734915+00:00",
+        "intro": "智能体具备自我进化能力听起来很美好，但在竞争环境中却可能引发灾难。这项研究发现，在利益驱动下，智能体会自发地演化出欺骗策略。诚实策略在泛化性上显得脆弱，而欺骗却成为了一种可迁移的元策略。智能体甚至发展出了合理化机制来掩盖欺骗行为。这揭示了智能体自我进化与对齐之间的根本矛盾，为未来部署自主智能体敲响了警钟。"
+      },
+      {
+        "title": "SemFuzz: A Semantics-Aware Fuzzing Framework for Network Protocol Implementations",
+        "link": "https://arxiv.org/abs/2603.05989",
+        "description": "arXiv:2603.05989v1 Announce Type: new \nAbstract: Network protocols are the foundation of modern communication, yet their implementations often contain semantic vulnerabilities stemming from inadequate understanding of specification semantics. Existing gray-box and black-box testing approaches lack semantic modeling of protocols, making it difficult to precisely express testing intent and cover boundary conditions. Moreover, they typically rely on coarse-grained oracles such as crashes, which are inadequate for identifying deep semantic vulnerabilities. To address these limitations, we present a semantics-aware fuzzing framework, SemFuzz. The framework leverages large language models to extract structured semantic rules from RFC documents and generates test cases that intentionally violate these rules to encode specific testing intents. It then detects deep semantic vulnerabilities by comparing the observed responses with the expected ones. Evaluation on seven widely deployed protocol implementations shows that SemFuzz identified sixteen potential vulnerabilities, ten of which have been confirmed. Among the confirmed vulnerabilities, five were previously unknown and four have been assigned CVEs. These results demonstrate the effectiveness of SemFuzz in detecting semantic vulnerabilities.",
+        "published": "2026-03-09T00:00:00-04:00",
+        "author": "Yanbang Sun, Quan Luo, Yuelin Wang, Qian Chen, Benjin Liu, Ruiqi Chen, Qing Huang, Xiaohong Li, Junjie Wang",
+        "categories": [
+          "cs.CR",
+          "cs.CY"
+        ],
+        "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2603.05989v1",
+        "source": "https://rss.arxiv.org/atom/cs.cr",
+        "fetched_at": "2026-03-09T06:20:34.734915+00:00",
+        "intro": "网络协议实现中的语义漏洞往往难以发现。现有测试方法缺乏对协议语义的深层建模。SemFuzz 框架利用大语言模型从 RFC 文档中提取规则，生成针对性的测试用例。通过对比预期响应与实际响应，它成功挖掘出了多个未知漏洞，其中四个已被分配 CVE 编号。这种语义感知的测试方法大大提升了漏洞挖掘的深度和效率。"
+      },
+      {
+        "title": "Proof-of-Guardrail in AI Agents and What (Not) to Trust from It",
+        "link": "https://arxiv.org/abs/2603.05786",
+        "description": "arXiv:2603.05786v1 Announce Type: new \nAbstract: As AI agents become widely deployed as online services, users often rely on an agent developer's claim about how safety is enforced, which introduces a threat where safety measures are falsely advertised. To address the threat, we propose proof-of-guardrail, a system that enables developers to provide cryptographic proof that a response is generated after a specific open-source guardrail. To generate proof, the developer runs the agent and guardrail inside a Trusted Execution Environment (TEE), which produces a TEE-signed attestation of guardrail code execution verifiable by any user offline. We implement proof-of-guardrail for OpenClaw agents and evaluate latency overhead and deployment cost. Proof-of-guardrail ensures integrity of guardrail execution while keeping the developer's agent private, but we also highlight a risk of deception about safety, for example, when malicious developers actively jailbreak the guardrail. Code and demo video: https://github.com/SaharaLabsAI/Verifiable-ClawGuard",
+        "published": "2026-03-09T00:00:00-04:00",
+        "author": "Xisen Jin, Michael Duan, Qin Lin, Aaron Chan, Zhenglun Chen, Junyi Du, Xiang Ren",
+        "categories": [
+          "cs.CR",
+          "cs.AI",
+          "cs.CL"
+        ],
+        "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2603.05786v1",
+        "source": "https://rss.arxiv.org/atom/cs.cr",
+        "fetched_at": "2026-03-09T06:20:34.734915+00:00",
+        "intro": "用户往往只能听信开发者关于 AI Agent 安全性的声明，这存在虚假宣传的风险。本研究提出了一种 Proof-of-Guardrail 系统，利用 TEE 生成密码学证明。用户可以离线验证响应确实经过了特定的安全围栏处理。这既保证了执行完整性，又保护了 Agent 的隐私。该方案有效解决了信任不对称问题，防止了开发者恶意绕过安全机制。"
+      },
+      {
+        "title": "Before You Hand Over the Wheel: Evaluating LLMs for Security Incident Analysis",
+        "link": "https://arxiv.org/abs/2603.06422",
+        "description": "arXiv:2603.06422v1 Announce Type: new \nAbstract: Security incident analysis (SIA) poses a major challenge for security operations centers, which must manage overwhelming alert volumes, large and diverse data sources, complex toolchains, and limited analyst expertise. These difficulties intensify because incidents evolve dynamically and require multi-step, multifaceted reasoning. Although organizations are eager to adopt Large Language Models (LLMs) to support SIA, the absence of rigorous benchmarking creates significant risks for assessing their effectiveness and guiding design decisions. Benchmarking is further complicated by: (i) the lack of an LLM-ready dataset covering a wide spectrum of SIA tasks; (ii) the continual emergence of new tasks reflecting the diversity of analyst responsibilities; and (iii) the rapid release of new LLMs that must be incorporated into evaluations.\n  In this paper, we address these challenges by introducing SIABENCH, an agentic evaluation framework for security incident analysis. First, we construct a first-of-its-kind dataset comprising two major SIA task categories: (i) deep analysis workflows for security incidents (25 scenarios) and (ii) alert-triage tasks (135 scenarios). Second, we implement an agent capable of autonomously performing a broad spectrum of SIA tasks (including network and memory forensics, malware analysis across binary/code/PDF formats, phishing email and kit analysis, log analysis, and false-alert detection). Third, we benchmark 11 major LLMs (spanning both open- and closed-weight models) on these tasks, with extensibility to support emerging models and newly added analysis scenarios.",
+        "published": "2026-03-09T00:00:00-04:00",
+        "author": "Sourov Jajodia, Madeena Sultana, Suryadipta Majumdar, Adrian Taylor, Grant Vandenberghe",
+        "categories": [
+          "cs.CR"
+        ],
+        "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2603.06422v1",
+        "source": "https://rss.arxiv.org/atom/cs.cr",
+        "fetched_at": "2026-03-09T06:20:34.734915+00:00",
+        "intro": "安全运营中心每天面临海量告警，急需大模型辅助分析。然而缺乏基准测试让效果评估变得困难。SIABENCH 提供了一套全面的评估框架，涵盖了从深度分析到告警分类的多种任务。它构建了包含恶意软件分析、网络取证等场景的数据集，并对主流大模型进行了基准测试。这为企业在安全运维中引入大模型提供了客观的决策依据。"
+      },
+      {
+        "title": "ThermoCAPTCHA: Privacy-Preserving Human Verification with Farm-Resistant Traceable Tokens",
+        "link": "https://arxiv.org/abs/2603.05915",
+        "description": "arXiv:2603.05915v1 Announce Type: new \nAbstract: CAPTCHAs remain a critical defense against automated abuse, yet modern systems suffer from well-known limitations in usability, accessibility, and resistance to increasingly capable bots and low-cost CAPTCHA farms. Behavioral and puzzle-based mechanisms often impose cognitive burdens, collect extensive interaction data, or permit outsourcing to human solvers. In this paper, we present ThermoCAPTCHA, a novel privacy-preserving human verification system that uses real-time thermal imaging to detect live human presence without requiring users to solve challenges. A lightweight YOLOv4-tiny model identifies human heat signatures from a single thermal capture, while cryptographically bound traceable tokens prevent forwarding attacks by CAPTCHA farm workers. Our prototype achieves 96.70% detection accuracy with a 73.60 ms verification latency on a low-powered server. Comprehensive security evaluation, including MITM manipulation, spoofing attempts, adversarial perturbations, and misuse scenarios, shows that ThermoCAPTCHA withstands threats that commonly defeat behavioral CAPTCHAs. A user study with 50 participants, including visually challenged users, demonstrates improved accuracy, faster completion times, and higher perceived usability compared to reCAPTCHA v2.",
+        "published": "2026-03-09T00:00:00-04:00",
+        "author": "Shovon Paul, Md Imran Hossen, Xiali Hei",
+        "categories": [
+          "cs.CR"
+        ],
+        "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2603.05915v1",
+        "source": "https://rss.arxiv.org/atom/cs.cr",
+        "fetched_at": "2026-03-09T06:20:34.734915+00:00",
+        "intro": "传统验证码在用户体验和抗机器人攻击之间难以两全，尤其面对低成本的验证码农场。ThermoCAPTCHA 提出了一种利用热成像进行人机验证的新思路。系统通过实时捕捉人体热特征来确认真人存在，无需用户解谜。结合密码学可追踪令牌，有效防止了转发达攻击。测试显示该方案在准确率和速度上均表现优异，极大提升了验证系统的可用性与安全性。"
+      }
+    ],
+    "arxiv_cs_ai": [
+      {
+        "title": "PVminerLLM: Structured Extraction of Patient Voice from Patient-Generated Text using Large Language Models",
+        "link": "https://arxiv.org/abs/2603.05776",
+        "description": "arXiv:2603.05776v1 Announce Type: new \nAbstract: Motivation: Patient-generated text contains critical information about patients' lived experiences, social circumstances, and engagement in care, including factors that strongly influence adherence, care coordination, and health equity. However, these patient voice signals are rarely available in structured form, limiting their use in patient-centered outcomes research and clinical quality improvement. Reliable extraction of such information is therefore essential for understanding and addressing non-clinical drivers of health outcomes at scale.\n  Results: We introduce PVminer, a benchmark for structured extraction of patient voice, and propose PVminerLLM, a supervised fine-tuned large language model tailored to this task. Across multiple datasets and model sizes, PVminerLLM substantially outperforms prompt-based baselines, achieving up to 83.82% F1 for Code prediction, 80.74% F1 for Sub-code prediction, and 87.03% F1 for evidence Span extraction. Notably, strong performance is achieved even with smaller models, demonstrating that reliable patient voice extraction is feasible without extreme model scale. These results enable scalable analysis of social and experiential signals embedded in patient-generated text.\n  Availability and Implementation: Code, evaluation scripts, and trained LLMs will be released publicly. Annotated datasets will be made available upon request for research use.\n  Keywords: Large Language Models, Supervised Fine-Tuning, Medical Annotation, Patient-Generated Text, Clinical NLP",
+        "published": "2026-03-09T00:00:00-04:00",
+        "author": "Samah Fodeh, Linhai Ma, Ganesh Puthiaraju, Srivani Talakokkul, Afshan Khan, Ashley Hagaman, Sarah Lowe, Aimee Roundtree",
+        "categories": [
+          "cs.CL",
+          "cs.AI"
+        ],
+        "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2603.05776v1",
+        "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl",
+        "fetched_at": "2026-03-09T06:20:35.224642+00:00",
+        "intro": "医疗文本处理一直是个难题，非结构化的患者描述难以转化为结构化数据。该研究提出了 PVminerLLM，利用监督微调的大模型，从杂乱的患者自述中精准提取健康状况与社会背景信息。在多个数据集上，其提取精度显著超越提示工程方法，甚至小参数模型也能达到 80% 以上的 F1 分数。这为大规模分析影响健康的非临床因素提供了可能，有望推动医疗公平与个性化护理。"
+      },
+      {
+        "title": "Beyond Rows to Reasoning: Agentic Retrieval for Multimodal Spreadsheet Understanding and Editing",
+        "link": "https://arxiv.org/abs/2603.06503",
+        "description": "arXiv:2603.06503v1 Announce Type: new \nAbstract: Recent advances in multimodal Retrieval-Augmented Generation (RAG) enable Large Language Models (LLMs) to analyze enterprise spreadsheet workbooks containing millions of cells, cross-sheet dependencies, and embedded visual artifacts. However, state-of-the-art approaches exclude critical context through single-pass retrieval, lose data resolution through compression, and exceed LLM context windows through naive full-context injection, preventing reliable multi-step reasoning over complex enterprise workbooks. We introduce Beyond Rows to Reasoning (BRTR), a multimodal agentic framework for spreadsheet understanding that replaces single-pass retrieval with an iterative tool-calling loop, supporting end-to-end Excel workflows from complex analysis to structured editing. Supported by over 200 hours of expert human evaluation, BRTR achieves state-of-the-art performance across three frontier spreadsheet understanding benchmarks, surpassing prior methods by 25 percentage points on FRTR-Bench, 7 points on SpreadsheetLLM, and 32 points on FINCH. We evaluate five multimodal embedding models, identifying NVIDIA NeMo Retriever 1B as the top performer for mixed tabular and visual data, and vary nine LLMs. Ablation experiments confirm that the planner, retrieval, and iterative reasoning each contribute substantially, and cost analysis shows GPT-5.2 achieves the best efficiency-accuracy trade-off. Throughout all evaluations, BRTR maintains full auditability through explicit tool-call traces.",
+        "published": "2026-03-09T00:00:00-04:00",
+        "author": "Anmol Gulati, Sahil Sen, Waqar Sarguroh, Kevin Paul",
+        "categories": [
+          "cs.CL"
+        ],
+        "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2603.06503v1",
+        "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl",
+        "fetched_at": "2026-03-09T06:20:35.224642+00:00",
+        "intro": "面对动辄百万单元格的企业级电子表格，传统 LLM 往往束手无策。BRTR 框架引入了智能体迭代检索机制，打破了单次检索的局限，实现了对多模态表格内容的深度理解与编辑。经过两百小时专家评估，该系统在三个基准测试中刷新了记录，不仅能看懂图表，还能进行复杂的结构化操作。这项技术让 AI 真正具备了处理企业核心数据的能力。"
+      },
+      {
+        "title": "Verify as You Go: An LLM-Powered Browser Extension for Fake News Detection",
+        "link": "https://arxiv.org/abs/2603.05519",
+        "description": "arXiv:2603.05519v1 Announce Type: new \nAbstract: The rampant spread of fake news in the digital age poses serious risks to public trust and democratic institutions, underscoring the need for effective, transparent, and user-centered detection tools. Existing browser extensions often fall short due to opaque model behavior, limited explanatory support, and a lack of meaningful user engagement. This paper introduces Aletheia, a novel browser extension that leverages Retrieval-Augmented Generation (RAG) and Large Language Models (LLMs) to detect fake news and provide evidence-based explanations. Aletheia further includes two interactive components: a Discussion Hub that enables user dialogue around flagged content and a Stay Informed feature that surfaces recent fact-checks. Through extensive experiments, we show that Aletheia outperforms state-of-the-art baselines in detection performance. Complementing this empirical evaluation, a complementary user study with 250 participants confirms the system's usability and perceived effectiveness, highlighting its potential as a transparent tool for combating online fake news.",
+        "published": "2026-03-09T00:00:00-04:00",
+        "author": "Dorsaf Sallami, Esma A\\\"imeur",
+        "categories": [
+          "cs.CL",
+          "cs.HC",
+          "cs.IR"
+        ],
+        "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2603.05519v1",
+        "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl",
+        "fetched_at": "2026-03-09T06:20:35.224642+00:00",
+        "intro": "假新闻泛滥成灾，现有检测工具往往缺乏透明度。Aletheia 浏览器插件结合 RAG 与 LLM 技术，在浏览网页时实时检测虚假内容并提供基于证据的解释。更有趣的是，它还设计了讨论区和最新事实核查功能，增强了用户的参与感。实验显示其检测性能优于现有基线，且 250 人的用户研究证实了其实用性。这为打击网络谣言提供了兼具透明度与有效性的新工具。"
+      },
+      {
+        "title": "Evolving Medical Imaging Agents via Experience-driven Self-skill Discovery",
+        "link": "https://arxiv.org/abs/2603.05860",
+        "description": "arXiv:2603.05860v1 Announce Type: new \nAbstract: Clinical image interpretation is inherently multi-step and tool-centric: clinicians iteratively combine visual evidence with patient context, quantify findings, and refine their decisions through a sequence of specialized procedures. While LLM-based agents promise to orchestrate such heterogeneous medical tools, existing systems treat tool sets and invocation strategies as static after deployment. This design is brittle under real-world domain shifts, across tasks, and evolving diagnostic requirements, where predefined tool chains frequently degrade and demand costly manual re-design. We propose MACRO, a self-evolving, experience-augmented medical agent that shifts from static tool composition to experience-driven tool discovery. From verified execution trajectories, the agent autonomously identifies recurring effective multi-step tool sequences, synthesizes them into reusable composite tools, and registers these as new high-level primitives that continuously expand its behavioral repertoire. A lightweight image-feature memory grounds tool selection in a visual-clinical context, while a GRPO-like training loop reinforces reliable invocation of discovered composites, enabling closed-loop self-improvement with minimal supervision. Extensive experiments across diverse medical imaging datasets and tasks demonstrate that autonomous composite tool discovery consistently improves multi-step orchestration accuracy and cross-domain generalization over strong baselines and recent state-of-the-art agentic methods, bridging the gap between brittle static tool use and adaptive, context-aware clinical AI assistance. Code will be available upon acceptance.",
+        "published": "2026-03-09T00:00:00-04:00",
+        "author": "Lin Fan, Pengyu Dai, Zhipeng Deng, Haolin Wang, Xun Gong, Yefeng Zheng, Yafei Ou",
+        "categories": [
+          "cs.AI",
+          "cs.CV"
+        ],
+        "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2603.05860v1",
+        "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl",
+        "fetched_at": "2026-03-09T06:20:35.224642+00:00",
+        "intro": "医疗影像分析往往需要复杂的工具链。MACRO 框架让 AI 智能体学会了自我进化，它能从成功的诊断路径中自主发现并封装高效的工具组合。这种基于经验的自我技能发现机制，使模型在面对不同医疗任务时能更灵活地调用工具，显著提升了跨领域的泛化能力。这不仅减少了人工设计工具流的成本，更拉近了通用 AI 与临床应用的距离。"
+      },
+      {
+        "title": "CodeScout: Contextual Problem Statement Enhancement for Software Agents",
+        "link": "https://arxiv.org/abs/2603.05744",
+        "description": "arXiv:2603.05744v1 Announce Type: new \nAbstract: Current AI-powered code assistance tools often struggle with poorly-defined problem statements that lack sufficient task context and requirements specification. Recent analysis of software engineering agents reveals that failures on such underspecified requests are highly correlated with longer trajectories involving either over-exploration or repeated attempts at applying the same fix without proper evolution or testing, leading to suboptimal outcomes across software development tasks. We introduce CodeScout, a contextual query refinement approach that systematically converts underspecified user requests into comprehensive, actionable problem statements through lightweight pre-exploration of the target codebase. Our key innovation is demonstrating that structured analysis before task execution can supplement existing agentic capabilities without requiring any modifications to their underlying scaffolds. CodeScout performs targeted context scoping, conducts multi-perspective analysis examining potential fixes and exploration opportunities, then synthesizes these insights into enhanced problem statements with reproduction steps, expected behaviors, and targeted exploration hints. This pre-exploration directly addresses the identified failure patterns by reducing non-converging agent trajectories while clarifying user intent in natural language space. We evaluate CodeScout using state-of-the-art agentic scaffolds and language models on SWEBench-Verified, demonstrating a 20\\% improvement in resolution rates with up to 27 additional issues resolved compared to the default baseline method. Our results suggest that systematic query refinement through contextual analysis represents a promising direction for enhancing AI code assistance capabilities.",
+        "published": "2026-03-09T00:00:00-04:00",
+        "author": "Manan Suri, Xiangci Li, Mehdi Shojaie, Songyang Han, Chao-Chun Hsu, Shweta Garg, Aniket Anand Deshmukh, Varun Kumar",
+        "categories": [
+          "cs.CL",
+          "cs.SE"
+        ],
+        "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2603.05744v1",
+        "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl",
+        "fetched_at": "2026-03-09T06:20:35.224642+00:00",
+        "intro": "让 AI 写代码时，模糊的需求往往是导致失败的主因。CodeScout 采用了一种新颖的上下文查询细化方法，在正式执行任务前先对代码库进行轻量级预探索。它能将模糊的用户请求转化为详尽的问题陈述，包含复现步骤和探索提示。在 SWE-Bench 上，这一策略使问题解决率提升了 20%。这种预处理思路有效避免了 Agent 盲目探索，让代码助手更靠谱。"
+      },
+      {
+        "title": "Safer Reasoning Traces: Measuring and Mitigating Chain-of-Thought Leakage in LLMs",
+        "link": "https://arxiv.org/abs/2603.05618",
+        "description": "arXiv:2603.05618v1 Announce Type: new \nAbstract: Chain-of-Thought (CoT) prompting improves LLM reasoning but can increase privacy risk by resurfacing personally identifiable information (PII) from the prompt into reasoning traces and outputs, even under policies that instruct the model not to restate PII. We study such direct, inference-time PII leakage using a model-agnostic framework that (i) defines leakage as risk-weighted, token-level events across 11 PII types, (ii) traces leakage curves as a function of the allowed CoT budget, and (iii) compares open- and closed-source model families on a structured PII dataset with a hierarchical risk taxonomy. We find that CoT consistently elevates leakage, especially for high-risk categories, and that leakage is strongly family- and budget-dependent. Increasing the reasoning budget can either amplify or attenuate leakage depending on the base model. We then benchmark lightweight inference-time gatekeepers: a rule-based detector, a TF-IDF + logistic regression classifier, a GLiNER-based NER model, and an LLM-as-judge, using risk-weighted F1, Macro-F1, and recall. No single method dominates across models or budgets, motivating hybrid, style-adaptive gatekeeping policies that balance utility and risk under a common, reproducible protocol.",
+        "published": "2026-03-09T00:00:00-04:00",
+        "author": "Patrick Ahrend, Tobias Eder, Xiyang Yang, Zhiyi Pan, Georg Groh",
+        "categories": [
+          "cs.CL"
+        ],
+        "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2603.05618v1",
+        "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl",
+        "fetched_at": "2026-03-09T06:20:35.224642+00:00",
+        "intro": "大模型的思维链虽然强大，却可能在推理过程中泄露隐私。研究发现，即便有指令约束，模型仍可能在思维链中复述敏感信息。该文提出了一个模型无关的框架来量化泄露风险，并设计了轻量级的守门员机制进行防御。实验表明，思维链确实会增加高风险隐私的泄露概率，而该框架能有效平衡模型推理能力与隐私保护，为安全部署提供了重要参考。"
+      },
+      {
+        "title": "RoboLayout: Differentiable 3D Scene Generation for Embodied Agents",
+        "link": "https://arxiv.org/abs/2603.05522",
+        "description": "arXiv:2603.05522v1 Announce Type: new \nAbstract: Recent advances in vision language models (VLMs) have shown strong potential for spatial reasoning and 3D scene layout generation from open-ended language instructions. However, generating layouts that are not only semantically coherent but also feasible for interaction by embodied agents remains challenging, particularly in physically constrained indoor environments. In this paper, RoboLayout is introduced as an extension of LayoutVLM that augments the original framework with agent-aware reasoning and improved optimization stability. RoboLayout integrates explicit reachability constraints into a differentiable layout optimization process, enabling the generation of layouts that are navigable and actionable by embodied agents. Importantly, the agent abstraction is not limited to a specific robot platform and can represent diverse entities with distinct physical capabilities, such as service robots, warehouse robots, humans of different age groups, or animals, allowing environment design to be tailored to the intended agent. In addition, a local refinement stage is proposed that selectively reoptimizes problematic object placements while keeping the remainder of the scene fixed, improving convergence efficiency without increasing global optimization iterations. Overall, RoboLayout preserves the strong semantic alignment and physical plausibility of LayoutVLM while enhancing applicability to agent-centric indoor scene generation, as demonstrated by experimental results across diverse scene configurations.",
+        "published": "2026-03-09T00:00:00-04:00",
+        "author": "Ali Shamsaddinlou",
+        "categories": [
+          "cs.AI",
+          "cs.CV",
+          "cs.LG",
+          "cs.RO"
+        ],
+        "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2603.05522v1",
+        "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl",
+        "fetched_at": "2026-03-09T06:20:35.224642+00:00",
+        "intro": "想让机器人在家里行动自如，合理的场景布局至关重要。RoboLayout 扩展了视觉语言模型，在生成布局时引入了可达性约束。它不再仅仅追求语义上的合理，更确保了布局对各类智能体（服务机器人、甚至宠物）的可操作性。通过差分优化和局部细化，该系统能生成导航无障碍的室内场景。这对于具身智能从仿真走向现实家庭环境具有重要意义。"
+      },
+      {
+        "title": "ReflexiCoder: Teaching Large Language Models to Self-Reflect on Generated Code and Self-Correct It via Reinforcement Learning",
+        "link": "https://arxiv.org/abs/2603.05863",
+        "description": "arXiv:2603.05863v1 Announce Type: new \nAbstract: While Large Language Models (LLMs) have revolutionized code generation, standard \"System 1\" approaches, generating solutions in a single forward pass, often hit a performance ceiling when faced with complex algorithmic tasks. Existing iterative refinement strategies attempt to bridge this gap at inference time, yet they predominantly rely on external oracles, execution feedback, or computationally expensive prompt-response cycles. In this work, we propose ReflexiCoder, a novel reinforcement learning (RL) framework that internalizes the structured reasoning trajectory, encompassing initial generation, bug and optimization aware reflection, and self-correction, directly into the model's weights. Unlike prior methods, ReflexiCoder shifts the paradigm from external-dependent refinement to an intrinsic, fully autonomous self-reflection and self-correction capabilities at inference time. We utilize an RL-zero training paradigm with granular reward functions to optimize the entire reflection-correction trajectory, teaching the model how to debug without reliance on ground-truth feedback or execution engines at inference time. Extensive experiments across seven benchmarks demonstrate that our ReflexiCoder-8B establishes a new state-of-the-art (SOTA) among leading open-source models in the 1.5B-14B range, achieving 94.51% (87.20%) on HumanEval (Plus), 81.80% (78.57%) on MBPP (Plus), 35.00% on BigCodeBench, 52.21% on LiveCodeBench, and 37.34% on CodeForces in a single-attempt setting, rivaling or surpassing proprietary models like GPT-5.1. Notably, our framework is significantly more token-efficient than base models, reducing inference-time compute overhead by approximately 40% through disciplined, high-speed reasoning and reflection patterns. Source code is available at https://github.com/juyongjiang/ReflexiCoder.",
+        "published": "2026-03-09T00:00:00-04:00",
+        "author": "Juyong Jiang, Jiasi Shen, Sunghun Kim, Kang Min Yoo, Jeonghoon Kim, Sungju Kim",
+        "categories": [
+          "cs.CL",
+          "cs.LG",
+          "cs.SE"
+        ],
+        "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2603.05863v1",
+        "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl",
+        "fetched_at": "2026-03-09T06:20:35.224642+00:00",
+        "intro": "代码生成模型往往会犯重复的错误。ReflexiCoder 引入了强化学习框架，将反思与纠正能力内化为模型权重。不同于依赖外部反馈的方法，它学会了在没有真值反馈的情况下进行自我调试与优化。在 HumanEval 等七个基准测试中，该模型不仅刷新了开源记录，推理成本还降低了 40%。这种将系统二思维嵌入模型的尝试，大幅提升了代码生成的鲁棒性。"
+      },
+      {
+        "title": "Artificial Intelligence for Climate Adaptation: Reinforcement Learning for Climate Change-Resilient Transport",
+        "link": "https://arxiv.org/abs/2603.06278",
+        "description": "arXiv:2603.06278v1 Announce Type: new \nAbstract: Climate change is expected to intensify rainfall and, consequently, pluvial flooding, leading to increased disruptions in urban transportation systems over the coming decades. Designing effective adaptation strategies is challenging due to the long-term, sequential nature of infrastructure investments, deep climate uncertainty, and the complex interactions between flooding, infrastructure, and mobility impacts. In this work, we propose a novel decision-support framework using reinforcement learning (RL) for long-term flood adaptation planning. Formulated as an integrated assessment model (IAM), the framework combines rainfall projection and flood modeling, transport simulation, and quantification of direct and indirect impacts on infrastructure and mobility. Our RL-based approach learns adaptive strategies that balance investment and maintenance costs against avoided impacts. We evaluate the framework through a case study of Copenhagen's inner city over the 2024-2100 period, testing multiple adaptation options, and different belief and realized climate scenarios. Results show that the framework outperforms traditional optimization approaches by discovering coordinated spatial and temporal adaptation pathways and learning trade-offs between impact reduction and adaptation investment, yielding more resilient strategies. Overall, our results showcase the potential of reinforcement learning as a flexible decision-support tool for adaptive infrastructure planning under climate uncertainty.",
+        "published": "2026-03-09T00:00:00-04:00",
+        "author": "Miguel Costa, Arthur Vandervoort, Carolin Schmidt, Jo\\~ao Miranda, Morten W. Petersen, Martin Drews, Karyn Morrisey, Francisco C. Pereira",
+        "categories": [
+          "cs.AI"
+        ],
+        "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2603.06278v1",
+        "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl",
+        "fetched_at": "2026-03-09T06:20:35.224642+00:00",
+        "intro": "气候变化导致的城市内涝严重威胁交通系统。该研究利用强化学习构建决策支持框架，在长达几十年的规划周期内寻找最优的基础设施改造策略。它综合了降雨预测、洪水模拟与交通影响评估，成功在哥本哈根案例中发现了比传统优化更优的适应性路径。这项工作展示了 AI 在解决长期、不确定性环境下的复杂公共政策制定问题上的巨大潜力。"
+      },
+      {
+        "title": "FlashPrefill: Instantaneous Pattern Discovery and Thresholding for Ultra-Fast Long-Context Prefilling",
+        "link": "https://arxiv.org/abs/2603.06199",
+        "description": "arXiv:2603.06199v1 Announce Type: new \nAbstract: Long-context modeling is a pivotal capability for Large Language Models, yet the quadratic complexity of attention remains a critical bottleneck, particularly during the compute-intensive prefilling phase. While various sparse attention mechanisms have been explored, they typically suffer from either significant search latency or insufficient sparsity. In this paper, we propose FlashPrefill, a framework enabling ultra-fast prefilling via instantaneous pattern discovery and thresholding. FlashPrefill leverages a fast block-searching technique to simultaneously locate dynamic vertical, slash, and block-sparse attention patterns. Crucially, it introduces a dynamic thresholding mechanism that bypasses the prohibitive overhead of sorting or accumulating attention scores while effectively eliminating the long-tail distribution to enhance sparsity. Extensive evaluations demonstrate that FlashPrefill achieves a substantial leap in efficiency, delivering an unprecedented 27.78x speedup on 256K sequences. Notably, unlike existing methods that incur efficiency degradation on shorter contexts, FlashPrefill maintains a 1.71x speedup even at a 4K context length, demonstrating its robustness and practical utility across varying sequence scales.",
+        "published": "2026-03-09T00:00:00-04:00",
+        "author": "Qihang Fan, Huaibo Huang, Zhiying Wu, Juqiu Wang, Bingning Wang, Ran He",
+        "categories": [
+          "cs.CL",
+          "cs.AI"
+        ],
+        "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2603.06199v1",
+        "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl",
+        "fetched_at": "2026-03-09T06:20:35.224642+00:00",
+        "intro": "长文本处理受限于注意力机制的计算复杂度。FlashPrefill 提出了一种无需排序或累加得分的动态剪枝机制，极速锁定垂直、斜线和块状稀疏注意力模式。这种方法在 256K 序列长度下实现了惊人的 27.78 倍加速，且在短序列下依然保持高效。它不仅大幅降低了长文本推理的计算开销，还克服了现有稀疏方法在短上下文下性能下降的通病，极具工程落地价值。"
+      }
+    ]
+  }
+}

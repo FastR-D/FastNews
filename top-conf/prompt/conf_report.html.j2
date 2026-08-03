@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ conference }} {{ year }} Papers Report</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 16mm;
+            @bottom-center {
+                content: counter(page);
+                font-family: "Inter", "Noto Sans SC", sans-serif;
+                font-size: 9pt;
+                color: #6b7280;
+            }
+        }
+
+        :root {
+            --app-bg: #f6f7f5;
+            --muted-bg: #eef2ef;
+            --surface: #ffffff;
+            --surface-muted: #f8faf8;
+            --border: #dce4df;
+            --input-border: #cbd7d0;
+            --primary: #0f766e;
+            --primary-deep: #115e59;
+            --primary-soft: #f0fdfa;
+            --accent: #f97316;
+            --text: #111827;
+            --muted: #66736d;
+            --subtle: #8a9690;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--app-bg);
+            color: var(--text);
+            font-family: "Inter", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+            font-size: 14px;
+            line-height: 1.65;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .app-shell {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 224px minmax(0, 1fr);
+        }
+
+        .sidebar {
+            background: var(--muted-bg);
+            border-right: 1px solid var(--border);
+            padding: 18px 14px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            margin-bottom: 18px;
+            font-weight: 650;
+        }
+
+        .brand-mark,
+        .header-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--primary-soft);
+            border: 1px solid #d4e7df;
+            color: var(--primary);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .nav-title {
+            padding: 0 8px 8px;
+            color: var(--subtle);
+            font-size: 11px;
+            font-weight: 650;
+            text-transform: uppercase;
+        }
+
+        .toc-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .toc-list a {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 8px;
+            border-radius: 8px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .toc-list a:hover {
+            background: #e8efeb;
+            color: var(--text);
+        }
+
+        .toc-count {
+            color: var(--primary);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .main {
+            min-width: 0;
+        }
+
+        .topbar {
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 0 24px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.78);
+        }
+
+        .breadcrumb {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .generated {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .page {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .header-copy {
+            display: flex;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 20px;
+            line-height: 1.35;
+            font-weight: 650;
+        }
+
+        .description {
+            margin: 5px 0 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 4px;
+            border: 1px solid #fed7aa;
+            background: #fff7ed;
+            color: #c2410c;
+            padding: 4px 7px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .surface {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            margin-bottom: 18px;
+        }
+
+        .stat {
+            padding: 16px 18px;
+            border-right: 1px solid var(--border);
+        }
+
+        .stat:last-child {
+            border-right: 0;
+        }
+
+        .stat-value {
+            display: block;
+            font-size: 20px;
+            line-height: 1.2;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            display: block;
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .mobile-toc {
+            display: none;
+            margin-bottom: 18px;
+            padding: 14px;
+            background: var(--muted-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .mobile-toc h2 {
+            margin: 0 0 8px;
+            font-size: 13px;
+            font-weight: 650;
+        }
+
+        .mobile-toc .toc-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 4px;
+        }
+
+        .category {
+            margin-top: 18px;
+            page-break-before: auto;
+        }
+
+        .category-head {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            background: var(--muted-bg);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .category h2 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 650;
+        }
+
+        .paper-count {
+            color: var(--muted);
+            font-size: 12px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .paper-list {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+        }
+
+        .paper {
+            position: relative;
+            padding: 16px 18px 16px 22px;
+            border-bottom: 1px solid var(--border);
+            page-break-inside: avoid;
+        }
+
+        .paper:last-child {
+            border-bottom: 0;
+        }
+
+        .paper::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--primary);
+        }
+
+        .paper-title {
+            margin: 0;
+            font-size: 15px;
+            line-height: 1.45;
+            font-weight: 650;
+        }
+
+        .paper-title a {
+            color: var(--primary-deep);
+        }
+
+        .paper-title a:hover {
+            text-decoration: underline;
+        }
+
+        .paper-authors {
+            margin: 6px 0 0;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.55;
+        }
+
+        .summary-label {
+            margin: 12px 0 4px;
+            color: var(--subtle);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .paper-summary {
+            margin: 0;
+            color: #26312d;
+            font-size: 13px;
+            text-align: justify;
+        }
+
+        @media (max-width: 900px) {
+            .app-shell {
+                display: block;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .topbar {
+                padding: 0 16px;
+            }
+
+            .page {
+                padding: 16px;
+            }
+
+            .page-header {
+                display: block;
+            }
+
+            .badge {
+                margin-top: 12px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .stat {
+                border-right: 0;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .stat:last-child {
+                border-bottom: 0;
+            }
+
+            .mobile-toc {
+                display: block;
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --app-bg: #151a19;
+                --muted-bg: #202925;
+                --surface: #1b2220;
+                --surface-muted: #202925;
+                --border: #2d3934;
+                --input-border: #3c4b45;
+                --primary: #2dd4bf;
+                --primary-deep: #5eead4;
+                --primary-soft: #042f2e;
+                --text: #f3f4f6;
+                --muted: #a5b1ab;
+                --subtle: #7f8c86;
+            }
+
+            .topbar {
+                background: rgba(27, 34, 32, 0.82);
+            }
+
+            .brand-mark,
+            .header-icon {
+                border-color: #315147;
+            }
+
+            .toc-list a:hover {
+                background: #27332e;
+            }
+
+            .paper-summary {
+                color: #d8dfdb;
+            }
+
+            .badge {
+                background: #431407;
+                border-color: #7c2d12;
+                color: #fed7aa;
+            }
+        }
+
+        @media print {
+            :root {
+                --app-bg: #ffffff;
+                --muted-bg: #eef2ef;
+                --surface: #ffffff;
+                --border: #dce4df;
+                --primary: #0f766e;
+                --primary-deep: #115e59;
+                --text: #111827;
+                --muted: #66736d;
+                --subtle: #8a9690;
+            }
+
+            body {
+                background: #ffffff;
+                font-size: 11pt;
+            }
+
+            .app-shell {
+                display: block;
+            }
+
+            .sidebar,
+            .topbar,
+            .mobile-toc {
+                display: none;
+            }
+
+            .page {
+                max-width: none;
+                padding: 0;
+            }
+
+            .page-header {
+                margin-bottom: 14mm;
+            }
+
+            .category {
+                margin-top: 8mm;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="brand">
+            <span class="brand-mark">FN</span>
+            <span>FastNews</span>
+        </div>
+        <div class="nav-title">Categories</div>
+        <ol class="toc-list">
+            {% for category, papers in categorized_papers.items() %}
+            <li>
+                <a href="#cat-{{ loop.index }}">
+                    <span>{{ category }}</span>
+                    <span class="toc-count">{{ papers|length }}</span>
+                </a>
+            </li>
+            {% endfor %}
+        </ol>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <div class="breadcrumb">Top Conferences / {{ conference }} / {{ year }}</div>
+            <div class="generated">{{ generated_date }}</div>
+        </header>
+
+        <div class="page">
+            <section class="page-header">
+                <div class="header-copy">
+                    <span class="header-icon">P</span>
+                    <div>
+                        <h1>{{ conference }} {{ year }} 论文总结</h1>
+                        <p class="description">面向安全研究阅读的分类摘要，保留论文链接、作者与中文核心总结。</p>
+                    </div>
+                </div>
+                <span class="badge">Conference Report</span>
+            </section>
+
+            <section class="surface stats" aria-label="Report overview">
+                <div class="stat">
+                    <span class="stat-value">{{ total_papers }}</span>
+                    <span class="stat-label">收录论文</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">{{ categorized_papers|length }}</span>
+                    <span class="stat-label">研究分类</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">{{ year }}</span>
+                    <span class="stat-label">会议年份</span>
+                </div>
+            </section>
+
+            <nav class="mobile-toc" aria-label="Category navigation">
+                <h2>分类目录</h2>
+                <ol class="toc-list">
+                    {% for category, papers in categorized_papers.items() %}
+                    <li>
+                        <a href="#cat-{{ loop.index }}">
+                            <span>{{ category }}</span>
+                            <span class="toc-count">{{ papers|length }}</span>
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ol>
+            </nav>
+
+            {% for category, papers in categorized_papers.items() %}
+            <section class="surface category" id="cat-{{ loop.index }}">
+                <div class="category-head">
+                    <h2>{{ category }}</h2>
+                    <span class="paper-count">{{ papers|length }} papers</span>
+                </div>
+                <div class="paper-list">
+                    {% for paper in papers %}
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="{{ paper.link }}">{{ paper.title }}</a>
+                        </h3>
+                        <p class="paper-authors">{{ paper.author }}</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">{{ paper.summary_zh or paper.description }}</p>
+                    </article>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endfor %}
+        </div>
+    </main>
+</div>
+</body>
+</html>

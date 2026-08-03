@@ -1,0 +1,29 @@
+阅读下面的信息：
+
+<article-list>
+    {% for article in articles %}
+        <article>
+            <_id>{{ article._id }}</_id>
+            <title>{{ article.title }}</title>
+            <description>{{ article.description }}</description>
+        </article>
+    {% endfor %}
+</article-list>
+
+
+以上是某杂志的文章列表。把它们的description翻译成中文，忽略末尾的 `[...]`。
+
+翻译风格要明白晓畅。
+
+输出一个合法的json array，表示文章和翻译后的摘要。`_id` 字段要抄写原先的 <_id> 标签中的内容，不得改动任何字节。`intro` 字段填写翻译后的description。
+
+
+输出样例：
+```
+[
+{"_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/edr-killer-tool-uses-signed-kernel-driver-from-forensic-software/", "intro": "攻击者正在入侵 NGINX 服务器，并通过此次攻击活动劫持用户流量，将其路由至攻击者的后端基础设施。"},
+{"_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/microsoft/microsoft-rolls-out-native-windows-11-sysmon-security-monitoring/", "intro": "微软已开始向部分加入 Windows Insider 预览体验计划的 Windows 11 系统推送内置的 Sysmon 功能。"}
+]
+```
+
+

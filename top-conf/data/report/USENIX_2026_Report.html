@@ -1,0 +1,2231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USENIX Security 2026 Papers Report</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 16mm;
+            @bottom-center {
+                content: counter(page);
+                font-family: "Inter", "Noto Sans SC", sans-serif;
+                font-size: 9pt;
+                color: #6b7280;
+            }
+        }
+
+        :root {
+            --app-bg: #f6f7f5;
+            --muted-bg: #eef2ef;
+            --surface: #ffffff;
+            --surface-muted: #f8faf8;
+            --border: #dce4df;
+            --input-border: #cbd7d0;
+            --primary: #0f766e;
+            --primary-deep: #115e59;
+            --primary-soft: #f0fdfa;
+            --accent: #f97316;
+            --text: #111827;
+            --muted: #66736d;
+            --subtle: #8a9690;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--app-bg);
+            color: var(--text);
+            font-family: "Inter", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+            font-size: 14px;
+            line-height: 1.65;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .app-shell {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 224px minmax(0, 1fr);
+        }
+
+        .sidebar {
+            background: var(--muted-bg);
+            border-right: 1px solid var(--border);
+            padding: 18px 14px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            margin-bottom: 18px;
+            font-weight: 650;
+        }
+
+        .brand-mark,
+        .header-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--primary-soft);
+            border: 1px solid #d4e7df;
+            color: var(--primary);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .nav-title {
+            padding: 0 8px 8px;
+            color: var(--subtle);
+            font-size: 11px;
+            font-weight: 650;
+            text-transform: uppercase;
+        }
+
+        .toc-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .toc-list a {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 8px;
+            border-radius: 8px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .toc-list a:hover {
+            background: #e8efeb;
+            color: var(--text);
+        }
+
+        .toc-count {
+            color: var(--primary);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .main {
+            min-width: 0;
+        }
+
+        .topbar {
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 0 24px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.78);
+        }
+
+        .breadcrumb {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .generated {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .page {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .header-copy {
+            display: flex;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 20px;
+            line-height: 1.35;
+            font-weight: 650;
+        }
+
+        .description {
+            margin: 5px 0 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 4px;
+            border: 1px solid #fed7aa;
+            background: #fff7ed;
+            color: #c2410c;
+            padding: 4px 7px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .surface {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            margin-bottom: 18px;
+        }
+
+        .stat {
+            padding: 16px 18px;
+            border-right: 1px solid var(--border);
+        }
+
+        .stat:last-child {
+            border-right: 0;
+        }
+
+        .stat-value {
+            display: block;
+            font-size: 20px;
+            line-height: 1.2;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            display: block;
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .mobile-toc {
+            display: none;
+            margin-bottom: 18px;
+            padding: 14px;
+            background: var(--muted-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .mobile-toc h2 {
+            margin: 0 0 8px;
+            font-size: 13px;
+            font-weight: 650;
+        }
+
+        .mobile-toc .toc-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 4px;
+        }
+
+        .category {
+            margin-top: 18px;
+            page-break-before: auto;
+        }
+
+        .category-head {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            background: var(--muted-bg);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .category h2 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 650;
+        }
+
+        .paper-count {
+            color: var(--muted);
+            font-size: 12px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .paper-list {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+        }
+
+        .paper {
+            position: relative;
+            padding: 16px 18px 16px 22px;
+            border-bottom: 1px solid var(--border);
+            page-break-inside: avoid;
+        }
+
+        .paper:last-child {
+            border-bottom: 0;
+        }
+
+        .paper::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--primary);
+        }
+
+        .paper-title {
+            margin: 0;
+            font-size: 15px;
+            line-height: 1.45;
+            font-weight: 650;
+        }
+
+        .paper-title a {
+            color: var(--primary-deep);
+        }
+
+        .paper-title a:hover {
+            text-decoration: underline;
+        }
+
+        .paper-authors {
+            margin: 6px 0 0;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.55;
+        }
+
+        .summary-label {
+            margin: 12px 0 4px;
+            color: var(--subtle);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .paper-summary {
+            margin: 0;
+            color: #26312d;
+            font-size: 13px;
+            text-align: justify;
+        }
+
+        @media (max-width: 900px) {
+            .app-shell {
+                display: block;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .topbar {
+                padding: 0 16px;
+            }
+
+            .page {
+                padding: 16px;
+            }
+
+            .page-header {
+                display: block;
+            }
+
+            .badge {
+                margin-top: 12px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .stat {
+                border-right: 0;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .stat:last-child {
+                border-bottom: 0;
+            }
+
+            .mobile-toc {
+                display: block;
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --app-bg: #151a19;
+                --muted-bg: #202925;
+                --surface: #1b2220;
+                --surface-muted: #202925;
+                --border: #2d3934;
+                --input-border: #3c4b45;
+                --primary: #2dd4bf;
+                --primary-deep: #5eead4;
+                --primary-soft: #042f2e;
+                --text: #f3f4f6;
+                --muted: #a5b1ab;
+                --subtle: #7f8c86;
+            }
+
+            .topbar {
+                background: rgba(27, 34, 32, 0.82);
+            }
+
+            .brand-mark,
+            .header-icon {
+                border-color: #315147;
+            }
+
+            .toc-list a:hover {
+                background: #27332e;
+            }
+
+            .paper-summary {
+                color: #d8dfdb;
+            }
+
+            .badge {
+                background: #431407;
+                border-color: #7c2d12;
+                color: #fed7aa;
+            }
+        }
+
+        @media print {
+            :root {
+                --app-bg: #ffffff;
+                --muted-bg: #eef2ef;
+                --surface: #ffffff;
+                --border: #dce4df;
+                --primary: #0f766e;
+                --primary-deep: #115e59;
+                --text: #111827;
+                --muted: #66736d;
+                --subtle: #8a9690;
+            }
+
+            body {
+                background: #ffffff;
+                font-size: 11pt;
+            }
+
+            .app-shell {
+                display: block;
+            }
+
+            .sidebar,
+            .topbar,
+            .mobile-toc {
+                display: none;
+            }
+
+            .page {
+                max-width: none;
+                padding: 0;
+            }
+
+            .page-header {
+                margin-bottom: 14mm;
+            }
+
+            .category {
+                margin-top: 8mm;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="brand">
+            <span class="brand-mark">FN</span>
+            <span>FastNews</span>
+        </div>
+        <div class="nav-title">Categories</div>
+        <ol class="toc-list">
+            
+            <li>
+                <a href="#cat-1">
+                    <span>Binary & Forensics</span>
+                    <span class="toc-count">1</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="#cat-2">
+                    <span>Cryptography & Protocols</span>
+                    <span class="toc-count">45</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="#cat-3">
+                    <span>Hardware Security</span>
+                    <span class="toc-count">11</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="#cat-4">
+                    <span>Human Factors & Usable Security</span>
+                    <span class="toc-count">8</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="#cat-5">
+                    <span>ML/AI Security</span>
+                    <span class="toc-count">33</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="#cat-6">
+                    <span>Miscellaneous</span>
+                    <span class="toc-count">5</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="#cat-7">
+                    <span>Network Security</span>
+                    <span class="toc-count">15</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="#cat-8">
+                    <span>Privacy & Anonymity</span>
+                    <span class="toc-count">16</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="#cat-9">
+                    <span>System & OS Security</span>
+                    <span class="toc-count">20</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="#cat-10">
+                    <span>Web Security</span>
+                    <span class="toc-count">9</span>
+                </a>
+            </li>
+            
+        </ol>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <div class="breadcrumb">Top Conferences / USENIX Security / 2026</div>
+            <div class="generated">2026-08-03 03:57:10 UTC</div>
+        </header>
+
+        <div class="page">
+            <section class="page-header">
+                <div class="header-copy">
+                    <span class="header-icon">P</span>
+                    <div>
+                        <h1>USENIX Security 2026 论文总结</h1>
+                        <p class="description">面向安全研究阅读的分类摘要，保留论文链接、作者与中文核心总结。</p>
+                    </div>
+                </div>
+                <span class="badge">Conference Report</span>
+            </section>
+
+            <section class="surface stats" aria-label="Report overview">
+                <div class="stat">
+                    <span class="stat-value">163</span>
+                    <span class="stat-label">收录论文</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">10</span>
+                    <span class="stat-label">研究分类</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">2026</span>
+                    <span class="stat-label">会议年份</span>
+                </div>
+            </section>
+
+            <nav class="mobile-toc" aria-label="Category navigation">
+                <h2>分类目录</h2>
+                <ol class="toc-list">
+                    
+                    <li>
+                        <a href="#cat-1">
+                            <span>Binary & Forensics</span>
+                            <span class="toc-count">1</span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="#cat-2">
+                            <span>Cryptography & Protocols</span>
+                            <span class="toc-count">45</span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="#cat-3">
+                            <span>Hardware Security</span>
+                            <span class="toc-count">11</span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="#cat-4">
+                            <span>Human Factors & Usable Security</span>
+                            <span class="toc-count">8</span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="#cat-5">
+                            <span>ML/AI Security</span>
+                            <span class="toc-count">33</span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="#cat-6">
+                            <span>Miscellaneous</span>
+                            <span class="toc-count">5</span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="#cat-7">
+                            <span>Network Security</span>
+                            <span class="toc-count">15</span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="#cat-8">
+                            <span>Privacy & Anonymity</span>
+                            <span class="toc-count">16</span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="#cat-9">
+                            <span>System & OS Security</span>
+                            <span class="toc-count">20</span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="#cat-10">
+                            <span>Web Security</span>
+                            <span class="toc-count">9</span>
+                        </a>
+                    </li>
+                    
+                </ol>
+            </nav>
+
+            
+            <section class="surface category" id="cat-1">
+                <div class="category-head">
+                    <h2>Binary & Forensics</h2>
+                    <span class="paper-count">1 papers</span>
+                </div>
+                <div class="paper-list">
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/huang-yizhi">FIRA: Enabling Automatic Forensic Investigation of Unmanned Aerial Vehicles</a>
+                        </h3>
+                        <p class="paper-authors">Yizhi Huang, Georgia Institute of Technology; David Oygenblik, Georgia Tech; Runze Zhang, Mingxuan Yao, Muhammad Ibrahim, Burak Sahin, Haichuan Xu, Saman Zonouz, and Brendan Saltaformaggio, Georgia Institute of Technology</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">针对无人机因在线学习导致崩溃时取证调查困难的问题，本文提出了FIRA，一种能够建立机器学习模型与无人机系统组件之间因果联系的新型取证技术。FIRA通过回传飞行中的在线学习更新和遥测数据（即使在带宽有限时），并确定崩溃是否可归因于在线学习模型。该技术应用于48种使用PX4和ArduPilot控制程序的无人机崩溃场景，在12起由后门在线学习模型导致的事故中，FIRA以95.8%的准确率正确地将模型归因于崩溃。</p>
+                    </article>
+                    
+                </div>
+            </section>
+            
+            <section class="surface category" id="cat-2">
+                <div class="category-head">
+                    <h2>Cryptography & Protocols</h2>
+                    <span class="paper-count">45 papers</span>
+                </div>
+                <div class="paper-list">
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/lehmkuhl">Heli: Heavy-Light Private Aggregation</a>
+                        </h3>
+                        <p class="paper-authors">Ryan Lehmkuhl and Henry Corrigan-Gibbs, MIT; Emma Dauterman, Stanford; David J. Wu, University of Texas at Austin</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文提出了Heli，一个允许两台服务器收集客户端私有数据聚合统计信息而不泄露个体信息的系统。Heli的创新在于，仅“重”服务器需要进行与客户端数量成正比的工作，而“轻”服务器的工作量与客户端数量无关（初始化后）。这使得计算能力有限的参与方也能服务于百万级客户端的部署。Heli依赖于一种新的加密原语“聚合仅加密”，在千万客户端求和场景下，轻服务器的工作量比之前工作减少了12万倍。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/lv">SMASH: Scalable Maliciously Secure Hybrid Multi-party Computation Framework for Privacy-Preserving Large Language Models</a>
+                        </h3>
+                        <p class="paper-authors">Yunlv Lv and Rui Zhang, Institute of Information Engineering, Chinese Academy of Sciences; State Key Laboratory of Cyberspace Security Defense; School of Cyber Security, University of Chinese Academy of Sciences; Zhiyuan Zhang, Max Planck Institute for Security and Privacy; Ziyi Wan, Institute of Information Engineering, Chinese Academy of Sciences; State Key Laboratory of Cyberspace Security Defense; School of Cyber Security, University of Chinese Academy of Sciences; Lanxue Zhang, Institute of Information Engineering, Chinese Academy of Sciences; School of Cyber Security, University of Chinese Academy of Sciences; Minhui Xue, CSIRO's Data61 and Responsible AI Research (RAIR) Centre, Adelaide University; Jiangtao Li, East China Normal University; Yanan Cao, Institute of Information Engineering, Chinese Academy of Sciences; School of Cyber Security, University of Chinese Academy of Sciences</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">现有安全多方计算框架在扩展到大语言模型时面临性能崩溃。本文提出SMASH，一个高度可扩展的恶意安全混合MPC框架。SMASH引入了基于DFT的旋转技术和轻量级的知识零知识证明来评估非线性操作，首次实现了与参与方数量成线性关系的通信复杂度。它还提供了高效的算术/布尔域转换协议。基准测试显示，SMASH在运行时比现有框架快最高18.9倍，通信量减少最高1000倍，为安全分布式LLM部署铺平了道路。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/cremers">Secure Protocol Composition under Dynamic Corruption: Scaling Up Symbolic Analysis for Real-World Security Properties</a>
+                        </h3>
+                        <p class="paper-authors">Cas Cremers, Erik Pallas, and Aleksi Peltonen, CISPA Helmholtz Center for Information Security</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">自动化符号协议验证在复杂协议分析中面临挑战。本文开发了一种支持动态腐败攻击者的组合结果，适用于满足不相交性要求的协议。该工作使组合符号分析能够处理真实世界的安全属性（如前向保密）。在对包含ECH扩展的TLS 1.3进行组合分析时，当整体分析在10%的情况下失败时，所有组合分析均成功，且运行时间和内存使用平均分别降低了71%和86%。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/leblanc-albarel">Breaking Widely Deployed Perceptual Hash Functions: Black-Box Collisions in Apple NeuralHash and Microsoft PhotoDNA</a>
+                        </h3>
+                        <p class="paper-authors">Diane Leblanc-Albarel and Bart Preneel, KU Leuven</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">感知哈希函数用于检测非法内容，但其安全性和隐私风险备受争议。本文展示了在对输入限制为人脸时，仅需2^16次评估即可为Apple的NeuralHash找到视觉不同但哈希值相同的碰撞。对于Microsoft的PhotoDNA，也发现了阈值远低于先前报告的近碰撞。这种黑盒攻击方法无需了解哈希函数设计，其结果严重质疑了这些设计在大规模客户端扫描应用中的适用性。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/scarlata">Zero Knowledge (About) Encryption: A Comparative Security Analysis of Three Cloud-based Password Managers</a>
+                        </h3>
+                        <p class="paper-authors">Matteo Scarlata, ETH Zurich; Giovanni Torrisi and Matilda Backendal, USI, Lugano; Kenneth G. Paterson, ETH Zurich</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">多家云密码管理器声称提供“零知识加密”，即服务器完全无法获知密码库内容。本文对Bitwarden、LastPass和Dashlane三家主流服务进行了安全分析，共发现25种不同的攻击。这些攻击严重程度不一，从针对特定用户库的完整性破坏到完全泄露组织的所有库，多数可恢复密码。研究揭示了在实现端到端加密系统时常见的设计反模式和密码学误解。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/gao-rui">Distributed Vector Commitments and Their Applications</a>
+                        </h3>
+                        <p class="paper-authors">Rui Gao and Huaqun Wang, Nanjing University of Posts and Telecommunications, The State Key Laboratory of Tibetan Intelligence; Zhiguo Wan, Hangzhou Normal University; Yuncong Hu, Shanghai Jiao Tong University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">现有向量承诺方案适用于集中式场景，无法处理输入向量分布在多个机器上的分布式设置。本文首次提出分布式向量承诺的概念，并设计了HLE-DVC方案。该方案允许多个持有子向量的机器共同承诺整个向量并生成位置证明，支持批处理证明、证明聚合和高效更新。实验表明，使用256台机器可实现256倍的并行加速，性能优于单机方案。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/knabenhans">End-to-End Encrypted Collaborative Documents</a>
+                        </h3>
+                        <p class="paper-authors">Christian Knabenhans, EPFL; Zayd Maradni, Max Planck Institute for Software Systems; Carmela Troncoso, Max Planck Institute for Security & Privacy</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文将端到端加密保护扩展到协作文档领域。研究首先形式化了端到端加密协作文档的安全和功能需求，然后提出了一个通用框架，将端到端加密的异步广播通道与任何确保全局一致视图的编辑协调机制相结合。基于此，作者设计并实现了SignalCD，一个针对调查记者场景、基于Signal群组消息协议构建的系统。原型实现表明该方案足够高效，可以实现实时协作。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/lee-keewoo">SophOMR: Improved Oblivious Message Retrieval from SIMD-Aware Homomorphic Compression</a>
+                        </h3>
+                        <p class="paper-authors">Keewoo Lee, Ethereum Foundation; Yongdong Yeo, Seoul National University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">隐私保护区块链和即时通讯面临接收者隐私挑战，即客户端需扫描公共板上的每个载荷。遗忘消息检索通过将扫描外包给服务提供商来解决此问题。本文提出SophOMR方案，通过新的同态压缩机制，显著提升了效率。其核心是利用底层同态加密方案的原生SIMD结构，将与总载荷数成比例的密文压缩为摘要。在65536个载荷（最多50个相关）的场景中，运行时、摘要大小和密钥大小分别比现有最优方案减少了3.4倍、2.2倍和1.5倍。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/chen-liqun">FABS: Fast Attribute-Based Signatures</a>
+                        </h3>
+                        <p class="paper-authors">Liqun Chen, Long Meng, Yalan Wang, Nada El Kassem, Christopher JP Newton, Yangguang Tian, Jodie Knapp, Constantin Cătălin Drăgan, and Daniel Gardham, University of Surrey; Mark Manulis, Universität der Bundeswehr München</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">属性基签名提供对签名生成者的细粒度控制。本文提出了两种快速的ABS方案：密钥策略和签名策略ABS。两者均支持基于单调跨度程序的表达性策略，并具备大宇宙、任意属性和自适应安全等实用特性。这是首次基于MSP的ABS方案实现，展示了在该领域已知的最佳渐进和具体性能。对于100个属性，密钥生成、签名和验证时间均可控制在零点几秒内。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/blass">Assumption-Free Fuzzy PSI via Predicate Encryption</a>
+                        </h3>
+                        <p class="paper-authors">Erik-Oliver Blass, Airbus; Guevara Noubir, Northeastern University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文提出了首个高效的模糊私有集交集协议，实现了线性通信复杂度，且不依赖于对参与方输入分布的严格假设，也避免了使用低效的全同态加密。其关键洞察是将安全计算汉明距离简化为安全计算内积。利用这一简化和最近的内积谓词加密技术，该协议能够在任意输入分布下达到最优的线性通信复杂度。实现验证了其可行性并展示了优于相关工作的性能。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/bell-clark">Vεrity: Verifiable Local Differential Privacy</a>
+                        </h3>
+                        <p class="paper-authors">James Bell-Clark, Adrià Gascón, Baiyu Li, and Mariana Raykova, Google; Amrita Roy Chowdhury, University of Michigan</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本地差分隐私易受投毒攻击，攻击者可控制部分报告用户并显著扭曲聚合输出。本文提出两种在保持LDP隐私保证的同时防止投毒攻击的新方案：Vεrity-Auth适用于第三方掌握真实值的情况；Vεrity则更进一步，处理用户本地生成输入且无真实值可引导可验证随机数生成的更困难场景。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/liu-yizhong">Logos: Robust Sharding Blockchain With Fast Processing and Optimal Cross-Shard Overhead</a>
+                        </h3>
+                        <p class="paper-authors">Yizhong Liu, Beihang University and Beijing Advanced Innovation Center for Future Blockchain and Privacy Computing; Boyu Zhao, Yuxuan Hu, Haojun Tan, Feiang Ran, Andi Liu, and Zhuocheng Pan, Beihang University; Yuan Lu, Institute of Software, Chinese Academy of Sciences; Song Bian, Jianwei Liu, and Zhenyu Guan, Beihang University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">分片区块链通过分区显著提升可扩展性，但跨分片交易处理是其安全和性能的关键瓶颈。现有方法存在鲁棒性有限和开销高的问题。本文提出Logos，一个鲁棒且高效的分片区块链。它采用新颖的广播-传输-共识模式，实现了对有效跨分片交易的最优分片内开销和更优的无效交易处理开销。在1000个AWS节点上的实验显示，其延迟是基准的50%，吞吐量达132.8 ktx/sec，跨分片网络使用量仅为基准的1/210，并在恶意洪泛攻击下保持了高吞吐。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/song-xiangfu">Streaming Function Secret Sharing and Its Applications</a>
+                        </h3>
+                        <p class="paper-authors">Xiangfu Song, Nanyang Technological University; Jianli Bai, Singapore Management University; Ye Dong, National University of Singapore; Yijian Liu, Yu Zhang, and Xianhui Lu, Institute of Information Engineering, Chinese Academy of Sciences and School of Cyber Security, University of Chinese Academy of Sciences; Tianwei Zhang, Nanyang Technological University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">该论文提出了一种新的密码学原语——流函数秘密共享，以解决在流式数据分析场景下保护隐私的挑战。现有的函数秘密共享方案在处理持续到达的消息时效率不足，本文的形式化定义和构造方案针对此场景进行了优化。新方案以更简洁和模块化的方式支持条件转码、策略隐藏聚合等多种应用，并在安全性和效率上显著优于现有方案。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/li-weihan">Shred-to-Shine Metamorphosis of (Distributed) Polynomial Commitments</a>
+                        </h3>
+                        <p class="paper-authors">Weihan Li, School of Cyber Science and Technology, Beihang University; Ant Group; Zongyang Zhang, School of Cyber Science and Technology, Beihang University; Sherman S. M. Chow, The Chinese University of Hong Kong; Yanpei Guo, National University of Singapore; Boyuan Gao, School of Cyber Science and Technology, Beihang University; Xuyang Song, Anoma; Yi Deng, School of Cryptology, Xidian University; Jianwei Liu, School of Cyber Science and Technology, Beihang University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文提出了两种高性能的多线性多项式承诺方案PIPFRI和DEPIPFRI，用于提升简洁非交互知识证明的性能。核心思想是“Shred-to-Shine”，即通过将多项式分割成可独立处理的片段来加速证明过程，同时保持证明大小和验证时间的紧凑。实验表明，新方案在证明速度上比现有最优方案提升了一个数量级，并首次实现了基于编码的通用电路分布式证明，同时改进了证明大小、验证时间以及证明者间的通信成本。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/meng">Unbalanced Fuzzy Private Set Intersection for L_infinity Distance: Achieving Sublinear Communication with Large Set Size</a>
+                        </h3>
+                        <p class="paper-authors">Shengzhe Meng and Xiaodong Wang, Tsinghua University; Xv Zhou, Beihang University; Bei Liang, Beijing Institute of Mathematical Sciences and Applications</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">针对实际应用中常见的集合大小严重不平衡场景，本文提出了两种用于L∞距离的不平衡模糊私有集合求交协议。研究发现现有协议的通信瓶颈在于传输不经意键值存储，本文通过设计新的空间哈希方案并将其与批处理私有信息检索相结合，实现了通信量随较大集合大小亚线性增长。在典型参数设置下，新协议的通信量相比最先进方案降低了数千倍，运行时间也显著提升。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/wang-hongxiao">mmCipher: Batching Post-Quantum Public Key Encryption Made Bandwidth-Optimal</a>
+                        </h3>
+                        <p class="paper-authors">Hongxiao Wang, The University of Hong Kong; Ron Steinfeld, Monash University; Markku-Juhani O. Saarinen, Information Security Laboratory, Tampere University; Muhammed F. Esgin, Monash University; Siu-Ming Yiu, The University of Hong Kong</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文首次提出了基于标准MLWE格假设的安全多消息多接收公钥加密方案mmCipher。为解决后量子场景下批量加密导致的带宽膨胀问题，论文引入了“扩展可复制公钥加密”这一新变体，允许通过提示复制密文，并通过精确估计提示安全性影响来实例化格基方案。实验评估显示，对于1024个接收方，该方案能将带宽开销降低23-45倍，密文大小仅比明文大4-9%，接近最优带宽，同时计算成本也降低3-5倍。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/rodrigues">M-Step: A Single-Stepping Framework for Side-Channel Analysis on TrustZone-M</a>
+                        </h3>
+                        <p class="paper-authors">Cristiano Rodrigues, Centro ALGORITMI, Universidade do Minho; Marton Bognar, DistriNet, KU Leuven; Sandro Pinto, Centro ALGORITMI, Universidade do Minho; Jo Van Bulck, DistriNet, KU Leuven</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">针对资源受限的ARM TrustZone-M平台缺乏高分辨率侧信道分析框架的问题，本文提出了M-Step，一个开放的可扩展单步调试攻击框架。研究者通过深入剖析中断处理行为，创新性地利用了被先前研究忽略的中断延迟泄漏来动态调整定时器中断，从而在没有虚拟内存的微控制器上实现了精确的指令级单步执行。利用该框架，研究者发现了最新ARM Mbed TLS库中的未知漏洞，并能通过单条迹线确定性地恢复TrustZone飞地中完整的RSA私钥。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/henzinger">Nudge: A Private Recommendations Engine</a>
+                        </h3>
+                        <p class="paper-authors">Alexandra Henzinger, MIT; Emma Dauterman, MIT and Stanford; Henry Corrigan-Gibbs, MIT; Dan Boneh, Stanford</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文提出了Nudge，一个具有密码学隐私保护的推荐系统。该系统由三个服务器和多个用户组成，通过秘密分享和三方安全计算，在训练轻量级推荐模型和生成个性化推荐的过程中，不泄露任何用户偏好信息（即使一个服务器被完全攻陷）。在Netflix数据集上的评估表明，Nudge的隐私保护推荐质量与非私有的矩阵分解方法相当，并略低于非私有的神经推荐器，展示了实用性与隐私的平衡。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/dellepere">Garuda and Pari: Faster and Smaller SNARKs via Equifficient Polynomial Commitments</a>
+                        </h3>
+                        <p class="paper-authors">Michel Dellepere, Independent; Pratyush Mishra and Alireza Shirzad, University of Pennsylvania</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文提出了两种新的简洁非交互知识证明方案Pari和Garuda，分别致力于最小化证明大小和生成时间。Pari方案实现了目前已知最小的证明大小（仅160字节）和最低的链上验证Gas成本。Garuda方案则首次支持任意自定义门和自由线性门，显著减少了证明生成时间。两者的核心是提出了一种新的密码学原语——等效多项式承诺，并基于此构建了高效的证明系统。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/hafezi">Transparent Dictionaries from Polynomial Commitments</a>
+                        </h3>
+                        <p class="paper-authors">Hossein Hafezi, NYU; Alireza Shirzad, University of Pennsylvania; Benedikt Bünz and Joseph Bonneau, NYU</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文提出了IRONDICT，一种基于多项式承诺方案的透明字典构造。该构造允许不受信任的服务器维护可变字典，并向客户端提供可验证的查询服务，重点解决了轻量级客户端高效审计的难题。通过结合最新的多项式承诺方案和增量可验证计算技术，IRONDICT使得在普通笔记本电脑上验证包含10亿条目的字典仅需35毫秒，比现有最优方案快300倍，证明大小小15万倍，同时保证了完美的隐私性。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/celi">Efficient Threshold ML-DSA</a>
+                        </h3>
+                        <p class="paper-authors">Sofía Celi, Brave Research and University of Bristol; Rafael del Pino and Thomas Espitau, PQShield; Guilhem Niot, PQShield and Univ Rennes, CNRS, IRISA; Thomas Prest, PQShield</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文提出了首个完全兼容NIST标准化ML-DSA算法的高效门限签名方案。该方案利用先进的短秘密共享技术和优化的拒绝采样，在分布式环境中实现了通信效率与正确性之间的良好平衡。实验评估表明，该方案在局域网和广域网环境下均具备实际部署的可行性，适用于多设备加密货币钱包、基于门限的TLS认证等现实世界应用。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/goel">PICS: Private Intersection over Committed (and reusable) Sets</a>
+                        </h3>
+                        <p class="paper-authors">Aarushi Goel, Rutgers University; Peihan Miao and Phuoc Van Long Pham, Brown University; Satvinder Singh, Purdue University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文提出了PICS，一个基于承诺集的私有集合求交新框架。它解决了现有恶意安全PSI协议在多轮会话中允许输入不一致的问题，通过强制承诺确保了输入的一致性。PICS在VOLE-PSI框架上构建，实现了高效的发送方和接收方输入一致性保证。与基线VOLE-PSI相比，其通信开销仅为常数倍（1.57-2.04倍），总运行时间开销在1.22-1.98倍之间，在安全性上显著增强。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/tu">Anonymous Tokens with Designated-Reader Metadata Bit</a>
+                        </h3>
+                        <p class="paper-authors">Aisha Tu, Wuhan University; Meng Jia, The Hong Kong Polytechnic University; Kun He, Jing Chen, and Ruiying Du, Wuhan University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文提出了一种具有指定读取器元数据位的匿名令牌方案。现有方案的元数据信号只能由令牌发行方读取，而本方案允许用户指定一个经发行方认可的验证者直接读取信号。该方案进一步扩展，支持了“读取器隐藏”（对发行方隐藏指定的验证者）和“发行方隐藏”（对验证者隐藏发行方身份）功能。论文提供了安全性证明和性能报告。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/chen-edward">Bridging Usability and Performance: A Tensor Compiler for Autovectorizing Homomorphic Encryption</a>
+                        </h3>
+                        <p class="paper-authors">Edward Chen, Fraser Brown, and Wenting Zheng, Carnegie Mellon University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文提出了Rotom，一个用于将张量程序自动向量化为优化同态加密程序的编译框架。手动编写高效的HE程序非常困难，因为性能对数据打包方式极为敏感。Rotom系统性地探索多种布局分配，应用尖端优化，并自动生成等效且高效的HE程序。其核心是一种轻量级的布局转换操作符。评估表明，Rotom能快速编译所有测试负载，并将旋转操作次数减少最高3倍，性能提升最高80倍。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/gajland">Shadowfax: Hybrid Security and Deniability for AKEMs</a>
+                        </h3>
+                        <p class="paper-authors">Phillip Gajland, IBM Research Europe – Zurich; Vincent Hwang, MPI-SP, Radboud University; Jonas Janneck, Ruhr University Bochum</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文研究了如何在后量子认证密钥封装机制中高效地保留可否认性这一重要隐私属性。现有后量子协议如PQXDH牺牲了可否认性。本文提出了两种混合方案：一种是黑盒构造，在两个组成部分都可否认时保持可否认性；另一种是Shadowfax，一个非黑盒方案，通过集成经典非交互密钥交换、后量子KEM和后量子环签名，在诚实和不诚实接收者场景下均实现可否认性，并提供了高效的实现和评估。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/yang-zhaomin">RBOOT: Accelerating Homomorphic Neural Network Inference by Fusing ReLU within Bootstrapping</a>
+                        </h3>
+                        <p class="paper-authors">Zhaomin Yang, Chao Niu, Benqiang Wei, Zhicong Huang, Cheng Hong, and Tao Wei, Ant Group</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">针对全同态加密中评估ReLU等非线性激活函数效率低下的瓶颈，本文提出了RBOOT框架，其核心洞察是将ReLU的计算巧妙地融合到CKKS同态加密方案的引导过程中。通过协同优化引导和激活函数，利用引导过程中EvalMod步骤的非线性特性来构造ReLU，显著降低了所需的乘法深度。在四个广泛使用的CNN模型上，RBOOT实现了比多项式近似方法快2.77倍的端到端推理速度和低81%的内存使用量，同时保持了相当的准确性。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/baelde">Leveraging Cryptographic Simulator Synthesis for Formally Verifying the FOO E-Voting Protocol</a>
+                        </h3>
+                        <p class="paper-authors">David Baelde, Univ Rennes, CNRS, IRISA; Adrien Koutsos and Justine Sauvage, Inria</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">密码学证明依赖于模拟器，但编写模拟器繁琐且易出错。本文在Squirrel框架中解决了模拟器综合问题。作者指出先前基于双向推导的证明搜索过程存在系统性缺陷，提出了一个显著改进的程序，可在递归迭代中重用预言机调用，并生成精确的不变式。该程序在Squirrel中实现，并用于验证FOO电子投票协议的选票隐私，这是首个针对FOO的计算化机械验证，也是目前最复杂的Squirrel证明。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/woll">Bridging Bitcoin to Second Layers via BitVM2</a>
+                        </h3>
+                        <p class="paper-authors">Robin Linus Woll, Stanford University and ZeroSync Association; Lukas Aumayr, University of Edinburgh and Common Prefix; Zeta Avarikioti, TU Wien and Common Prefix; Matteo Maffei, TU Wien; Andrea Pelosi, University of Pisa, University of Camerino, and TU Wien; Orfeas Stefanos Thyfronitis Litos, Imperial College London and Common Prefix; Christos Stefo, TU Wien; David Tse, Stanford University and Byzantine Research; Alexei Zamyatin, BOB</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">该论文介绍了BitVM2，首次实现基于轻客户端的比特币无信任桥。其核心BitVM2-CORE范式结合了图灵完备的表达能力和比特币共识的安全性。BitVM2-BRIDGE将信任假设从诚实多数（t-of-n）降低到存在性诚实（1-of-n）。活性由单个理性操作员保证，任何用户都可以充当挑战者进行无许可验证。该方案已开发出生产级实现，并在比特币主网上执行了完整的挑战验证。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/gui">DDR-SSE: Duplicated Retrieval of Documents for System-wide Secure Searchable Symmetric Encryption</a>
+                        </h3>
+                        <p class="paper-authors">Zichen Gui, University of Georgia; Simon-Philipp Merz and Kenneth G. Paterson, ETH Zürich; Sikhar Patranabis, IBM Research India</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">可搜索对称加密（SSE）方案通常仅索引级安全，无法抵抗对加密文档检索的密码分析。本文提出了DDR-SSE，一种实际高效的、系统级安全的SSE方案，仅需静态客户端状态且泄漏配置文件简单。技术核心是使用重复文档存储和随机文档检索来抑制访问模式泄漏，而不牺牲实际效率。论文提供了基于模拟的安全证明，并通过广泛的泄漏密码分析证明DDR-SSE能抵抗查询重建攻击。原型基准测试显示其可平滑扩展至现实应用规模的大型数据库。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/baum">Concretely Efficient Blind Signatures Based on VOLE-in-the-Head Proofs and the MAYO Trapdoor</a>
+                        </h3>
+                        <p class="paper-authors">Carsten Baum and Marvin Beckmann, Denmark Technical University; Ward Beullens, IBM, Zürich; Shibam Mukherjee, Graz University of Technology and Know Center; Christian Rechberger, Graz University of Technology and TACEO</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">盲签名是许多隐私保护应用的重要构建块。本文提出了一种基于VOLE-in-the-Head零知识证明系统和MAYO数字签名方案的、可证明后量子安全的盲签名方案PoMFRIT。与性能不佳的现有格基方案相比，PoMFRIT在签名颁发和验证（展示）阶段均实现了高效：签名大小约6.7KB，验证时间小于76毫秒。作为中间贡献，作者还实现了首个针对SHA-3系列哈希函数的VOLE-in-the-Head证明。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/baweja">Scribe: Low-memory SNARKs via Read-Write Streaming</a>
+                        </h3>
+                        <p class="paper-authors">Anubhav Baweja, Pratyush Mishra, Tushar Mopuri, Karan Newatia, and Steve Wang, University of Pennsylvania</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">零知识简洁非交互式知识论证（SNARK）的证明生成面临内存瓶颈。本文提出了Scribe，一种新的低内存SNARK，通过利用磁盘存储这一丰富资源，在智能手机等廉价消费设备上高效证明大型陈述。Scribe的证明器采用读写流计算模型，状态存储在磁盘上并以流式方式访问。评估显示，在商用硬件上，Scribe可轻松处理2^28个门的电路，内存使用少于750MB，与需要更多内存的基线（HyperPlonk）相比，证明延迟仅增加约10%。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/fu">Distributed Synthesis of Differentially Private Tabular Datasets</a>
+                        </h3>
+                        <p class="paper-authors">Yucheng Fu, University of Virginia; Tianyao Gu and Elaine Shi, Carnegie Mellon University; Tianhao Wang, University of Virginia</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文针对敏感数据属性分布在多个实体中的分布式场景，提出了一个用于差分隐私表格数据合成的安全多方计算协议。该协议包含两个新原语：一个利用分布式点函数高效估计垂直分布数据的双路边际的协议，以及一个通过在累积分布函数表中进行批量查找生成噪声的协议。作为具体演示，构建了分布式版的先进DP数据合成算法AIM。实现达到了与集中式版本相同的效用，且端到端运行时间比现有工作减少了数个数量级。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/bian-song">Libra: Pattern-Scheduling Co-Optimization for Cross-Scheme FHE Code Generation over GPGPU</a>
+                        </h3>
+                        <p class="paper-authors">Song Bian, Yintai Sun, Zian Zhao, and Haowen Pan, Beihang University; Mingzhe Zhang, unaffiliated; Zhenyu Guan, Beihang University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文提出了Libra，一个编译器框架，用于在通用图形处理器（GPGPU）上自动生成高效的跨方案全同态加密（FHE）代码。它整合了FHE计算模式和硬件感知的调度策略，建立了一个算法-硬件协同优化框架。具体包括：定义新的跨方案表示、基于多方案切换模式的组合执行成本动态优化FHE程序、以及引入计算调度策略以加速GPU上的算子间执行。实验显示，Libra在微基准测试和应用上分别实现了高达270倍和19倍的加速，并提升了计算单元和内存带宽的利用率。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/guo-hao">Efficient and High-Accuracy Secure Two-Party Protocols for a Class of Functions with Real-number Inputs</a>
+                        </h3>
+                        <p class="paper-authors">Hao Guo and Zhaoqian Liu, The Chinese University of Hong Kong, Shenzhen; Liqiang Peng, Alibaba Group; Shuaishuai Li, Zhongguancun Laboratory, Beijing, China; Ximing Fu, The Chinese University of Hong Kong, Shenzhen; Weiran Liu and Lin Qu, Alibaba Group</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">在两方秘密共享方案中，需要从共享输入计算实数函数的值。本文显著放宽了先前工作对输入的限制，允许计算在更宽松甚至无输入约束的实数上的函数。在此基础上，提出了一个通用框架，用于设计包括整数除法、三角函数和指数函数在内的一类函数的安全协议。实验评估表明，所提协议实现了高效率和高精度。例如，评估e^{-x}的协议将通信成本降低至SirNN和Bolt的约31%，运行时加速分别高达5.53倍和3.09倍，精度也显著优于它们。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/liang">InstantOMR: Oblivious Message Retrieval with Low Latency and Optimal Parallelizability</a>
+                        </h3>
+                        <p class="paper-authors">Haofei Liang, Shanghai Jiao Tong University; Zeyu Liu, Yale University; Eran Tromer, Boston University; Xiang Xie, Primus Labs; Yu Yu, Shanghai Jiao Tong University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">隐蔽消息检索用于匿名消息系统和私有区块链，允许资源有限的接收方外包消息的检测和检索。本文提出InstantOMR，一种结合TFHE功能引导和标准RLWE操作的混合OMR方案，专门优化了低延迟和高并行性。实验表明，InstantOMR的延迟比现有方案低约600倍，并且能近乎最优地随CPU核心数扩展。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/mahdavi">ZipPIR: High-throughput Single-server PIR without Client-side Storage</a>
+                        </h3>
+                        <p class="paper-authors">Rasoul Akhavan Mahdavi, Abdulrahman Diaa, and Florian Kerschbaum, University of Waterloo</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">私有信息检索允许客户端私密访问数据库。现有高吞吐量协议通常需要大量客户端存储或离线阶段通信成本过高。本文提出ZipPIR，一种将LWE密文压缩为更小Paillier密文的高吞吐量PIR协议。其离线阶段几乎静默，无需客户端交互。ZipPIR实现了超过2 GB/s的吞吐量，与需要大提示存储的现有协议相当，同时显著提升了无客户端存储PIR的吞吐量。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/pang-kaiyi">Provable Secure Steganography Based on Adaptive Dynamic Sampling</a>
+                        </h3>
+                        <p class="paper-authors">Kaiyi Pang and Minhao Bai, Tsinghua University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">可证安全隐写术是确保正常模型输出与隐写输出计算不可区分的前沿技术，但现有方法常需要获取模型的显式分布。本文提出一种仅需要接受种子作为输入的模型API的可证安全隐写方案。核心机制是采样候选令牌集并构建消息位串到令牌的映射。通过维护和动态扩展碰撞集来解决解码正确性问题。评估表明，该方法在效率和容量上与现有方法相当。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/hochrainer">Arguzz: Testing zkVMs for Soundness and Completeness Bugs</a>
+                        </h3>
+                        <p class="paper-authors">Christoph Hochrainer, Technische Universität Wien; Valentin Wüstholz, Diligence Security; Maria Christakis, Technische Universität Wien</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">零知识虚拟机用于可验证的链下计算，但其约束系统或执行逻辑中的错误可能导致健全性或完备性问题。本文提出ARGUZZ，首个用于测试zkVM健全性和完备性漏洞的自动化工具。它结合了元测试和故障注入，通过生成语义等效程序对并在zkVM中运行来检测漏洞。ARGUZZ对六个真实世界zkVM进行测试，发现了三个中的十一个漏洞，其中一个获得了五万美元的赏金。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/guo-qian">Unlocking the True Potential of Decryption Failure Oracles: A Hybrid Adaptive-LDPC Attack on ML-KEM Using Imperfect Oracles</a>
+                        </h3>
+                        <p class="paper-authors">Qian Guo, Denis Nabokov, and Thomas Johansson, Lund University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">利用解密失败预言机的侧信道攻击是对部署的后量子密码学的紧迫威胁。本文重新审视了利用DF预言机对ML-KEM的选择密文攻击。作者引入了一种结合自适应查询生成与LDPC码信念传播的新攻击框架，通过精心设计的奇偶校验提取最大香农信息。对于ML-KEM-768，该攻击仅需2950次查询即可恢复密钥，其效率接近理论下限，并超越了最先进的二进制PC攻击。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/hu-zhenkai">Ajax: Fast Threshold Fully Homomorphic Encryption without Noise Flooding</a>
+                        </h3>
+                        <p class="paper-authors">Zhenkai Hu, Shanghai Jiao Tong University and State Key Laboratory of Cryptology; Haofei Liang, Shanghai Jiao Tong University; Xiao Wang, Northwestern University; Xiang Xie, East China Normal University and Primus Labs; Kang Yang, State Key Laboratory of Cryptology; Yu Yu, Shanghai Jiao Tong University and Shanghai Qi Zhi Institute; Wenhao Zhang, Northwestern University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">阈值全同态加密允许多方对加密数据进行计算。现有方案在阈值解密时使用“噪声淹没”技术，导致参数大或解密慢。本文提出Ajax，一种针对FHEW类密码系统的快速阈值全同态加密方案。对于阈值解密，它提出了基于随机双重分享的“先掩码后打开”技术，消除了噪声淹没的需求。端到端实现表明，其解密性能比现有方案提升了5.7倍至283.6倍。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/li-chen">Differential Trust: Dynamic Multi-Authority Anonymous Credentials with Epoch-Weighted Updates</a>
+                        </h3>
+                        <p class="paper-authors">Chen Li, Tianjin University; Jianting Ning, Zhejiang Sci-Tech University; Xiulong Liu, Tianjin University; Yulin Liu, Wuhan University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">匿名凭证是隐私保护认证的基础。现有最先进的多机构凭证在颁发阶段平等地对待所有机构，忽略了不同机构可信度或权益的差异。本文提出MA-ACEW，首个考虑机构权重分布的多机构匿名凭证模型。其核心是新型的时期绑定PS签名原语，支持基于权重的凭证颁发和高效的跨时期更新。基准测试表明，聚合128个部分凭证的凭证仅需10.68毫秒。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/bienstock">Quorus: Efficient, Scalable Threshold ML-DSA Signatures from MPC</a>
+                        </h3>
+                        <p class="paper-authors">Alexander Bienstock, Leo de Castro, Daniel Escudero, Antigoni Polychroniadou, and Akira Takahashi, J.P. Morgan AlgoCRYPT CoE and J.P. Morgan AI Research</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">阈值签名协议将签名密钥分发给多方，但现有的后量子阈值方案大多针对特殊设计的方案。本文提出了首个高效且可扩展的多机构生成NIST后量子签名标准之一的ML-DSA的解决方案。作者提出了ML-DSA签名算法的变体，并设计了高效的MPC协议。该方案在诚实多数设置下运行，签名和验证密钥大小与标准ML-DSA匹配，且无需新假设。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/li-zhihao">BatchBoot: Fast Batched Bootstrapping for TFHE scheme and Practical Applications</a>
+                        </h3>
+                        <p class="paper-authors">Zhihao Li, Ant Digital Technologies, Ant Group; Hongyu Wang, Shanxi University; Yuan Zhao and Lichun Li, Ant Digital Technologies, Ant Group; Zhiwei Wang, State Key Laboratory of Cyberspace Security Defense, Institute of Information Engineering, CAS; Jiaxing He, Changzheng Wei, and Ying Yan, Ant Digital Technologies, Ant Group; Lifeng Guo, Shanxi University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">TFHE的引导机制可处理任意计算但一次只能处理一条加密消息，限制了其可扩展性。本文提出BatchBoot，一个高效的TFHE批处理引导框架。它重新设计了同态多项式乘法子模块，提出了稀疏感知的消息打包策略，并将功能引导扩展到电路引导。BatchBoot比现有批处理方案快2.4倍，比非批处理实现快43.8倍。应用上，它实现了首个不平衡设置下的TFHE-PSI协议，并设计了8位FHE指令集。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/talur">SONIC: Concurrent Oblivious RAM & Data Structures for Low-Latency and High-Throughput</a>
+                        </h3>
+                        <p class="paper-authors">Nihal Talur and Ioannis Demertzis, UC Santa Cruz</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">该论文旨在解决隐私计算中依赖加密或可信执行环境（TEE）时易受访问模式攻击和侧信道攻击的风险。论文指出现有的基于树或分区的ORAM方案在低延迟和高吞吐量之间存在割裂。为此，本文提出了SONIC，首个用于硬件飞地的ORAM，它用RingORAM取代了传统的PathORAM。该设计克服了所有树ORAM构建的核心挑战（如顺序驱逐瓶颈），实现了并发访问、批量驱逐和无锁操作。SONIC在单服务器上实现了最低150K、最高2M请求/秒的吞吐量，比EnigMap高28-197倍，比GraphOS高158-1065倍。此外，SONIC可作为Snoopy的子ORAM替代品，将处理1TB数据所需的服务器数量从数千台大幅减少至32台，实现了更实用的可扩展性。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/li-yueming">E2E-AKMA: An End-to-End Secure and Privacy-Enhancing AKMA Protocol Against the Anchor Function Compromise</a>
+                        </h3>
+                        <p class="paper-authors">Yueming Li, Institute of Software, Chinese Academy of Sciences; and University of Chinese Academy of Sciences; Long Chen, Institute of Software, Chinese Academy of Sciences; and Key Laboratory of System Software, Chinese Academy of Sciences; Qianwen Gao, Institute of Software, Chinese Academy of Sciences; and University of Chinese Academy of Sciences; Zhenfeng Zhang, Institute of Software, Chinese Academy of Sciences; and Key Laboratory of System Software, Chinese Academy of Sciences</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">该论文针对5G标准中应用认证与密钥管理（AKMA）协议存在的安全与隐私挑战。AKMA允许应用服务商将用户认证委托给移动网络运营商，但其中的锚点功能（AAnF）若被攻破，可能导致用户登录活动被监控或通信内容被未授权访问；同时，用户永久身份标识（SUPI）暴露给外部应用功能会带来严重的隐私关联风险。为解决这些问题，论文提出了E2E-AKMA协议。该协议即使在AAnF被攻破的情况下，也能确保用户设备与应用功能之间建立端到端安全的会话密钥，并保证除5G核心网外，任何实体均无法将账户活动与用户真实身份关联。该设计保留了原方案无需复杂动态密钥管理和特殊硬件的优势。实验评估显示，其额外开销仅比原5G AKMA方案高约9.4%，表明其具有高效性和实际部署潜力。</p>
+                    </article>
+                    
+                </div>
+            </section>
+            
+            <section class="surface category" id="cat-3">
+                <div class="category-head">
+                    <h2>Hardware Security</h2>
+                    <span class="paper-count">11 papers</span>
+                </div>
+                <div class="paper-list">
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/amgain">HAMLOCK: HArdware-Model LOgically Combined attacK</a>
+                        </h3>
+                        <p class="paper-authors">Sanskar Amgain, University of Tennessee, Knoxville; Daniel Lobo, Atri Chatterjee, and Swarup Bhunia, University of Florida; Fnu Suya, University of Tennessee, Knoxville</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">第三方硬件加速器的使用引入了新的安全漏洞。现有模型级后门攻击可被防御方法检测。本文提出HAMLOCK，一种在硬件-软件边界上分布攻击逻辑的隐蔽威胁。它通过微调软件模型中少数神经元的激活值，并在恶意硬件木马监控下触发另一木马篡改最终输出。这种解耦设计使模型本身无完整后门路径，从而绕过了现有模型级防御，且硬件木马开销极低，难以检测。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/lu-hongyi">CuSafe: Capturing Memory Corruption on NVIDIA GPUs</a>
+                        </h3>
+                        <p class="paper-authors">Hongyi Lu, Southern University of Science and Technology and Hong Kong University of Science and Technology; Fengwei Zhang, Southern University of Science and Technology; Zhenkai Zhang, Clemson University; Shuai Wang, Hong Kong University of Science and Technology; Yanan Guo, University of Rochester</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">针对GPU应用程序日益受到C/C++等不安全语言导致的内存损坏漏洞影响的问题，本文提出了CuSafe，一个可在商用NVIDIA GPU上部署的新型GPU内存安全检查器。CuSafe采用结合指针标记和带内缓冲区边界的混合元数据方案，并引入栈时代追踪和虚拟地址随机化等机制来缓解时间损坏引起的元数据混淆。在33个程序上的安全评估显示，CuSafe在空间和时间漏洞覆盖方面均优于现有方案；在44个程序（包括LLaMA大模型）上的性能评估显示，其平均性能开销仅为13%，内存开销可忽略不计。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/gu-cheng">Behind Bars: A Side-Channel Attack on NVIDIA MIG Cache Partitioning Using Memory Barriers</a>
+                        </h3>
+                        <p class="paper-authors">Cheng Gu, University of Rochester; Reese Levine, UC Santa Cruz; Zhenkai Zhang, Clemson University; Tyler Sorensen, Microsoft and UC Santa Cruz; Yanan Guo, University of Rochester</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文对NVIDIA多实例GPU的L2缓存分区安全性进行了实证研究。研究发现，尽管MIG设计了分区，但跨实例的L2缓存干扰仍然存在。具体而言，一个MIG实例中生成的内存屏障会产生跨L2分区传播的副作用，影响其他实例中某些加载操作的时序。基于此，研究者开发了一种基于时序的侧信道攻击，使一个实例的攻击者能够推断另一个实例中受害者的内核启动模式。该攻击能危害大语言模型推理等广泛使用GPU应用的机密性。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/zhang-guoming">TrojPix: Electromagnetic Covert Channels via Imperceptible Pixel Modulation</a>
+                        </h3>
+                        <p class="paper-authors">Guoming Zhang, Shandong University and Quan Cheng Laboratory; Huiting Zhang, Zhenwei Lu, Heqiang Fu, Xin Gao, Riccardo Spolaor, and Yetong Cao, Shandong University; Yanni Yang and Pengfei Hu, Shandong University and Quan Cheng Laboratory</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文展示了通过不可感知的像素调制，可以在数字视频线上确定性地诱导可控电磁发射，从而实现无需系统权限或硬件修改的隐蔽信道。基于此，研究者提出了TrojPix，一种在保持屏幕显示不可感知性的同时，通过数字视频线进行高速、远距离通信的隐蔽信道。TrojPix实现了结合像素到样本映射和自适应解码的轻量级通信方案。在9种品牌显示器和15种视频线上的评估显示，其峰值吞吐量达8.1 Mbps，最大距离达208米，揭示了气隙网络面临的一种实用且隐蔽的威胁。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/kim-hodong">TIMESLICE-SANDWICH: A GPU Side-Channel Attack Exploiting Time-Sliced Scheduling</a>
+                        </h3>
+                        <p class="paper-authors">Hodong Kim and Gyeongsup Lim, Korea University; Seunghee Shin, State University of New York at Binghamton; Youngjoo Shin and Junbeom Hur, Korea University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文探索了GPU时间切片调度机制这一标准资源共享特性中的安全影响。研究者分析了在时间切片调度下并发执行引起的时序变化，识别出时间片的上界，并利用其估计并发程序的GPU使用模式。基于此发现，提出了TIMESLICE-SANDWICH，一种新型GPU侧信道攻击，利用时间片持续时间的差异来推断和区分受害者的执行模式。与先前攻击不同，它无需争用特定共享资源。在神经网络恢复和网站指纹识别攻击中，该攻击分别取得了94.40%和92.84%的平均高准确率。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/zhang-ruiyi">StackWarp: Breaking AMD SEV-SNP Integrity via Deterministic Stack-Pointer Manipulation through the CPU's Stack Engine</a>
+                        </h3>
+                        <p class="paper-authors">Ruiyi Zhang, Tristan Hornetz, Daniel Weber, Fabian Thomas, and Michael Schwarz, CISPA Helmholtz Center for Information Security</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文提出了StackWarp，一种利用AMD Zen CPU上栈引擎的软件架构攻击，可以在SEV-SNP机密虚拟机内修改栈指针，从而完全破坏其完整性。该攻击依赖于一个未记录的MSR位，该位在逻辑核心之间状态未正确同步，使攻击者能跨逻辑核心确定性地调整栈指针，在包括最新Zen 5在内的多代CPU上均有效。研究展示了四种端到端攻击，包括RSA私钥恢复、OpenSSH密码认证绕过和权限提升，结论指出启用SMT破坏了SEV-SNP的完整性保证。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/klix">Silicon Heist: (Ransom) Attacks for Cloud FPGAs via Privilege Escalation</a>
+                        </h3>
+                        <p class="paper-authors">Simon Klix, Felix Hahn, Maik Ender, Nils Albartus, and Christof Paar, Max Planck Institute for Security and Privacy (MPI-SP); Russell Tessier, University of Massachusetts</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">该论文揭示了针对云FPGA的新颖特权提升路径。攻击者利用AMD FPGA的内部配置访问端口（ICAP）绕过云服务商的安全机制，逐步将能力提升至远程JTAG访问。通过ICAP，用户最终可获得对硬件底层JTAG接口的控制权，从而访问设备的eFuses。这使得攻击者能够不可逆地编程加密设置，锁定云服务商，为其设备勒索赎金。研究在亚马逊EC2 F1和F2实例上验证了该漏洞的可行性，揭示了云环境中未受保护的底层硬件组件带来的被忽视的威胁。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/hetterich-lorenz-instrsem">InstrSem: Automatically and Generically Inferring Semantics of (Undocumented) CPU Instructions</a>
+                        </h3>
+                        <p class="paper-authors">Lorenz Hetterich, Fabian Thomas, Tristan Hornetz, and Michael Schwarz, CISPA Helmholtz Center for Information Security</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文提出了InstrSem，一种ISA无关、模块化、全自动的方法，仅从执行行为推断指令语义（包括未文档化指令），并提供人类和机器可理解的语义。该方法通过系统变化架构状态执行原始编码，并合成紧凑的数学函数来解释所有状态变化；再通过变异编码位并关联行为变化来概括完整指令，恢复寄存器和立即数字段。InstrSem在RV64I、AArch64和LA64等架构上进行了评估，自动恢复了超过97.81%的RV64I基础指令集语义，并发现了未文档化的向量指令等安全相关信息。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/noh">ARM MTE Performance in Practice</a>
+                        </h3>
+                        <p class="paper-authors">Taehyun Noh, University of Texas at Austin; Yingchen Wang, University of California Berkeley; Tal Garfinkel, Google; Mahesh Madhav, Ampere Computing; Daniel Moghimi, Google; Mattan Erez and Shravan Narayan, University of Texas at Austin</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文首次对ARM MTE（内存标记扩展）硬件在四个不同微架构（包括谷歌Pixel手机和AmpereOne CPU）上的性能进行了全面分析。研究调查了MTE在主要应用——概率性内存安全——以及内存追踪、TOCTOU防御等特定安全应用上的性能。结果发现MTE通常开销适度，但在某些基准测试上性能下降高达6.64倍。论文识别了导致这些开销的微架构原因，并探讨了先前MTE性能研究中的方法或实验错误。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/choudhari">Memclave: Secure In-Memory Enclave for Untrusted Hosts</a>
+                        </h3>
+                        <p class="paper-authors">Amit Choudhari, CISPA Helmholtz Center for Information Security; Fabian van Rissenbeck, Technische Universität Dortmund; Christian Rossow, CISPA Helmholtz Center for Information Security</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">内存中处理设备通过将计算移入DRAM来减少数据移动，但其控制平面和共享模块内存可能暴露给不受信任的主机。本文提出Memclave，一个纯软件框架，为商用PIM设备带来代码完整性和数据机密性。它使用经TPM认证的虚拟机监控程序在启动时永久隔离PIM的控制平面，并在每个内存核心上建立受保护的数据路径。在UPMEM DIMM上的评估表明，其性能接近PIM基线。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/wang-chunlin">Khost: KVM-based Near Native MCU Firmware Rehosting</a>
+                        </h3>
+                        <p class="paper-authors">Chunlin Wang, Yicheng Yang, Yuan Zhang, Haoyu Xiao, Yifan Zhang, and Jiarun Dai, Fudan University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">基于微控制器单元的设备是物联网基础设施的关键层。现有重托管框架因仿真或执行范围有限而存在显著性能开销。本文提出Khost，一个近原生、范围保持的重托管框架。它通过扩展KVM引入轻量级扩展CPU、辅助页表和软件中断控制器，实现了最小开销的固件重托管。评估显示，Khost的性能开销比QEMU降低了90%以上，模糊测试吞吐量提高了近200倍。</p>
+                    </article>
+                    
+                </div>
+            </section>
+            
+            <section class="surface category" id="cat-4">
+                <div class="category-head">
+                    <h2>Human Factors & Usable Security</h2>
+                    <span class="paper-count">8 papers</span>
+                </div>
+                <div class="paper-list">
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/thompson">"Your imaging may be stone-cold normal, but if they look sick, they're going to get admitted": An Investigation of Clinicians' Perceptions of Impact & Likelihood of Security Failures</a>
+                        </h3>
+                        <p class="paper-authors">Ronald E. Thompson III and Hamza Khalid, Tufts University; Hilary Fisher, Brigham and Women's Hospital; Rhea Votipka, Beth Israel Lahey Health; Daniel Votipka, Tufts University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">网络攻击是严重的患者安全问题，但现有安全控制往往未充分考虑临床环境的独特性。本文通过混合方法研究探讨了临床医生的安全视角。研究发现，临床医生感知到的威胁与已部署的控制之间存在显著错位。他们认为保密性失败最可能发生；将完整性失败视为灾难性但信任自身专业经验以忽略异常数据；并使用纸质记录等模拟变通方法管理可用性失败，这又引入了新风险。结果强调了将临床医生纳入安全设计的必要性。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/prakash">Assessing LLM Response Quality in the Context of Technology-Facilitated Abuse</a>
+                        </h3>
+                        <p class="paper-authors">Vijay Prakash, New York University; Majed Almansoori, University of Wisconsin–Madison; Donghan Hu, New York University; Rahul Chatterjee, University of Wisconsin–Madison; Danny Yuxing Huang, New York University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">技术促成的虐待是一种利用数字工具控制、监视或伤害幸存者的亲密伴侣暴力形式。随着大语言模型的普及，幸存者可能开始向LLM聊天机器人寻求帮助。本文首次由专家主导，手动评估了四个LLM在响应TFA相关问题时的有效性。研究使用来自文献和在线论坛的真实问题，评估了零样本单轮响应的质量，并通过用户研究评估了其可操作性。研究结果为未来模型在该领域的设计、开发和微调提供了见解和具体建议。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/bhattacharya">Inconsistent, Incomplete, and Insecure: A Survey of Account Security Interfaces</a>
+                        </h3>
+                        <p class="paper-authors">Arkaprabha Bhattacharya and Alaa Daffalla, Cornell University; Kevin Lee, Independent Researcher; Rosanna Bellini, New York University; Nicola Dell, Cornell Tech; Thomas Ristenpart, University of Toronto & Cornell Tech</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文对100项流行服务的账户安全界面进行了迄今最大规模的测量研究。研究揭示了一个不令人满意的现状：29项服务没有提供任何方式来区分账户访问。通过新的分类法，研究显示各服务部署的ASI类型不一致。即使是专家研究人员也发现ASI常常不完整且令人困惑。在61项提供设备或位置描述的ASI中，有41项（67.2%）容易受到欺骗攻击，成功混淆了访问来源。基于这些发现，论文提出了改进未来ASI部署的六项原则。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/piao">"Abuse Risks are Often Inherent to Product Features": Exploring AI Vendors' Bug Bounty and Responsible Disclosure Policies</a>
+                        </h3>
+                        <p class="paper-authors">Yangheran Piao, Jingjie Li, and Daniel W. Woods, University of Edinburgh</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文评估了AI厂商处理AI漏洞披露的当前实践。研究者分析了264家AI厂商的漏洞披露政策，采用混合方法，结合快照和纵向定性分析，并与320起AI事件和260篇学术文章进行对齐。分析发现，36%的AI厂商没有既定政策，只有18%提及了AI风险。数据访问、授权和模型提取漏洞最一致地被宣布为范围内的，而越狱和幻觉最常被宣布为范围外的。研究识别出三种反映厂商不同立场的模式，并发现厂商可能在学术研究和真实事件之后才处理AI漏洞披露。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/roch">You Know Why, but Still Rely: The Impact of Explainable AI on Trust, Task Load, and Performance in Cybersecurity Decision-Making</a>
+                        </h3>
+                        <p class="paper-authors">Neele Roch, Hannah Sievers, Noé Zufferey, and Verena Zimmermann, ETH Zurich</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文报告了一项针对具有网络安全领域知识用户的被试间研究（N=139），研究了在恶意域名拦截场景下，可解释AI（XAI）解释对信任、可用性、感知任务负载和协作任务性能的影响。结果令人惊讶：提供解释并未增强信任；事实上，具有领域知识的用户在与XAI交互后报告了更低的信任度。定性结果表明，他们应用自己的决策标准，而暴露AI决策边界可能引入模糊性并滋生不信任。虽然包含XAI没有增加感知任务负载，但也没有提高性能。这些发现引发了对当前XAI方法在知识中心决策环境中有效性的质疑，并强调了在网络安全中需要更符合情境、用户对齐的解释策略。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/al-alsadi">"Oh, what people would do with my knife?" Navigating the Dual-Use Dilemma in PoC Exploit Development, Disclosure, and Community Dynamics</a>
+                        </h3>
+                        <p class="paper-authors">Arwa Al Alsadi and Lorenz Kustosch, TU Delft; Lamya Alowain, Independent; Michel Van Eeten and Carlos H. Gañán, TU Delft</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文通过对16位不同地区的PoC漏洞开发者进行半结构化访谈，应用期望价值理论，揭示了PoC开发作为一个复杂动机生态系统，其中技术信心、价值评估和风险计算在双重用途张力中相互交织。研究发现，PoC开发从崩溃演示到武器化漏洞利用的连续体，由多方面计算而非二元伦理所塑造。作者提出了三个理论扩展：使责任外部化的双重用途道德推理、供应商行为重塑披露决策的动态价值评估、以及在伦理研究与技术精通之间的身份导航。研究强调，供应商响应性、社区动态和法律约束显著影响披露策略。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/kalu">Why Johnny Adopts Identity-Based Software Signing: A Usability Case Study of Sigstore</a>
+                        </h3>
+                        <p class="paper-authors">Kelechi G. Kalu, Sofia Okorafor, and Tanmay Singla, Purdue University; Sophie Chen, Carnegie Mellon University; Santiago Torres-Arias and James C. Davis, Purdue University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">软件签名是确保软件供应链组件完整性和真实性的最稳健方法。新一代签名工具（如Sigstore）自动化了许多传统工具的密钥管理和签名者识别问题，但其可用性及其对实践采用和有效性的影响尚不清楚。本文通过对17位行业专家进行访谈，进行了首个关于Sigstore的可用性研究，考察了：(1) 从业者工具选择的优缺点；(2) 他们的签名工具使用方式和随时间变化的原因；(3) 引发可用性问题的场景。研究发现，新一代工具的不同组件成熟度和准备就绪程度不同，集成灵活性是常见痛点，但可能通过插件和API缓解。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/song-qiurong">Digital Risks and Coping Practices among Roblox Game Creators</a>
+                        </h3>
+                        <p class="paper-authors">Qiurong Song, Rie Helene (Lindy) Hernandez, Xinning Gui, and Yubo Kou, The Pennsylvania State University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">游戏平台（如Roblox）已成为创作者经济的重要组成部分，但游戏创作者面临着显著的安全、隐私和安全风险。先前工作研究了社交媒体平台内容创作者的风险，但对游戏创作者的风险格局知之甚少。本文通过对20位Roblox创作者进行访谈，了解他们如何感知、体验和应对数字风险。分析揭示了五类风险——平台、生产、组织、社区和技术风险，它们可能损害创作者的情感、身体、关系和财务安全。研究还识别了谈判更公平报酬和寻求社区支持等应对策略，并提出了加强游戏创作者保护的建议。</p>
+                    </article>
+                    
+                </div>
+            </section>
+            
+            <section class="surface category" id="cat-5">
+                <div class="category-head">
+                    <h2>ML/AI Security</h2>
+                    <span class="paper-count">33 papers</span>
+                </div>
+                <div class="paper-list">
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/tong">Membership Inference Attacks on Tokenizers of Large Language Models</a>
+                        </h3>
+                        <p class="paper-authors">Meng Tong, University of Science and Technology of China; Yuntao Du, Purdue University; Kejiang Chen and Weiming Zhang, University of Science and Technology of China; Ninghui Li, Purdue University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">将成员推理攻击应用于预训练大语言模型时面临标签错误、分布偏移等挑战。本文引入分词器作为新的攻击向量。分词器可从零高效训练，避免了上述挑战，且其训练数据通常具有代表性。本研究首次探讨了通过分词器泄露成员信息的可能性，并探索了五种攻击方法。对数百万互联网样本的广泛实验揭示了最先进LLM分词器的漏洞。研究提出了自适应防御方法，强调了为分词器设计隐私保护机制的紧迫性。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/he-zeqing">JailbreakScope: Interpreting Jailbreak Mechanism through Representation and Circuit Analyses</a>
+                        </h3>
+                        <p class="paper-authors">Zeqing He, Zhibo Wang, Zhixuan Chu, Huiyu Xu, Wenhui Zhang, Qinglong Wang, and Rui Zheng, Zhejiang University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">尽管越狱攻击普遍存在，但其底层机制仍未被充分理解。本文提出JailbreakScope，一个从表示和电路两个角度分析越狱机制的解释框架，追踪其在整个生成过程中的演变。在5个主流LLM和7种越狱策略下的评估揭示了一个普遍模式：越狱通过放大强化肯定响应的组件并抑制产生拒绝的组件，使表示向安全区域偏移，导致LLM提供回应而非拒绝。研究还发现表示欺骗与电路激活偏移之间存在强且一致的相关性。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/du">Imitative Membership Inference Attack</a>
+                        </h3>
+                        <p class="paper-authors">Yuntao Du and Yuetian Chen, Purdue University; Hanshen Xiao, Purdue University & NVIDIA Research; Bruno Ribeiro and Ninghui Li, Purdue University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">现有成员推理攻击依赖于训练数百个与目标模型独立的影子模型，计算开销巨大。本文提出模仿成员推理攻击，采用新颖的模仿训练技术，构建少量目标信息模仿模型，这些模型在推理时能紧密复制目标模型的行为。广泛实验表明，IMIA在各种攻击设置下性能显著优于现有MIA，同时所需计算成本不到现有方法的5%。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/deng">The Prompt Stealing Fallacy: Rethinking Metrics, Attacks, and Defenses</a>
+                        </h3>
+                        <p class="paper-authors">Zehang Deng, Swinburne University of Technology and CSIRO's Data61; Haoyang Li, The Hong Kong Polytechnic University; Wanlun Ma, Swinburne University of Technology; Ruoxi Sun and Derui Wang, CSIRO's Data61; Minhui Xue, CSIRO's Data61 and Responsible AI Research (RAIR) Centre, Adelaide University; Haibo Hu, The Hong Kong Polytechnic University; Sheng Wen and Yang Xiang, Swinburne University of Technology</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">文本到图像模型的提示词是宝贵的知识产权，但易受窃取攻击。本文首先指出了当前评估实践的不足，提出了两个改进指标。通过广泛评估发现，现有攻击方法在恢复高贡献提示组件方面并不如报告的有效。作者进一步提出了一个利用强化学习的黑盒攻击框架PromptThief，显著优于基线方法。同时，研究评估了两种防御机制，发现基于特征级提示水印的被动方案具有强大且稳定的检测性能，为提示IP保护提供了实用路径。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/pasquini">When AIOps Become "AI Oops": Subverting LLM-driven IT Operations via Telemetry Manipulation</a>
+                        </h3>
+                        <p class="paper-authors">Dario Pasquini, RSAC Labs; Evgenios M. Kornaropoulos and Giuseppe Ateniese, George Mason University; Omer Akgul, Athanasios Theocharis, and Petros Efstathopoulos, RSAC Labs</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">AIOps通过LLM代理自动化运维，但本文首次对其进行安全分析，揭示了其安全代价。研究展示了攻击者可以操纵系统遥测数据，误导AIOps代理采取损害其管理基础设施完整性的行动。作者引入了通过错误诱导请求注入遥测数据的技术，并提出了全自动化的攻击方法AIOpsDoom。为应对此威胁，提出了AIOpsShield防御机制，通过利用遥测数据的结构化特性进行净化，实验证明其能可靠阻止攻击且不影响正常代理性能。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/zhang-yuyang">VSG-Safe: Spotting NSFW Video through Cross-Frame Evidence</a>
+                        </h3>
+                        <p class="paper-authors">Yuyang Zhang, Xudong Jiang, Yuxuan Song, and Yuxiang Sun, Wuhan University; Yihao Huang, National University of Singapore; Run Wang, Shundi Xiao, and Lina Wang, Wuhan University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">文本到视频模型可生成高质量视频，但也放大了自动合成不当内容的安全和社会风险。现有审核流程通常将视频视为独立帧或原始序列，忽略了关键语义可能通过特定帧的组合显现。本文提出利用场景图作为核心中间语义表示，其自然编码了实体、属性和关系，并支持跨帧推理。基于此，提出VSG-Safe框架，首先提取跨帧内容构建场景图，再利用图导向模型联合捕捉信息进行检测。在基准和自建数据集上的实验显示，其F1得分比七个基线平均高出42.32%。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/czybik">A Large-Scale Study of Personalized Phishing using Large Language Models</a>
+                        </h3>
+                        <p class="paper-authors">Stefan Czybik, BIFOLD & TU Berlin; Anne Josiane Kouam, Inria & TU Berlin; Peter Heubl and Jan Magnus Nold, Ruhr-University Bochum; Konrad Rieck, BIFOLD & TU Berlin</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">大语言模型生成流畅文本的能力也使其易于被用于恶意目的。本研究在7700名参与者的实验中评估了基于LLM的鱼叉式网络钓鱼的有效性。利用目标邮箱作为查询，通过网络搜索收集个人信息并自动生成定制邮件。研究发现，基于LLM的鱼叉式网络钓鱼的点击率比通用网络策略几乎提高了两倍，且个性化成本极低（每封邮件约0.03美元）。鉴于网络钓鱼仍是主要攻击向量，研究结论强调需要加强现有防御。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/qi-minfeng">VIPER Strike: Defeating Visual Reasoning CAPTCHAs via Structured Vision–Language Inference</a>
+                        </h3>
+                        <p class="paper-authors">Minfeng Qi and Dongyang He, City University of Macau; Qin Wang, CSIRO Data61; Lefeng Zhang, City University of Macau</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">视觉推理验证码结合视觉场景和自然语言查询，要求对对象、属性和空间关系进行组合推理。现有求解器缺乏通用性。本文提出VIPER统一攻击框架，集成了结构化的多对象视觉感知与自适应的基于LLM的推理。在六大主流验证码提供商上的评估显示，VIPER成功率高达93.2%，在大多数基准测试上超越人类准确率，且在不同LLM主干上保持鲁棒性。为应对此威胁，作者还提出了模板空间随机化策略，可有效降低求解器性能。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/li-zhichao">On Evaluating the Robustness of Large Vision-Language Models via Untargeted Modality Alignment Breaking Adversarial Attack</a>
+                        </h3>
+                        <p class="paper-authors">Zhichao Li, Hongshan Yang, Zhibo Wang, Huiyu Xu, and Junhong Lai, Zhejiang University; Yaopeng Wang, Southeastern University and Zhejiang University; Kui Ren and Chun Chen, Zhejiang University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">为全面评估大型视觉语言模型的黑盒鲁棒性，本文提出了模态对齐破坏攻击。MABA旨在破坏整个多模态流水线，重点关注视觉编码和模态对齐两个关键阶段。首先，它揭示了可迁移对抗攻击的核心在于抑制判别性视觉表征，并将其作为优化目标以提高迁移性。其次，引入了互信息感知投影器作为LVLM的替代模态对齐模块，有效打破跨模态一致性。在图像描述任务中，MABA实现了平均58.37%的语义指标下降，达到了最先进水平。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/wang-liwen">MASLeak: Investigating and Exposing Intellectual Property Leakage Vulnerabilities in Multi-Agent Systems</a>
+                        </h3>
+                        <p class="paper-authors">Liwen Wang, The Hong Kong University of Science and Technology; Wenxuan Wang, Renmin University of China; Shuai Wang, Zongjie Li, Zhenlan Ji, and Zongyi Lyu, The Hong Kong University of Science and Technology; Daoyuan Wu, Lingnan University; Shing-Chi Cheung, The Hong Kong University of Science and Technology</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文提出了MASLEAK，首个在黑盒设置下系统性地从多智能体系统中提取知识产权的框架。假设攻击者只能通过公共API提交查询并观察输出。受计算机蠕虫传播启发，MASLEAK精心构造对抗性查询q，从每个MAS代理中引发、传播并保留响应，从而揭示包括代理数量、拓扑、系统提示、任务指令和工具使用在内的完整专有组件。在810个合成MAS应用和真实世界应用（Coze, CrewAI）上的评估显示，MASLEAK在提取系统提示和架构等IP方面达到了平均87%-92%的高攻击成功率。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/gressel">Love, Lies, and Language Models: Investigating AI's Role in Romance-Baiting Scams</a>
+                        </h3>
+                        <p class="paper-authors">Gilad Gressel and Rahul Pankajakshan, Center for Cybersecurity Systems & Networks, Amrita Vishwa Vidyapeetham, Amritapuri; Shir Rozenfeld, Ben Gurion University of the Negev; Ling Li, Ca' Foscari University of Venice; Ivan Franceschini, University of Melbourne; Krishnashree Achuthan, Center for Cybersecurity Systems & Networks, Amrita Vishwa Vidyapeetham, Amritapuri; Yisroel Mirsky, Ben Gurion University of the Negev</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文调查了大语言模型在浪漫诱骗诈骗中的作用。通过对145名内部人士和5名受害者的访谈、为期一周的LLM诈骗代理与人工操作员的盲法对话研究，以及对商业安全过滤器的评估，研究发现：LLM已在诈骗组织中广泛部署，87%的诈骗劳动属于易自动化的系统性对话任务；在研究中，LLM代理比人类操作员获得了更高的信任度和服从率（46% vs 18%）；而流行的安全过滤器对浪漫诱骗对话的检测率为0%。这些结果表明，此类诈骗可能易于大规模LLM自动化，而现有防御不足。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/sun-desen">Attacks on Approximate Caches in Text-to-Image Diffusion Models</a>
+                        </h3>
+                        <p class="paper-authors">Desen Sun, Shuncheng Jie, and Sihang Liu, University of Waterloo</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文对文本到图像扩散模型中为提高效率而引入的近似缓存机制进行了全面的安全风险评估。该优化打破了用户间的隔离，引入了新的攻击面。论文展示了三种远程攻击：（1）利用近似缓存建立隐蔽信道，可交换信息并持续数天；（2）提示窃取攻击，攻击者可从缓存命中中恢复现有的缓存提示；（3）投毒攻击，在被窃取的提示中嵌入攻击者标志，导致后续命中该提示的请求生成意外标志。所有攻击均通过服务系统远程进行，揭示了严重的安全隐患。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/zhai">A Distortion-minimization Watermarking Framework for Large Language Models: Larger Capacity, Stronger Robustness and Higher Quality</a>
+                        </h3>
+                        <p class="paper-authors">Liming Zhai, Xuezhou Shang, Liyun Zhang, and Po Hu, Central China Normal University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">针对大语言模型水印技术在容量、鲁棒性和文本质量之间难以兼顾的问题，本文提出了一个失真最小化水印框架。该框架将鲁棒性和质量建模为文本修改的失真代价，在给定水印长度下最小化总失真，以实现最优权衡。具体设计了利用语义不变性的鲁棒性代价，以及引导修改朝向低内聚、高变化区域的质量代价。通过提出的周期优化编码技术，将整体失真最小化表述为周期最短路径问题，支持顺序生成的实时优化和灵活容量控制。在严重改写攻击下，DMW的匹配率比最佳基线高46.35%，同时保持更优的文本质量。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/liu-tong">The Art of Hide and Seek: Making Pickle-Based Model Supply Chain Poisoning Stealthy Again</a>
+                        </h3>
+                        <p class="paper-authors">Tong Liu and Guozhu Meng, Institute of Information Engineering, Chinese Academy of Sciences; School of Cyber Security, University of Chinese Academy of Sciences; Peng Zhou, Shanghai University; Zizhuang Deng, School of Cyber Science and Technology, Shandong University; State Key Laboratory of Cryptography and Digital Economy Security, Shandong University; Shuaiyin Yao and Kai Chen, Institute of Information Engineering, Chinese Academy of Sciences; School of Cyber Security, University of Chinese Academy of Sciences</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">Pickle反序列化漏洞是Python中长期存在的威胁。尽管许多AI/ML框架因Pickle能透明保存和恢复复杂对象而继续采用它作为模型序列化协议。本文首次系统揭示了基于Pickle的模型中毒攻击面，涵盖模型加载和风险函数两个视角。在模型加载面，识别出五大框架中的22条不同加载路径，其中19条完全未被现有扫描器发现。研究开发了名为异常导向编程（EDP）的绕过技术，并发现了大量可利用的风险函数小工具（gadgets）。这些方法能有效绕过现实世界的扫描器。研究负责任地向供应商披露了发现，并获得了1.2万美元的漏洞赏金。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/ha">Identifying Provenance of Generative Text-to-Image Models</a>
+                        </h3>
+                        <p class="paper-authors">Anna Yoo Jeong Ha, Wenxin Ding, Stanley Wu, Shawn Shan, Haitao Zheng, and Ben Y. Zhao, University of Chicago</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">微调提供了快速廉价地创建新文本到图像模型的方法，但这些模型常与从头训练的模型难以区分，导致模型误述问题。本文提出了一个模型溯源系统，仅通过黑盒查询访问即可识别通过微调现有模型而产生的模型。系统分析模型输出，使用通用特征提取器提取视觉特征，并通过Jensen-Shannon散度将其分布与参考池中的基础模型分布进行比较。应用统计假设检验来判断目标模型是独立训练还是微调的，如果是后者，则判断其可能的基础模型。在七个广泛使用的扩散模型及其众多微调变体上的评估显示了高准确率，即使在图像后处理或权重扰动等对抗条件下也是如此。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/chen-yuetian">Window-based Membership Inference Attacks Against Fine-tuned Large Language Models</a>
+                        </h3>
+                        <p class="paper-authors">Yuetian Chen, Yuntao Du, and Kaiyuan Zhang, Purdue University; Ashish Kundu, Cisco Research; Charles Fleming, Cisco Systems; Bruno Ribeiro and Ninghui Li, Purdue University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">大多数针对大语言模型（LLM）的成员推理攻击（MIA）依赖于全局信号（如平均损失），这会稀释局部记忆化的细微信号。本文挑战了这种全局平均范式，主张成员信号在局部上下文中更为显著。提出了WBC，通过滑动窗口方法和基于符号的聚合来利用这一洞见。该方法在不同大小的窗口上滑动，每个窗口基于目标模型和参考模型之间的损失比较对成员资格进行二元投票。通过跨几何间隔窗口大小的投票集成，从词元级伪影到短语级结构捕获记忆化模式。在十一个数据集上的广泛实验表明，WBC显著优于现有基线，在低假阳性阈值下实现了更高的AUC分数和2-3倍的检测率提升。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/kim-juhee-agentic">SoK: Attack and Defense Landscape of Agentic AI Systems</a>
+                        </h3>
+                        <p class="paper-authors">Juhee Kim, UC Berkeley and Seoul National University; Wenbo Guo, UC Santa Barbara; Dawn Song, UC Berkeley</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">集成大语言模型和非AI工具组件的AI智能体正在现实世界中快速兴起，但其灵活性也带来了与传统软件系统不同的复杂安全挑战。本文首次对AI智能体安全进行了系统化知识梳理，分析了其设计空间、攻击面和防御机制，并指出了未来研究的开放挑战。该工作为理解AI智能体安全风险和防御策略提供了首个系统性框架，为构建安全的智能体系统奠定了基础。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/chen-chen">Lethe: Purifying Backdoored Large Language Models with Knowledge Dilution</a>
+                        </h3>
+                        <p class="paper-authors">Chen Chen, Nanyang Technological University; Yuchen Sun and Jiaxin Gao, Wuhan University; Xueluan Gong, Nanyang Technological University; Qian Wang, Wuhan University; Ziyao Liu, Yongsen Zheng, and Kwok-Yan Lam, Nanyang Technological University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">大语言模型容易受到后门攻击。现有的后门防御方法要么缺乏全面性（仅关注有限触发器设置、仅检测机制、应用领域有限），要么无法抵御先进场景（如基于模型编辑、多触发器、无触发器攻击）。本文提出了LETHE，一种通过知识稀释（使用内部和外部机制）来消除LLM后门行为的新方法。内部地，利用轻量级数据集训练一个干净模型，然后与后门模型合并以中和恶意行为；外部地，在提示中引入良性且语义相关的证据，分散LLM对后门特征的注意力。在五个广泛使用的LLM上的实验表明，LETHE在分类和生成领域中，针对八种后门攻击，性能优于八种先进的防御基线，将高级后门攻击的成功率降低高达98%，同时保持模型效用。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/wang-li">VidLeaks: Membership Inference Attacks Against Text-to-Video Models</a>
+                        </h3>
+                        <p class="paper-authors">Li Wang and Wenyu Chen, Shandong University; Ning Yu, Eyeline Labs; Zheng Li and Shanqing Guo, Shandong University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">强大的文本到视频（T2V）模型引发了版权和隐私担忧。成员推理攻击（MIA）是审计此类风险的工具，但现有技术无法捕捉视频生成的时空复杂性。本文首次系统研究了针对T2V模型的MIA，并引入了新框架VidLeaks，通过两种互补信号探测稀疏时序记忆化：1) 空间重建保真度（SRF），使用Top-K相似度放大稀疏记忆关键帧的空间记忆信号；2) 时序生成稳定性（TGS），通过多次查询测量语义一致性以捕捉时序泄露。在三种渐进限制的黑盒设置下评估了三个代表性T2V模型，VidLeaks即使在严格的仅查询设置下，也能实现高AUC（如AnimateDiff上82.92%，InstructVideo上97.01%），揭示了T2V模型通过稀疏和时序记忆化泄露大量成员信息的严重漏洞。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/zhao-shiqian">When Memory Becomes a Vulnerability: Towards Multi-turn Jailbreak Attacks against Text-to-Image Generation Systems</a>
+                        </h3>
+                        <p class="paper-authors">Shiqian Zhao, Nanyang Technological University; Jiayang Liu, Nanyang Technological University; and Institute of Science Tokyo, Japan; Yiming Li, Runyi Hu, and Xiaojun Jia, Nanyang Technological University; Wenshu Fan, University of Electronic Science and Technology of China; Xiaobao Wu and Xinfeng Li, Nanyang Technological University; Jie Zhang, CFAR and IHPC, Agency for Science, Technology and Research (A*STAR), Singapore; Wei Dong and Tianwei Zhang, Nanyang Technological University; Luu Anh Tuan, Nanyang Technological University and VinUniversity</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文针对利用记忆机制的多轮对话文本到图像生成系统，揭示了其记忆机制可能加剧越狱攻击风险。作者提出了首个明确利用记忆机制的多轮越狱攻击框架Inception，其包含分割和递归两个核心模块，旨在将恶意意图嵌入会话初始的记忆中以规避安全过滤。通过构建仿真系统VisionFlow及在真实商业平台上的实验，证明Inception相比现有最优方法攻击成功率提升了20%。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/zhu-chengcheng">Fend for Yourself! Backdoor Purification in Federated Graph Learning with an Evolving Knowledge Anchor</a>
+                        </h3>
+                        <p class="paper-authors">Chengcheng Zhu and Yunlong Mao, Nanjing University; Jiale Zhang and Bosen Rao, Yangzhou University; Sheng Zhong, Nanjing University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">联邦图学习因其分布式特性易受后门攻击，现有防御方法依赖可信服务器或对图数据效果有限。本文提出GBHINDER，一个无需可信服务器的防御框架，其核心是让每个良性参与者利用自身可信的历史知识作为“良性锚点”来净化下载的全局模型，并动态选择性吸收全局良性知识以进化该锚点。实验表明，该框架能将后门攻击成功率降至10%以下，同时保持主任务的高准确率。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/ling">Sirens' Whisper: Inaudible Near-Ultrasonic Jailbreaks of Speech-Driven LLMs</a>
+                        </h3>
+                        <p class="paper-authors">Zijian Ling, Huazhong University of Science and Technology and Tsinghua University; Pingyi Hu, Xiuyong Gao, and Xiaojing Ma, Huazhong University of Science and Technology; Man Zhou, Huazhong University of Science and Technology and Tsinghua University; Jun Feng and Songfeng Lu, Huazhong University of Science and Technology; Dongmei Zhang and Bin Benjamin Zhu, Microsoft Corporation</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文针对通过语音接口访问的大语言模型，提出首个基于声学隐蔽信道的实际越狱攻击框架Sirens’ Whisper。该框架将恶意基带音频编码为近超声波，通过建模信道非线性特性并进行预补偿，实现了在商品设备上鲁棒、不可听的任意目标提示注入。实验在商用和开源语音LLM上展示了强大的黑盒攻击效果，且人类听众难以区分注入的音频与背景音。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/luo">Autonomy Comes with Costs: Detecting Denial-of-Service Vulnerabilities Caused by Resource Abusing in LLM-based Agents</a>
+                        </h3>
+                        <p class="paper-authors">Jiaqi Luo, Jiarun Dai, Fengyu Liu, Songyang Peng, Youkun Shi, Tong Bu, and Geng Hong, Fudan University; Xudong Pan, Fudan University and Shanghai Innovation Institute; Yuan Zhang, Fudan University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">LLM代理因缺乏全面的资源治理而可能遭受资源滥用导致的拒绝服务攻击。本文首次系统研究了LLM代理中的资源管理安全问题，识别出三种资源生命周期管理模式及相应的DoS攻击途径。作者提出了一个导向型灰盒模糊测试框架AgentDoS，用于检测此类漏洞。在对20个广泛使用的开源LLM代理的评估中，发现了影响16个代理的36个零日漏洞。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/chang-hongyan">Overcoming the Retrieval Barrier: Indirect Prompt Injection in the Wild for LLM Systems</a>
+                        </h3>
+                        <p class="paper-authors">Hongyan Chang, Ergute Bao, Xinjian Luo, and Ting Yu, Mohamed bin Zayed University of Artificial Intelligence</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">大型语言模型依赖从外部语料库检索信息，引入了间接提示注入攻击的新攻击面。以往研究常因难以确保恶意内容被检索到而低估了其现实威胁。本文通过分解恶意内容为可保证检索的触发片段和编码攻击目标的攻击片段，设计了一种高效黑盒攻击算法。该攻击在11个基准和8个嵌入模型上实现了近100%的检索率，并展示了首个端到端的现实攻击实例，证明了间接提示注入的实际危害。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/wang-xiuling">Inference Attacks Against Graph Generative Diffusion Models</a>
+                        </h3>
+                        <p class="paper-authors">Xiuling Wang and Xin Huang, Hong Kong Baptist University; Guibo Luo, Peking University; Jianliang Xu, Hong Kong Baptist University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文研究了图生成扩散模型中的隐私风险，提出了三种黑盒推断攻击：图重建攻击、属性推断攻击和成员推断攻击。实验在多种图生成扩散模型和真实图数据上验证了这些攻击的有效性，显著优于基线方法。最后，本文提出了两种防御机制，在防御强度和模型效用之间实现了更好的平衡。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/cai">From Texts to Rules: Generating Sigma Rules with Large Language Models from Cyber Threat Reports</a>
+                        </h3>
+                        <p class="paper-authors">Yongxin Cai, Guangzhou University; Jing Qiu, Guangzhou University and Pengcheng Laboratory; Qingming Li, Zhejiang University; Du Cheng, Tsinghua University; Lei Chen, Hong Kong University of Science and Technology (Guangzhou)</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">网络威胁报告与检测规则之间存在语义鸿沟和领域约束，阻碍了准确检测规则的生成。本文提出了端到端框架SIGMERGE，通过构建语义中间层作为桥梁，将CTR文本转换为Sigma检测规则。该框架包含信息提取、攻击描述生成和Sigma规则生成三个模块。实验表明，SIGMERGE能高效生成规则，并已贡献4条新规则至官方仓库。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/najjar">Sy-FAR: Symmetry-based Fair Adversarial Robustness</a>
+                        </h3>
+                        <p class="paper-authors">Haneen Najjar, Eyal Ronen, and Mahmood Sharif, Tel Aviv University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">安全关键的机器学习系统（如人脸识别）易受对抗样本攻击，而现有对抗鲁棒性提升方法常导致不公平的鲁棒性。本文提出Sy-FAR，一种追求对称性（即攻击从类别i到j应与从j到i同样成功）而非完美公平性的方法。理论证明，个体对称性可诱导子群体对称性。在多个数据集和模型架构上的评估显示，Sy-FAR显著提升了公平对抗鲁棒性，且速度更快、更稳定。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/wu-lichao">GateBreaker: Gate-Guided Attacks on Mixture-of-Expert LLMs</a>
+                        </h3>
+                        <p class="paper-authors">Lichao Wu, Sasha Behrouzi, and Mohamadreza Rostami, Technical University of Darmstadt; Stjepan Picek, University of Zagreb and Radboud University; Ahmad-Reza Sadeghi, Technical University of Darmstadt</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">混合专家LLM的模块化、稀疏激活设计可能使其安全机制与密集模型不同。本文提出GateBreaker，首个无需训练、轻量且与架构无关的攻击框架，在推理时破坏现代MoE LLM的安全对齐。该框架通过门级分析、专家级定位和选择性安全移除三个阶段，仅禁用目标专家层中最多2.9%的神经元，即可显著提高攻击成功率。该方法在多个对齐的MoE LLM和视觉语言模型上均有效。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/fan">TopFeaRe: Locating Critical State of Adversarial Resilience for Graphs Regarding Topology-Feature Entanglement</a>
+                        </h3>
+                        <p class="paper-authors">Xinxin Fan, State Key Laboratory of AI Safety, Institute of Computing Technology, Chinese Academy of Sciences; and University of Chinese Academy of Sciences; Wenxiong Chen, Dalian University of Technology; and State Key Laboratory of AI Safety, Institute of Computing Technology, Chinese Academy of Sciences; Quanliang Jing, State Key Laboratory of AI Safety, Institute of Computing Technology, Chinese Academy of Sciences; Chi Lin, Dalian University of Technology; Shaoye Luo, State Key Laboratory of AI Safety, Institute of Computing Technology, Chinese Academy of Sciences; and University of Chinese Academy of Sciences; Wenbo Song, Dalian University of Technology; and State Key Laboratory of AI Safety, Institute of Computing Technology, Chinese Academy of Sciences; Yunfeng Lu, Beihang University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">图对抗攻击通常从拓扑结构和节点特征两个角度产生，但现有防御方法未能揭示两者如何融合以学习图表示。本文受复杂动态系统理论启发，提出通过定位图的“对抗鲁棒性临界状态”来进行对抗防御。其核心是将图映射到动态系统，设计二维拓扑-特征纠缠扰动函数，并利用平衡点理论定位临界状态。在多个真实数据集上的实验表明，该方法显著优于现有基线。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/crump">OS-Sanitizer: System-wide Latent Defect Inference in Linux Applications</a>
+                        </h3>
+                        <p class="paper-authors">Addison Crump, Sahil Sihag, Florian Bauckholt, and Keno Hassler, CISPA Helmholtz Center for Information Security; Thorsten Holz, Max Planck Institute for Security and Privacy</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">动态测试通常只能通过触发故障来发现软件问题。本文探索了通过检查良性行为来推断潜在缺陷的可能性。原型系统OS-Sanitizer利用eBPF作为系统内省工具，实现了启发式程序来报告整个系统中所有应用程序的疑似缺陷。该方法将静态测试中的“代码异味”概念引入动态测试。在广泛使用的应用程序中，该系统发现了超过40个问题，包括严重漏洞。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/shang">Attesting Model Lineage by Consisted Knowledge Evolution with Fine-Tuning Trajectory</a>
+                        </h3>
+                        <p class="paper-authors">Zhuoyi Shang, Jiasen Li, and Pengzhen Chen, Institute of Information Engineering, Chinese Academy of Sciences; School of Cyber Security, University of Chinese Academy of Sciences; and State Key Laboratory of Cyberspace Security Defense; Yanwei Liu, Institute of Information Engineering, Chinese Academy of Sciences; and State Key Laboratory of Cyberspace Security Defense; Xiaoyan Gu, Institute of Information Engineering, Chinese Academy of Sciences; School of Cyber Security, University of Chinese Academy of Sciences; and State Key Laboratory of Cyberspace Security Defense; Weiping Wang, Institute of Information Engineering, Chinese Academy of Sciences</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">该论文旨在解决开放模型库中未经授权的模型再分发和虚假模型溯源声明等安全问题，这些模型通常基于微调产生。论文指出现有基于静态架构相似性的方法无法捕捉知识动态演化关系，因此受人类进化遗传机制启发，提出了一种通过验证知识演化与参数修改联合轨迹来证明模型血统的新框架。该方法首先利用模型编辑量化微调引入的参数级变化，然后引入一种新颖的知识向量化机制，借助探测样本将编辑后模型中的演化知识精炼为紧凑表示，最后通过验证知识关系的算术一致性来实现血统的稳健认证。大量实验表明，该方法在多种现实对抗场景下均有效且具有鲁棒性，能跨分类器、扩散模型和大型语言模型等多种模型类型实现可靠的血统验证。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/wang-jiayimei">Adversarial Patch EXterminator: Zero-Shot and Patch-Agnostic Defense Framework Against Adversarial Patch Attacks</a>
+                        </h3>
+                        <p class="paper-authors">Jiayimei Wang, City University of Hong Kong; Tao Ni, King Abdullah University of Science and Technology; Guowen Xu, University of Electronic Science and Technology of China; Qingchuan Zhao and Cong Wang, City University of Hong Kong</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">该论文针对计算机视觉系统面临的严重威胁——对抗性补丁攻击，旨在解决现有防御方案依赖先验知识或大量训练数据、在复杂物理条件下鲁棒性不足，以及对微小、不规则或高背景一致性补丁等挑战性案例防御效果有限的问题。为此，论文提出了APEX，一个零样本、补丁无关的三阶段防御框架。该框架首先通过边界框提取聚焦补丁区域，接着结合基于互信息的模糊热图与边缘感知的边界热图定位对抗区域，最后利用结构引导的图像修复来恢复图像。实验在多个数据集和现有最先进防御方法上进行，证明APEX能有效防御各种类型的对抗性补丁（如非自然、自然及红外图像），展现出卓越的补丁定位能力、对不同环境（如光照条件）的高鲁棒性以及在物理世界场景中保护多种模型的高性能。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/liu-xiuming">Quantifying Large Language Model Attacks Through the Lens of Model Cognition</a>
+                        </h3>
+                        <p class="paper-authors">Xiuming Liu, Chaoxiang He, Xuanran Yu, Jichen Chai, Feiyue Xu, Sheng Hang, and Hanqing Hu, Shanghai Jiao Tong University; Bin Benjamin Zhu, Microsoft Corporation; Hongsheng Hu, Shi-Feng Sun, Dawu Gu, and Shuo Wang, Shanghai Jiao Tong University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">该论文关注大型语言模型易受恶意输入诱导生成有害内容的问题，指出当前安全机制（如关键词过滤或输出审核）大多忽视了模型内部动态。研究发现，与有害提示相关的安全特征在中间隐藏状态中具有高度可分性（探针准确率可达99%），即使模型最终输出合规内容，这些特征在内部也持续存在。利用这一观察，论文引入了层级毒性探针和多层互补检测框架（Sentinel），融合不同深度的信号进行检测。该轻量级框架（<5M参数）将误报率减半，在对抗性攻击下仍保持超过94%的检测准确率（基线下降32%），并优于Llama-Guard-3-8B。此外，该方法首次提供了安全相关信号在LLM内部如何出现、传播和衰减的量化、层级解析地图，为可解释的、由内而外的对齐与诊断提供了支持。</p>
+                    </article>
+                    
+                </div>
+            </section>
+            
+            <section class="surface category" id="cat-6">
+                <div class="category-head">
+                    <h2>Miscellaneous</h2>
+                    <span class="paper-count">5 papers</span>
+                </div>
+                <div class="paper-list">
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/mongardini">A Midsummer Meme's Dream: Investigating Market Manipulations in the Meme Coin Ecosystem</a>
+                        </h3>
+                        <p class="paper-authors">Alberto Maria Mongardini, Sapienza University of Rome and Technical University of Denmark; Alessandro Mei, Sapienza University of Rome</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">模因币已成为加密货币市场中最受欢迎的细分市场之一，其价值主要源于社区情绪，易受操纵。本研究对跨四条链的34,988个模因币进行了前所未有的跨链分析。研究发现，在高回报代币中，高达82.89%显示出人工增长策略的证据，包括洗盘交易和新定义的基于流动性池的价格膨胀。利润提取方案（如拉地毯）通常跟随在初始操纵之后。研究量化了超过17,000个受害地址的经济损失超过930万美元，揭示了协调努力而非自然市场动态驱动了高回报。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/shen">Paper Title Under Embargo</a>
+                        </h3>
+                        <p class="paper-authors">Author list under embargo.</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">该论文目前处于保密期，最终论文PDF和摘要将在会议第一天发布。因此无法提供摘要。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/hetterich-lorenz-2">Paper Title Under Embargo</a>
+                        </h3>
+                        <p class="paper-authors">Lorenz Hetterich, Tristan Hornetz, Fabian Thomas, and Michael Schwarz, CISPA Helmholtz Center for Information Security</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">该论文目前处于保密状态，最终论文PDF和摘要将在会议第一天公布。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/crow">Paper Title Under Embargo</a>
+                        </h3>
+                        <p class="paper-authors">Author list under embargo.</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">该论文目前处于保密状态，最终论文PDF和摘要将在会议第一天公布。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/schlueter-1">Paper Title Under Embargo</a>
+                        </h3>
+                        <p class="paper-authors">Benedict Schlüter, Christoph Wech, and Shweta Shinde, ETH Zurich</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">该论文处于禁运期。最终的PDF和摘要将在会议第一天发布。</p>
+                    </article>
+                    
+                </div>
+            </section>
+            
+            <section class="surface category" id="cat-7">
+                <div class="category-head">
+                    <h2>Network Security</h2>
+                    <span class="paper-count">15 papers</span>
+                </div>
+                <div class="paper-list">
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/flammarion">Hop: A Modern Transport and Remote Access Protocol</a>
+                        </h3>
+                        <p class="paper-authors">Paul Flammarion, Stanford University; George Hosono, Georgia Institute of Technology; Wilson Nguyen, Laura Bauman, Daniel Rebelsky, and Gerry Wan, Stanford University; David Adrian, Independent; Zakir Durumeric, Stanford University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">针对SSH协议近20年未有重大更新且存在诸多不足的问题，本文介绍了现代传输和远程访问协议Hop。Hop基于现代密码学进展，引入了密码学介导的委托方案、原生主机识别、适应现代企业环境的客户端认证以及对客户端漫游的支持。该协议在降低SSH复杂性和开销的同时，旨在满足当今对安全远程访问的需求。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/merget">Opossum Attack: Application Layer Desynchronization using Opportunistic TLS</a>
+                        </h3>
+                        <p class="paper-authors">Robert Merget, Technology Innovation Institute; Nurullah Erinola and Marcel Maehren, Ruhr University Bochum; Lukas Knittel, Ruhr University Bo­chum; Sven Hebrok, Paderborn University; Marcus Brinkmann, Ruhr University Bochum; Juraj Somorovsky, Paderborn University; Jörg Schwenk, Ruhr University Bochum</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文揭示了一种存在于隐式TLS和机会性TLS集成方式中的新型漏洞。攻击者利用该漏洞可以打破认证，即使使用现代TLS实现也能在握手后影响交换的消息。这种攻击不依赖于实现缺陷，仅需一方支持机会性TLS。研究通过IPv4扫描发现，超过300万台服务器同时支持两种模式，其中HTTP协议的数千台服务器存在可被利用的场景。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/weyns">From Mirai to Gorilla: Deep Dive into a Long-Lasting DDoS-for-Hire Botnet</a>
+                        </h3>
+                        <p class="paper-authors">Maarten Weyns, Dario Ferrero, and Stefan Op de Beek, Delft University of Technology (TU Delft); Daniel Wagner, Max Planck Institute for Informatics / DE-CIX; Georgios Smaragdakis and Harm Griffioen, Delft University of Technology (TU Delft)</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本研究深入分析了名为“Gorilla”的长期运营的基于Mirai的DDoS租赁僵尸网络。该僵尸网络在2024年秋至2025年夏期间异常活跃。通过逆向工程，研究揭示了其设计、工程决策和营销策略。其长寿源于针对性的改进，包括两个软件开发阶段并吸取前版教训。研究还分析了其火力、攻击向量和目标业务类型。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/yang-tianchang">Invariant-Guided Logical Testing of Open RAN Controllers</a>
+                        </h3>
+                        <p class="paper-authors">Tianchang Yang, Ali Ranjbar, Gang Tan, and Syed Rafiul Hussain, The Pennsylvania State University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">Open RAN（O-RAN）通过开放接口和软件化组件增强了移动网络的灵活性，但也引入了逻辑正确性验证的挑战。本文提出InvaRAN测试框架，利用动态推断的程序不变量作为预期行为的代理来检测O-RAN实现中的逻辑缺陷。该框架将不变量分为关键和非关键类别，并能捕获执行跟踪中的跨变量相关性。在生产级O-RAN控制器上的评估发现了九个未知问题，包括逻辑和内存漏洞。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/bach">Analyzing the WebRTC Ecosystem and Breaking Authentication in DTLS-SRTP</a>
+                        </h3>
+                        <p class="paper-authors">Martin Bach, Technology Innovation Institute; Vukašin Karadžić, TU Darmstadt; Lukas Knittel, Ruhr-University Bo­chum; Robert Merget and Jean Paul Degabriele, Technology Innovation Institute</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">DTLS-SRTP用于保护Zoom、Teams等平台的实时媒体通信，但其复杂的协议栈导致安全性未被充分探索。本文开发了自动化中间人测试框架DMS，对DTLS-SRTP连接的认证机制进行了测试。在跨24家服务提供商的案例研究中，发现33个媒体服务器实现中有19个存在可被利用来打破认证的漏洞，其中9个服务数亿用户的系统可被攻击者窃听视频会议。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/kumar-akshaya">Security and Privacy Analysis of Tile's Location Tracking Protocol</a>
+                        </h3>
+                        <p class="paper-authors">Akshaya Kumar, Anna Raymaker, and Michael A. Specter, Georgia Institute of Technology</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文首次对Tile位置追踪服务进行了全面的安全分析。研究发现了多个可利用的漏洞和设计缺陷，例如Tile服务器可以持续获知所有用户和标签的位置，未授权攻击者可通过蓝牙广播跟踪用户，且其防盗模式易被绕过。Tile的“问责制”机制本意是惩罚滥用行为，但分析表明其实现存在缺陷且引入了新的可利用漏洞，凸显了在此类协议中形式化定义问责制的必要性。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/ben-simhon">DNS Cache Poisoning Like it's 2006</a>
+                        </h3>
+                        <p class="paper-authors">Omer Ben-Simhon and Amit Klein, Hebrew University of Jerusalem</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文针对广泛部署的DNS解析器BIND9，提出了一类新颖的DNS缓存投毒攻击。该攻击的两大突破在于：（1）能够可靠地同时预测关键的挑战参数（UDP源端口和事务ID）；（2）整个攻击过程完全在客户端侧完成，无需攻击者运营针对自己域名的权威服务器，这尚属首次。通过利用BIND伪随机数生成器的弱点，攻击在真实网络条件下表现出高成功率。相关漏洞已负责任地披露并获得修补和CVE编号。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/xu-liwen">DaLens: Charting DNS Self-Amplification Threats at Large</a>
+                        </h3>
+                        <p class="paper-authors">Liwen Xu and Zechao Cai, ETH Zurich; Huayi Duan, HKUST(GZ); Adrian Perrig, ETH Zurich</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文首次对DNS自放大攻击进行了大规模测量研究。研究者设计并开发了DaLens框架，用于系统性地解析复杂的DNS基础设施以识别有效的放大器，并量化其放大能力。通过对30.7万个公共递归解析器的分析，发现了2.9万个独特的可利用于并行自放大攻击的解析器集群，其中许多即使在漏洞已公开披露后仍能产生显著的放大效果，为DNS运营商评估和防御此类威胁提供了关键依据。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/qu">Tracegram: Framing Trace-Level Traffic Analysis with Temporally-Aware Multiple Instance Learning</a>
+                        </h3>
+                        <p class="paper-authors">Jian Qu, Yuchen Zhang, Jialong Zhang, and Jianfeng Li, MOE Key Laboratory for Intelligent Networks and Network Security, Xi’an Jiaotong University; Xiaobo Ma, MOE Key Laboratory for Intelligent Networks and Network Security and Shaanxi Province Key Laboratory of Computer Network, Xi’an Jiaotong University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">针对现代网络行为跨多个流且随时间演化的特性，本文提出了Tracegram，一种将轨迹级流量分析形式化为多实例学习问题的框架。该框架结合每流编码器与时间感知聚合模块，以跨流推理、保持长程依赖关系，并生成关键流归因信号以辅助分析人员验证。在四个公开数据集的多任务评估中，Tracegram取得了优于或可比于现有最先进方法的性能，并在APT轨迹案例研究中能够高亮与攻击阶段对齐的流，支持定向调查。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/zhao-yizhou">WAVED: Principled Identification of Off-Path Exploitable Weak Verifications within the TCP/IP Protocol Suite</a>
+                        </h3>
+                        <p class="paper-authors">Yizhou Zhao and Xuewei Feng, Tsinghua University; Min Li, Zhongguancun Laboratory; Ke Xu, Tsinghua University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文首次系统性地研究了TCP/IP协议套件实现中因弱验证导致的离路径可利用漏洞，并提出了WAVED框架进行识别。WAVED核心是开发了针对TCP/IP内核的流、上下文和字段敏感的指针分析，并构建污点传播图来建模和跟踪栈内数据流。通过精确建模字节粒度的污点传播和方向敏感的约束强度分析，该框架在Linux和FreeBSD上精确发现了14个导致语义漏洞的未知弱点，并已负责任地披露。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/kim-daewoo">Side-Channel Attacks on Open vSwitch</a>
+                        </h3>
+                        <p class="paper-authors">Daewoo Kim and Sihang Liu, University of Waterloo</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文从安全角度剖析了流行软件虚拟交换机Open vSwitch内部的缓存系统，并识别出三种攻击原语。基于这些原语，研究者提出了三种通过OVS实施的远程攻击，破坏了虚拟化环境的隔离：（1）利用不同缓存的远程隐蔽信道；（2）泄露远程用户数据包头部字段的头部恢复攻击；（3）恢复远程受害者数据包速率的监控攻击。论文还讨论了潜在的防御措施。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/ziazi">Sliding into the Flight Deck's DMs: Practical Message Attacks on CPDLC</a>
+                        </h3>
+                        <p class="paper-authors">Mehdi Ziazi, ETH Zurich; Khalid Aleem, Independent; Harshad Sathaye, ETH Zurich; Martin Strohmeier, Cyber-Defence Campus, armasuisse Science + Technology</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文对现代空中交通管理核心的CPDLC系统进行了全栈安全分析。CPDLC依赖协议复杂性和模糊性作为安全屏障，未实现加密。研究展示了多个漏洞，允许通过伪地面站攻击劫持管制员-飞行员数据链，并实施大规模拒绝服务攻击以禁用范围内的所有飞机CPDLC服务。作为概念验证，作者介绍了首个基于SDR的全栈CPDLC地面站实现，并通过与航空服务提供商和制造商合作开发的真实硬件测试环境验证了攻击的可行性。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/huang-qiqing">Semantics Over Syntax: Uncovering Pre-Authentication 5G Baseband Vulnerabilities</a>
+                        </h3>
+                        <p class="paper-authors">Qiqing Huang and Xingyu Wang, University at Buffalo; Wanda Guo and Guofei Gu, Texas A&M University; Hongxin Hu, University at Buffalo</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">该论文揭示了5G用户设备（UE）在早期控制平面交换（预认证阶段）处理无线资源控制（RRC）配置消息时存在的语义漏洞。现有测试大多关注构造无效语法输入，而本研究表明，语法有效但语义不一致的消息可将基带实现推入无效状态，导致断言失败或调制解调器崩溃。研究提出了约束引导的语义测试框架CONSET，该框架利用大语言模型推断跨字段依赖关系，生成针对性的语义违反测试用例。在商业智能手机上发现了7个未公开漏洞，包括3个高危CVE，影响大量芯片组和手机型号。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/zhu-changjia">WILD Attack: Stealthy Undermining of Wi-Fi-Based Geolocation Through Remote Crowdsourced Data Injection</a>
+                        </h3>
+                        <p class="paper-authors">Changjia Zhu, Xiao Han, Parush Gera, Zhuo Lu, Tempestt Neal, and Yao Liu, University of South Florida</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">传统的Wi-Fi定位系统欺骗攻击因缺乏隐蔽性和持久性而未引起重大安全关注。本文提出了一种新颖的WILD攻击，通过远程注入伪造的众包报告来破坏定位查询表，从而从根本上颠覆Wi-Fi定位系统的安全性。研究发现四个广泛部署的Wi-Fi定位提供商均接受伪造报告。该攻击可导致条目篡改或删除，且影响可持续数周。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/herley">Estimating the Amount of Script-generated Traffic in a Mixture</a>
+                        </h3>
+                        <p class="paper-authors">Cormac Herley, Microsoft Research</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文解决了估计混合流量中机器人生成流量比例的问题。当干净流量中至少一对特征是独立时，作者证明了获取该比例的上界等价于寻找一个最大化简单目标函数的秩一矩阵。本文给出了求解该问题的有效方法，并推导了置信区间。通过蒙特卡洛模拟和对Twitter数据的实证研究验证了方法的准确性，该方法可用于识别虚假参与。</p>
+                    </article>
+                    
+                </div>
+            </section>
+            
+            <section class="surface category" id="cat-8">
+                <div class="category-head">
+                    <h2>Privacy & Anonymity</h2>
+                    <span class="paper-count">16 papers</span>
+                </div>
+                <div class="paper-list">
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/qiu-chenxi">Interpolation-Based Optimization for Enforcing lp-Norm Metric Differential Privacy in Continuous and Fine-Grained Domains</a>
+                        </h3>
+                        <p class="paper-authors">Chenxi Qiu, University of North Texas</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">度量差分隐私在细粒度或连续场景下的优化面临计算成本高和满足点式约束的挑战。本文提出一个基于插值的框架来优化ℓp-norm mDP。该方法在稀疏锚点集上优化扰动分布，并通过对数凸组合在非锚点位置插值分布。为解决高维空间中朴素插值导致的隐私违规，研究将插值过程分解为一维步骤，并推导出能强制满足ℓp-norm mDP的修正公式。在真实位置数据集上的实验表明，该方法在细粒度域提供了严格的隐私保证和有竞争力的效用。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/shi-quan">LPG: Raise Your Location Privacy Game in Direct-to-Cell LEO Satellite Networks</a>
+                        </h3>
+                        <p class="paper-authors">Quan Shi, National University of Singapore; Liying Wang, Peking University; Prosanta Gope, University of Sheffield; Qi Liang and Haowen Wang, Beijing University of Posts and Telecommunications; Qirui Liu, Peking University; Chenren Xu, Peking University and Key Laboratory of High Confidence Software Technologies, Ministry of Education (PKU); Shangguang Wang and Qing Li, Beijing University of Posts and Telecommunications; Biplab Sikdar, National University of Singapore</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">多租户直连手机的低轨卫星网络存在将用户身份与位置关联的风险。现有隐私解决方案不适用于此类资源受限和动态的卫星环境。本文提出LPG，首个为此类网络提供用户可配置位置隐私的协议层解决方案。LPG通过身份-位置解耦实现此目标：卫星提供连接但不知用户身份，移动网络运营商管理服务但不知精确位置。它支持无需向卫星透露身份的离线安全认证和密钥协商，以及用户可配置的地理粒度位置披露。在真实在轨卫星和手机上的实现证明了其可行性。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/hofhammer">PrivacyShield: Relaying BLE Beacons to Counter Unsolicited Tracking</a>
+                        </h3>
+                        <p class="paper-authors">Florian Hofhammer, EPFL; Daniele Antonioli, EURECOM; Mathias Payer, EPFL</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">离线查找网络（如Apple Find My）常被滥用进行跟踪。本文分析了其反跟踪措施，展示了恶意行为者如何绕过这些措施。为保护受害者，作者提出PrivacyShield，一个利用离线查找BLE信标未被认证且可被中继到任意位置特性的中继网络。通过中继信标，该网络促使第三方设备向查找网络报告错误位置，从而混淆受害者位置。研究证明了其有效性，并为网络提供商提供了改进建议。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/zhang-tao-residual">Residual-PAC Privacy: Automatic Privacy Control Beyond the Gaussian Barrier</a>
+                        </h3>
+                        <p class="paper-authors">Tao Zhang and Yevgeniy Vorobeychik, Washington University in St. Louis</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">现有PAC隐私算法依赖高斯互信息上界，但其仅在特定条件下才紧致。本文提出了两种基于后处理的方法来改善这一问题。更根本地，引入了基于f-散度的Residual-PAC隐私度量，用于量化对抗推理后残留的隐私。为实践此度量，提出了Stackelberg R-PAC自动私有化算法，这是一个通过凸双层优化选择最优噪声分布的博弈论框架。实验表明，SR-PAC在任意数据分布下均能获得优于PAC和差分隐私基线的隐私-效用权衡。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/lee-keewoo">SophOMR: Improved Oblivious Message Retrieval from SIMD-Aware Homomorphic Compression</a>
+                        </h3>
+                        <p class="paper-authors">Keewoo Lee, Ethereum Foundation; Yongdong Yeo, Seoul National University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">隐私保护区块链和即时通讯面临接收者隐私挑战，即客户端需扫描公共板上的每个载荷。遗忘消息检索通过将扫描外包给服务提供商来解决此问题。本文提出SophOMR方案，通过新的同态压缩机制，显著提升了效率。其核心是利用底层同态加密方案的原生SIMD结构，将与总载荷数成比例的密文压缩为摘要。在65536个载荷（最多50个相关）的场景中，运行时、摘要大小和密钥大小分别比现有最优方案减少了3.4倍、2.2倍和1.5倍。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/gong-easy-hard">From Easy to Hard++: Promoting Differentially Private Image Synthesis Through Spatial-Frequency Curriculum</a>
+                        </h3>
+                        <p class="paper-authors">Chen GONG and Kecen Li, University of Virginia; Zinan Lin, Microsoft Research; Tianhao Wang, University of Virginia</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">为改善差分隐私图像合成的质量，本文在DP-FETA使用“中心图像”预训练的思路上进行了扩展。研究发现“中心图像”仅适用于样本相似度高的数据集。为此，本文提出了FETA-Pro，引入频率特征作为“训练捷径”，其复杂度介于空间特征和完整图像之间，允许更细粒度的DP训练课程。通过辅助生成器和流水线生成设计，解决了空间与频率特征训练差异的问题。在五个敏感图像数据集上的评估表明，在隐私预算ε=1下，FETA-Pro的平均保真度比最佳基线高25.7%，实用性高4.1%。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/bai">United We Defend: Collaborative Membership Inference Defenses in Federated Learning</a>
+                        </h3>
+                        <p class="paper-authors">Li Bai, The Hong Kong Polytechnic University; Junxu Liu, The Hong Kong Polytechnic University and PolyU Research Centre for Privacy and Security Technologies in Future Smart Systems; Sen Zhang, Xinwei Zhang, and Qingqing Ye, The Hong Kong Polytechnic University; Haibo Hu, The Hong Kong Polytechnic University and PolyU Research Centre for Privacy and Security Technologies in Future Smart Systems</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">针对联邦学习中成员推理攻击对仅由单个客户端独立部署的防御效果不佳的问题，本文研究了一种新的协同防御场景和模式，并提出了CoFedMID框架。该框架包含类引导分区、效用感知补偿和聚合中性扰动三个模块，通过限制本地模型记忆、回收贡献样本和在联盟层面注入抵消噪声，协同增强隐私保护和模型效用。在三个数据集上的广泛实验表明，该框架能显著降低七种MIA的性能，同时仅造成少量效用损失，且在各种防御设置下结果一致。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/breckenridge">B-Privacy: Defining and Enforcing Privacy in Weighted Voting</a>
+                        </h3>
+                        <p class="paper-authors">Samuel Breckenridge, Dani Vilardell, and Andrés Fábrega, Cornell Tech, IC3; Amy Zhao, Ava Labs, IC3; Patrick McCorry, Arbitrum Foundation; Ari Juels, Cornell Tech, IC3</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">论文指出，在加密货币和Web3中流行的按代币持有比例加权的投票系统颠覆了现有的选民隐私概念。实验表明，即使采用无记名投票，公布原始计票结果也常常会暴露选民的选择。因此，论文引入了名为B-隐私的新概念，其基础是贿赂——当前投票系统的关键问题。B-隐私量化了攻击者基于已公开的计票结果贿赂选民的经济成本。论文提出了一种通过为计票结果添加噪声来增强B-隐私的机制，并证明了其在B-隐私与透明度（即报告计票结果的准确性）之间的权衡边界。在27个DAO的2503项提案上的实验表明，该机制在最小化透明度损失的前提下，将B-隐私提高了3.5倍的几何平均值。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/jeong">Network-Level Prompt and Trait Leakage in Local Research Agents</a>
+                        </h3>
+                        <p class="paper-authors">Hyejun Jeong, Mohammadreza Teymoorianfard, Abhinav Kumar, Amir Houmansadr, and Eugene Bagdasarian, University of Massachusetts Amherst</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文揭示了本地部署的网页/研究智能体（WRAs，基于语言模型的系统）易受被动网络观察者推理攻击的风险。WRAs每次请求访问70-140个不同的域名，其独特的时序模式造成了新的隐私风险。研究演示了一种新颖的提示和用户特征泄露攻击，仅利用网络级元数据（访问的IP地址及时序）。通过构建新数据集和定义行为指标OBELS，攻击能恢复超过73%的用户提示功能和领域知识。在多会话设置下，可高精度恢复多达32个潜在特征中的19个。论文最后讨论了缓解策略。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/nguyen-khoa">NOIR: Privacy-Preserving Generation of Code with Open-Source LLMs</a>
+                        </h3>
+                        <p class="paper-authors">Khoa Nguyen, Khiem Ton, and NhatHai Phan, New Jersey Institute of Technology; Issa Khalil, Hamad Bin Khalifa University; Khang Tran and Cristian Borcea, New Jersey Institute of Technology; Ruoming Jin, Kent State University; Abdallah Khreishah, New Jersey Institute of Technology; My T. Thai, University of Florida</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">针对LLM驱动的代码生成中，云服务商可能观察客户端提示和生成代码所带来的知识产权和数据安全风险，本文提出了首个保护客户端提示和生成代码免受云窥探的框架NOIR。NOIR使用客户端编码器和解码器，仅向云端发送提示的嵌入向量以获得LLM的丰富嵌入，然后在本地解码生成代码。为防止云端从嵌入向量推断信息，NOIR引入了在提示和代码词汇表中实现不可区分性的机制，以及客户端独立且随机的分词器。分析和结果表明，在强大隐私保护下，NOIR在基准测试（如Evalplus、BigCodeBench）上显著优于现有基线。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/kabir">Can we estimate privacy vulnerability of individual records? Towards Mitigating Attribute Inference Attacks on ML Models</a>
+                        </h3>
+                        <p class="paper-authors">Ehsanul Kabir and Najrin Sultana, Pennsylvania State University; Ninghui Li, Purdue University; Shagufta Mehnaz, Pennsylvania State University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">机器学习模型易受属性推理和模型反转攻击的隐私泄露。现有防御目标过于宽泛，无法提供细粒度的漏洞感知保护。本文首先通过NeighVE（一种对手侧工具）研究记录级漏洞估计，发现记录级隐私泄露风险在很大程度上不受模型架构和攻击策略影响，而是由数据集特性（特别是每个记录敏感属性的局部邻域分布）决定。基于此洞察，提出了VESL，一种受子空间学习启发的防御方法，能在最小化效用损失的同时缓解属性推理泄露。作为副产品，VESL也提高了敏感属性间的公平性。论文还引入了AttriVET，一个能以超过90%准确率预测脆弱记录的评估器。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/li-na">CompLeak: Deep Learning Model Compression Exacerbates Privacy Leakage</a>
+                        </h3>
+                        <p class="paper-authors">Na Li, School of Cyber Science and Engineering, Nanjing University of Science and Technology, China; Yansong Gao, School of Cyber Science and Engineering, Southeast University, China; Hongsheng Hu, School of Computer Science, Shanghai Jiao Tong University, China; Boyu Kuang, School of Cyber Science and Engineering, Nanjing University of Science and Technology, China; Anmin Fu, School of Cyber Science and Engineering, Nanjing University of Science and Technology, China; and School of Computer Science and Engineering, Nanjing University of Science and Technology, China</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">模型压缩对于减少内存存储和加速推理至关重要，但其引入的隐私风险尚未被充分理解。本文通过成员推理攻击（MIA）的视角，提出了首个评估隐私风险的框架CompLeak，检查了剪枝、量化和权重聚类等三种广泛使用的压缩配置。CompLeak有三个变体：CompLeak NR分别攻击每个压缩模型；CompLeak SR在可访问原始模型和一个压缩模型时，结合两个模型的元信息揭示更多隐私；CompLeak MR在可访问多个压缩模型时，利用其泄露信息显著表征整体隐私泄露。在六个模型架构和五个基准数据集上的实验表明，CompLeak MR在所有评估指标上实现了最佳MIA性能，证明模型压缩加剧了隐私泄露。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/vlummens">Bridges to Self: Silent Web-to-App Tracking on Mobile via Localhost</a>
+                        </h3>
+                        <p class="paper-authors">Tim Vlummens, COSIC, KU Leuven; Aniketh Girish and Nipuna Weerasekara, IMDEA Networks Institute; Frederik Zuiderveen Borgesius and Gunes Acar, Radboud University; Narseo Vallina-Rodriguez, IMDEA Networks Institute</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">现代浏览器和移动操作系统利用沙箱和进程隔离来分离Web和应用上下文。本文揭示，Meta和Yandex曾利用Web标准（如HTTP、WebSocket）通过本地主机打破这些隔离，实现跨上下文跟踪。该技术能将匿名Web Cookie链接到持久的本地用户ID，击败了清除Cookie、无痕模式等保护措施。研究评估了浏览器的修补努力，并揭示了绕过新防御的额外侧信道。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/miranda-pascual">The Adverse Effects of Omitting Records in Differential Privacy: How Sampling and Suppression Degrade the Privacy–Utility Tradeoff</a>
+                        </h3>
+                        <p class="paper-authors">Àlex Miranda-Pascual, Kalrsruhe Institute of Technology and Universitat Politècnica de Catalunya; Javier Parra-Arnau, Universitat Politècnica de Catalunya; Thorsten Strufe, Karlsruhe Institute of Technology</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">采样在差分隐私中以隐私放大著称，并常被假设能通过减少噪声来提高机制的效用。本文进一步表明，这一假设是有缺陷的：当在同等隐私水平下衡量效用时，作为预处理的采样因省略记录而导致的效用损失，在所有典型DP机制上都会产生惩罚。对抑制策略的分析也得出了类似结论。研究结果对DP实践中常见的预处理假设提出了质疑。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/zhu-kaiming">Cracking Federated Privacy: Initialization-Resilient Gradient Inversion with Fine-Grained Reconstruction</a>
+                        </h3>
+                        <p class="paper-authors">Kaiming Zhu, Jinsheng Yang, Siyang Guo, Huaqian Qin, Taiyu Wang, Junbo Wang, Yuhong Nan, and Zibin Zheng, Sun Yat-sen University, P.R. China</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">联邦学习易受梯度反演攻击，现有攻击在早期初始化变化下效果不佳且重建粗糙。本文发现共享梯度中的稀疏性变化是这种敏感性的主要来源，并提出一种具有粗到细设计的初始化鲁棒GIA。粗阶段对齐梯度方向并约束非零项，细阶段通过混合度量细化大小对齐。实验表明，该方法在敏感初始化下PSNR增益高达200%，并在整个联邦学习生命周期中实现细粒度恢复。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/cuevas">Chameleon Channels: Measuring YouTube Accounts Repurposed for Deception and Profit</a>
+                        </h3>
+                        <p class="paper-authors">Alejandro Cuevas, Carnegie Mellon University; Manoel Horta Ribeiro, Princeton University; Nicolas Christin, Carnegie Mellon University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文探索了社交媒体频道被“重新利用”以改变其身份和内容的问题。研究首先描绘了一个“二手”社交媒体账户市场，并在6个月内记录了超过100万美元的交易。对购买的YouTube频道的观察发现，其中相当一部分被用于传播政策敏感内容，且这些频道似乎并未失去订阅者。通过大规模采样，研究估计了野外的重新利用现象，并发现这些频道拥有大量订阅者，对财务和意识形态动机的对手具有吸引力。</p>
+                    </article>
+                    
+                </div>
+            </section>
+            
+            <section class="surface category" id="cat-9">
+                <div class="category-head">
+                    <h2>System & OS Security</h2>
+                    <span class="paper-count">20 papers</span>
+                </div>
+                <div class="paper-list">
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/peng-jiaqian">Bond: Constraint-Directed Fuzzing for Automated Validation of Taint Analysis Results in Linux-based IoT Firmware</a>
+                        </h3>
+                        <p class="paper-authors">Jiaqian Peng, Institute of Information Engineering, Chinese Academy of Sciences; School of Cyber Security, University of Chinese Academy of Sciences; Puzhuo Liu, Ant Group; Tsinghua University; Kai Cheng, Institute of Information Engineering, Chinese Academy of Sciences; Zhaoteng Yan, School of Cyber Security, University of Chinese Academy of Sciences; Jie Liu, Institute of Information Engineering, Chinese Academy of Sciences; Chengnian Sun, University of Waterloo; Hongsong Zhu, Institute of Information Engineering, Chinese Academy of Sciences; School of Cyber Security, University of Chinese Academy of Sciences</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">IoT固件漏洞威胁严重，但静态污点分析工具产生的报告常难以验证。本文提出Bond，一个结合静态污点分析和动态漏洞验证的定向模糊测试框架。它通过整合三类约束和六种语义类型，实现了约束引导的输入变异，高效探索污点报告关联的路径。在19个设备上的评估中，Bond成功验证了1349份报告为真实漏洞，包括155个未知漏洞，性能优于现有IoT模糊测试器。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/zhang-jiayi">XGuardian: Towards Generalized, Explainable and More Effective Server-side Anti-cheat in First-Person Shooter Games</a>
+                        </h3>
+                        <p class="paper-authors">Jiayi Zhang, Chenxin Sun, and Chenxiong Qian, The University of Hong Kong</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">瞄准辅助作弊是FPS游戏中最普遍的作弊形式。现有检测方法存在框架不可靠、泛化性有限、开销大、缺乏可解释性等问题。本文提出XGuardian，一个基于服务器的通用且可解释的检测系统。它仅使用俯仰和偏航角原始数据构建时间特征来描述瞄准轨迹，从而在CS2等主流游戏上实现了高性能、低开销和高泛化性的检测，并能解释其判断依据。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/chen-decheng">UncoreBleed: AEX-Free, High-Resolution, and Low-Noise Side-Channel Attacks on SGX Enclaved Execution</a>
+                        </h3>
+                        <p class="paper-authors">Decheng Chen, South China University of Technology; Zhi Zhang, The University of Western Australia; Zhenkai Zhang, Clemson University; Xin Zhang, Shandong University; Yansong Gao, Southeast University; Yi Zou, South China University of Technology</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文推翻了长期以来认为Intel SGX禁用性能监控计数器以缓解侧信道攻击的观点。研究者发现现代处理器的非核心PMC在生产模式SGX飞地中仍能记录与执行相关的事件。通过逆向工程，他们揭示了mesh-to-memory子系统中一个关键事件的过滤机制和可编程性，构建了首个基于PMC、无需AEX、高分辨率且低噪声的SGX侧信道攻击UncoreBleed。该攻击在现有最强软件防御TLBlur下仍能成功重建图像和提取RSA私钥，表明活跃的非核心PMC对飞地机密性构成严重威胁。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/kim-juhee-dmguard">DMGuard: Safeguarding Kernels from Physical-Page Use-After-Free Vulnerabilities</a>
+                        </h3>
+                        <p class="paper-authors">Juhee Kim, Jaeyoung Chung, Dae R. Jeong, and Byoungyoung Lee, Seoul National University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文提出DMGuard，首个能全面缓解跨异构地址翻译域（CPU、GPU、IOMMU）的物理页释放后使用漏洞的运行时防护方案。传统漏洞是虚拟地址层面的，而本文定义的物理页释放后使用是指虚拟地址仍映射到已释放或重分配的物理页，使攻击者可访问任意物理内存。DMGuard通过轻量级无锁机制管理物理页状态机，确保页表中不存在悬挂映射。在Android设备上的评估表明，它能有效阻止所有已知漏洞，且性能开销可忽略不计。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/qi-bing">MULCOTAINT: Towards Efficient Multi-tag Dynamic Taint Analysis via Hardware/Software Co-design</a>
+                        </h3>
+                        <p class="paper-authors">Bing Qi, University of Chinese Academy of Sciences; Institute of Software, Chinese Academy of Sciences; Yi Yang and Xiangkun Jia, University of Chinese Academy of Sciences; Institute of Software, Chinese Academy of Sciences; Key Laboratory of System Software (Chinese Academy of Sciences); Zhengpin Qian and Huafeng Huang, University of Chinese Academy of Sciences; Institute of Software, Chinese Academy of Sciences; Purui Su, University of Chinese Academy of Sciences; Institute of Software, Chinese Academy of Sciences; Key Laboratory of System Software (Chinese Academy of Sciences)</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文针对多标签动态污点分析性能低下的问题，提出了通过软硬件协同设计的框架MULCOTAINT。该框架通过协处理器架构将污点分析与正常执行解耦，并解决了将污点计算设计为向量化计算、用页表管理污点标签等多项挑战。使用32个程序进行的评估表明，MULCOTAINT具有高性能和可接受的内存使用，并能进行详细的漏洞分析。其性能显著优于TaintRabbit、PANDA等软件方案和HardTaint、RAFT等硬件方案。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/jia-zhipeng">PANGOLIN: Fuzzing Multilingual IoT Firmware with LLM-Driven Code Analysis</a>
+                        </h3>
+                        <p class="paper-authors">Zhipeng Jia and Xiaokang Yin, Information Engineering University; Shuitao Gan, Laboratory for Advanced Computing and Intelligence Engineering; Chao Zhang, Institute for Network Sciences and Cyberspace, Tsinghua University; JCSS, Tsinghua University (INSC) - Science City (Guangzhou) Digital Technology Group Co., Ltd.; Hangtian Liu, State Key Laboratory of Mathematical Engineering and Advanced Computing; Jiangan Ji, Enzhou Song, and Ruijie Cai, Information Engineering University; Jinglei Tan, State Key Laboratory of Mathematical Engineering and Advanced Computing; Shengli Liu, Information Engineering University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">针对多语言物联网固件中大量隐藏接口难以有效测试的问题，本文提出了PANGOLIN，一个利用大语言模型驱动代码分析的新型模糊测试方案。该方案首先利用LLM分析API分发机制并识别接口，然后通过LLM代理进行跨语言分析生成输入参数规范，最后利用响应驱动反馈修正参数规范。这种知识驱动的语义感知模糊测试能够探索更深层的代码路径，发现了68个未知漏洞，比现有最优工具LABRADOR多2.96倍，其中45个位于隐藏接口。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/daneshmand">PROBE+DETECT+MITIGATE (PDM): Enabling Cloud Tenants to Self-Defend against Microarchitectural Attacks</a>
+                        </h3>
+                        <p class="paper-authors">Arash Daneshmand, University of British Columbia Okanagan and Concordia University; Hugo Kermabon-Bobinnec, Concordia University; Lingyu Wang, University of British Columbia Okanagan and Concordia University; Makan Pourzandi, Ericsson Security Research, Ericsson Canada; Suryadipta Majumdar, Concordia University; Yosr Jarraya, Ericsson Security Research, Ericsson Canada</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">该论文提出PDM方案，使云租户能够独立检测和缓解微架构攻击，而无需云服务商的帮助。PDM基于一个有趣的观察：使用流行的FLUSH+RELOAD攻击技术探测受害应用内存空间实际上可以用于检测。该方案通过选择性触发混淆和内存加密技术实现高效的租户级缓解，并解决了不涉及驱逐的攻击（如Spectre）、无需源码或二进制插桩、良性噪声干扰以及准确性、延迟和开销权衡等关键挑战。实验表明，PDM能以高精度（如AWS Fargate上≥98.63% TPR）及时（7ms提前量）、高效（≤2.47%开销）且鲁棒地检测和缓解多种微架构攻击。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/burbano">BADControl: Backdoor Attacks Against Control Systems</a>
+                        </h3>
+                        <p class="paper-authors">Luis Burbano, University of California, Santa Cruz; Hampei Sasahara, The University of Tokyo; Ruoyu Song and Z. Berkay Celik, Purdue University; Alvaro A. Cardenas, University of California, Santa Cruz</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">该论文提出了首个针对底层控制器的、使用物理触发器的后门攻击BADCONTROL。攻击通过污染操作数据植入漏洞，该漏洞可由环境中的外部信号（如自动驾驶中的特定驾驶动作）激活。BADCONTROL通过投影梯度上升解决约束优化问题来修改数据，最大化受控系统在目标频率的响应。研究同时提出了两种防御方法。在自适应巡航控制和车道保持控制场景的实验中，该后门能以极高的成功率（如100%碰撞率）导致车辆失控，其隐蔽性远高于现有的自动驾驶车辆误报框架。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/yao-chengtao">TAT: Attesting Trajectory Integrity of Industrial Robotic Arms</a>
+                        </h3>
+                        <p class="paper-authors">Chengtao Yao, Chengcheng Zhao, Peng Cheng, and Jiming Chen, Zhejiang University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文针对工业机械臂的运动安全，提出了“轨迹完整性”这一新安全属性，确保机械臂的运动符合预期路径。为实现此属性，设计了TAT，一个最小侵入式的远程证明框架。TAT利用时间运动事件图捕获运动语义，并结合事件和关节测量来验证实际运动。在开源机械臂平台上的原型评估表明，TAT的内存开销最高2.30%，执行时间开销仅0.14%，在不同运动参数修改下的证明有效性得到了验证。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/jiang-qinhong">SoK: Security of Cyber-physical Systems Under Intentional Electromagnetic Interference Attacks</a>
+                        </h3>
+                        <p class="paper-authors">Qinhong Jiang, The Hong Kong Polytechnic University; Yan Long, The Hong Kong University of Science and Technology (Guangzhou); Youqian Zhang, The Hong Kong Polytechnic University; Chen Yan and Xiaoyu Ji, Zhejiang University; Xiapu Luo, The Hong Kong Polytechnic University; Kevin Fu, Northeastern University; Jiannong Cao, The Hong Kong Polytechnical University; Wenyuan Xu, Zhejiang University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">有意电磁干扰攻击因其能破坏或控制广泛的安全关键应用，对信息物理系统日益普遍且具有破坏性。现有研究往往针对特定设备，缺乏统一的模型化理解。本文分析了80多个IEMI攻击与防御实例，提供了一个建模对手如何实现IEMI耦合和样本操纵的分析框架，旨在推动该领域从经验性发现转向理论分析和主动防御策略，并开源了研究数据库。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/liu-yijing">Cracks in the Walled Garden: Dissecting the Gray-Market of Unauthorized iOS App Distribution via Ad Hoc Sideloading</a>
+                        </h3>
+                        <p class="paper-authors">Yijing Liu, Yiming Zhang, Baojun Liu, and Haixin Duan, Tsinghua University and BNRist</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">苹果的严格代码签名和应用分发控制催生了通过Ad Hoc预置机制进行未授权应用安装的灰色市场。本文首次系统研究了该市场，重点分析了其在中国的一体化服务运作。研究发现了多层证书流通模型和常见的签名工具技巧，并揭示大部分分发的应用是合法应用的修改版，利用动态库注入实现定制功能，这削弱了应用和系统的安全保护。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/peng-dinglan">kSFS: Repurposing a Microkernel-like Interface for Fast and Secure In-Kernel Linux File Systems</a>
+                        </h3>
+                        <p class="paper-authors">Dinglan Peng and Pedro Fonseca, Purdue University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">文件系统复杂且是操作系统漏洞的主要来源，现有内核沙箱技术常忽略定义一个具有强威胁模型的安全边界。本文提出kSFS，一个用于内核沙箱文件系统的框架。它将原本为用户空间设计的FUSE协议重新用作不受信任的内核文件系统的安全接口，并将WebAssembly泛化到内核空间作为通用沙箱机制。kSFS在保持更好安全性和可靠性的同时，性能显著优于用户空间对应物。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/song-qiyang">vCause: Efficient and Verifiable Causality Analysis for Cloud-based Endpoint Auditing</a>
+                        </h3>
+                        <p class="paper-authors">Qiyang Song, Qihang Zhou, Xiaoqi Jia, and Zhenyu Song, Institute of Information Engineering, Chinese Academy of Sciences; and School of Cyber Security, University of Chinese Academy of Sciences; Wenbo Jiang, University of Electronic Science and Technology of China; Heqing Huang, Independent Researcher; Yong Liu, Qi An Xin Technology Group Inc.; Dan Meng, Institute of Information Engineering, Chinese Academy of Sciences; and School of Cyber Security, University of Chinese Academy of Sciences</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">在基于云的端点审计中，云可能不可信或被攻击者破坏，从而操纵因果分析结果。为应对此风险，本文提出VCAUSE，一个高效可验证的因果分析系统。它集成了图累加器和可验证溯源图两种认证数据结构，支持对溯源图节点的查询及其因果关联组件的识别进行验证。形式化分析和实验评估表明，VCAUSE能在端点和云上以极低的计算开销实现安全可验证的因果分析。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/marini">CombiSan: Unifying Software Sanitizers for Comprehensive Fuzzing</a>
+                        </h3>
+                        <p class="paper-authors">Matteo Marini, Sapienza University of Rome; Floris Gorter, Vrije Universiteit Amsterdam; Daniele Cono D'Elia, Sapienza University of Rome; Cristiano Giuffrida, Vrije Universiteit Amsterdam</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">现代C/C++缺陷检测依赖模糊测试和软件清理器，但主流清理器互操作性有限，导致需要多次运行测试。本文提出CombiSan，一个为模糊测试优化的清理器，可同时检测地址、未初始化内存和其他未定义行为问题。它采用统一的影子内存设计，并延迟分析所有聚合问题。评估显示，CombiSan在检测到新缺陷的同时，模糊测试速度比顺序测试快1.7倍。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/gu-kangzheng">KernelRCA: Facilitating Root Cause Analysis of Memory Corruptions in Linux Kernel with Contextual Causality Chain</a>
+                        </h3>
+                        <p class="paper-authors">Kangzheng Gu, Yifan Zhang, Yuan Zhang, and Min Yang, Fudan University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">持续模糊测试发现了大量缺陷，但现有根因分析方法无法直观反映包括调用上下文和数据依赖在内的集成触发过程。本文提出上下文因果链这一新颖根因表示方法，并设计了自动构建它的系统KernelRCA。该系统成功诊断了Linux内核中54种真实内存损坏问题，其报告显著促进了人类分析师对缺陷的理解和修复。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/han">Static Detection of TOCTOU Bugs Caused by Kernel Races</a>
+                        </h3>
+                        <p class="paper-authors">Gui-Dong Han, Jia-Ju Bai, Qiu-Ji Chen, and Jiqiang Lu, Beihang University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">TOCTOU漏洞是内核代码中已知的安全问题，内核竞态是最常见的根本原因，但由于内核并发逻辑的复杂性，缺乏系统化的检测方法。本文设计了KERAT，首个系统化的静态方法来检测由内核竞态引起的TOCTOU漏洞。它通过静态挖掘和检查共享变量的原子性规则来进行检测。在Linux和FreeBSD上评估发现了351个真实缺陷，其中65个已得到开发者确认。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/braunsdorf">SafeFFI: Efficient Sanitization at the Boundary Between Safe and Unsafe Code in Rust and Mixed-Language Applications</a>
+                        </h3>
+                        <p class="paper-authors">Oliver Braunsdorf and Tim Lange, Ludwig-Maximilians-Universität München; Konrad Hohentanner and Julian Horsch, Fraunhofer AISEC; Johannes Kinder, Ludwig-Maximilians-Universität München</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">不安全的Rust代码对于与C/C++库互操作是必要的，但可能导致内存安全违规。清理器可以捕获此类错误，但会引入不必要的检查。本文提出SafeFFI，一种优化Rust二进制文件内存安全检测的系统。它将检查集中在安全与不安全代码的边界，将内存安全执行从清理器交给Rust类型系统。SafeFFI显著减少了检查数量，同时仍能检测到所有已知漏洞。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/wan">When Updates Backfire: A Black-Box Security Analysis of Desktop Software Update Mechanisms</a>
+                        </h3>
+                        <p class="paper-authors">Jie Wan, Pengcheng Xia, and Haoyu Wang, Huazhong University of Science and Technology</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">桌面软件更新是修补漏洞的主要机制，但更新过程本身引入了新的攻击面。本文提出UpdSight，一个通过模拟中间人攻击来测试更新安全性的黑盒框架。它对85个广泛使用的桌面应用进行了评估，发现了22个可利用的漏洞，包括降级、清单操纵等，其中16个已得到供应商确认。研究揭示了诸如未签名清单和弱回滚检查等反复出现的设计缺陷。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/jiang-qisheng">VeCT: Secure and Efficient Constant-Time Code Rewriting with Vector Extensions</a>
+                        </h3>
+                        <p class="paper-authors">Qisheng Jiang and Danfeng Zhang, Duke University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">时序信道允许攻击者通过分析程序执行时间来提取秘密。常数时间准则通过数据/控制流线性化来防御，但重写后的代码内存开销通常很大。本文提出VeCT，一个基于编译器的代码重写器，利用向量扩展在保持常数时间保证的同时提高性能。通过对AVX-512指令的安全使用规则分析，VeCT消除了不必要的数据加载并启用向量化。在AES等应用上，VeCT将重写代码的开销降低了高达98.9%。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/duong">FirmReBugger: A Benchmark Framework for Monolithic Firmware Fuzzers</a>
+                        </h3>
+                        <p class="paper-authors">Mathew Duong, Michael Chesser, and Guy Farrelly, University of Adelaide; Surya Nepal, Data61 CSIRO; Damith C. Ranasinghe, University of Adelaide</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">对整体式固件进行模糊测试是一个活跃的研究领域，但评估改进时常用的指标存在问题，导致需要基于缺陷的可靠基准。本文设计并构建了FirmReBugger，一个用于公平评估固件模糊测试器的基准框架。它提出使用缺陷预言作为基准，并创建了FirmBench，一组包含313个软件缺陷预言的多样化真实世界二进制目标。利用该框架评估了9个最先进的模糊测试器。</p>
+                    </article>
+                    
+                </div>
+            </section>
+            
+            <section class="surface category" id="cat-10">
+                <div class="category-head">
+                    <h2>Web Security</h2>
+                    <span class="paper-count">9 papers</span>
+                </div>
+                <div class="paper-list">
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/vetrivel">Missing, Present and Conflicting: A Large Scale Analysis of IoT Update Information in the EU Market</a>
+                        </h3>
+                        <p class="paper-authors">Swaathi Vetrivel, Michel van Eeten, and Carlos H. Gañán, Delft University of Technology</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">该研究首次大规模调查了欧盟市场中IoT设备更新支持期限信息的披露情况。通过对超过34,000个产品页面的分析，发现信息的披露极不均衡，荷兰零售商因监管合规而披露率高，而亚马逊和Temu则几乎没有。研究指出，不同零售商、制造商和欧盟中心数据库之间的披露信息存在广泛矛盾，这削弱了透明度法规的有效性，并可能误导消费者。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/guo-wenbo">Cutting the Gordian Knot: Detecting Malicious PyPI Packages via a Knowledge-Mining Framework</a>
+                        </h3>
+                        <p class="paper-authors">Wenbo Guo, Nanyang Technological University; Chengwei Liu, Nankai University; Ming Kang, Sichuan University; Yiran Zhang and Jiahui Wu, Nanyang Technological University; Zhengzi Xu, Imperial Global Singapore; Vinay Sachidananda and Yang Liu, Nanyang Technological University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">针对现有PyPI恶意软件检测工具误报率高的问题，本研究提出PyGuard知识挖掘框架。它通过从现有工具的检测失败案例中提取行为模式，并利用大语言模型进行语义抽象，从而区分具有相同API调用但用途不同的代码。实验表明，PyGuard在保持极高准确性的同时，将误报数降低至仅2个，并能有效检测混淆代码，在NPM生态系统中也展现了良好的跨语言适用性。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/alam">SoK: PHILTER: Uncovering Security and Functional Gaps in AI-based Phishing Website Detection Literature via an LLM-based Reasoning Framework</a>
+                        </h3>
+                        <p class="paper-authors">Mahbub Alam, Texas A&M University; Muhammad Lutfor Rahman, California State University San Marcos; Sonjoy Kumar Paul, Amy W. Hays, Aftab Hussain, Md Imanul Huq, and Nitesh Saxena, Texas A&M University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文提出PHILTER框架，利用大语言模型和专家评审，系统评估现有AI网络钓鱼网站检测研究的功能和安全缺陷。对55篇学术研究的分析发现，没有任何一项研究能同时满足所有功能和安全要求，多数方法难以应对演变的攻击策略、保护隐私或在多样化正常网页上进行充分测试。研究揭示了以准确率为导向的评估所忽略的盲点，并提供了未来防御设计的改进建议。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/huang-mingyuan">Revealing the Dark Side of Smart Accounts: An Empirical Study of EIP-7702 Incurred Risks in Blockchain Ecosystem</a>
+                        </h3>
+                        <p class="paper-authors">Mingyuan Huang, Hong Kong University of Science and Technology; Han Liu, College of Cryptology and Cyber Science, Nankai University; Shuo Yang, Sun Yat-sen University; Daoyuan Wu, Lingnan University; Shuai Wang, Hong Kong University of Science and Technology</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">本文对区块链EIP-7702提案引入的智能账户安全风险进行了系统性的实证研究。研究者将风险分为针对外部拥有账户、智能合约账户及组合攻击三类，并开发了结合大规模交易分析与跨合约静态分析的检测工具。在七个支持EIP-7702的区块链上，他们发现了924个恶意合约账户，造成超过230万美元损失，暴露了超过1000万美元的潜在风险。研究揭示了攻击者行为模式、规避策略及对现有安全模型的挑战。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/chen-bofei">Patch-Guided Vulnerability Detection: Extracting Java API Security Rules via Attack–Defense Cross-Analysis</a>
+                        </h3>
+                        <p class="paper-authors">Bofei Chen, Shuang Liao, and Lei Zhang, Fudan University; Chibin Zhang and Mathias Payer, EPFL; Yuan Zhang, Fudan University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">该研究针对Java应用中安全敏感API误用导致的漏洞问题，提出VulGenie框架。该框架利用已确认的安全补丁作为种子，通过攻击-防御交叉分析提取精确的API安全规则。它设计了修改行为依赖补丁图来处理噪声补丁，并采用自适应的偏差引导静态分析以平衡精度和性能。在150个近期Java安全补丁上评估，VulGenie提取了198条高精度规则，发现了177条CodeQL未覆盖的规则，并在十个流行Java应用上检测到46个零日漏洞。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/jannett">The State of Passkeys: Studying the Adoption and Security of Passkeys on the Web</a>
+                        </h3>
+                        <p class="paper-authors">Louis Jannett, Ruhr University Bochum; Andreas Mayer and Maximilian Westers, Heilbronn University of Applied Sciences; Vladislav Mladenov, Ruhr University Bochum; Christian Mainka, University of Wuppertal; Jörg Schwenk, Ruhr University Bochum</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">该论文首次对Passkeys（基于FIDO2和WebAuthn的抗钓鱼认证方法）在互联网上的大规模采用和安全状况进行了系统研究。作者构建了持续更新的PASSKEYS-RADAR数据集，分析了872个启用Passkeys的网站，发现不同网站在管理Passkeys方面存在重大差异，且部分网站请求使用已弃用的加密算法。研究开发了PASSKEYS-ATTACKER工具，发现了15种攻击类型（其中10种为新攻击），在103个评估的网站中，53个网站存在至少一个高危漏洞，可能导致账户接管等严重后果。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/shao-zhenzhe">Lost in Blockchain Address Misuse: Hidden Cross-Platform Risks and Their Security Impact</a>
+                        </h3>
+                        <p class="paper-authors">Zhenzhe Shao, Sun Yat-sen University and Zhejiang University; Jiashuo Zhang, Peking University; Zihao Li, University of Electronic Science and Technology of China and The Hong Kong Polytechnic University; Daoyuan Wu, Lingnan University; Chong Chen and Yiming Shen, Sun Yat-sen University; Lingfeng Bao, Zhejiang University and Hangzhou High-Tech Zone (Binjiang) Institute of Blockchain and Data Security; Yanlin Wang, Sun Yat-sen University; Jiachi Chen, Zhejiang University and Hangzhou High-Tech Zone (Binjiang) Institute of Blockchain and Data Security</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">该研究系统性地揭示并分析了区块链系统中一类被称为“地址误用”的风险，包括合约账户误用和外部所有账户误用两类。研究构建了大规模数据集，结合启发式规则、交易模式分析和符号执行，在以太坊和BSC上识别出65,340个高风险地址实例，关联的资产损失超过5.748亿美元。研究还发现了两个此前未公开的攻击向量，提供了攻击者利用用户地址误用牟利的实际证据。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/abu-ishgair">Trustworthy and Confidential SBOM Exchange</a>
+                        </h3>
+                        <p class="paper-authors">Eman Abu Ishgair and Chinenye Okafor, Purdue University; Marcela S. Melara, Intel Corporation; Santiago Torres-Arias, Purdue University</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">针对软件物料清单（SBOM）在透明度与保密性之间的矛盾，该论文提出了一个名为Petra的SBOM交换系统。它允许软件供应商使用选择性加密来组合和分发脱敏的SBOM数据，同时使软件消费者能够在不泄露未授权信息的情况下，搜索脱敏SBOM以回答特定的安全问题。Petra利用格式无关、防篡改的SBOM表示形式生成高效且保密的完整性证明，实现对脱敏SBOM的加密审计和信任建立。</p>
+                    </article>
+                    
+                    <article class="paper">
+                        <h3 class="paper-title">
+                            <a href="https://www.usenix.org/conference/usenixsecurity26/presentation/chen-pei">When Fun Turns Toxic: A First Look at Aggressive Advertising in Mini-games</a>
+                        </h3>
+                        <p class="paper-authors">Pei Chen, Geng Hong, Yicheng Qin, Huazhe Wang, Mengying Wu, and Min Yang, Fudan University; Ziru Zhao, Yuanpeng Zhu, and Tao Su, vivo Mobile Communication Co., Ltd</p>
+                        <p class="summary-label">核心总结</p>
+                        <p class="paper-summary">该论文首次对超级应用生态系统中小程序游戏的攻击性广告行为进行了系统性的安全分析。研究分析了九个平台的策略，并设计了可扩展的检测框架MAAD，在三大平台上进行了大规模测量，发现49.95%的小程序游戏存在攻击性广告行为。研究揭示了这些行为的干扰模式（如特定触发器、过度弹出、误导策略）及其对抗性绕过技术，指出攻击性广告是利用平台执行机制结构性盲点的系统性安全风险。</p>
+                    </article>
+                    
+                </div>
+            </section>
+            
+        </div>
+    </main>
+</div>
+</body>
+</html>

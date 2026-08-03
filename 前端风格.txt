@@ -1,0 +1,500 @@
+FastRead 前端风格沉淀
+
+定位
+
+FastRead 的界面是“科研阅读与知识工作台”，不是营销站、内容门户或炫技型产品页。其他项目如果要和 FastRead 保持一致，应优先保持：安静、清晰、信息密度适中、结构稳定、操作直接。
+
+核心气质
+
+1. 工作台感：页面首先服务于导入、检索、阅读、整理、生成、设置等任务，不做大面积宣传式 hero。
+2. 学术工具感：文字、表格、列表、摘要、标签、引用、Markdown 内容是主角，视觉风格克制。
+3. 低装饰：少用大渐变、插画、发光、夸张阴影。用边框、分区、留白、图标和状态色建立层级。
+4. 温和科技感：主色是青绿色 teal，辅以暖橙 accent；背景是偏绿的浅灰，不是纯白或冷蓝灰。
+5. 深浅模式同构：深色模式不是另一个主题，只是同一套结构的低亮度版本。
+
+技术基线
+
+- React + TypeScript + Vite。
+- Tailwind CSS 作为主要样式系统。
+- lucide-react 作为图标库，图标线宽和尺寸保持轻量。
+- 字体：Inter + Noto Sans SC，代码字体 JetBrains Mono。
+- Tailwind darkMode 使用 class。
+
+全局 Token
+
+字体
+
+- sans: Inter, Noto Sans SC, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif
+- mono: JetBrains Mono, Fira Code, Consolas, monospace
+- 中文界面默认使用 13-16px 的正文层级，避免过大标题。
+- 页面标题常用 text-xl / 20px、font-semibold。
+- 卡片标题常用 text-sm 或 text-base、font-medium / font-semibold。
+- 辅助说明常用 text-xs 或 text-sm，颜色用 gray-400/500。
+- 不使用负 letter-spacing，不按 viewport 缩放字体。
+
+基础颜色
+
+背景：
+
+- light app bg: #f6f7f5
+- light sidebar/muted bg: #eef2ef
+- light surface: #ffffff
+- dark app bg: #151a19
+- dark sidebar: #18201d
+- dark surface: #1b2220
+- dark muted surface: #202925
+
+边框：
+
+- light border: #dce4df
+- light input border: #cbd7d0
+- active light border: #d4e7df
+- dark border: #2d3934
+- dark input border: #3c4b45
+- active dark border: #315147
+
+主色 primary / teal：
+
+- 50 #f0fdfa
+- 100 #ccfbf1
+- 200 #99f6e4
+- 300 #5eead4
+- 400 #2dd4bf
+- 500 #14b8a6
+- 600 #0d9488
+- 700 #0f766e
+- 800 #115e59
+- 900 #134e4a
+- 950 #042f2e
+
+强调色 accent / orange：
+
+- 50 #fff7ed
+- 100 #ffedd5
+- 200 #fed7aa
+- 300 #fdba74
+- 400 #fb923c
+- 500 #f97316
+- 600 #ea580c
+- 700 #c2410c
+- 800 #9a3412
+- 900 #7c2d12
+- 950 #431407
+
+状态色：
+
+- success: green，表示已完成、已速读、成功。
+- warning: amber，表示需注意、待处理。
+- danger: red，表示删除、失败、破坏性操作。
+- info: blue，仅用于中性提示，不作为主品牌色。
+
+阴影
+
+FastRead 主要靠边框和背景层次，不靠强阴影。阴影只用于弹窗、浮层、可拖动面板等需要脱离页面流的元素。
+
+- sm: 0 1px 2px rgb(15 23 42 / 0.04)
+- md: 0 3px 8px rgb(15 23 42 / 0.06)
+- lg: 0 8px 18px rgb(15 23 42 / 0.08)
+- xl: 0 14px 28px rgb(15 23 42 / 0.10)
+- 2xl: 0 18px 36px rgb(15 23 42 / 0.12)
+- focus/glow primary: 0 0 0 3px rgb(20 184 166 / 0.14)
+
+圆角
+
+- 系统统一使用 8px，即 rounded-lg。
+- Tailwind 的 xl / 2xl / 3xl 在 FastRead 中也应收敛到 8px。
+- Badge 可使用 4px rounded。
+- 不使用超大圆角胶囊按钮，除非是极小状态点或圆形 avatar。
+
+间距
+
+- 页面外边距：p-4 sm:p-6。
+- 主内容最大宽：常规列表 max-w-7xl；表单/生成类页面 max-w-6xl；详情页 max-w-5xl。
+- 页面 header 与主体间距：mb-6。
+- 卡片内边距：p-4 / p-5 / p-6。
+- 工具栏高度：header 56px，桌面 sidebar 224px 宽。
+- 列表行：px-4/5，py-3/4，使用 divide-y 分割。
+- 控件 gap：小控件 gap-1.5，大控件 gap-2/3。
+
+布局模式
+
+应用壳
+
+- 桌面左侧固定 sidebar，宽度 w-56。
+- 右侧为 header + main。
+- header 高度 h-14，展示面包屑、主题切换和少量全局操作。
+- mobile 隐藏 sidebar，改为顶部横向滚动导航。
+- main 使用 flex-1 min-h-0 overflow-auto，页面自行控制 max-width 和 padding。
+
+典型页面结构
+
+1. 页面容器
+
+使用：
+
+div.p-4.sm:p-6.max-w-7xl.mx-auto
+
+2. PageHeader
+
+包含左侧图标、标题、说明和右侧 actions。
+
+- 标题：text-xl font-semibold
+- 说明：text-sm text-gray-500 leading-6
+- 图标容器：p-2 rounded-lg bg-primary-50 text-primary-700
+
+3. 概览统计条
+
+适合论文数、完成数、趋势数等：
+
+- surface
+- grid grid-cols-3
+- divide-x
+- icon + value + label
+- value 使用 text-lg sm:text-xl font-semibold
+
+4. 数据列表
+
+推荐结构：
+
+- 外层 surface overflow-hidden
+- 顶部工具栏：搜索、筛选、计数
+- 桌面表头：hidden md:grid，灰色底，11px 字号
+- 内容行：grid，hover:bg-primary-50/40
+- 每行主信息左侧可用 1px/4px 色条表示来源或类型
+- 行内操作默认轻量，桌面可在 group-hover 时出现
+
+5. 双栏工作台
+
+用于生成、配置、预览类页面：
+
+- grid grid-cols-1 xl:grid-cols-[minmax(360px,0.8fr)_minmax(0,1.2fr)] gap-4
+- 左侧为输入/配置 surface
+- 右侧为结果/预览 surface
+- 不嵌套卡片，表单区和结果区各自是独立 surface
+
+6. 详情页
+
+- 顶部有返回按钮，使用 ArrowLeft + 小号文本。
+- 详情头部用 surface，包含实体图标、标题、描述和主要动作。
+- 后续内容按列表、Markdown、表格或工作区拆分，不堆叠装饰性卡片。
+
+组件规范
+
+Surface
+
+统一使用以下语义类：
+
+.surface:
+- bg-white dark:bg-[#1b2220]
+- border border-[#dce4df] dark:border-[#2d3934]
+- rounded-lg
+
+.surface-muted:
+- bg-[#eef2ef] dark:bg-[#202925]
+- border border-[#dce4df] dark:border-[#2d3934]
+- rounded-lg
+
+使用原则：
+
+- surface 是页面中的主要内容容器。
+- surface-muted 用于 sidebar、移动导航、低优先级分区。
+- 不要把页面 section 都做成漂浮卡片；section 可以是无框布局，真正承载信息的区域才用 surface。
+- 不要卡片套卡片。
+
+Button
+
+变体：
+
+- primary: bg-primary-700 hover:bg-primary-800 text-white
+- secondary: 白底/深色 surface + 边框，用于次要动作
+- ghost: 无边框、hover 背景，用于轻量动作
+- danger: bg-danger-600，用于删除/危险动作
+- accent: bg-accent-600，用于生成、提案、特殊强调动作
+
+尺寸：
+
+- sm: px-3 py-1.5 text-xs gap-1.5
+- md: px-4 py-2 text-sm gap-2
+- lg: px-6 py-2.5 text-base gap-2
+
+规则：
+
+- 默认 rounded-lg、font-medium、transition-colors duration-200。
+- 按钮中有明确动作时优先配 lucide 图标，图标通常 w-4 h-4。
+- 破坏性动作不要只靠文字，用 danger 色或 danger hover。
+- loading 状态用 Loader animate-spin，并禁用按钮。
+
+Icon Button
+
+用于退出、主题切换、删除、更多操作：
+
+- w-8 h-8
+- rounded-lg
+- text-gray-500 dark:text-gray-400
+- hover:text-gray-900 dark:hover:text-gray-100
+- hover:bg-[#e8efeb] dark:hover:bg-[#27332e]
+- transition-colors
+
+规则：
+
+- 必须有 title 或 aria-label。
+- 图标通常 w-4 h-4。
+- 删除按钮 hover 使用 danger 文字和浅 danger 背景。
+
+Input / Field
+
+.field:
+
+- w-full
+- px-3 py-2.5
+- rounded-lg
+- border border-[#cbd7d0] dark:border-[#3c4b45]
+- bg-white dark:bg-[#1b2220]
+- text-sm text-gray-900 dark:text-gray-100
+
+focus：
+
+- ring-2 ring-primary-500/20
+- border-primary-600
+- outline-none
+
+带图标输入：
+
+- 外层 relative
+- 图标 absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400
+- input 使用 pl-9 或 pl-10
+
+Badge
+
+结构：
+
+- inline-flex items-center gap-1.5
+- px-2 py-0.5
+- rounded
+- text-xs font-medium
+
+颜色：
+
+- primary：标签、关键词、默认品牌状态。
+- success：已完成、已速读。
+- accent：来源、生成类或重点提示。
+- warning：待确认。
+- danger：错误、失败。
+- gray：普通元信息。
+
+可选 dot：
+
+- w-1.5 h-1.5 rounded-full
+- 用对应色阶 500。
+
+PageHeader
+
+用于所有主页面，统一建立页面层级：
+
+- 外层 flex items-start justify-between gap-4 mb-6 animate-slide-down
+- 左侧 flex items-start gap-3
+- 标题 text-xl font-semibold
+- 说明 text-sm text-gray-500 mt-1 leading-6
+- actions flex items-center gap-2 flex-shrink-0
+
+EmptyState
+
+用于空数据、搜索无结果、首次使用：
+
+- 居中 py-14 px-4 text-center
+- 图标 p-3 rounded-lg bg-primary-50 text-primary-700
+- 标题 text-lg font-semibold text-gray-700
+- 描述 text-sm text-gray-500 max-w-sm
+- action mt-5
+
+Tabs
+
+FastRead 的 tabs 是下划线样式，不使用胶囊式大按钮：
+
+- 外层 flex gap-1 border-b
+- tab px-4 py-2.5 text-sm font-medium
+- active text-primary-600
+- active indicator absolute bottom-0 h-0.5 bg-primary-600 rounded-full
+
+Markdown
+
+Markdown 是 FastRead 的核心内容展示形态，风格应像阅读器：
+
+- 正文 text-gray-800 dark:text-gray-200
+- font-size 0.9375rem
+- line-height 1.75
+- h1 text-2xl，h2 text-xl，h3 text-lg
+- code 使用 primary 浅底、mono 字体
+- pre 使用深色代码块
+- blockquote 使用 primary 左边框
+- table 全宽、细边框、表头浅灰底
+
+交互与动效
+
+动效只用于状态变化，不做装饰：
+
+- fade-in: 0.3s ease-out
+- slide-up: 0.3s ease-out，Y 轴 8px
+- slide-down: 0.3s ease-out，Y 轴 -8px
+- scale-in: 0.2s ease-out，scale 0.95 -> 1
+- shimmer: 骨架屏
+
+hover 规则：
+
+- 列表行 hover 用非常浅的 primary 背景。
+- 卡片 hover 只改变边框色，不放大、不漂浮。
+- 按钮 hover 只改变背景/文字色，少用 shadow。
+
+loading 规则：
+
+- 局部按钮 loading 用 Loader。
+- 大区域 loading 可用居中 spinner 或 skeleton。
+- skeleton 使用灰色 shimmer，深色模式用 slate/gray 的低透明度。
+
+深色模式
+
+深色模式使用 class="dark" 控制。
+
+原则：
+
+- 背景从 #f6f7f5 切到 #151a19。
+- surface 从白色切到 #1b2220。
+- sidebar 从 #eef2ef 切到 #18201d。
+- 边框降低亮度但保持可见。
+- 主色在深色模式多使用 primary-200/300/400，不使用过亮大面积色块。
+- 文本层级：标题 gray-100，正文 gray-200/300，辅助 gray-400/500。
+
+导航规范
+
+Sidebar：
+
+- w-56 flex-col
+- bg-[#eef2ef] dark:bg-[#18201d]
+- border-r
+- 顶部品牌区 h-16 px-5
+- 品牌 icon：w-8 h-8 rounded-lg bg-primary-700 text-white
+- nav item：flex items-center gap-3 px-3 py-2 rounded-lg text-sm
+- active：白底/深色 active surface + primary 文本 + 细边框
+- inactive：gray 文本，hover 到白底或深色浅底
+
+Header：
+
+- h-14 px-4 sm:px-6
+- border-b
+- bg-white/85 dark:bg-[#18201d]/95
+- 左侧面包屑，右侧只放全局轻量操作
+
+Mobile nav：
+
+- lg:hidden
+- 横向滚动
+- px-3 py-2
+- gap-1
+- item px-2.5 py-1.5 text-xs
+
+图标规范
+
+- 默认使用 lucide-react。
+- 常规按钮图标 w-4 h-4。
+- PageHeader 图标 w-5 h-5。
+- EmptyState 图标 w-10 h-10。
+- 品牌图标可使用 Zap，fill="currentColor"。
+- 图标颜色不要过多；大多数用 gray-400/500，重要状态才用 primary/accent/success/danger。
+
+内容写法
+
+- 文案短、功能导向。
+- 页面 subtitle 用一句话说明当前页能做什么，不写营销口号。
+- 操作按钮使用动词短语：导入论文、生成综述、确认上传、添加论文。
+- 空状态给出下一步动作，不写长说明。
+- 状态标签尽量 2-4 个汉字，如 已速读、本周新增、失败。
+
+可复制 Tailwind 配置要点
+
+在新项目中至少复制：
+
+1. colors.primary / accent / success / warning / danger / info。
+2. fontFamily.sans / mono。
+3. boxShadow 的低强度阴影。
+4. borderRadius 中 xl、2xl、3xl 都收敛为 0.5rem。
+5. animation 和 keyframes：fade-in、slide-up、slide-down、scale-in、shimmer。
+6. darkMode: 'class'。
+
+可复制全局 CSS 要点
+
+必须包含：
+
+- :root font-family 和 --color-bg。
+- body margin: 0; min-height: 100vh; background: var(--color-bg)。
+- * { box-sizing: border-box; }
+- button, input, select, textarea { font: inherit; }
+- ::selection 使用 primary-200 + primary-900。
+- scrollbar 6px，thumb 使用 #cbd5d0 / dark #3b4743。
+- .surface、.surface-muted、.field、.section-label、.icon-button。
+- .markdown-body。
+- .skeleton、.card-hover、.input-focus。
+
+页面套用模板
+
+列表管理页：
+
+div.p-4.sm:p-6.max-w-7xl.mx-auto
+  PageHeader(title, subtitle, icon, actions)
+  section.surface 统计条
+  section.surface.overflow-hidden
+    toolbar: search/filter/count
+    table header
+    rows / loading / EmptyState
+
+生成工作台页：
+
+div.p-4.sm:p-6.max-w-6xl.mx-auto
+  PageHeader
+  tabs
+  grid 一列到双栏
+    surface 输入参数
+    surface 生成结果或预览
+
+详情页：
+
+div.p-4.sm:p-6.max-w-5xl.mx-auto
+  返回按钮
+  surface 详情头部
+  tabs 或 action row
+  content: markdown/list/table/graph
+
+表单页：
+
+- 登录/注册可使用左右分栏。
+- 左侧品牌展示允许使用 primary 渐变，但仅限 auth/欢迎类页面。
+- 应用内部页面避免大面积渐变。
+- 表单输入统一 rounded-lg、text-sm、input-focus。
+
+不要做
+
+- 不要使用大面积紫色、深蓝、米色、棕橙主题。
+- 不要把页面做成营销 landing page。
+- 不要用超大圆角、玻璃拟态、厚重阴影。
+- 不要使用过多渐变；除登录页品牌区域外，主应用少用渐变。
+- 不要在普通页面里使用插画式空状态。
+- 不要卡片套卡片。
+- 不要为了装饰添加漂浮色块、模糊光斑或复杂背景。
+- 不要让 hover 导致布局尺寸变化。
+- 不要使用过大的标题破坏工作台密度。
+
+统一验收清单
+
+1. 页面背景是否为 #f6f7f5 / dark #151a19。
+2. 主内容是否使用 p-4 sm:p-6 和合理 max-width。
+3. 是否有 PageHeader，并且标题、说明、actions 层级清楚。
+4. 主容器是否使用 surface，而不是随意 bg-white rounded-xl。
+5. 圆角是否统一 8px。
+6. 主按钮是否使用 primary-700，特殊生成动作是否使用 accent-600。
+7. 图标是否来自 lucide-react，尺寸是否统一。
+8. 列表是否使用边框、分割线和浅 hover，而不是重阴影卡片。
+9. 深色模式颜色是否同构且可读。
+10. 文案是否短、动作明确、没有营销腔。
+
+给其他项目或 AI 的风格提示词
+
+请按 FastRead 风格实现界面：这是一个安静、克制、信息密度适中的研究工作台。使用 React + Tailwind，主色为 teal（primary-700 #0f766e），强调色为 orange（accent-600 #ea580c），浅色背景 #f6f7f5，深色背景 #151a19。主要容器使用白色或 #1b2220 的 surface，1px 低对比边框，统一 8px 圆角，少用阴影。布局采用左侧 224px sidebar、顶部 56px header、内容区 p-4 sm:p-6；移动端使用横向顶部导航。组件使用 lucide-react 图标，按钮、输入框、Badge、PageHeader、EmptyState 与 FastRead 保持一致。界面应像科研/知识管理工具，不做营销 hero，不用大渐变和装饰光斑，不使用卡片套卡片，hover 只做轻量颜色变化。

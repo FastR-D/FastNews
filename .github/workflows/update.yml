@@ -1,0 +1,30 @@
+name: update
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: data-commit
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv run python -m secnews.update bleepingcomputer
+      - run: uv run python -m secnews.update arxiv_cs_cr
+      - run: uv run python -m secnews.update arxiv_cs_ai
+      - name: Commit and push data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add secnews/data/articles/
+          git diff --cached --quiet || git commit -m "update articles $(date -u +'%Y-%m-%d %H:%M')"
+          git pull --rebase
+          git push

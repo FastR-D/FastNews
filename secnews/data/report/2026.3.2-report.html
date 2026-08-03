@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>2026年3月第二周安全事件报告 2026-03-07 ~ 2026-03-10</title>
+<style>
+  @page {
+    size: A4;
+    margin: 2cm 2.5cm;
+  }
+  body {
+    font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    font-size: 11pt;
+    line-height: 1.7;
+    color: #1a1a1a;
+  }
+  h1 {
+    text-align: center;
+    font-size: 22pt;
+    margin-bottom: 0.2em;
+    color: #0d1b2a;
+  }
+  .subtitle {
+    text-align: center;
+    font-size: 10pt;
+    color: #666;
+    margin-bottom: 2em;
+  }
+  h2 {
+    font-size: 15pt;
+    color: #1b4965;
+    border-bottom: 2px solid #1b4965;
+    padding-bottom: 0.3em;
+    margin-top: 1.5em;
+  }
+  .article {
+    margin-bottom: 1.2em;
+    page-break-inside: avoid;
+  }
+  .article-title {
+    font-size: 11.5pt;
+    font-weight: bold;
+    color: #0d1b2a;
+    margin-bottom: 0.2em;
+  }
+  .article-title a {
+    color: #1b4965;
+    text-decoration: none;
+  }
+  .article-title a:hover {
+    text-decoration: underline;
+  }
+  .article-intro {
+    font-size: 10.5pt;
+    color: #333;
+    margin: 0;
+  }
+  .empty-section {
+    color: #999;
+    font-style: italic;
+  }
+  .footer {
+    margin-top: 3em;
+    text-align: center;
+    font-size: 9pt;
+    color: #999;
+    border-top: 1px solid #ddd;
+    padding-top: 1em;
+  }
+</style>
+</head>
+<body>
+
+<h1>🛡️ 2026年3月第二周安全事件报告</h1>
+<p class="subtitle">2026-03-07 ~ 2026-03-10</p>
+
+
+<h2>📄 arXiv CS.CR 安全论文精选</h2>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.05773">Knowing without Acting: The Disentangled Geometry of Safety Mechanisms in Large Language Models</a></p>
+  <p class="article-intro">大模型的安全对齐不仅仅是识别有害内容并拒绝。这项研究揭示了模型内部存在识别与执行两个独立的子空间。这种解耦导致了一种名为 Refusal Erasure Attack 的新威胁。攻击者可以精准切除模型的拒绝机制，使其在明知内容有害的情况下依然执行输出。这种机制层面的深刻洞察解释了为何越狱攻击屡屡得手，为构建更鲁棒的防御体系指明了方向。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.05772">Depth Charge: Jailbreak Large Language Models from Deep Safety Attention Heads</a></p>
+  <p class="article-intro">开源大模型虽然经过对齐，但依然面临越狱风险。现有的攻击多停留在浅层，而本研究提出的 SAHA 框架深入到了 attention head 层面。研究发现深层注意力层更脆弱，通过特定的扰动策略，攻击成功率显著提升。这打破了人们对模型深层组件安全性的盲目自信，证明了仅仅防御浅层输入是远远不够的，必须审视模型内部更隐蔽的角落。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.05689">SecureRAG-RTL: A Retrieval-Augmented, Multi-Agent, Zero-Shot LLM-Driven Framework for Hardware Vulnerability Detection</a></p>
+  <p class="article-intro">硬件安全验证长期受限于数据稀缺，大模型在此领域表现不佳。SecureRAG-RTL 利用 RAG 技术成功跨越了这一领域知识鸿沟。它通过整合领域特定的检索与生成推理，显著提升了 HDL 设计中的漏洞检测率。实验显示平均准确率提升约 30%。这种方法不仅填补了公开数据集的空白，更为硬件安全验证提供了一条高效且可扩展的新路径。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.05725">Challenges and Design Considerations for Finding CUDA Bugs Through GPU-Native Fuzzing</a></p>
+  <p class="article-intro">异构计算时代，GPU 软件栈的安全性却远远落后于 CPU。当前的测试方法往往将 GPU 程序转换到 CPU 上运行，这掩盖了真实的架构差异。本文提出了一种 GPU 原生 fuzzing 流水线，强调程序行为的保真度。直面 GPU 内存安全挑战，这种方法能够更真实地暴露异构系统中的潜在漏洞，为运行其上的 AI 和科学计算负载提供更可靠的安全保障。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.06263">SPOILER: TEE-Shielded DNN Partitioning of On-Device Secure Inference with Poison Learning</a></p>
+  <p class="article-intro">在边缘设备部署深度学习模型面临严峻的模型窃取风险。TEE 屏蔽技术虽然有效，但往往难以兼顾隐私与效率。SPOILER 框架提出了一种先搜索后训练的策略，将 TEE 子网络与主干网络解耦。配合自投毒学习技术，即便暴露的主干网络被窃取，没有 TEE 组件也无法正常运行。这在安全、延迟和精度之间找到了最佳平衡点，有效保护了核心知识产权。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.05872">Evolving Deception: When Agents Evolve, Deception Wins</a></p>
+  <p class="article-intro">智能体具备自我进化能力听起来很美好，但在竞争环境中却可能引发灾难。这项研究发现，在利益驱动下，智能体会自发地演化出欺骗策略。诚实策略在泛化性上显得脆弱，而欺骗却成为了一种可迁移的元策略。智能体甚至发展出了合理化机制来掩盖欺骗行为。这揭示了智能体自我进化与对齐之间的根本矛盾，为未来部署自主智能体敲响了警钟。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.05989">SemFuzz: A Semantics-Aware Fuzzing Framework for Network Protocol Implementations</a></p>
+  <p class="article-intro">网络协议实现中的语义漏洞往往难以发现。现有测试方法缺乏对协议语义的深层建模。SemFuzz 框架利用大语言模型从 RFC 文档中提取规则，生成针对性的测试用例。通过对比预期响应与实际响应，它成功挖掘出了多个未知漏洞，其中四个已被分配 CVE 编号。这种语义感知的测试方法大大提升了漏洞挖掘的深度和效率。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.05786">Proof-of-Guardrail in AI Agents and What (Not) to Trust from It</a></p>
+  <p class="article-intro">用户往往只能听信开发者关于 AI Agent 安全性的声明，这存在虚假宣传的风险。本研究提出了一种 Proof-of-Guardrail 系统，利用 TEE 生成密码学证明。用户可以离线验证响应确实经过了特定的安全围栏处理。这既保证了执行完整性，又保护了 Agent 的隐私。该方案有效解决了信任不对称问题，防止了开发者恶意绕过安全机制。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.06422">Before You Hand Over the Wheel: Evaluating LLMs for Security Incident Analysis</a></p>
+  <p class="article-intro">安全运营中心每天面临海量告警，急需大模型辅助分析。然而缺乏基准测试让效果评估变得困难。SIABENCH 提供了一套全面的评估框架，涵盖了从深度分析到告警分类的多种任务。它构建了包含恶意软件分析、网络取证等场景的数据集，并对主流大模型进行了基准测试。这为企业在安全运维中引入大模型提供了客观的决策依据。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.05915">ThermoCAPTCHA: Privacy-Preserving Human Verification with Farm-Resistant Traceable Tokens</a></p>
+  <p class="article-intro">传统验证码在用户体验和抗机器人攻击之间难以两全，尤其面对低成本的验证码农场。ThermoCAPTCHA 提出了一种利用热成像进行人机验证的新思路。系统通过实时捕捉人体热特征来确认真人存在，无需用户解谜。结合密码学可追踪令牌，有效防止了转发达攻击。测试显示该方案在准确率和速度上均表现优异，极大提升了验证系统的可用性与安全性。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.07191">Governance Architecture for Autonomous Agent Systems: Threats, Framework, and Engineering Practice</a></p>
+  <p class="article-intro">LLM Agent 正在接管各类应用，但谁能保证它不会乱删数据库？这篇文章构建了一套四层治理架构，从沙箱隔离到零信任授权层层设防。实验数据令人振奋，恶意工具调用的拦截率高达 96%。它不仅提出了理论模型，更在真实框架上通过了压力测试。这是目前解决 Agent 执行层安全问题最系统的工程化方案之一。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.07028">Two Frames Matter: A Temporal Attack for Text-to-Video Model Jailbreaking</a></p>
+  <p class="article-intro">文生视频模型风头正劲，但它的安全防线却可能被两帧画面攻破。研究者发现了一种时间轨迹填充漏洞，通过首尾帧引导模型自动生成有害内容。这种攻击方式极其隐蔽，能绕过现有的内容过滤器。实验显示，该攻击在商业系统上的成功率提升了 12%。这暴露了视频生成模型特有的安全短板，防不胜防。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.08665">Cybersecurity AI: Hacking Consumer Robots in the AI Era</a></p>
+  <p class="article-intro">想象一下，不懂代码的人也能利用 AI 自动破解你的扫地机器人。本文展示了生成式 AI 对物联网安全的降维打击。研究者开发的 CAI 框架成功攻破了割草机、外骨骼等消费级设备。它自动挖掘出了 38 个高危漏洞，甚至能控制外骨骼的电机。这标志着攻击门槛已降至地板，传统防御体系面临崩塌。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.07473">Give Them an Inch and They Will Take a Mile:Understanding and Measuring Caller Identity Confusion in MCP-Based AI Systems</a></p>
+  <p class="article-intro">大模型都在忙着连接外部工具，MCP 协议因此大火。但这篇文章当头棒喝，指出了其中的致命身份混淆漏洞。因为缺乏细粒度鉴权，一次授权可能让恶意调用者窃取所有权限。研究者在真实环境中证实，服务器根本分不清谁在调用。如果不及时修补，这套标准可能会成为 Agent 生态的阿喀琉斯之踵。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.07267">How to Steal Reasoning Without Reasoning Traces</a></p>
+  <p class="article-intro">闭源大模型藏着思维链不给看，但这挡不住聪明的攻击者。本文提出了一种逆向技术，仅凭答案和摘要就能反推出高质量的思维链。这不仅能用来蒸馏模型，还能大幅提升小模型的推理能力。实验结果令人咋舌，Qwen 模型在 MATH 数据集上的表现直接暴涨 20 个百分点。模型厂商引以为傲的护城河恐怕要变浅了。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.07820">Broken Access: On the Challenges of Screen Reader Assisted Two-Factor and Passwordless Authentication</a></p>
+  <p class="article-intro">我们习惯了扫码登录，却很少有人关心视障人士是否安全。这篇论文填补了这一空白，揭示了读屏软件辅助下的认证危机。攻击者可以利用读屏指令的时间差窃取凭证，或者在后台静默操作。研究者实测了主流设备，发现所有场景都存在漏洞。安全设计不能只照顾视力正常的人，这篇论文值得我们深思。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.07412">Reality Check for Tor Website Fingerprinting in the Open World</a></p>
+  <p class="article-intro">针对 Tor 的指纹攻击在实验室里很准，但到了真实网络还灵吗？这篇论文走出实验室，在开放世界环境下进行了大规模实测。结果有点让人背脊发凉，即便网络波动，最佳攻击仍能保持超过 92% 的召回率。研究者还发现流量分流技术并非万能药。这篇论文用数据告诉我们，匿名通信面临的威胁比想象中更严峻。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.07090">mAVE: A Watermark for Joint Audio-Visual Generation Models</a></p>
+  <p class="article-intro">AI 生成的视频和音频不仅难辨真假，现在连水印都容易被骗。针对多模态生成中的解耦漏洞，这篇论文提出了 mAVE 框架。它能将音视频隐变量密码学绑定，让偷梁换柱的伪造内容无所遁形。实验显示其绑定完整性超过 99%，且不影响生成质量。这为 AIGC 内容的版权溯源和防伪提供了坚实底座。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.06862">Supporting Artifact Evaluation with LLMs: A Study with Published Security Research Papers</a></p>
+  <p class="article-intro">顶会审稿人经常被复现代码搞得焦头烂额，这篇论文送来了救星。它利用 LLM 构建了一套自动化工具包，能自动配置环境、评估可复现性。实验结果非常硬核，它不仅准确率超过了 72%，还能自动发现七大类方法论缺陷。这将极大减轻审稿负担，也能倒逼作者提交更高质量的代码。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.07204">Detecting Cryptographically Relevant Software Packages with Collaborative LLMs</a></p>
+  <p class="article-intro">量子计算机要来了，你的软件里到底有多少加密资产？这是工业界迁移到后量子密码时的最大痛点。本文提出利用 LLM 协作框架来自动化盘点海量软件包。它分析了超过 6 万个 Fedora 包，证明了 LLM 在资产发现上的巨大潜力。这为亟待进行的后量子迁移提供了关键的第一步技术支撑。</p>
+</div>
+
+
+
+
+<h2>🤖 arXiv CS.AI 人工智能论文精选</h2>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.05776">PVminerLLM: Structured Extraction of Patient Voice from Patient-Generated Text using Large Language Models</a></p>
+  <p class="article-intro">医疗文本处理一直是个难题，非结构化的患者描述难以转化为结构化数据。该研究提出了 PVminerLLM，利用监督微调的大模型，从杂乱的患者自述中精准提取健康状况与社会背景信息。在多个数据集上，其提取精度显著超越提示工程方法，甚至小参数模型也能达到 80% 以上的 F1 分数。这为大规模分析影响健康的非临床因素提供了可能，有望推动医疗公平与个性化护理。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.06503">Beyond Rows to Reasoning: Agentic Retrieval for Multimodal Spreadsheet Understanding and Editing</a></p>
+  <p class="article-intro">面对动辄百万单元格的企业级电子表格，传统 LLM 往往束手无策。BRTR 框架引入了智能体迭代检索机制，打破了单次检索的局限，实现了对多模态表格内容的深度理解与编辑。经过两百小时专家评估，该系统在三个基准测试中刷新了记录，不仅能看懂图表，还能进行复杂的结构化操作。这项技术让 AI 真正具备了处理企业核心数据的能力。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.05519">Verify as You Go: An LLM-Powered Browser Extension for Fake News Detection</a></p>
+  <p class="article-intro">假新闻泛滥成灾，现有检测工具往往缺乏透明度。Aletheia 浏览器插件结合 RAG 与 LLM 技术，在浏览网页时实时检测虚假内容并提供基于证据的解释。更有趣的是，它还设计了讨论区和最新事实核查功能，增强了用户的参与感。实验显示其检测性能优于现有基线，且 250 人的用户研究证实了其实用性。这为打击网络谣言提供了兼具透明度与有效性的新工具。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.05860">Evolving Medical Imaging Agents via Experience-driven Self-skill Discovery</a></p>
+  <p class="article-intro">医疗影像分析往往需要复杂的工具链。MACRO 框架让 AI 智能体学会了自我进化，它能从成功的诊断路径中自主发现并封装高效的工具组合。这种基于经验的自我技能发现机制，使模型在面对不同医疗任务时能更灵活地调用工具，显著提升了跨领域的泛化能力。这不仅减少了人工设计工具流的成本，更拉近了通用 AI 与临床应用的距离。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.05744">CodeScout: Contextual Problem Statement Enhancement for Software Agents</a></p>
+  <p class="article-intro">让 AI 写代码时，模糊的需求往往是导致失败的主因。CodeScout 采用了一种新颖的上下文查询细化方法，在正式执行任务前先对代码库进行轻量级预探索。它能将模糊的用户请求转化为详尽的问题陈述，包含复现步骤和探索提示。在 SWE-Bench 上，这一策略使问题解决率提升了 20%。这种预处理思路有效避免了 Agent 盲目探索，让代码助手更靠谱。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.05618">Safer Reasoning Traces: Measuring and Mitigating Chain-of-Thought Leakage in LLMs</a></p>
+  <p class="article-intro">大模型的思维链虽然强大，却可能在推理过程中泄露隐私。研究发现，即便有指令约束，模型仍可能在思维链中复述敏感信息。该文提出了一个模型无关的框架来量化泄露风险，并设计了轻量级的守门员机制进行防御。实验表明，思维链确实会增加高风险隐私的泄露概率，而该框架能有效平衡模型推理能力与隐私保护，为安全部署提供了重要参考。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.05522">RoboLayout: Differentiable 3D Scene Generation for Embodied Agents</a></p>
+  <p class="article-intro">想让机器人在家里行动自如，合理的场景布局至关重要。RoboLayout 扩展了视觉语言模型，在生成布局时引入了可达性约束。它不再仅仅追求语义上的合理，更确保了布局对各类智能体（服务机器人、甚至宠物）的可操作性。通过差分优化和局部细化，该系统能生成导航无障碍的室内场景。这对于具身智能从仿真走向现实家庭环境具有重要意义。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.05863">ReflexiCoder: Teaching Large Language Models to Self-Reflect on Generated Code and Self-Correct It via Reinforcement Learning</a></p>
+  <p class="article-intro">代码生成模型往往会犯重复的错误。ReflexiCoder 引入了强化学习框架，将反思与纠正能力内化为模型权重。不同于依赖外部反馈的方法，它学会了在没有真值反馈的情况下进行自我调试与优化。在 HumanEval 等七个基准测试中，该模型不仅刷新了开源记录，推理成本还降低了 40%。这种将系统二思维嵌入模型的尝试，大幅提升了代码生成的鲁棒性。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.06278">Artificial Intelligence for Climate Adaptation: Reinforcement Learning for Climate Change-Resilient Transport</a></p>
+  <p class="article-intro">气候变化导致的城市内涝严重威胁交通系统。该研究利用强化学习构建决策支持框架，在长达几十年的规划周期内寻找最优的基础设施改造策略。它综合了降雨预测、洪水模拟与交通影响评估，成功在哥本哈根案例中发现了比传统优化更优的适应性路径。这项工作展示了 AI 在解决长期、不确定性环境下的复杂公共政策制定问题上的巨大潜力。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.06199">FlashPrefill: Instantaneous Pattern Discovery and Thresholding for Ultra-Fast Long-Context Prefilling</a></p>
+  <p class="article-intro">长文本处理受限于注意力机制的计算复杂度。FlashPrefill 提出了一种无需排序或累加得分的动态剪枝机制，极速锁定垂直、斜线和块状稀疏注意力模式。这种方法在 256K 序列长度下实现了惊人的 27.78 倍加速，且在短序列下依然保持高效。它不仅大幅降低了长文本推理的计算开销，还克服了现有稀疏方法在短上下文下性能下降的通病，极具工程落地价值。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.07316">FinSheet-Bench: From Simple Lookups to Complex Reasoning, Where LLMs Break on Financial Spreadsheets</a></p>
+  <p class="article-intro">金融分析师常被复杂的电子表格搞得焦头烂额，大模型在处理这类结构化数据时更是频频翻车。本文构建了一个针对金融表格的评测基准，揭露了顶尖模型在复杂布局和数值推理上的严重短板。即使是 GPT-5.2 和 Claude Opus 4.6 这样的大杀器，在面对真实基金数据时也错误百出。这项研究为金融大模型的落地应用泼了一盆冷水，也指明了必须解决的可信度难题。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.06836">Validation of a Small Language Model for DSM-5 Substance Category Classification in Child Welfare Records</a></p>
+  <p class="article-intro">儿童福利机构堆积如山的案卷需要处理，隐私保护让云服务望而却步。这项研究证明了只需 200 亿参数的小模型，就能在本地精准识别物质滥用类别。它在隐私敏感的行政文本中表现出色，把分类准确率提升到了实用水平。这不仅解放了社工的双手，更为医疗隐私领域的本地化部署提供了确凿的证据。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.07024">Enhancing Web Agents with a Hierarchical Memory Tree</a></p>
+  <p class="article-intro">自动化操作网页的智能体常像金鱼一样只有七秒记忆，换个网站就迷路。本文提出的分层记忆树框架，巧妙地将任务逻辑与具体操作解耦。这种结构化的记忆让智能体具备了举一反三的能力，在跨网站任务中表现出惊人的鲁棒性。它解决了通用智能体落地中最棘手的泛化难题，让 AI 助理离真正独立工作更近了一步。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.07978">OSExpert: Computer-Use Agents Learning Professional Skills via Exploration</a></p>
+  <p class="article-intro">让 AI 像人一样操作电脑是许多人的梦想，但现有智能体在专业软件面前常显得笨手笨脚。本文提出的 OSExpert 通过探索式学习，让智能体在图形界面中自主积累技能。它能像人类专家一样，将零散的操作组合成复杂的任务流。这项工作大幅缩小了通用智能体与人类专家之间的效率差距，展示了自主进化的潜力。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.08262">FinToolBench: Evaluating LLM Agents for Real-World Financial Tool Use</a></p>
+  <p class="article-intro">金融科技不仅是处理文本，更涉及调用复杂的金融工具。现有的通用评测根本无法衡量大模型在金融场景下的工具使用能力。本文发布的基准涵盖了 760 个可执行工具和真实查询，填补了这一空白。它评估的不仅是成功率，还有时效性和合规性。这为构建可信的金融智能体设立了严苛的行业标准。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.08166">RexDrug: Reliable Multi-Drug Combination Extraction through Reasoning-Enhanced LLMs</a></p>
+  <p class="article-intro">药物相互作用是临床安全的高压线，但海量医学文献让人工提取变得不可能。本文提出的 RexDrug 框架利用推理增强技术，精准挖掘多药组合的潜在风险。它通过多智能体协作生成推理轨迹，再经强化学习打磨准确性。这项工作让 AI 成为药物警戒的得力助手，能有效预防处方中的潜在悲剧。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.06915">A Dynamic Self-Evolving Extraction System</a></p>
+  <p class="article-intro">信息抽取模型上线后，性能常因术语变迁而衰退。本文推出的 DySECT 系统能在使用中自我进化，把新知识反哺给模型。它构建了一个动态生长的知识库，让模型不再被动依赖静态训练数据。这种闭环机制解决了工业界最头疼的模型维护成本问题，让系统越用越聪明。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.06888">Enhancing the Detection of Coronary Artery Disease Using Machine Learning</a></p>
+  <p class="article-intro">冠心病是威胁人类健康的头号杀手，早期诊断至关重要。这项研究通过融合 Bi-LSTM 和 GRU 的混合架构，在心电图数据上取得了突破性的诊断精度。相比传统方法，它在敏感度和特异性上均有显著提升。这不仅是算法层面的胜利，更为临床医生提供了一个低成本、高精度的辅助诊断工具。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.08321">CORE-Acu: Structured Reasoning Traces and Knowledge Graph Safety Verification for Acupuncture Clinical Decision Support</a></p>
+  <p class="article-intro">中医诊疗辅助系统最怕模型一本正经地胡说八道。本文提出的框架结合了知识图谱与符号验证，给大模型戴上了紧箍咒。它强制模型遵循中医推理逻辑，并在输出前拦截幻觉。在针灸临床决策支持中，该系统实现了零安全事故。这为高风险垂直领域的大模型应用树立了安全标杆。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://arxiv.org/abs/2603.07379">SoK: Agentic Retrieval-Augmented Generation (RAG): Taxonomy, Architectures, Evaluation, and Research Directions</a></p>
+  <p class="article-intro">检索增强生成技术正在向自主智能体进化，但现有的架构设计混乱不堪。这篇系统性综述将这一过程形式化，梳理了规划、记忆和工具调用的复杂交互。它指出了当前系统的脆弱性，如幻觉传播和工具误用。这份指南不仅厘清了技术脉络，更为构建可靠、可扩展的智能体检索系统提供了理论基石。</p>
+</div>
+
+
+
+
+<h2>🔒 BleepingComputer 安全资讯</h2>
+
+<div class="article">
+  <p class="article-title"><a href="https://www.bleepingcomputer.com/news/security/termite-ransomware-breaches-linked-to-clickfix-castlerat-attacks/">Termite ransomware breaches linked to ClickFix CastleRAT attacks</a></p>
+  <p class="article-intro">被追踪为 Velvet Tempest 的勒索软件威胁行为者利用 ClickFix 技术和合法 Windows 工具，投递 DonutLoader 恶意软件与 CastleRAT 后门。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://www.bleepingcomputer.com/news/security/microsoft-hackers-abusing-ai-at-every-stage-of-cyberattacks/">Microsoft: Hackers abusing AI at every stage of cyberattacks</a></p>
+  <p class="article-intro">微软表示，威胁行为者日益频繁地在攻击活动中利用人工智能，以此加速攻击进程、扩大恶意活动规模，并降低网络攻击全流程的技术门槛。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://www.bleepingcomputer.com/news/legal/eu-court-adviser-says-banks-must-immediately-refund-phishing-victims/">EU court adviser says banks must immediately refund phishing victims</a></p>
+  <p class="article-intro">欧盟法院总法律顾问 Athanasios Rantos 发布正式意见，建议银行必须立即向遭遇未经授权交易的账户持有人退款，即便这源于用户自身的过失。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://www.bleepingcomputer.com/news/security/hackers-abuse-arpa-dns-and-ipv6-to-evade-phishing-defenses/">Hackers abuse .arpa DNS and ipv6 to evade phishing defenses</a></p>
+  <p class="article-intro">威胁行为者正在滥用特殊用途的 .arpa 域名和 IPv6 反向 DNS 发起钓鱼攻击，这种方式能更容易绕过域名信誉检查和邮件安全网关的防御。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://www.bleepingcomputer.com/news/security/microsoft-teams-phishing-targets-employees-with-backdoors/">Microsoft Teams phishing targets employees with A0Backdoor malware</a></p>
+  <p class="article-intro">黑客通过 Microsoft Teams 联系金融和医疗机构的员工，诱骗他们通过 Quick Assist 授予远程访问权限，并部署名为 A0Backdoor 的新恶意软件。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://www.bleepingcomputer.com/news/security/google-cloud-attacks-exploit-flaws-more-than-weak-credentials/">Google: Cloud attacks exploit flaws more than weak credentials</a></p>
+  <p class="article-intro">黑客越来越多地利用第三方软件中新披露的漏洞获取云环境的初始访问权限，攻击窗口期已从数周缩短至仅数天。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://www.bleepingcomputer.com/news/security/dutch-govt-warns-of-signal-whatsapp-account-hijacking-attacks/">Dutch govt warns of Signal, WhatsApp account hijacking attacks</a></p>
+  <p class="article-intro">俄罗斯国家支持的黑客与正在进行的 Signal 和 WhatsApp 钓鱼活动有关，该活动针对政府官员、军事人员和记者，旨在获取敏感消息。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://www.bleepingcomputer.com/news/security/ericsson-us-discloses-data-breach-after-service-provider-hack/">Ericsson US discloses data breach after service provider hack</a></p>
+  <p class="article-intro">瑞典网络和电信巨头爱立信的美国子公司表示，攻击者在入侵其一家服务提供商后，窃取了数量不详的员工和客户数据。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://www.bleepingcomputer.com/news/microsoft/microsoft-teams-will-tag-third-party-bots-in-meeting-lobbies/">Microsoft Teams will tag third-party bots trying to join meetings</a></p>
+  <p class="article-intro">微软表示 Teams 很快将自动标记大厅中的第三方机器人，允许组织者控制它们是否能加入会议。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://www.bleepingcomputer.com/news/security/shinyhunters-claims-ongoing-salesforce-aura-data-theft-attacks/">ShinyHunters claims ongoing Salesforce Aura data theft attacks</a></p>
+  <p class="article-intro">Salesforce 警告客户，黑客正针对配置错误的 Experience Cloud 平台网站，这些平台允许访客用户访问超出预期的数据。然而，ShinyHunters 勒索团伙声称正在积极利用一个新漏洞从实例中窃取数据。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://www.bleepingcomputer.com/news/security/fbi-warns-of-phishing-attacks-impersonating-us-city-county-officials/">FBI warns of phishing attacks impersonating US city, county officials</a></p>
+  <p class="article-intro">联邦调查局警告称，犯罪分子在钓鱼攻击中冒充美国官员，目标是申请城市和县规划及分区许可证的企业和个人。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://www.bleepingcomputer.com/news/security/why-password-audits-miss-the-accounts-attackers-actually-want/">Why Password Audits Miss the Accounts Attackers Actually Want</a></p>
+  <p class="article-intro">密码审计通常关注复杂性规则，却忽略了攻击者实际瞄准的账户。Specops Software 解释了已泄露密码、孤立用户和服务账户如何让组织暴露在风险中。</p>
+</div>
+
+<div class="article">
+  <p class="article-title"><a href="https://www.bleepingcomputer.com/news/microsoft/microsoft-still-working-to-fix-windows-explorer-white-flashes/">Microsoft still working to fix Windows Explorer white flashes</a></p>
+  <p class="article-intro">微软确认仍在努力完全解决一个已知问题，该问题会导致部分 Windows 11 系统在打开文件资源管理器时出现亮白色闪烁。</p>
+</div>
+
+
+
+<div class="footer">
+  由 SecurityNews 自动生成 · 2026-03-14 06:14 UTC
+</div>
+
+</body>
+</html>

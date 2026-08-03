@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ report_title | default('安全资讯周报') }} {{ date_range }}</title>
+<style>
+  @page {
+    size: A4;
+    margin: 16mm;
+  }
+
+  :root {
+    --app-bg: #f6f7f5;
+    --muted-bg: #eef2ef;
+    --surface: #ffffff;
+    --border: #dce4df;
+    --primary: #0f766e;
+    --primary-deep: #115e59;
+    --primary-soft: #f0fdfa;
+    --accent-soft: #fff7ed;
+    --accent-border: #fed7aa;
+    --accent-text: #c2410c;
+    --text: #111827;
+    --muted: #66736d;
+    --subtle: #8a9690;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background: var(--app-bg);
+    color: var(--text);
+    font-family: "Inter", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+    font-size: 14px;
+    line-height: 1.68;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .page {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 18px;
+    margin-bottom: 22px;
+  }
+
+  .title-wrap {
+    display: flex;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .header-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--primary-soft);
+    border: 1px solid #d4e7df;
+    color: var(--primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    flex: 0 0 auto;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 20px;
+    line-height: 1.35;
+    font-weight: 650;
+  }
+
+  .subtitle {
+    margin: 5px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 4px;
+    border: 1px solid var(--accent-border);
+    background: var(--accent-soft);
+    color: var(--accent-text);
+    padding: 4px 7px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .surface {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .overview {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-bottom: 18px;
+  }
+
+  .stat {
+    padding: 15px 18px;
+    border-right: 1px solid var(--border);
+  }
+
+  .stat:last-child {
+    border-right: 0;
+  }
+
+  .stat-value {
+    display: block;
+    font-size: 19px;
+    line-height: 1.2;
+    font-weight: 700;
+  }
+
+  .stat-label {
+    display: block;
+    margin-top: 5px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .section {
+    margin-top: 18px;
+    page-break-inside: avoid;
+  }
+
+  .section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 12px 16px;
+    background: var(--muted-bg);
+    border-bottom: 1px solid var(--border);
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.4;
+    font-weight: 650;
+  }
+
+  .section-count {
+    color: var(--muted);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .article {
+    position: relative;
+    padding: 15px 18px 15px 22px;
+    border-bottom: 1px solid var(--border);
+    page-break-inside: avoid;
+  }
+
+  .article:last-child {
+    border-bottom: 0;
+  }
+
+  .article::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--primary);
+  }
+
+  .article-title {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.45;
+    font-weight: 650;
+  }
+
+  .article-title a {
+    color: var(--primary-deep);
+  }
+
+  .article-title a:hover {
+    text-decoration: underline;
+  }
+
+  .article-intro {
+    margin: 8px 0 0;
+    color: #26312d;
+    font-size: 13px;
+    text-align: justify;
+  }
+
+  .empty-section {
+    color: var(--subtle);
+    font-size: 13px;
+  }
+
+  .footer {
+    margin-top: 22px;
+    color: var(--subtle);
+    font-size: 12px;
+    text-align: center;
+  }
+
+  @media (max-width: 720px) {
+    .page {
+      padding: 16px;
+    }
+
+    .page-header {
+      display: block;
+    }
+
+    .badge {
+      margin-top: 12px;
+    }
+
+    .overview {
+      grid-template-columns: 1fr;
+    }
+
+    .stat {
+      border-right: 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stat:last-child {
+      border-bottom: 0;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --app-bg: #151a19;
+      --muted-bg: #202925;
+      --surface: #1b2220;
+      --border: #2d3934;
+      --primary: #2dd4bf;
+      --primary-deep: #5eead4;
+      --primary-soft: #042f2e;
+      --accent-soft: #431407;
+      --accent-border: #7c2d12;
+      --accent-text: #fed7aa;
+      --text: #f3f4f6;
+      --muted: #a5b1ab;
+      --subtle: #7f8c86;
+    }
+
+    .header-icon {
+      border-color: #315147;
+    }
+
+    .article-intro {
+      color: #d8dfdb;
+    }
+  }
+
+  @media print {
+    :root {
+      --app-bg: #ffffff;
+      --muted-bg: #eef2ef;
+      --surface: #ffffff;
+      --border: #dce4df;
+      --primary: #0f766e;
+      --primary-deep: #115e59;
+      --primary-soft: #f0fdfa;
+      --accent-soft: #fff7ed;
+      --accent-border: #fed7aa;
+      --accent-text: #c2410c;
+      --text: #111827;
+      --muted: #66736d;
+      --subtle: #8a9690;
+    }
+
+    body {
+      background: #ffffff;
+      font-size: 11pt;
+    }
+
+    .page {
+      max-width: none;
+      padding: 0;
+    }
+
+    .section {
+      margin-top: 8mm;
+    }
+  }
+</style>
+</head>
+<body>
+<main class="page">
+  <header class="page-header">
+    <div class="title-wrap">
+      <span class="header-icon">N</span>
+      <div>
+        <h1>{{ report_title | default('安全资讯周报') }}</h1>
+        <p class="subtitle">{{ date_range }}</p>
+      </div>
+    </div>
+    <span class="badge">Security Digest</span>
+  </header>
+
+  <section class="surface overview" aria-label="Weekly overview">
+    <div class="stat">
+      <span class="stat-value">{{ sections.arxiv_cs_cr|length }}</span>
+      <span class="stat-label">CS.CR 论文</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value">{{ sections.arxiv_cs_ai|length }}</span>
+      <span class="stat-label">CS.AI 论文</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value">{{ sections.bleepingcomputer|length }}</span>
+      <span class="stat-label">安全资讯</span>
+    </div>
+  </section>
+
+  {% if sections.arxiv_cs_cr %}
+  <section class="surface section">
+    <div class="section-head">
+      <h2>arXiv CS.CR 安全论文精选</h2>
+      <span class="section-count">{{ sections.arxiv_cs_cr|length }} items</span>
+    </div>
+    {% for article in sections.arxiv_cs_cr %}
+    <article class="article">
+      <p class="article-title"><a href="{{ article.link }}">{{ article.title }}</a></p>
+      <p class="article-intro">{{ article.intro }}</p>
+    </article>
+    {% endfor %}
+  </section>
+  {% endif %}
+
+  {% if sections.arxiv_cs_ai %}
+  <section class="surface section">
+    <div class="section-head">
+      <h2>arXiv CS.AI 人工智能论文精选</h2>
+      <span class="section-count">{{ sections.arxiv_cs_ai|length }} items</span>
+    </div>
+    {% for article in sections.arxiv_cs_ai %}
+    <article class="article">
+      <p class="article-title"><a href="{{ article.link }}">{{ article.title }}</a></p>
+      <p class="article-intro">{{ article.intro }}</p>
+    </article>
+    {% endfor %}
+  </section>
+  {% endif %}
+
+  {% if sections.bleepingcomputer %}
+  <section class="surface section">
+    <div class="section-head">
+      <h2>BleepingComputer 安全资讯</h2>
+      <span class="section-count">{{ sections.bleepingcomputer|length }} items</span>
+    </div>
+    {% for article in sections.bleepingcomputer %}
+    <article class="article">
+      <p class="article-title"><a href="{{ article.link }}">{{ article.title }}</a></p>
+      <p class="article-intro">{{ article.intro }}</p>
+    </article>
+    {% endfor %}
+  </section>
+  {% endif %}
+
+  <footer class="footer">
+    由 FastNews 自动生成 · {{ generated_at }}
+  </footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,38 @@
+{
+  "generated_at": "2026-03-08T22:40:55.119320+00:00",
+  "article_start_at": "2026-03-07T22:40:10.594868+00:00",
+  "articles": {
+    "bleepingcomputer": [
+      {
+        "title": "Termite ransomware breaches linked to ClickFix CastleRAT attacks",
+        "link": "https://www.bleepingcomputer.com/news/security/termite-ransomware-breaches-linked-to-clickfix-castlerat-attacks/",
+        "description": "Ransomware threat actors tracked as Velvet Tempest are using the ClickFix technique and legitimate Windows utilities to deploy the DonutLoader malware and the CastleRAT backdoor. [...]",
+        "published": "Sat, 07 Mar 2026 11:14:32 -0500",
+        "author": "Bill Toulas",
+        "categories": [
+          "Security"
+        ],
+        "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/termite-ransomware-breaches-linked-to-clickfix-castlerat-attacks/",
+        "source": "https://www.bleepingcomputer.com/feed/",
+        "fetched_at": "2026-03-08T06:12:07.370910+00:00",
+        "intro": "被追踪为 Velvet Tempest 的勒索软件威胁行为者利用 ClickFix 技术和合法 Windows 工具，投递 DonutLoader 恶意软件与 CastleRAT 后门。"
+      },
+      {
+        "title": "Microsoft: Hackers abusing AI at every stage of cyberattacks",
+        "link": "https://www.bleepingcomputer.com/news/security/microsoft-hackers-abusing-ai-at-every-stage-of-cyberattacks/",
+        "description": "Microsoft says threat actors are increasingly using artificial intelligence in their operations to accelerate attacks, scale malicious activity, and lower technical barriers across all aspects of a cyberattack. [...]",
+        "published": "Sat, 07 Mar 2026 10:15:25 -0500",
+        "author": "Lawrence Abrams",
+        "categories": [
+          "Security"
+        ],
+        "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/microsoft-hackers-abusing-ai-at-every-stage-of-cyberattacks/",
+        "source": "https://www.bleepingcomputer.com/feed/",
+        "fetched_at": "2026-03-08T06:12:07.370910+00:00",
+        "intro": "微软表示，威胁行为者日益频繁地在攻击活动中利用人工智能，以此加速攻击进程、扩大恶意活动规模，并降低网络攻击全流程的技术门槛。"
+      }
+    ],
+    "arxiv_cs_cr": [],
+    "arxiv_cs_ai": []
+  }
+}

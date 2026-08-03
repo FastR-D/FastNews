@@ -1,0 +1,79 @@
+name: Top Conferences Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      conference:
+        description: 'Conference identifier (usenix/ieee-sp/ndss/ccs)'
+        required: true
+        default: 'usenix'
+        type: choice
+        options:
+          - usenix
+          - ieee-sp
+          - ndss
+          - ccs
+      year:
+        description: 'Conference year (e.g. 2025)'
+        required: true
+        default: '2025'
+        type: string
+
+jobs:
+  generate-report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.13'
+
+    - name: Install dependencies
+      run: |
+        pip install uv
+        uv pip install -e . --system
+        sudo apt-get update && sudo apt-get install -y fonts-noto-cjk libpango-1.0-0 libpangoft2-1.0-0
+
+    - name: Fetch Papers
+      run: uv run python top-conf/fetch_big4.py ${{ github.event.inputs.conference }} ${{ github.event.inputs.year }}
+
+    - name: Generate Paper Summaries
+      env:
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        OPENAI_BASE_URL: ${{ secrets.OPENAI_BASE_URL }}
+        LLM_MODEL: ${{ secrets.LLM_MODEL }}
+      run: uv run python top-conf/generate_conf_summary.py ${{ github.event.inputs.conference }} ${{ github.event.inputs.year }}
+      # If the LLM generation fails (e.g. API limits), the job will fail.
+      # But since it saves progress to summary.jsonl iteratively, 
+      # we can cache it or push the progress so it picks up where it left off next time.
+      # To do this correctly, we will unconditionally commit the progress if there are changes.
+
+    - name: Generate PDF and HTML Report
+      if: always()
+      run: uv run python top-conf/generate_conf_report.py ${{ github.event.inputs.conference }} ${{ github.event.inputs.year }}
+
+    - name: Commit Progress Data
+      if: always()
+      run: |
+        git config --global user.name "GitHub Action"
+        git config --global user.email "action@github.com"
+        git add top-conf/data/ top-conf/index.html index.html
+        git commit -m "chore: top-conf automatically generated checkpoint/data" || echo "No changes to commit"
+        git push || echo "Push failed, probably no changes"
+
+    - name: Create Release and Upload Report
+      if: success()
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: report-${{ github.event.inputs.conference }}-${{ github.event.inputs.year }}-${{ github.run_id }}
+        name: ${{ github.event.inputs.conference }} ${{ github.event.inputs.year }} Summary
+        files: |
+          top-conf/data/report/*.pdf
+          top-conf/data/report/*.html
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
