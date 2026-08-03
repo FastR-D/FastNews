@@ -168,7 +168,7 @@ uv run python top-conf/generate_conf_report.py ieee-sp 2026
 | --- | --- | --- |
 | `update` | 每天 06:00 UTC | 抓取 3 个 RSS 源，追加到 `secnews/data/articles/` 并提交 |
 | `gen_newspaper` | 每天 22:30 UTC | 调用 LLM 生成报纸 JSON 并提交 |
-| `weekly_release` | 每周六 06:00 UTC | 汇总近 7 天报纸生成周报，提交 HTML 备份并发布至 [GitHub Releases](https://github.com/fripSide/SecurityNews/releases) |
+| `weekly_release` | 每周六 06:00 UTC | 汇总近 7 天报纸生成周报，提交 HTML 备份并发布至 [GitHub Releases](https://github.com/FastR-D/FastNews/releases) |
 | `conf_release`（Top Conferences Release） | 手动触发（workflow_dispatch） | 抓取 → LLM 总结 → 生成报告 → 提交数据并发布 Release |
 
 使用前需要在仓库 Settings → Secrets and variables → Actions 中配置：

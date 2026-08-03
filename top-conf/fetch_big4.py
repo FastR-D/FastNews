@@ -13,7 +13,7 @@ from bs4.element import NavigableString, Tag
 
 USER_AGENT = (
     "Mozilla/5.0 (compatible; FastNewsBot/0.1; "
-    "+https://github.com/fripSide/SecurityNews)"
+    "+https://github.com/FastR-D/FastNews)"
 )
 
 CONFERENCE_NAMES = {
