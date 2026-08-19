@@ -5,6 +5,7 @@
 ## ✨ 特性
 
 - **🗞️ 安全资讯周报（secnews）**：每日从 BleepingComputer 与 arXiv 抓取资讯/论文，由 LLM 筛选、导读并翻译，每周自动生成排版精美的 HTML/PDF 周报。
+- **📝 每日 AI 导读**：为 `articles` 中每个日期生成中文标题与摘要，保存到 `secnews/data/daily_summaries/`，支持增量续跑。
 - **🎓 顶会论文分析（top-conf）**：针对 USENIX Security、IEEE S&P、NDSS、ACM CCS 四大安全顶会做结构化抓取，LLM 自动分类（Web / 系统 / 密码学 / 隐私 / ML 安全等 10 类）并生成深度中文摘要，输出 Web/PDF 报告。
 - **🧭 统一报告主页**：总览页集中展示所有报告，支持维护"感兴趣作者"列表（保存在浏览器本地）。
 - **🤖 全自动流水线**：GitHub Actions 定时抓取、总结、发布，全程无需人工干预。
@@ -60,6 +61,7 @@ uv run python generate_homepage.py
 │   ├── prompt/                 # LLM 提示词与周报模板
 │   └── data/
 │       ├── articles/           # 原始 RSS 条目（按日期 JSONL）
+│       ├── daily_summaries/    # 每日 AI 翻译与概括（按日期 JSON）
 │       ├── newspapers/         # LLM 总结结果（按日期 JSON）
 │       └── report/             # 周报 HTML 备份
 ├── top-conf/                   # 顶会论文分析模块
@@ -98,7 +100,14 @@ uv run python -m secnews.update arxiv_cs_ai
 # 2. 生成报纸 JSON（LLM 筛选 + 导读/翻译，只处理上次生成后的新文章）
 uv run python -m secnews.generate_newspaper
 
-# 3. 生成周报（默认汇总最近 7 天，可传天数参数）
+# 3. 为最新日期生成中文标题与摘要（按 source_hash 增量处理）
+uv run python -m secnews.generate_daily_summary
+
+# 指定日期，或补齐所有历史日期
+uv run python -m secnews.generate_daily_summary --date 2026-08-19
+uv run python -m secnews.generate_daily_summary --all
+
+# 4. 生成周报（默认汇总最近 7 天，可传天数参数）
 uv run python -m secnews.generate_pdf
 uv run python -m secnews.generate_pdf 3
 
@@ -167,7 +176,7 @@ uv run python top-conf/generate_conf_report.py ieee-sp 2026
 | 工作流 | 触发时机 | 作用 |
 | --- | --- | --- |
 | `update` | 每天 06:00 UTC | 抓取 3 个 RSS 源，追加到 `secnews/data/articles/` 并提交 |
-| `gen_newspaper` | 每天 22:30 UTC | 调用 LLM 生成报纸 JSON 并提交 |
+| `gen_newspaper` | 每天 22:30 UTC | 调用 LLM 生成报纸 JSON、每日 AI 导读并提交 |
 | `weekly_release` | 每周六 06:00 UTC | 汇总近 7 天报纸生成周报，提交 HTML 备份并发布至 [GitHub Releases](https://github.com/FastR-D/FastNews/releases) |
 | `conf_release`（Top Conferences Release） | 手动触发（workflow_dispatch） | 抓取 → LLM 总结 → 生成报告 → 提交数据并发布 Release |
 

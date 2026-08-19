@@ -3,721 +3,465 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FastNews Reports</title>
+<title>安全研究报告工作台 - FastNews</title>
+<script>
+  (() => {
+    const saved = window.localStorage.getItem("fastnews.theme");
+    const dark = saved === "dark" || (saved !== "light" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.classList.toggle("dark", dark);
+  })();
+</script>
 <style>
   :root {
-    --app-bg: #f6f7f5;
-    --muted-bg: #eef2ef;
-    --surface: #ffffff;
-    --border: #dce4df;
-    --input-border: #cbd7d0;
-    --primary: #0f766e;
-    --primary-deep: #115e59;
-    --primary-soft: #f0fdfa;
-    --accent: #f97316;
-    --accent-soft: #fff7ed;
-    --accent-border: #fed7aa;
-    --accent-text: #c2410c;
-    --text: #111827;
-    --muted: #66736d;
-    --subtle: #8a9690;
-    --danger: #dc2626;
-    --danger-soft: #fef2f2;
+    --app-bg: #f6f7f5; --muted-bg: #eef2ef; --surface: #fff; --soft: #f8faf8;
+    --border: #dce4df; --input-border: #cbd7d0; --primary: #0f766e; --primary-deep: #115e59;
+    --primary-soft: #f0fdfa; --primary-border: #d4e7df; --accent: #ea580c; --accent-soft: #fff7ed;
+    --accent-border: #fed7aa; --accent-text: #c2410c; --text: #17211e; --muted: #66736d;
+    --subtle: #8a9690; --danger: #dc2626; --danger-soft: #fef2f2; --focus: rgb(20 184 166 / .16);
   }
-
-  * {
-    box-sizing: border-box;
+  html.dark {
+    --app-bg: #151a19; --muted-bg: #18201d; --surface: #1b2220; --soft: #202925;
+    --border: #2d3934; --input-border: #3c4b45; --primary: #2dd4bf; --primary-deep: #5eead4;
+    --primary-soft: #042f2e; --primary-border: #315147; --accent: #fb923c; --accent-soft: #431407;
+    --accent-border: #7c2d12; --accent-text: #fed7aa; --text: #f3f4f6; --muted: #a5b1ab;
+    --subtle: #7f8c86; --danger: #f87171; --danger-soft: #431407; --focus: rgb(45 212 191 / .18);
   }
-
+  * { box-sizing: border-box; }
+  html { color-scheme: light; }
+  html.dark { color-scheme: dark; }
   body {
-    margin: 0;
-    min-height: 100vh;
-    background: var(--app-bg);
-    color: var(--text);
-    font-family: Inter, "Noto Sans SC", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    font-size: 14px;
-    line-height: 1.6;
+    min-height: 100vh; margin: 0; background: var(--app-bg); color: var(--text);
+    font: 14px/1.6 Inter, "Noto Sans SC", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   }
-
-  a {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  button,
-  input,
-  textarea {
-    font: inherit;
-  }
-
-  .app-shell {
-    min-height: 100vh;
-    display: grid;
-    grid-template-columns: 224px minmax(0, 1fr);
-  }
-
+  a { color: inherit; text-decoration: none; }
+  button, input, textarea { font: inherit; }
+  button { border: 0; }
+  button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible { outline: 0; box-shadow: 0 0 0 3px var(--focus); }
+  .icon { width: 16px; height: 16px; flex: 0 0 auto; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .icon-lg { width: 20px; height: 20px; }
+  .icon-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+  .app-shell { display: grid; grid-template-columns: 224px minmax(0, 1fr); min-height: 100vh; }
   .sidebar {
-    background: var(--muted-bg);
-    border-right: 1px solid var(--border);
-    padding: 18px 14px;
+    display: flex; position: sticky; top: 0; flex-direction: column; height: 100vh;
+    padding: 16px 14px; background: var(--muted-bg); border-right: 1px solid var(--border);
   }
-
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px;
-    margin-bottom: 18px;
-    font-weight: 650;
+  .brand { display: flex; align-items: center; gap: 10px; padding: 8px; margin-bottom: 24px; }
+  .brand-mark, .header-icon, .stat-icon, .gateway-icon {
+    display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;
+    color: var(--primary); background: var(--primary-soft); border: 1px solid var(--primary-border); border-radius: 8px;
   }
-
-  .brand-mark,
-  .header-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    background: var(--primary-soft);
-    border: 1px solid #d4e7df;
-    color: var(--primary);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    flex: 0 0 auto;
-  }
-
-  .nav-title {
-    padding: 0 8px 8px;
-    color: var(--subtle);
-    font-size: 11px;
-    font-weight: 650;
-    text-transform: uppercase;
-  }
-
-  .nav-list {
-    list-style: none;
-    margin: 0 0 18px;
-    padding: 0;
-  }
-
-  .nav-list a {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 8px;
-    border-radius: 8px;
-    color: var(--muted);
-    font-size: 13px;
-  }
-
-  .nav-list a:hover {
-    background: #e8efeb;
-    color: var(--text);
-  }
-
-  .nav-list a.active {
-    background: var(--primary-soft);
-    color: var(--primary-deep);
-    font-weight: 650;
-  }
-
-  .nav-count {
-    color: var(--primary);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .main {
-    min-width: 0;
-  }
-
+  .brand-mark { width: 32px; height: 32px; color: #fff; background: var(--primary); }
+  .brand-mark .icon { width: 18px; height: 18px; stroke-width: 2; }
+  .brand-name { display: block; font-size: 15px; line-height: 1.25; font-weight: 700; }
+  .brand-caption { display: block; margin-top: 2px; color: var(--subtle); font-size: 11px; }
+  .nav-title { padding: 0 8px 8px; color: var(--subtle); font-size: 11px; font-weight: 650; text-transform: uppercase; }
+  .nav-list { display: grid; gap: 3px; padding: 0; margin: 0; list-style: none; }
+  .nav-list a, .mobile-nav a { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; font-weight: 500; transition: background .2s, color .2s; }
+  .nav-list a { justify-content: space-between; padding: 9px 10px; border-radius: 8px; }
+  .nav-list a > span:first-child, .mobile-nav a > span:first-child { display: inline-flex; align-items: center; gap: 10px; }
+  .nav-list a:hover, .mobile-nav a:hover { color: var(--text); background: var(--surface); }
+  .nav-list a.active, .mobile-nav a.active { color: var(--primary-deep); font-weight: 650; background: var(--primary-soft); border: 1px solid var(--primary-border); }
+  .nav-list .icon, .mobile-nav .icon { color: var(--subtle); }
+  .nav-list a.active .icon, .mobile-nav a.active .icon { color: var(--primary); }
+  .nav-count { color: var(--primary); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .sidebar-footer { padding: 12px 10px 2px; margin-top: auto; color: var(--subtle); font-size: 11px; }
+  .main { min-width: 0; }
   .topbar {
-    height: 56px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 0 24px;
-    border-bottom: 1px solid var(--border);
-    background: rgba(255, 255, 255, 0.78);
+    position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; height: 56px; padding: 0 24px; background: color-mix(in srgb, var(--surface) 92%, transparent);
+    border-bottom: 1px solid var(--border); backdrop-filter: blur(8px);
   }
-
-  .breadcrumb,
-  .generated {
-    color: var(--muted);
-    font-size: 13px;
-  }
-
-  .page {
-    max-width: 1180px;
-    margin: 0 auto;
-    padding: 24px;
-  }
-
-  .page-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 18px;
-    margin-bottom: 24px;
-  }
-
-  .header-copy {
-    display: flex;
-    gap: 12px;
-    min-width: 0;
-  }
-
-  h1 {
-    margin: 0;
-    font-size: 20px;
-    line-height: 1.35;
-    font-weight: 650;
-  }
-
-  .description {
-    margin: 5px 0 0;
-    color: var(--muted);
-    font-size: 14px;
-  }
-
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    border-radius: 4px;
-    border: 1px solid var(--accent-border);
-    background: var(--accent-soft);
-    color: var(--accent-text);
-    padding: 4px 7px;
-    font-size: 12px;
-    font-weight: 600;
-    white-space: nowrap;
-  }
-
-  .surface {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
-  }
-
-  .stats {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    margin-bottom: 18px;
-  }
-
-  .stat {
-    padding: 16px 18px;
-    border-right: 1px solid var(--border);
-  }
-
-  .stat:last-child {
-    border-right: 0;
-  }
-
-  .stat-value {
-    display: block;
-    font-size: 20px;
-    line-height: 1.2;
-    font-weight: 700;
-  }
-
-  .stat-label {
-    display: block;
-    margin-top: 5px;
-    color: var(--muted);
-    font-size: 12px;
-  }
-
-  .workspace {
-    display: grid;
-    grid-template-columns: minmax(360px, 0.9fr) minmax(0, 1.1fr);
-    gap: 18px;
-    align-items: start;
-  }
-
-  .workspace.single-column {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .category-entry {
-    position: relative;
-    padding: 18px 20px 18px 24px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .category-entry:last-child {
-    border-bottom: 0;
-  }
-
-  .category-entry::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 4px;
-    background: var(--primary);
-  }
-
-  .category-entry h3 {
-    margin: 0;
-    font-size: 15px;
-    font-weight: 650;
-  }
-
-  .category-entry p {
-    margin: 6px 0 0;
-    color: var(--muted);
-    font-size: 13px;
-  }
-
-  .section-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px;
-    padding: 12px 16px;
-    background: var(--muted-bg);
-    border-bottom: 1px solid var(--border);
-  }
-
-  h2 {
-    margin: 0;
-    font-size: 15px;
-    line-height: 1.4;
-    font-weight: 650;
-  }
-
-  .section-count {
-    color: var(--muted);
-    font-size: 12px;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .report-row,
-  .author-row {
-    position: relative;
-    padding: 15px 18px 15px 22px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .report-row:last-child,
-  .author-row:last-child {
-    border-bottom: 0;
-  }
-
-  .report-row::before,
-  .author-row::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 4px;
-    background: var(--primary);
-  }
-
-  .report-title,
-  .author-name {
-    margin: 0;
-    font-size: 14px;
-    line-height: 1.45;
-    font-weight: 650;
-  }
-
-  .report-title a,
-  .author-name a {
-    color: var(--primary-deep);
-  }
-
-  .report-title a:hover,
-  .author-name a:hover {
-    text-decoration: underline;
-  }
-
-  .meta,
-  .author-bio {
-    margin: 6px 0 0;
-    color: var(--muted);
-    font-size: 12px;
-  }
-
-  .row-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 10px;
-  }
-
-  .button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 32px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--text);
-    padding: 6px 10px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s, color 0.2s, border-color 0.2s;
-  }
-
-  .button:hover {
-    background: #e8efeb;
-    border-color: var(--input-border);
-  }
-
-  .button-primary {
-    border-color: var(--primary);
-    background: var(--primary);
-    color: #ffffff;
-  }
-
-  .button-primary:hover {
-    background: var(--primary-deep);
-    border-color: var(--primary-deep);
-  }
-
-  .button-danger {
-    color: var(--danger);
-  }
-
-  .button-danger:hover {
-    background: var(--danger-soft);
-    border-color: #fecaca;
-  }
-
-  .author-form {
-    padding: 16px;
-    display: grid;
-    gap: 12px;
-  }
-
-  .field-group {
-    display: grid;
-    gap: 6px;
-  }
-
-  .label {
-    color: var(--muted);
-    font-size: 12px;
-    font-weight: 600;
-  }
-
-  .field {
-    width: 100%;
-    border: 1px solid var(--input-border);
-    border-radius: 8px;
-    background: var(--surface);
-    color: var(--text);
-    padding: 10px 11px;
-    font-size: 13px;
-    outline: none;
-  }
-
-  .field:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgb(20 184 166 / 0.14);
-  }
-
-  textarea.field {
-    min-height: 84px;
-    resize: vertical;
-  }
-
-  .empty {
-    padding: 18px;
-    color: var(--subtle);
-    font-size: 13px;
-  }
-
+  .breadcrumb, .generated { color: var(--muted); font-size: 13px; }
+  .breadcrumb strong { color: var(--text); font-weight: 600; }
+  .topbar-actions { display: flex; align-items: center; gap: 8px; }
+  .generated { white-space: nowrap; }
+  .page { width: 100%; max-width: 1180px; padding: 24px; margin: 0 auto; }
+  .mobile-nav { display: none; }
+  .page-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 22px; }
+  .header-copy { display: flex; align-items: flex-start; gap: 12px; min-width: 0; }
+  .header-icon { width: 36px; height: 36px; }
+  .header-icon .icon { width: 19px; height: 19px; }
+  h1, h2, h3, p { margin-top: 0; }
+  h1 { margin-bottom: 0; font-size: 20px; line-height: 1.35; font-weight: 650; }
+  .description { margin: 5px 0 0; color: var(--muted); font-size: 14px; }
+  .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; color: var(--accent-text); font-size: 12px; font-weight: 600; white-space: nowrap; background: var(--accent-soft); border: 1px solid var(--accent-border); border-radius: 4px; }
+  .badge::before { width: 6px; height: 6px; content: ""; background: var(--accent); border-radius: 50%; }
+  .surface { overflow: hidden; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+  .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: 18px; }
+  .stat { display: flex; align-items: center; gap: 11px; min-width: 0; padding: 15px 18px; border-right: 1px solid var(--border); }
+  .stat:last-child { border-right: 0; }
+  .stat-icon { width: 30px; height: 30px; }
+  .stat-copy { min-width: 0; }
+  .stat-value { display: block; overflow: hidden; color: var(--text); font-size: 19px; line-height: 1.2; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+  .stat-value.type-value { font-size: 14px; }
+  .stat-label { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
+  .workspace { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(360px, .95fr); gap: 18px; align-items: start; }
+  .workspace.single-column { grid-template-columns: minmax(0, 1fr); }
+  .section-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; min-height: 58px; padding: 12px 16px; background: var(--soft); border-bottom: 1px solid var(--border); }
+  h2 { margin-bottom: 0; font-size: 15px; line-height: 1.4; font-weight: 650; }
+  .section-description { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
+  .section-count { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .gateway-list { display: grid; }
+  .gateway-row { display: grid; grid-template-columns: 38px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 17px 18px; border-bottom: 1px solid var(--border); transition: background .2s; }
+  .gateway-row:last-child { border-bottom: 0; }
+  .gateway-row:hover { background: color-mix(in srgb, var(--primary-soft) 58%, var(--surface)); }
+  .gateway-icon { width: 38px; height: 38px; }
+  .gateway-icon.orange { color: var(--accent-text); background: var(--accent-soft); border-color: var(--accent-border); }
+  .gateway-icon.gray { color: var(--muted); background: var(--muted-bg); border-color: var(--border); }
+  .gateway-title { margin: 0; color: var(--text); font-size: 14px; font-weight: 650; }
+  .gateway-description { margin: 4px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+  .gateway-meta { display: block; margin-top: 5px; color: var(--primary); font-size: 11px; font-weight: 600; }
+  .gateway-arrow { color: var(--subtle); }
+  .gateway-row:hover .gateway-arrow { color: var(--primary); }
+  .button, .icon-button { display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: background .2s, color .2s, border-color .2s; }
+  .button { min-height: 34px; gap: 7px; padding: 7px 12px; color: var(--text); font-size: 13px; font-weight: 600; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+  .button:hover { background: var(--muted-bg); border-color: var(--input-border); }
+  .button-primary { color: #fff; background: var(--primary); border-color: var(--primary); }
+  .button-primary:hover { color: #fff; background: var(--primary-deep); border-color: var(--primary-deep); }
+  .button-secondary { color: var(--primary-deep); background: var(--surface); border-color: var(--primary-border); }
+  .button-danger { color: var(--danger); }
+  .button-danger:hover { color: var(--danger); background: var(--danger-soft); border-color: var(--danger); }
+  .button-sm { min-height: 32px; padding: 6px 10px; font-size: 12px; }
+  .icon-button { width: 32px; height: 32px; padding: 0; color: var(--muted); background: transparent; border: 1px solid transparent; border-radius: 8px; }
+  .icon-button:hover { color: var(--text); background: var(--muted-bg); border-color: var(--border); }
+  .icon-button.button-danger:hover { color: var(--danger); background: var(--danger-soft); border-color: transparent; }
+  body.modal-open { overflow: hidden; }
+  .author-modal { position: fixed; inset: 0; z-index: 40; display: flex; align-items: center; justify-content: center; padding: 24px; }
+  .author-modal[hidden] { display: none; }
+  .author-modal-backdrop { position: absolute; inset: 0; background: rgb(15 23 42 / .48); }
+  .author-form { position: relative; width: min(100%, 560px); max-height: min(680px, calc(100vh - 48px)); overflow-y: auto; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 18px 50px rgb(15 23 42 / .2); }
+  .editor-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+  .section-label { display: block; color: var(--primary-deep); font-size: 12px; font-weight: 700; }
+  .editor-hint { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
+  .field-grid { display: grid; grid-template-columns: .8fr 1.2fr; gap: 12px; }
+  .field-group { display: grid; gap: 6px; }
+  .field-group.full { grid-column: 1 / -1; }
+  .label { color: var(--muted); font-size: 12px; font-weight: 600; }
+  .field { width: 100%; padding: 9px 10px; color: var(--text); font-size: 13px; background: var(--surface); border: 1px solid var(--input-border); border-radius: 8px; outline: none; }
+  .field::placeholder { color: var(--subtle); }
+  .field:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--focus); }
+  textarea.field { min-height: 76px; resize: vertical; }
+  .editor-actions, .row-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .editor-actions { margin-top: 14px; }
+  .author-list-head, .author-row { display: grid; grid-template-columns: minmax(120px, .8fr) minmax(160px, 1.2fr) minmax(130px, 1fr) 72px; gap: 14px; align-items: center; }
+  .author-list-head { padding: 9px 16px; color: var(--subtle); font-size: 11px; font-weight: 650; background: var(--soft); border-bottom: 1px solid var(--border); }
+  .author-row { padding: 12px 16px; border-bottom: 1px solid var(--border); transition: background .2s; }
+  .author-row:last-child { border-bottom: 0; }
+  .author-row:hover { background: color-mix(in srgb, var(--primary-soft) 46%, var(--surface)); }
+  .author-row-main { display: grid; grid-column: 1 / 4; grid-template-columns: minmax(120px, .8fr) minmax(160px, 1.2fr) minmax(130px, 1fr); gap: 14px; align-items: center; min-width: 0; padding: 0; color: inherit; font: inherit; text-align: left; background: transparent; border: 0; cursor: pointer; }
+  .author-name, .author-bio, .author-url { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .author-name { color: var(--primary-deep); font-size: 13px; font-weight: 650; }
+  .author-bio, .author-url { color: var(--muted); font-size: 12px; }
+  .author-url { color: var(--primary-deep); }
+  .author-actions { display: flex; justify-content: flex-end; gap: 2px; }
+  .report-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+  .search-field { position: relative; width: min(100%, 340px); }
+  .search-field .icon { position: absolute; top: 50%; left: 10px; color: var(--subtle); transform: translateY(-50%); pointer-events: none; }
+  .search-field .field { padding-left: 34px; }
+  .conference-explorer { margin-bottom: 18px; }
+  .filter-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--border); }
+  .filter-group { display: grid; gap: 5px; min-width: 0; }
+  .filter-group .field { min-width: 0; }
+  .conference-list { min-height: 96px; }
+  .conference-row { position: relative; padding: 15px 18px 15px 22px; border-bottom: 1px solid var(--border); }
+  .conference-row:last-child { border-bottom: 0; }
+  .conference-row::before { position: absolute; top: 0; bottom: 0; left: 0; width: 4px; content: ""; background: var(--accent); }
+  .conference-title { margin: 0; font-size: 14px; line-height: 1.45; font-weight: 650; }
+  .conference-title a { color: var(--primary-deep); }
+  .conference-title a:hover { text-decoration: underline; }
+  .conference-summary { margin: 7px 0 0; color: var(--muted); font-size: 13px; line-height: 1.65; }
+  .conference-meta { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 7px; color: var(--subtle); font-size: 12px; }
+  .conference-tag { padding: 1px 6px; color: var(--accent-text); background: var(--accent-soft); border: 1px solid var(--accent-border); border-radius: 4px; }
+  .report-row { position: relative; padding: 15px 18px 15px 22px; border-bottom: 1px solid var(--border); }
+  .report-row:last-child { border-bottom: 0; }
+  .report-row::before { position: absolute; top: 0; bottom: 0; left: 0; width: 4px; content: ""; background: var(--primary); }
+  .report-row.is-hidden { display: none; }
+  .report-title { margin: 0; font-size: 14px; line-height: 1.45; font-weight: 650; }
+  .report-title a { color: var(--primary-deep); }
+  .report-title a:hover { text-decoration: underline; }
+  .meta { margin: 5px 0 0; color: var(--muted); font-size: 12px; }
+  .row-actions { margin-top: 10px; }
+  .empty { padding: 42px 18px; color: var(--subtle); font-size: 13px; text-align: center; }
+  .news-calendar { padding: 16px; border-bottom: 1px solid var(--border); }
+  .calendar-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+  .calendar-month { margin: 0; font-size: 16px; font-weight: 650; }
+  .calendar-controls { display: flex; align-items: center; gap: 4px; }
+  .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+  .calendar-weekday { padding: 3px 0 5px; color: var(--subtle); font-size: 11px; font-weight: 650; text-align: center; }
+  .calendar-day { position: relative; min-width: 0; }
+  .calendar-day button { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; min-height: 38px; padding: 4px; color: var(--muted); font-size: 13px; background: transparent; border: 1px solid transparent; border-radius: 8px; cursor: pointer; }
+  .calendar-day button:hover:not(:disabled) { color: var(--primary-deep); background: var(--primary-soft); border-color: var(--primary-border); }
+  .calendar-day button:disabled { color: var(--border); cursor: default; }
+  .calendar-controls .icon-button:disabled { color: var(--border); cursor: default; opacity: .65; }
+  .calendar-controls .icon-button:disabled:hover { background: transparent; border-color: transparent; }
+  .calendar-day button.has-news { color: var(--text); font-weight: 650; }
+  .calendar-day button.has-news::after { position: absolute; bottom: 4px; width: 4px; height: 4px; content: ""; background: var(--accent); border-radius: 50%; }
+  .calendar-day button.selected { color: #fff; background: var(--primary); border-color: var(--primary); }
+  .calendar-day button.selected::after { background: #fff; }
+  .news-list-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 16px; background: var(--soft); border-bottom: 1px solid var(--border); }
+  .news-date-title { margin: 0; font-size: 15px; font-weight: 650; }
+  .news-list { min-height: 96px; }
+  .news-row { position: relative; padding: 15px 18px 15px 22px; border-bottom: 1px solid var(--border); }
+  .news-row:last-child { border-bottom: 0; }
+  .news-row::before { position: absolute; top: 0; bottom: 0; left: 0; width: 4px; content: ""; background: var(--accent); }
+  .news-title { margin: 0; font-size: 14px; line-height: 1.45; font-weight: 650; }
+  .news-title a { color: var(--primary-deep); }
+  .news-title a:hover { text-decoration: underline; }
+  .news-description { margin: 7px 0 0; color: var(--muted); font-size: 13px; line-height: 1.65; }
+  .news-meta { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 7px; color: var(--subtle); font-size: 12px; }
+  .news-tag { padding: 1px 6px; color: var(--accent-text); background: var(--accent-soft); border: 1px solid var(--accent-border); border-radius: 4px; }
+  .news-status { padding: 42px 18px; color: var(--subtle); font-size: 13px; text-align: center; }
   @media (max-width: 920px) {
-    .app-shell {
-      display: block;
-    }
-
-    .sidebar {
-      display: none;
-    }
-
-    .topbar {
-      padding: 0 16px;
-    }
-
-    .page {
-      padding: 16px;
-    }
-
-    .page-header {
-      display: block;
-    }
-
-    .badge {
-      margin-top: 12px;
-    }
-
-    .stats,
-    .workspace {
-      grid-template-columns: 1fr;
-    }
-
-    .stat {
-      border-right: 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .stat:last-child {
-      border-bottom: 0;
-    }
-
-    .workspace.single-column {
-      grid-template-columns: 1fr;
-    }
+    .app-shell { display: block; }
+    .sidebar { display: none; }
+    .topbar { padding: 0 16px; }
+    .mobile-nav { display: flex; gap: 4px; overflow-x: auto; padding: 8px 12px; background: var(--muted-bg); border-bottom: 1px solid var(--border); scrollbar-width: none; }
+    .mobile-nav::-webkit-scrollbar { display: none; }
+    .mobile-nav a { flex: 0 0 auto; padding: 6px 10px; font-size: 12px; border-radius: 8px; }
+    .page { padding: 18px 16px 28px; }
+    .page-header { display: block; margin-bottom: 18px; }
+    .badge { margin-top: 12px; }
+    .workspace, .workspace.single-column { grid-template-columns: 1fr; }
   }
-
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --app-bg: #151a19;
-      --muted-bg: #202925;
-      --surface: #1b2220;
-      --border: #2d3934;
-      --input-border: #3c4b45;
-      --primary: #2dd4bf;
-      --primary-deep: #5eead4;
-      --primary-soft: #042f2e;
-      --accent-soft: #431407;
-      --accent-border: #7c2d12;
-      --accent-text: #fed7aa;
-      --text: #f3f4f6;
-      --muted: #a5b1ab;
-      --subtle: #7f8c86;
-      --danger-soft: #431407;
-    }
-
-    .topbar {
-      background: rgba(27, 34, 32, 0.82);
-    }
-
-    .brand-mark,
-    .header-icon {
-      border-color: #315147;
-    }
-
-    .nav-list a:hover,
-    .button:hover {
-      background: #27332e;
-    }
+  @media (max-width: 620px) {
+    .generated { display: none; }
+    .topbar { height: 52px; }
+    .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .stat { display: block; padding: 12px 10px; }
+    .stat-icon { width: 28px; height: 28px; margin-bottom: 8px; }
+    .stat-value { font-size: 17px; }
+    .stat-value.type-value { font-size: 12px; }
+    .stat-label { font-size: 11px; line-height: 1.4; }
+    .gateway-row { grid-template-columns: 34px minmax(0, 1fr) 16px; gap: 10px; padding: 15px 14px; }
+    .gateway-icon { width: 34px; height: 34px; }
+    .field-grid { grid-template-columns: 1fr; }
+    .field-group.full { grid-column: auto; }
+    .author-modal { align-items: flex-end; padding: 12px; }
+    .author-form { max-height: calc(100vh - 24px); padding: 18px 16px; }
+    .author-list-head { display: none; }
+    .author-row { grid-template-columns: minmax(0, 1fr) auto; gap: 8px; padding: 13px 14px; }
+    .author-row-main { grid-column: 1; grid-template-columns: 1fr; gap: 3px; min-width: 0; }
+    .report-toolbar { align-items: stretch; flex-direction: column; gap: 8px; padding: 12px 14px; }
+    .search-field { width: 100%; }
+    .filter-grid { grid-template-columns: 1fr; padding: 12px 14px; }
+    .news-calendar { padding: 12px; }
+    .calendar-day button { min-height: 34px; }
+    .news-list-head { align-items: flex-start; flex-direction: column; gap: 3px; padding: 12px 14px; }
+    .news-row { padding: 14px 14px 14px 18px; }
   }
 </style>
 </head>
 <body>
+<svg class="icon-sprite" aria-hidden="true" focusable="false">
+  <symbol id="icon-zap" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></symbol>
+  <symbol id="icon-dashboard" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></symbol>
+  <symbol id="icon-graduation" viewBox="0 0 24 24"><path d="m2 10 10-5 10 5-10 5-10-5Z"/><path d="M6 12.5V16c2 1.5 4 2.25 6 2.25S16 17.5 18 16v-3.5"/><path d="M22 10v6"/></symbol>
+  <symbol id="icon-newspaper" viewBox="0 0 24 24"><path d="M4 4h15a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/><path d="M7 8h9M7 12h9M7 16h5"/></symbol>
+  <symbol id="icon-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="icon-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 13h8M8 17h6"/></symbol>
+  <symbol id="icon-tag" viewBox="0 0 24 24"><path d="M20 13 13 20a2 2 0 0 1-3 0l-6-6a2 2 0 0 1 0-3V4h7a2 2 0 0 1 1 1l8 8Z"/><circle cx="8.5" cy="8.5" r="1"/></symbol>
+  <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+  <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="icon-chevron-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+  <symbol id="icon-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="icon-external" viewBox="0 0 24 24"><path d="M14 3h7v7M10 14 21 3M19 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h6"/></symbol>
+  <symbol id="icon-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="icon-x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+  <symbol id="icon-pencil" viewBox="0 0 24 24"><path d="m4 20 4.5-1L19 8.5a2.12 2.12 0 0 0-3-3L5.5 16 4 20Z"/><path d="m14.5 7.5 2 2"/></symbol>
+  <symbol id="icon-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 14h10l1-14M9 7V4h6v3"/></symbol>
+  <symbol id="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"/></symbol>
+  <symbol id="icon-moon" viewBox="0 0 24 24"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3 6.5 6.5 0 0 0 21 12.8Z"/></symbol>
+</svg>
+
 <div class="app-shell">
   <aside class="sidebar">
-    <div class="brand">
-      <span class="brand-mark">FN</span>
-      <span>FastNews</span>
-    </div>
+    <a class="brand" href="index.html"><span class="brand-mark"><svg class="icon"><use href="#icon-zap"></use></svg></span><span><span class="brand-name">FastNews</span><span class="brand-caption">Research briefings</span></span></a>
     <div class="nav-title">Workspace</div>
-    <ol class="nav-list">
-      <li><a class="active" href="index.html"><span>Overview</span></a></li>
-      <li><a class="" href="top-conf/index.html"><span>Top Conference</span><span class="nav-count">2</span></a></li>
-      <li><a class="" href="secnews/index.html"><span>Security Digest</span><span class="nav-count">2</span></a></li>
-      
-      <li><a href="#authors"><span>Authors</span><span class="nav-count" id="authorNavCount">0</span></a></li>
-      
-    </ol>
+    <nav aria-label="主导航"><ul class="nav-list">
+      <li><a class="active" href="index.html"><span><svg class="icon"><use href="#icon-dashboard"></use></svg>总览</span></a></li>
+      <li><a class="" href="top-conf/index.html"><span><svg class="icon"><use href="#icon-graduation"></use></svg>顶会报告</span><span class="nav-count">4</span></a></li>
+      <li><a class="" href="secnews/index.html"><span><svg class="icon"><use href="#icon-newspaper"></use></svg>安全资讯</span><span class="nav-count">2</span></a></li>
+      <li><a href="#authors"><span><svg class="icon"><use href="#icon-users"></use></svg>关注作者</span><span class="nav-count" id="authorNavCount">0</span></a></li>
+    </ul></nav>
+    <div class="sidebar-footer">本地报告索引 · FastRead</div>
   </aside>
-
   <main class="main">
     <header class="topbar">
-      <div class="breadcrumb">FastNews / Local Index</div>
-      <div class="generated">Updated 2026-08-03 03:58 UTC</div>
+      <div class="breadcrumb"><strong>FastNews</strong><span> / Local Index</span></div>
+      <div class="topbar-actions"><span class="generated">更新于 2026-08-19 14:43 UTC</span><button class="icon-button" id="themeToggle" type="button" aria-label="切换深色模式" title="切换深色模式"><svg class="icon theme-sun"><use href="#icon-sun"></use></svg><svg class="icon theme-moon"><use href="#icon-moon"></use></svg></button></div>
     </header>
-
+    <nav class="mobile-nav" aria-label="移动端导航">
+      <a class="active" href="index.html"><span><svg class="icon"><use href="#icon-dashboard"></use></svg>总览</span></a>
+      <a class="" href="top-conf/index.html"><span><svg class="icon"><use href="#icon-graduation"></use></svg>顶会报告</span></a>
+      <a class="" href="secnews/index.html"><span><svg class="icon"><use href="#icon-newspaper"></use></svg>安全资讯</span></a><a href="#authors"><span><svg class="icon"><use href="#icon-users"></use></svg>关注作者</span></a>
+    </nav>
     <div class="page">
       <section class="page-header">
-        <div class="header-copy">
-          <span class="header-icon">R</span>
-          <div>
-            <h1>安全研究报告工作台</h1>
-            <p class="description">集中访问会议报告和安全周报，并维护感兴趣作者列表。</p>
-          </div>
-        </div>
+        <div class="header-copy"><span class="header-icon"><svg class="icon"><use href="#icon-dashboard"></use></svg></span><div><h1>安全研究报告工作台</h1><p class="description">集中访问会议报告和安全周报，并维护感兴趣作者列表。</p></div></div>
         <span class="badge">Local Index</span>
       </section>
-
-      <section class="surface stats" aria-label="Overview">
-        
-          <div class="stat">
-            <span class="stat-value">4</span>
-            <span class="stat-label">已生成报告</span>
-          </div>
-          <div class="stat">
-            <span class="stat-value">2</span>
-            <span class="stat-label">顶会报告</span>
-          </div>
-          <div class="stat">
-            <span class="stat-value" id="authorStatCount">0</span>
-            <span class="stat-label">关注作者</span>
-          </div>
-        
+      <section class="surface stats" aria-label="概览统计">
+        <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-file"></use></svg></span><span class="stat-copy"><span class="stat-value">6</span><span class="stat-label">已生成报告</span></span></div>
+        <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-graduation"></use></svg></span><span class="stat-copy"><span class="stat-value">4</span><span class="stat-label">顶会报告</span></span></div>
+        <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-users"></use></svg></span><span class="stat-copy"><span class="stat-value" id="authorStatCount">0</span><span class="stat-label">关注作者</span></span></div>
       </section>
-
       <div class="workspace ">
-        
         <section class="surface" id="reports">
-          <div class="section-head">
-            <h2>报告入口</h2>
-            <span class="section-count">4 files</span>
+          <div class="section-head"><div><h2>阅读入口</h2><p class="section-description">按主题进入报告索引</p></div><span class="section-count">6 reports</span></div>
+          <div class="gateway-list">
+            <a class="gateway-row" href="secnews/index.html"><span class="gateway-icon orange"><svg class="icon-lg"><use href="#icon-newspaper"></use></svg></span><span><h3 class="gateway-title">安全资讯周报</h3><p class="gateway-description">查看安全新闻与 arXiv 论文的周期性导读。</p><span class="gateway-meta">2 份报告</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
+            <a class="gateway-row" href="top-conf/index.html"><span class="gateway-icon"><svg class="icon-lg"><use href="#icon-graduation"></use></svg></span><span><h3 class="gateway-title">顶会论文总结</h3><p class="gateway-description">按会议和研究方向浏览安全顶会论文分析。</p><span class="gateway-meta">4 份报告</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
+            <a class="gateway-row" href="#authors"><span class="gateway-icon gray"><svg class="icon-lg"><use href="#icon-users"></use></svg></span><span><h3 class="gateway-title">关注作者</h3><p class="gateway-description">维护作者主页和研究方向，方便持续跟踪。</p><span class="gateway-meta"><span id="authorGatewayCount">0</span> 位作者</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
           </div>
-          <article class="category-entry">
-            <h3><a href="top-conf/index.html">顶会论文总结</a></h3>
-            <p>按会议和研究方向浏览安全顶会论文总结，共 2 份报告。</p>
-            <div class="row-actions">
-              <a class="button button-primary" href="top-conf/index.html">进入顶会总结</a>
-            </div>
-          </article>
-          <article class="category-entry">
-            <h3><a href="secnews/index.html">安全资讯周报</a></h3>
-            <p>浏览安全新闻与 arXiv 论文周报，共 2 份报告。</p>
-            <div class="row-actions">
-              <a class="button button-primary" href="secnews/index.html">进入安全周报</a>
-            </div>
-          </article>
         </section>
-
         <section class="surface" id="authors">
-          <div class="section-head">
-            <h2>感兴趣作者</h2>
-            <span class="section-count" id="authorSectionCount">0 authors</span>
-          </div>
-          <form class="author-form" id="authorForm">
-            <div class="field-group">
-              <label class="label" for="authorName">姓名</label>
-              <input class="field" id="authorName" name="name" autocomplete="name" required>
-            </div>
-            <div class="field-group">
-              <label class="label" for="authorBio">简介</label>
-              <textarea class="field" id="authorBio" name="bio" required></textarea>
-            </div>
-            <div class="field-group">
-              <label class="label" for="authorHome">主页链接</label>
-              <input class="field" id="authorHome" name="homepage" type="url" placeholder="https://example.com" required>
-            </div>
-            <button class="button button-primary" type="submit">添加作者</button>
-          </form>
+          <div class="section-head"><div><h2>关注作者</h2><p class="section-description">点击作者行可编辑资料</p></div><span class="section-count" id="authorSectionCount">0 位作者</span><button class="button button-secondary button-sm" id="toggleAuthorForm" type="button" aria-controls="authorModal" aria-expanded="false"><svg class="icon"><use href="#icon-plus"></use></svg>添加作者</button></div>
+          <div class="author-list-head"><span>名称</span><span>研究方向</span><span>主页</span><span></span></div>
           <div id="authorList"></div>
         </section>
-        
+        <div class="author-modal" id="authorModal" hidden>
+          <div class="author-modal-backdrop" data-close-author-modal></div>
+          <form class="author-form" id="authorForm" role="dialog" aria-modal="true" aria-labelledby="authorFormTitle" aria-describedby="authorFormHint">
+            <div class="editor-head"><div><span class="section-label" id="authorFormTitle">新增作者</span><p class="editor-hint" id="authorFormHint">填写姓名、研究方向和主页链接</p></div><button class="icon-button" id="closeAuthorForm" type="button" aria-label="关闭编辑" title="关闭编辑"><svg class="icon"><use href="#icon-x"></use></svg></button></div>
+            <div class="field-grid"><div class="field-group"><label class="label" for="authorName">姓名</label><input class="field" id="authorName" name="name" autocomplete="name" required></div><div class="field-group"><label class="label" for="authorHome">主页链接</label><input class="field" id="authorHome" name="homepage" type="url" placeholder="https://example.com" required></div><div class="field-group full"><label class="label" for="authorBio">研究方向</label><textarea class="field" id="authorBio" name="bio" required></textarea></div></div>
+            <div class="editor-actions"><button class="button button-primary" id="submitAuthor" type="submit"><svg class="icon"><use href="#icon-plus"></use></svg><span id="submitAuthorLabel">保存作者</span></button><button class="button" id="cancelAuthor" type="button">取消</button></div>
+          </form>
+        </div>
       </div>
     </div>
   </main>
 </div>
 
+<script>
+  const root = document.documentElement;
+  const themeToggle = document.getElementById("themeToggle");
+  const sunIcon = themeToggle.querySelector(".theme-sun");
+  const moonIcon = themeToggle.querySelector(".theme-moon");
+  function updateThemeButton() {
+    const dark = root.classList.contains("dark");
+    sunIcon.hidden = dark; moonIcon.hidden = !dark;
+    themeToggle.title = dark ? "切换浅色模式" : "切换深色模式";
+    themeToggle.setAttribute("aria-label", themeToggle.title);
+  }
+  themeToggle.addEventListener("click", () => {
+    const dark = !root.classList.contains("dark");
+    root.classList.toggle("dark", dark);
+    window.localStorage.setItem("fastnews.theme", dark ? "dark" : "light");
+    updateThemeButton();
+  });
+  updateThemeButton();
+</script>
+
 
 <script>
   const STORAGE_KEY = "fastnews.favoriteAuthors";
+  const modal = document.getElementById("authorModal");
   const form = document.getElementById("authorForm");
   const list = document.getElementById("authorList");
   const sectionCount = document.getElementById("authorSectionCount");
   const statCount = document.getElementById("authorStatCount");
   const navCount = document.getElementById("authorNavCount");
-
+  const gatewayCount = document.getElementById("authorGatewayCount");
+  const toggleForm = document.getElementById("toggleAuthorForm");
+  const closeForm = document.getElementById("closeAuthorForm");
+  const cancelForm = document.getElementById("cancelAuthor");
+  const formTitle = document.getElementById("authorFormTitle");
+  const submitLabel = document.getElementById("submitAuthorLabel");
+  let editingIndex = -1;
+  let modalTrigger = null;
   function loadAuthors() {
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) : [];
-    } catch {
-      return [];
-    }
+      const authors = raw ? JSON.parse(raw) : [];
+      return Array.isArray(authors) ? authors : [];
+    } catch { return []; }
   }
-
-  function saveAuthors(authors) {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(authors));
-  }
-
+  function saveAuthors(authors) { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(authors)); }
   function normalizeHomepage(value) {
-    try {
-      const url = new URL(value);
-      return ["http:", "https:"].includes(url.protocol) ? url.href : "";
-    } catch {
-      return "";
-    }
+    try { const url = new URL(value); return ["http:", "https:"].includes(url.protocol) ? url.href : ""; }
+    catch { return ""; }
   }
-
   function escapeHtml(value) {
-    return String(value)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
+    return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
   }
-
   function updateCounts(count) {
-    sectionCount.textContent = `${count} authors`;
-    statCount.textContent = count;
-    navCount.textContent = count;
+    sectionCount.textContent = count + " 位作者"; statCount.textContent = count; gatewayCount.textContent = count;
+    if (navCount) navCount.textContent = count;
   }
-
+  function openAuthorForm(index = -1, trigger = document.activeElement) {
+    editingIndex = index;
+    const author = loadAuthors()[index];
+    modalTrigger = trigger instanceof HTMLElement ? trigger : toggleForm;
+    modal.hidden = false;
+    document.body.classList.add("modal-open");
+    toggleForm.setAttribute("aria-expanded", "true");
+    formTitle.textContent = author ? "编辑作者" : "新增作者";
+    submitLabel.textContent = author ? "保存修改" : "保存作者";
+    form.querySelector("[name=name]").value = author?.name || "";
+    form.querySelector("[name=bio]").value = author?.bio || "";
+    form.querySelector("[name=homepage]").value = author?.homepage || "";
+    form.querySelector("[name=name]").focus();
+  }
+  function closeAuthorEditor(restoreFocus = true) {
+    if (modal.hidden) return;
+    editingIndex = -1;
+    form.reset();
+    modal.hidden = true;
+    document.body.classList.remove("modal-open");
+    toggleForm.setAttribute("aria-expanded", "false");
+    const trigger = modalTrigger;
+    modalTrigger = null;
+    if (restoreFocus && trigger?.isConnected) trigger.focus();
+  }
+  function modalFocusableElements() {
+    return Array.from(form.querySelectorAll('button:not([disabled]), input:not([disabled]), textarea:not([disabled]), a[href]'));
+  }
   function renderAuthors() {
-    const authors = loadAuthors();
-    updateCounts(authors.length);
-
-    if (!authors.length) {
-      list.innerHTML = '<div class="empty">还没有添加关注作者。</div>';
-      return;
-    }
-
+    const authors = loadAuthors(); updateCounts(authors.length);
+    if (!authors.length) { list.innerHTML = '<div class="empty">还没有添加关注作者。</div>'; return; }
     list.innerHTML = authors.map((author, index) => `
       <article class="author-row">
-        <h3 class="author-name"><a href="${escapeHtml(author.homepage)}" target="_blank" rel="noopener noreferrer">${escapeHtml(author.name)}</a></h3>
-        <p class="author-bio">${escapeHtml(author.bio)}</p>
-        <div class="row-actions">
-          <a class="button" href="${escapeHtml(author.homepage)}" target="_blank" rel="noopener noreferrer">访问主页</a>
-          <button class="button button-danger" type="button" data-delete-index="${index}">删除</button>
-        </div>
+        <button class="author-row-main" type="button" data-edit-index="${index}" title="编辑 ${escapeHtml(author.name)}"><span class="author-name">${escapeHtml(author.name)}</span><span class="author-bio">${escapeHtml(author.bio)}</span><span class="author-url">${escapeHtml(author.homepage)}</span></button>
+        <div class="author-actions"><a class="icon-button" href="${escapeHtml(author.homepage)}" target="_blank" rel="noopener noreferrer" aria-label="访问 ${escapeHtml(author.name)} 的主页" title="访问主页"><svg class="icon"><use href="#icon-external"></use></svg></a><button class="icon-button button-danger" type="button" data-delete-index="${index}" aria-label="删除 ${escapeHtml(author.name)}" title="删除作者"><svg class="icon"><use href="#icon-trash"></use></svg></button></div>
       </article>
     `).join("");
   }
-
+  toggleForm.addEventListener("click", (event) => openAuthorForm(-1, event.currentTarget));
+  closeForm.addEventListener("click", closeAuthorEditor);
+  cancelForm.addEventListener("click", closeAuthorEditor);
+  modal.addEventListener("click", (event) => {
+    if (event.target.closest("[data-close-author-modal]")) closeAuthorEditor();
+  });
+  modal.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") { event.preventDefault(); closeAuthorEditor(); return; }
+    if (event.key !== "Tab") return;
+    const focusable = modalFocusableElements();
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+  });
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     const data = new FormData(form);
-    const author = {
-      name: String(data.get("name") || "").trim(),
-      bio: String(data.get("bio") || "").trim(),
-      homepage: normalizeHomepage(String(data.get("homepage") || "").trim())
-    };
-
-    if (!author.name || !author.bio || !author.homepage) {
-      return;
-    }
-
+    const author = { name: String(data.get("name") || "").trim(), bio: String(data.get("bio") || "").trim(), homepage: normalizeHomepage(String(data.get("homepage") || "").trim()) };
+    if (!author.name || !author.bio || !author.homepage) return;
     const authors = loadAuthors();
-    authors.unshift(author);
-    saveAuthors(authors);
-    form.reset();
-    renderAuthors();
+    const wasEditing = editingIndex >= 0 && Boolean(authors[editingIndex]);
+    const savedIndex = wasEditing ? editingIndex : 0;
+    if (wasEditing) authors[editingIndex] = author; else authors.unshift(author);
+    saveAuthors(authors); closeAuthorEditor(false); renderAuthors();
+    const savedRow = list.querySelector(`[data-edit-index="${savedIndex}"]`);
+    (wasEditing ? savedRow : toggleForm)?.focus();
   });
-
   list.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-delete-index]");
-    if (!button) {
-      return;
-    }
-
-    const index = Number(button.dataset.deleteIndex);
-    const authors = loadAuthors();
-    authors.splice(index, 1);
-    saveAuthors(authors);
-    renderAuthors();
+    const edit = event.target.closest("[data-edit-index]");
+    if (edit) { openAuthorForm(Number(edit.dataset.editIndex), edit); return; }
+    const remove = event.target.closest("[data-delete-index]");
+    if (!remove) return;
+    const authors = loadAuthors(); authors.splice(Number(remove.dataset.deleteIndex), 1); saveAuthors(authors); renderAuthors();
   });
-
   renderAuthors();
 </script>
 

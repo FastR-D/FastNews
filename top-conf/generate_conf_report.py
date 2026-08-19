@@ -1,27 +1,9 @@
 import argparse
 import json
-import os
 import sys
 from datetime import datetime, UTC
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
-import subprocess, platform
-
-# On macOS, WeasyPrint needs Homebrew native libs (pango, glib)
-if platform.system() == 'Darwin':
-    try:
-        brew_prefix = subprocess.check_output(['brew', '--prefix'], text=True).strip()
-        dyld = os.environ.get('DYLD_FALLBACK_LIBRARY_PATH', '')
-        os.environ['DYLD_FALLBACK_LIBRARY_PATH'] = f"{brew_prefix}/lib:{dyld}".rstrip(':')
-    except Exception:
-        pass
-
-try:
-    from weasyprint import HTML
-    HAS_WEASYPRINT = True
-except (ImportError, OSError):
-    HAS_WEASYPRINT = False
-    print("Warning: WeasyPrint not available, skipping PDF generation.")
 
 
 def refresh_homepage():
@@ -47,31 +29,54 @@ def conference_label(conference):
 
 def render_conf_report(conference, year):
     in_file = Path(f'top-conf/data/summary/{conference}_{year}_summary.jsonl')
+    source_file = Path(f'top-conf/data/conferences/{conference}_{year}.jsonl')
     if not in_file.exists():
         print(f"Error: {in_file} does not exist. Run generate_conf_summary.py first.")
         sys.exit(1)
-        
-    categorized_papers = {}
-    with open(in_file, 'r', encoding='utf-8') as f:
+    if not source_file.exists():
+        print(f"Error: {source_file} does not exist.")
+        sys.exit(1)
+
+    source_papers = {}
+    with source_file.open('r', encoding='utf-8') as f:
         for line in f:
-            line = line.strip()
-            if not line:
+            if not line.strip():
                 continue
-            rec = json.loads(line)
-            cat = rec.get("category", "Uncategorized")
-            if cat not in categorized_papers:
-                categorized_papers[cat] = []
-            categorized_papers[cat].append(rec.get("paper", {}))
-            
-    # Sort categories nicely
+            paper = json.loads(line)
+            paper_id = paper.get('_id') or paper.get('link')
+            if paper_id:
+                source_papers[paper_id] = paper
+
+    summaries = {}
+    with in_file.open('r', encoding='utf-8') as f:
+        for line in f:
+            if not line.strip():
+                continue
+            record = json.loads(line)
+            paper = record.get('paper', {})
+            paper_id = paper.get('_id') or paper.get('link')
+            if paper_id in source_papers:
+                summaries[paper_id] = record
+
+    categorized_papers = {}
+    for paper_id, source_paper in source_papers.items():
+        record = summaries.get(paper_id)
+        if not record:
+            continue
+        paper = {**source_paper, **record.get('paper', {})}
+        category = record.get('category') or 'Uncategorized'
+        categorized_papers.setdefault(category, []).append(paper)
+
     categorized_papers = dict(sorted(categorized_papers.items()))
-        
     total_papers = sum(len(papers) for papers in categorized_papers.values())
-    print(f"Loaded {total_papers} categorized papers for {conference.upper()} {year}")
-    
+    print(
+        f"Loaded {total_papers}/{len(source_papers)} categorized papers "
+        f"for {conference.upper()} {year}"
+    )
+
     env = Environment(loader=FileSystemLoader(str(Path(__file__).parent / 'prompt')))
     template = env.get_template('conf_report.html.j2')
-    
+
     html_content = template.render(
         conference=conference_label(conference),
         year=year,
@@ -79,33 +84,23 @@ def render_conf_report(conference, year):
         total_papers=total_papers,
         categorized_papers=categorized_papers
     )
+    html_content = '\n'.join(line.rstrip() for line in html_content.splitlines()) + '\n'
     
     out_dir = Path('top-conf/data/report')
     out_dir.mkdir(parents=True, exist_ok=True)
-    
+
     base_name = f"{conference.upper()}_{year}_Report"
     html_path = out_dir / f"{base_name}.html"
-    pdf_path = out_dir / f"{base_name}.pdf"
-    
+
     with open(html_path, 'w', encoding='utf-8') as f:
         f.write(html_content)
-        
+
     print(f"HTML saved to {html_path}")
-    
-    print("Generating PDF...")
-    if HAS_WEASYPRINT:
-        try:
-            HTML(string=html_content).write_pdf(target=str(pdf_path))
-            print(f"PDF saved to {pdf_path}")
-        except Exception as e:
-            print(f"Failed to generate PDF: {e}")
-    else:
-        print("Skipping PDF (WeasyPrint not available). Install pango: brew install pango")
 
     refresh_homepage()
 
 def main():
-    parser = argparse.ArgumentParser(description="Generate PDF and HTML report from categorized conference papers")
+    parser = argparse.ArgumentParser(description="Generate an HTML report from categorized conference papers")
     parser.add_argument('conference', choices=['usenix', 'ieee-sp', 'ndss', 'ccs'], help="Conference name")
     parser.add_argument('year', type=int, help="Publication year")
     args = parser.parse_args()

@@ -3,603 +3,486 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FastNews Reports</title>
+<title>安全资讯周报 - FastNews</title>
+<script>
+  (() => {
+    const saved = window.localStorage.getItem("fastnews.theme");
+    const dark = saved === "dark" || (saved !== "light" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.classList.toggle("dark", dark);
+  })();
+</script>
 <style>
   :root {
-    --app-bg: #f6f7f5;
-    --muted-bg: #eef2ef;
-    --surface: #ffffff;
-    --border: #dce4df;
-    --input-border: #cbd7d0;
-    --primary: #0f766e;
-    --primary-deep: #115e59;
-    --primary-soft: #f0fdfa;
-    --accent: #f97316;
-    --accent-soft: #fff7ed;
-    --accent-border: #fed7aa;
-    --accent-text: #c2410c;
-    --text: #111827;
-    --muted: #66736d;
-    --subtle: #8a9690;
-    --danger: #dc2626;
-    --danger-soft: #fef2f2;
+    --app-bg: #f6f7f5; --muted-bg: #eef2ef; --surface: #fff; --soft: #f8faf8;
+    --border: #dce4df; --input-border: #cbd7d0; --primary: #0f766e; --primary-deep: #115e59;
+    --primary-soft: #f0fdfa; --primary-border: #d4e7df; --accent: #ea580c; --accent-soft: #fff7ed;
+    --accent-border: #fed7aa; --accent-text: #c2410c; --text: #17211e; --muted: #66736d;
+    --subtle: #8a9690; --danger: #dc2626; --danger-soft: #fef2f2; --focus: rgb(20 184 166 / .16);
   }
-
-  * {
-    box-sizing: border-box;
+  html.dark {
+    --app-bg: #151a19; --muted-bg: #18201d; --surface: #1b2220; --soft: #202925;
+    --border: #2d3934; --input-border: #3c4b45; --primary: #2dd4bf; --primary-deep: #5eead4;
+    --primary-soft: #042f2e; --primary-border: #315147; --accent: #fb923c; --accent-soft: #431407;
+    --accent-border: #7c2d12; --accent-text: #fed7aa; --text: #f3f4f6; --muted: #a5b1ab;
+    --subtle: #7f8c86; --danger: #f87171; --danger-soft: #431407; --focus: rgb(45 212 191 / .18);
   }
-
+  * { box-sizing: border-box; }
+  html { color-scheme: light; }
+  html.dark { color-scheme: dark; }
   body {
-    margin: 0;
-    min-height: 100vh;
-    background: var(--app-bg);
-    color: var(--text);
-    font-family: Inter, "Noto Sans SC", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    font-size: 14px;
-    line-height: 1.6;
+    min-height: 100vh; margin: 0; background: var(--app-bg); color: var(--text);
+    font: 14px/1.6 Inter, "Noto Sans SC", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   }
-
-  a {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  button,
-  input,
-  textarea {
-    font: inherit;
-  }
-
-  .app-shell {
-    min-height: 100vh;
-    display: grid;
-    grid-template-columns: 224px minmax(0, 1fr);
-  }
-
+  a { color: inherit; text-decoration: none; }
+  button, input, textarea { font: inherit; }
+  button { border: 0; }
+  button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible { outline: 0; box-shadow: 0 0 0 3px var(--focus); }
+  .icon { width: 16px; height: 16px; flex: 0 0 auto; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .icon-lg { width: 20px; height: 20px; }
+  .icon-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+  .app-shell { display: grid; grid-template-columns: 224px minmax(0, 1fr); min-height: 100vh; }
   .sidebar {
-    background: var(--muted-bg);
-    border-right: 1px solid var(--border);
-    padding: 18px 14px;
+    display: flex; position: sticky; top: 0; flex-direction: column; height: 100vh;
+    padding: 16px 14px; background: var(--muted-bg); border-right: 1px solid var(--border);
   }
-
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px;
-    margin-bottom: 18px;
-    font-weight: 650;
+  .brand { display: flex; align-items: center; gap: 10px; padding: 8px; margin-bottom: 24px; }
+  .brand-mark, .header-icon, .stat-icon, .gateway-icon {
+    display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;
+    color: var(--primary); background: var(--primary-soft); border: 1px solid var(--primary-border); border-radius: 8px;
   }
-
-  .brand-mark,
-  .header-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    background: var(--primary-soft);
-    border: 1px solid #d4e7df;
-    color: var(--primary);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    flex: 0 0 auto;
-  }
-
-  .nav-title {
-    padding: 0 8px 8px;
-    color: var(--subtle);
-    font-size: 11px;
-    font-weight: 650;
-    text-transform: uppercase;
-  }
-
-  .nav-list {
-    list-style: none;
-    margin: 0 0 18px;
-    padding: 0;
-  }
-
-  .nav-list a {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 8px;
-    border-radius: 8px;
-    color: var(--muted);
-    font-size: 13px;
-  }
-
-  .nav-list a:hover {
-    background: #e8efeb;
-    color: var(--text);
-  }
-
-  .nav-list a.active {
-    background: var(--primary-soft);
-    color: var(--primary-deep);
-    font-weight: 650;
-  }
-
-  .nav-count {
-    color: var(--primary);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .main {
-    min-width: 0;
-  }
-
+  .brand-mark { width: 32px; height: 32px; color: #fff; background: var(--primary); }
+  .brand-mark .icon { width: 18px; height: 18px; stroke-width: 2; }
+  .brand-name { display: block; font-size: 15px; line-height: 1.25; font-weight: 700; }
+  .brand-caption { display: block; margin-top: 2px; color: var(--subtle); font-size: 11px; }
+  .nav-title { padding: 0 8px 8px; color: var(--subtle); font-size: 11px; font-weight: 650; text-transform: uppercase; }
+  .nav-list { display: grid; gap: 3px; padding: 0; margin: 0; list-style: none; }
+  .nav-list a, .mobile-nav a { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; font-weight: 500; transition: background .2s, color .2s; }
+  .nav-list a { justify-content: space-between; padding: 9px 10px; border-radius: 8px; }
+  .nav-list a > span:first-child, .mobile-nav a > span:first-child { display: inline-flex; align-items: center; gap: 10px; }
+  .nav-list a:hover, .mobile-nav a:hover { color: var(--text); background: var(--surface); }
+  .nav-list a.active, .mobile-nav a.active { color: var(--primary-deep); font-weight: 650; background: var(--primary-soft); border: 1px solid var(--primary-border); }
+  .nav-list .icon, .mobile-nav .icon { color: var(--subtle); }
+  .nav-list a.active .icon, .mobile-nav a.active .icon { color: var(--primary); }
+  .nav-count { color: var(--primary); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .sidebar-footer { padding: 12px 10px 2px; margin-top: auto; color: var(--subtle); font-size: 11px; }
+  .main { min-width: 0; }
   .topbar {
-    height: 56px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 0 24px;
-    border-bottom: 1px solid var(--border);
-    background: rgba(255, 255, 255, 0.78);
+    position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; height: 56px; padding: 0 24px; background: color-mix(in srgb, var(--surface) 92%, transparent);
+    border-bottom: 1px solid var(--border); backdrop-filter: blur(8px);
   }
-
-  .breadcrumb,
-  .generated {
-    color: var(--muted);
-    font-size: 13px;
-  }
-
-  .page {
-    max-width: 1180px;
-    margin: 0 auto;
-    padding: 24px;
-  }
-
-  .page-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 18px;
-    margin-bottom: 24px;
-  }
-
-  .header-copy {
-    display: flex;
-    gap: 12px;
-    min-width: 0;
-  }
-
-  h1 {
-    margin: 0;
-    font-size: 20px;
-    line-height: 1.35;
-    font-weight: 650;
-  }
-
-  .description {
-    margin: 5px 0 0;
-    color: var(--muted);
-    font-size: 14px;
-  }
-
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    border-radius: 4px;
-    border: 1px solid var(--accent-border);
-    background: var(--accent-soft);
-    color: var(--accent-text);
-    padding: 4px 7px;
-    font-size: 12px;
-    font-weight: 600;
-    white-space: nowrap;
-  }
-
-  .surface {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
-  }
-
-  .stats {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    margin-bottom: 18px;
-  }
-
-  .stat {
-    padding: 16px 18px;
-    border-right: 1px solid var(--border);
-  }
-
-  .stat:last-child {
-    border-right: 0;
-  }
-
-  .stat-value {
-    display: block;
-    font-size: 20px;
-    line-height: 1.2;
-    font-weight: 700;
-  }
-
-  .stat-label {
-    display: block;
-    margin-top: 5px;
-    color: var(--muted);
-    font-size: 12px;
-  }
-
-  .workspace {
-    display: grid;
-    grid-template-columns: minmax(360px, 0.9fr) minmax(0, 1.1fr);
-    gap: 18px;
-    align-items: start;
-  }
-
-  .workspace.single-column {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .category-entry {
-    position: relative;
-    padding: 18px 20px 18px 24px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .category-entry:last-child {
-    border-bottom: 0;
-  }
-
-  .category-entry::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 4px;
-    background: var(--primary);
-  }
-
-  .category-entry h3 {
-    margin: 0;
-    font-size: 15px;
-    font-weight: 650;
-  }
-
-  .category-entry p {
-    margin: 6px 0 0;
-    color: var(--muted);
-    font-size: 13px;
-  }
-
-  .section-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px;
-    padding: 12px 16px;
-    background: var(--muted-bg);
-    border-bottom: 1px solid var(--border);
-  }
-
-  h2 {
-    margin: 0;
-    font-size: 15px;
-    line-height: 1.4;
-    font-weight: 650;
-  }
-
-  .section-count {
-    color: var(--muted);
-    font-size: 12px;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .report-row,
-  .author-row {
-    position: relative;
-    padding: 15px 18px 15px 22px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .report-row:last-child,
-  .author-row:last-child {
-    border-bottom: 0;
-  }
-
-  .report-row::before,
-  .author-row::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 4px;
-    background: var(--primary);
-  }
-
-  .report-title,
-  .author-name {
-    margin: 0;
-    font-size: 14px;
-    line-height: 1.45;
-    font-weight: 650;
-  }
-
-  .report-title a,
-  .author-name a {
-    color: var(--primary-deep);
-  }
-
-  .report-title a:hover,
-  .author-name a:hover {
-    text-decoration: underline;
-  }
-
-  .meta,
-  .author-bio {
-    margin: 6px 0 0;
-    color: var(--muted);
-    font-size: 12px;
-  }
-
-  .row-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 10px;
-  }
-
-  .button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 32px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--text);
-    padding: 6px 10px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s, color 0.2s, border-color 0.2s;
-  }
-
-  .button:hover {
-    background: #e8efeb;
-    border-color: var(--input-border);
-  }
-
-  .button-primary {
-    border-color: var(--primary);
-    background: var(--primary);
-    color: #ffffff;
-  }
-
-  .button-primary:hover {
-    background: var(--primary-deep);
-    border-color: var(--primary-deep);
-  }
-
-  .button-danger {
-    color: var(--danger);
-  }
-
-  .button-danger:hover {
-    background: var(--danger-soft);
-    border-color: #fecaca;
-  }
-
-  .author-form {
-    padding: 16px;
-    display: grid;
-    gap: 12px;
-  }
-
-  .field-group {
-    display: grid;
-    gap: 6px;
-  }
-
-  .label {
-    color: var(--muted);
-    font-size: 12px;
-    font-weight: 600;
-  }
-
-  .field {
-    width: 100%;
-    border: 1px solid var(--input-border);
-    border-radius: 8px;
-    background: var(--surface);
-    color: var(--text);
-    padding: 10px 11px;
-    font-size: 13px;
-    outline: none;
-  }
-
-  .field:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgb(20 184 166 / 0.14);
-  }
-
-  textarea.field {
-    min-height: 84px;
-    resize: vertical;
-  }
-
-  .empty {
-    padding: 18px;
-    color: var(--subtle);
-    font-size: 13px;
-  }
-
+  .breadcrumb, .generated { color: var(--muted); font-size: 13px; }
+  .breadcrumb strong { color: var(--text); font-weight: 600; }
+  .topbar-actions { display: flex; align-items: center; gap: 8px; }
+  .generated { white-space: nowrap; }
+  .page { width: 100%; max-width: 1180px; padding: 24px; margin: 0 auto; }
+  .mobile-nav { display: none; }
+  .page-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 22px; }
+  .header-copy { display: flex; align-items: flex-start; gap: 12px; min-width: 0; }
+  .header-icon { width: 36px; height: 36px; }
+  .header-icon .icon { width: 19px; height: 19px; }
+  h1, h2, h3, p { margin-top: 0; }
+  h1 { margin-bottom: 0; font-size: 20px; line-height: 1.35; font-weight: 650; }
+  .description { margin: 5px 0 0; color: var(--muted); font-size: 14px; }
+  .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; color: var(--accent-text); font-size: 12px; font-weight: 600; white-space: nowrap; background: var(--accent-soft); border: 1px solid var(--accent-border); border-radius: 4px; }
+  .badge::before { width: 6px; height: 6px; content: ""; background: var(--accent); border-radius: 50%; }
+  .surface { overflow: hidden; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+  .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: 18px; }
+  .stat { display: flex; align-items: center; gap: 11px; min-width: 0; padding: 15px 18px; border-right: 1px solid var(--border); }
+  .stat:last-child { border-right: 0; }
+  .stat-icon { width: 30px; height: 30px; }
+  .stat-copy { min-width: 0; }
+  .stat-value { display: block; overflow: hidden; color: var(--text); font-size: 19px; line-height: 1.2; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+  .stat-value.type-value { font-size: 14px; }
+  .stat-label { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
+  .workspace { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(360px, .95fr); gap: 18px; align-items: start; }
+  .workspace.single-column { grid-template-columns: minmax(0, 1fr); }
+  .section-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; min-height: 58px; padding: 12px 16px; background: var(--soft); border-bottom: 1px solid var(--border); }
+  h2 { margin-bottom: 0; font-size: 15px; line-height: 1.4; font-weight: 650; }
+  .section-description { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
+  .section-count { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .gateway-list { display: grid; }
+  .gateway-row { display: grid; grid-template-columns: 38px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 17px 18px; border-bottom: 1px solid var(--border); transition: background .2s; }
+  .gateway-row:last-child { border-bottom: 0; }
+  .gateway-row:hover { background: color-mix(in srgb, var(--primary-soft) 58%, var(--surface)); }
+  .gateway-icon { width: 38px; height: 38px; }
+  .gateway-icon.orange { color: var(--accent-text); background: var(--accent-soft); border-color: var(--accent-border); }
+  .gateway-icon.gray { color: var(--muted); background: var(--muted-bg); border-color: var(--border); }
+  .gateway-title { margin: 0; color: var(--text); font-size: 14px; font-weight: 650; }
+  .gateway-description { margin: 4px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+  .gateway-meta { display: block; margin-top: 5px; color: var(--primary); font-size: 11px; font-weight: 600; }
+  .gateway-arrow { color: var(--subtle); }
+  .gateway-row:hover .gateway-arrow { color: var(--primary); }
+  .button, .icon-button { display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: background .2s, color .2s, border-color .2s; }
+  .button { min-height: 34px; gap: 7px; padding: 7px 12px; color: var(--text); font-size: 13px; font-weight: 600; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+  .button:hover { background: var(--muted-bg); border-color: var(--input-border); }
+  .button-primary { color: #fff; background: var(--primary); border-color: var(--primary); }
+  .button-primary:hover { color: #fff; background: var(--primary-deep); border-color: var(--primary-deep); }
+  .button-secondary { color: var(--primary-deep); background: var(--surface); border-color: var(--primary-border); }
+  .button-danger { color: var(--danger); }
+  .button-danger:hover { color: var(--danger); background: var(--danger-soft); border-color: var(--danger); }
+  .button-sm { min-height: 32px; padding: 6px 10px; font-size: 12px; }
+  .icon-button { width: 32px; height: 32px; padding: 0; color: var(--muted); background: transparent; border: 1px solid transparent; border-radius: 8px; }
+  .icon-button:hover { color: var(--text); background: var(--muted-bg); border-color: var(--border); }
+  .icon-button.button-danger:hover { color: var(--danger); background: var(--danger-soft); border-color: transparent; }
+  body.modal-open { overflow: hidden; }
+  .author-modal { position: fixed; inset: 0; z-index: 40; display: flex; align-items: center; justify-content: center; padding: 24px; }
+  .author-modal[hidden] { display: none; }
+  .author-modal-backdrop { position: absolute; inset: 0; background: rgb(15 23 42 / .48); }
+  .author-form { position: relative; width: min(100%, 560px); max-height: min(680px, calc(100vh - 48px)); overflow-y: auto; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 18px 50px rgb(15 23 42 / .2); }
+  .editor-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+  .section-label { display: block; color: var(--primary-deep); font-size: 12px; font-weight: 700; }
+  .editor-hint { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
+  .field-grid { display: grid; grid-template-columns: .8fr 1.2fr; gap: 12px; }
+  .field-group { display: grid; gap: 6px; }
+  .field-group.full { grid-column: 1 / -1; }
+  .label { color: var(--muted); font-size: 12px; font-weight: 600; }
+  .field { width: 100%; padding: 9px 10px; color: var(--text); font-size: 13px; background: var(--surface); border: 1px solid var(--input-border); border-radius: 8px; outline: none; }
+  .field::placeholder { color: var(--subtle); }
+  .field:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--focus); }
+  textarea.field { min-height: 76px; resize: vertical; }
+  .editor-actions, .row-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .editor-actions { margin-top: 14px; }
+  .author-list-head, .author-row { display: grid; grid-template-columns: minmax(120px, .8fr) minmax(160px, 1.2fr) minmax(130px, 1fr) 72px; gap: 14px; align-items: center; }
+  .author-list-head { padding: 9px 16px; color: var(--subtle); font-size: 11px; font-weight: 650; background: var(--soft); border-bottom: 1px solid var(--border); }
+  .author-row { padding: 12px 16px; border-bottom: 1px solid var(--border); transition: background .2s; }
+  .author-row:last-child { border-bottom: 0; }
+  .author-row:hover { background: color-mix(in srgb, var(--primary-soft) 46%, var(--surface)); }
+  .author-row-main { display: grid; grid-column: 1 / 4; grid-template-columns: minmax(120px, .8fr) minmax(160px, 1.2fr) minmax(130px, 1fr); gap: 14px; align-items: center; min-width: 0; padding: 0; color: inherit; font: inherit; text-align: left; background: transparent; border: 0; cursor: pointer; }
+  .author-name, .author-bio, .author-url { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .author-name { color: var(--primary-deep); font-size: 13px; font-weight: 650; }
+  .author-bio, .author-url { color: var(--muted); font-size: 12px; }
+  .author-url { color: var(--primary-deep); }
+  .author-actions { display: flex; justify-content: flex-end; gap: 2px; }
+  .report-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+  .search-field { position: relative; width: min(100%, 340px); }
+  .search-field .icon { position: absolute; top: 50%; left: 10px; color: var(--subtle); transform: translateY(-50%); pointer-events: none; }
+  .search-field .field { padding-left: 34px; }
+  .conference-explorer { margin-bottom: 18px; }
+  .filter-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--border); }
+  .filter-group { display: grid; gap: 5px; min-width: 0; }
+  .filter-group .field { min-width: 0; }
+  .conference-list { min-height: 96px; }
+  .conference-row { position: relative; padding: 15px 18px 15px 22px; border-bottom: 1px solid var(--border); }
+  .conference-row:last-child { border-bottom: 0; }
+  .conference-row::before { position: absolute; top: 0; bottom: 0; left: 0; width: 4px; content: ""; background: var(--accent); }
+  .conference-title { margin: 0; font-size: 14px; line-height: 1.45; font-weight: 650; }
+  .conference-title a { color: var(--primary-deep); }
+  .conference-title a:hover { text-decoration: underline; }
+  .conference-summary { margin: 7px 0 0; color: var(--muted); font-size: 13px; line-height: 1.65; }
+  .conference-meta { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 7px; color: var(--subtle); font-size: 12px; }
+  .conference-tag { padding: 1px 6px; color: var(--accent-text); background: var(--accent-soft); border: 1px solid var(--accent-border); border-radius: 4px; }
+  .report-row { position: relative; padding: 15px 18px 15px 22px; border-bottom: 1px solid var(--border); }
+  .report-row:last-child { border-bottom: 0; }
+  .report-row::before { position: absolute; top: 0; bottom: 0; left: 0; width: 4px; content: ""; background: var(--primary); }
+  .report-row.is-hidden { display: none; }
+  .report-title { margin: 0; font-size: 14px; line-height: 1.45; font-weight: 650; }
+  .report-title a { color: var(--primary-deep); }
+  .report-title a:hover { text-decoration: underline; }
+  .meta { margin: 5px 0 0; color: var(--muted); font-size: 12px; }
+  .row-actions { margin-top: 10px; }
+  .empty { padding: 42px 18px; color: var(--subtle); font-size: 13px; text-align: center; }
+  .news-calendar { padding: 16px; border-bottom: 1px solid var(--border); }
+  .calendar-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+  .calendar-month { margin: 0; font-size: 16px; font-weight: 650; }
+  .calendar-controls { display: flex; align-items: center; gap: 4px; }
+  .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+  .calendar-weekday { padding: 3px 0 5px; color: var(--subtle); font-size: 11px; font-weight: 650; text-align: center; }
+  .calendar-day { position: relative; min-width: 0; }
+  .calendar-day button { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; min-height: 38px; padding: 4px; color: var(--muted); font-size: 13px; background: transparent; border: 1px solid transparent; border-radius: 8px; cursor: pointer; }
+  .calendar-day button:hover:not(:disabled) { color: var(--primary-deep); background: var(--primary-soft); border-color: var(--primary-border); }
+  .calendar-day button:disabled { color: var(--border); cursor: default; }
+  .calendar-controls .icon-button:disabled { color: var(--border); cursor: default; opacity: .65; }
+  .calendar-controls .icon-button:disabled:hover { background: transparent; border-color: transparent; }
+  .calendar-day button.has-news { color: var(--text); font-weight: 650; }
+  .calendar-day button.has-news::after { position: absolute; bottom: 4px; width: 4px; height: 4px; content: ""; background: var(--accent); border-radius: 50%; }
+  .calendar-day button.selected { color: #fff; background: var(--primary); border-color: var(--primary); }
+  .calendar-day button.selected::after { background: #fff; }
+  .news-list-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 16px; background: var(--soft); border-bottom: 1px solid var(--border); }
+  .news-date-title { margin: 0; font-size: 15px; font-weight: 650; }
+  .news-list { min-height: 96px; }
+  .news-row { position: relative; padding: 15px 18px 15px 22px; border-bottom: 1px solid var(--border); }
+  .news-row:last-child { border-bottom: 0; }
+  .news-row::before { position: absolute; top: 0; bottom: 0; left: 0; width: 4px; content: ""; background: var(--accent); }
+  .news-title { margin: 0; font-size: 14px; line-height: 1.45; font-weight: 650; }
+  .news-title a { color: var(--primary-deep); }
+  .news-title a:hover { text-decoration: underline; }
+  .news-description { margin: 7px 0 0; color: var(--muted); font-size: 13px; line-height: 1.65; }
+  .news-meta { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 7px; color: var(--subtle); font-size: 12px; }
+  .news-tag { padding: 1px 6px; color: var(--accent-text); background: var(--accent-soft); border: 1px solid var(--accent-border); border-radius: 4px; }
+  .news-status { padding: 42px 18px; color: var(--subtle); font-size: 13px; text-align: center; }
   @media (max-width: 920px) {
-    .app-shell {
-      display: block;
-    }
-
-    .sidebar {
-      display: none;
-    }
-
-    .topbar {
-      padding: 0 16px;
-    }
-
-    .page {
-      padding: 16px;
-    }
-
-    .page-header {
-      display: block;
-    }
-
-    .badge {
-      margin-top: 12px;
-    }
-
-    .stats,
-    .workspace {
-      grid-template-columns: 1fr;
-    }
-
-    .stat {
-      border-right: 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .stat:last-child {
-      border-bottom: 0;
-    }
-
-    .workspace.single-column {
-      grid-template-columns: 1fr;
-    }
+    .app-shell { display: block; }
+    .sidebar { display: none; }
+    .topbar { padding: 0 16px; }
+    .mobile-nav { display: flex; gap: 4px; overflow-x: auto; padding: 8px 12px; background: var(--muted-bg); border-bottom: 1px solid var(--border); scrollbar-width: none; }
+    .mobile-nav::-webkit-scrollbar { display: none; }
+    .mobile-nav a { flex: 0 0 auto; padding: 6px 10px; font-size: 12px; border-radius: 8px; }
+    .page { padding: 18px 16px 28px; }
+    .page-header { display: block; margin-bottom: 18px; }
+    .badge { margin-top: 12px; }
+    .workspace, .workspace.single-column { grid-template-columns: 1fr; }
   }
-
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --app-bg: #151a19;
-      --muted-bg: #202925;
-      --surface: #1b2220;
-      --border: #2d3934;
-      --input-border: #3c4b45;
-      --primary: #2dd4bf;
-      --primary-deep: #5eead4;
-      --primary-soft: #042f2e;
-      --accent-soft: #431407;
-      --accent-border: #7c2d12;
-      --accent-text: #fed7aa;
-      --text: #f3f4f6;
-      --muted: #a5b1ab;
-      --subtle: #7f8c86;
-      --danger-soft: #431407;
-    }
-
-    .topbar {
-      background: rgba(27, 34, 32, 0.82);
-    }
-
-    .brand-mark,
-    .header-icon {
-      border-color: #315147;
-    }
-
-    .nav-list a:hover,
-    .button:hover {
-      background: #27332e;
-    }
+  @media (max-width: 620px) {
+    .generated { display: none; }
+    .topbar { height: 52px; }
+    .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .stat { display: block; padding: 12px 10px; }
+    .stat-icon { width: 28px; height: 28px; margin-bottom: 8px; }
+    .stat-value { font-size: 17px; }
+    .stat-value.type-value { font-size: 12px; }
+    .stat-label { font-size: 11px; line-height: 1.4; }
+    .gateway-row { grid-template-columns: 34px minmax(0, 1fr) 16px; gap: 10px; padding: 15px 14px; }
+    .gateway-icon { width: 34px; height: 34px; }
+    .field-grid { grid-template-columns: 1fr; }
+    .field-group.full { grid-column: auto; }
+    .author-modal { align-items: flex-end; padding: 12px; }
+    .author-form { max-height: calc(100vh - 24px); padding: 18px 16px; }
+    .author-list-head { display: none; }
+    .author-row { grid-template-columns: minmax(0, 1fr) auto; gap: 8px; padding: 13px 14px; }
+    .author-row-main { grid-column: 1; grid-template-columns: 1fr; gap: 3px; min-width: 0; }
+    .report-toolbar { align-items: stretch; flex-direction: column; gap: 8px; padding: 12px 14px; }
+    .search-field { width: 100%; }
+    .filter-grid { grid-template-columns: 1fr; padding: 12px 14px; }
+    .news-calendar { padding: 12px; }
+    .calendar-day button { min-height: 34px; }
+    .news-list-head { align-items: flex-start; flex-direction: column; gap: 3px; padding: 12px 14px; }
+    .news-row { padding: 14px 14px 14px 18px; }
   }
 </style>
 </head>
 <body>
+<svg class="icon-sprite" aria-hidden="true" focusable="false">
+  <symbol id="icon-zap" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></symbol>
+  <symbol id="icon-dashboard" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></symbol>
+  <symbol id="icon-graduation" viewBox="0 0 24 24"><path d="m2 10 10-5 10 5-10 5-10-5Z"/><path d="M6 12.5V16c2 1.5 4 2.25 6 2.25S16 17.5 18 16v-3.5"/><path d="M22 10v6"/></symbol>
+  <symbol id="icon-newspaper" viewBox="0 0 24 24"><path d="M4 4h15a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/><path d="M7 8h9M7 12h9M7 16h5"/></symbol>
+  <symbol id="icon-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="icon-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 13h8M8 17h6"/></symbol>
+  <symbol id="icon-tag" viewBox="0 0 24 24"><path d="M20 13 13 20a2 2 0 0 1-3 0l-6-6a2 2 0 0 1 0-3V4h7a2 2 0 0 1 1 1l8 8Z"/><circle cx="8.5" cy="8.5" r="1"/></symbol>
+  <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+  <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="icon-chevron-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+  <symbol id="icon-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="icon-external" viewBox="0 0 24 24"><path d="M14 3h7v7M10 14 21 3M19 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h6"/></symbol>
+  <symbol id="icon-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="icon-x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+  <symbol id="icon-pencil" viewBox="0 0 24 24"><path d="m4 20 4.5-1L19 8.5a2.12 2.12 0 0 0-3-3L5.5 16 4 20Z"/><path d="m14.5 7.5 2 2"/></symbol>
+  <symbol id="icon-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 14h10l1-14M9 7V4h6v3"/></symbol>
+  <symbol id="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"/></symbol>
+  <symbol id="icon-moon" viewBox="0 0 24 24"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3 6.5 6.5 0 0 0 21 12.8Z"/></symbol>
+</svg>
+
 <div class="app-shell">
   <aside class="sidebar">
-    <div class="brand">
-      <span class="brand-mark">FN</span>
-      <span>FastNews</span>
-    </div>
+    <a class="brand" href="../index.html"><span class="brand-mark"><svg class="icon"><use href="#icon-zap"></use></svg></span><span><span class="brand-name">FastNews</span><span class="brand-caption">Research briefings</span></span></a>
     <div class="nav-title">Workspace</div>
-    <ol class="nav-list">
-      <li><a class="" href="../index.html"><span>Overview</span></a></li>
-      <li><a class="" href="../top-conf/index.html"><span>Top Conference</span><span class="nav-count">2</span></a></li>
-      <li><a class="active" href="../secnews/index.html"><span>Security Digest</span><span class="nav-count">2</span></a></li>
+    <nav aria-label="主导航"><ul class="nav-list">
+      <li><a class="" href="../index.html"><span><svg class="icon"><use href="#icon-dashboard"></use></svg>总览</span></a></li>
+      <li><a class="" href="../top-conf/index.html"><span><svg class="icon"><use href="#icon-graduation"></use></svg>顶会报告</span><span class="nav-count">4</span></a></li>
+      <li><a class="active" href="../secnews/index.html"><span><svg class="icon"><use href="#icon-newspaper"></use></svg>安全资讯</span><span class="nav-count">2</span></a></li>
       
-    </ol>
+    </ul></nav>
+    <div class="sidebar-footer">本地报告索引 · FastRead</div>
   </aside>
-
   <main class="main">
     <header class="topbar">
-      <div class="breadcrumb">FastNews / Security Digest</div>
-      <div class="generated">Updated 2026-08-03 03:58 UTC</div>
+      <div class="breadcrumb"><strong>FastNews</strong><span> / Security Digest</span></div>
+      <div class="topbar-actions"><span class="generated">更新于 2026-08-19 14:43 UTC</span><button class="icon-button" id="themeToggle" type="button" aria-label="切换深色模式" title="切换深色模式"><svg class="icon theme-sun"><use href="#icon-sun"></use></svg><svg class="icon theme-moon"><use href="#icon-moon"></use></svg></button></div>
     </header>
-
+    <nav class="mobile-nav" aria-label="移动端导航">
+      <a class="" href="../index.html"><span><svg class="icon"><use href="#icon-dashboard"></use></svg>总览</span></a>
+      <a class="" href="../top-conf/index.html"><span><svg class="icon"><use href="#icon-graduation"></use></svg>顶会报告</span></a>
+      <a class="active" href="../secnews/index.html"><span><svg class="icon"><use href="#icon-newspaper"></use></svg>安全资讯</span></a>
+    </nav>
     <div class="page">
       <section class="page-header">
-        <div class="header-copy">
-          <span class="header-icon">R</span>
-          <div>
-            <h1>安全资讯周报</h1>
-            <p class="description">浏览由 BleepingComputer 和 arXiv 生成的安全资讯周报。</p>
-          </div>
-        </div>
+        <div class="header-copy"><span class="header-icon"><svg class="icon"><use href="#icon-newspaper"></use></svg></span><div><h1>安全资讯周报</h1><p class="description">浏览由 BleepingComputer 和 arXiv 生成的安全资讯周报。</p></div></div>
         <span class="badge">Local Index</span>
       </section>
-
-      <section class="surface stats" aria-label="Overview">
-        
-          <div class="stat">
-            <span class="stat-value">2</span>
-            <span class="stat-label">已生成报告</span>
-          </div>
-          <div class="stat">
-            <span class="stat-value">0</span>
-            <span class="stat-label">PDF 文件</span>
-          </div>
-          <div class="stat">
-            <span class="stat-value">Security Digest</span>
-            <span class="stat-label">报告类型</span>
-          </div>
-        
+      <section class="surface stats" aria-label="概览统计">
+        <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-newspaper"></use></svg></span><span class="stat-copy"><span class="stat-value">147</span><span class="stat-label">可选日期</span></span></div>
+        <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-file"></use></svg></span><span class="stat-copy"><span class="stat-value">19476</span><span class="stat-label">新闻条目</span></span></div>
+        <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-dashboard"></use></svg></span><span class="stat-copy"><span class="stat-value type-value">2026-08-19</span><span class="stat-label">最新日期</span></span></div>
       </section>
-
       <div class="workspace single-column">
-        
-        <section class="surface" id="reports">
-          <div class="section-head">
-            <h2>已生成 Report</h2>
-            <span class="section-count">2 files</span>
+        <section class="surface" id="newsWorkspace">
+          <div class="section-head"><div><h2>按日期阅读</h2><p class="section-description">选择日期查看当天抓取的安全新闻与论文</p></div><span class="section-count">147 个日期</span></div>
+          <div class="news-calendar" aria-label="新闻日期日历">
+            <div class="calendar-toolbar"><h3 class="calendar-month" id="calendarMonth">新闻日期</h3><div class="calendar-controls"><button class="icon-button" id="previousMonth" type="button" aria-label="上个月" title="上个月"><svg class="icon"><use href="#icon-chevron-left"></use></svg></button><button class="icon-button" id="nextMonth" type="button" aria-label="下个月" title="下个月"><svg class="icon"><use href="#icon-chevron-right"></use></svg></button></div></div>
+            <div class="calendar-grid" id="calendarGrid"></div>
           </div>
-          
-            
-            <article class="report-row">
-              <h3 class="report-title"><a href="data/report/2026.3.2-report.html">2026.3.2 report</a></h3>
-              <p class="meta">Security Digest · 2026-07-31 11:54 · 32.7 KB</p>
-              <div class="row-actions">
-                <a class="button button-primary" href="data/report/2026.3.2-report.html">打开 HTML</a>
-                
-              </div>
-            </article>
-            
-            <article class="report-row">
-              <h3 class="report-title"><a href="data/report/2026.3.1-report.html">2026.3.1 report</a></h3>
-              <p class="meta">Security Digest · 2026-07-31 11:54 · 8.6 KB</p>
-              <div class="row-actions">
-                <a class="button button-primary" href="data/report/2026.3.1-report.html">打开 HTML</a>
-                
-              </div>
-            </article>
-            
-          
+          <div class="news-list-head"><h3 class="news-date-title" id="newsDateTitle">加载中</h3><span class="section-count" id="newsDateCount">加载中</span></div>
+          <div class="news-list" id="newsList"><div class="news-status">正在加载新闻…</div></div>
         </section>
-        
       </div>
     </div>
   </main>
 </div>
 
+<script>
+  const root = document.documentElement;
+  const themeToggle = document.getElementById("themeToggle");
+  const sunIcon = themeToggle.querySelector(".theme-sun");
+  const moonIcon = themeToggle.querySelector(".theme-moon");
+  function updateThemeButton() {
+    const dark = root.classList.contains("dark");
+    sunIcon.hidden = dark; moonIcon.hidden = !dark;
+    themeToggle.title = dark ? "切换浅色模式" : "切换深色模式";
+    themeToggle.setAttribute("aria-label", themeToggle.title);
+  }
+  themeToggle.addEventListener("click", () => {
+    const dark = !root.classList.contains("dark");
+    root.classList.toggle("dark", dark);
+    window.localStorage.setItem("fastnews.theme", dark ? "dark" : "light");
+    updateThemeButton();
+  });
+  updateThemeButton();
+</script>
+
+
+<script>
+  const newsDays = [{"date": "2026-03-07", "count": 15}, {"date": "2026-03-08", "count": 2}, {"date": "2026-03-09", "count": 90}, {"date": "2026-03-10", "count": 230}, {"date": "2026-03-11", "count": 126}, {"date": "2026-03-12", "count": 133}, {"date": "2026-03-13", "count": 150}, {"date": "2026-03-14", "count": 9}, {"date": "2026-03-15", "count": 2}, {"date": "2026-03-16", "count": 76}, {"date": "2026-03-17", "count": 269}, {"date": "2026-03-18", "count": 180}, {"date": "2026-03-19", "count": 109}, {"date": "2026-03-20", "count": 180}, {"date": "2026-03-21", "count": 9}, {"date": "2026-03-22", "count": 3}, {"date": "2026-03-23", "count": 116}, {"date": "2026-03-24", "count": 248}, {"date": "2026-03-25", "count": 155}, {"date": "2026-03-26", "count": 134}, {"date": "2026-03-27", "count": 129}, {"date": "2026-03-28", "count": 7}, {"date": "2026-03-29", "count": 1}, {"date": "2026-03-30", "count": 72}, {"date": "2026-03-31", "count": 189}, {"date": "2026-04-01", "count": 145}, {"date": "2026-04-02", "count": 141}, {"date": "2026-04-03", "count": 171}, {"date": "2026-04-04", "count": 8}, {"date": "2026-04-05", "count": 3}, {"date": "2026-04-06", "count": 102}, {"date": "2026-04-07", "count": 254}, {"date": "2026-04-08", "count": 194}, {"date": "2026-04-09", "count": 186}, {"date": "2026-04-10", "count": 170}, {"date": "2026-04-11", "count": 6}, {"date": "2026-04-12", "count": 1}, {"date": "2026-04-13", "count": 112}, {"date": "2026-04-14", "count": 361}, {"date": "2026-04-15", "count": 175}, {"date": "2026-04-16", "count": 121}, {"date": "2026-04-17", "count": 205}, {"date": "2026-04-18", "count": 7}, {"date": "2026-04-19", "count": 3}, {"date": "2026-04-20", "count": 113}, {"date": "2026-04-21", "count": 393}, {"date": "2026-04-22", "count": 166}, {"date": "2026-04-23", "count": 163}, {"date": "2026-04-24", "count": 171}, {"date": "2026-04-25", "count": 9}, {"date": "2026-04-26", "count": 2}, {"date": "2026-04-27", "count": 82}, {"date": "2026-04-28", "count": 278}, {"date": "2026-04-29", "count": 135}, {"date": "2026-04-30", "count": 107}, {"date": "2026-05-01", "count": 181}, {"date": "2026-05-02", "count": 9}, {"date": "2026-05-03", "count": 2}, {"date": "2026-05-04", "count": 92}, {"date": "2026-05-05", "count": 299}, {"date": "2026-05-06", "count": 149}, {"date": "2026-05-07", "count": 121}, {"date": "2026-05-08", "count": 262}, {"date": "2026-05-09", "count": 7}, {"date": "2026-05-10", "count": 2}, {"date": "2026-05-11", "count": 216}, {"date": "2026-05-12", "count": 484}, {"date": "2026-05-13", "count": 253}, {"date": "2026-05-14", "count": 174}, {"date": "2026-05-15", "count": 196}, {"date": "2026-05-16", "count": 8}, {"date": "2026-05-17", "count": 2}, {"date": "2026-05-18", "count": 131}, {"date": "2026-05-19", "count": 318}, {"date": "2026-05-20", "count": 187}, {"date": "2026-05-21", "count": 145}, {"date": "2026-05-22", "count": 191}, {"date": "2026-05-23", "count": 7}, {"date": "2026-05-24", "count": 2}, {"date": "2026-05-25", "count": 110}, {"date": "2026-05-26", "count": 379}, {"date": "2026-05-27", "count": 214}, {"date": "2026-05-28", "count": 343}, {"date": "2026-05-29", "count": 333}, {"date": "2026-05-30", "count": 8}, {"date": "2026-05-31", "count": 2}, {"date": "2026-06-01", "count": 178}, {"date": "2026-06-02", "count": 427}, {"date": "2026-06-03", "count": 232}, {"date": "2026-06-04", "count": 167}, {"date": "2026-06-05", "count": 260}, {"date": "2026-06-06", "count": 6}, {"date": "2026-06-07", "count": 1}, {"date": "2026-06-08", "count": 124}, {"date": "2026-06-09", "count": 377}, {"date": "2026-06-10", "count": 183}, {"date": "2026-06-11", "count": 168}, {"date": "2026-06-12", "count": 183}, {"date": "2026-06-13", "count": 8}, {"date": "2026-06-14", "count": 3}, {"date": "2026-06-15", "count": 109}, {"date": "2026-06-16", "count": 328}, {"date": "2026-06-17", "count": 155}, {"date": "2026-06-18", "count": 121}, {"date": "2026-06-19", "count": 167}, {"date": "2026-06-20", "count": 8}, {"date": "2026-06-21", "count": 2}, {"date": "2026-06-22", "count": 1}, {"date": "2026-06-23", "count": 415}, {"date": "2026-06-24", "count": 163}, {"date": "2026-06-25", "count": 117}, {"date": "2026-06-26", "count": 187}, {"date": "2026-06-27", "count": 5}, {"date": "2026-06-28", "count": 1}, {"date": "2026-06-29", "count": 76}, {"date": "2026-06-30", "count": 284}, {"date": "2026-07-01", "count": 166}, {"date": "2026-07-02", "count": 122}, {"date": "2026-07-03", "count": 169}, {"date": "2026-07-04", "count": 2}, {"date": "2026-07-05", "count": 1}, {"date": "2026-07-06", "count": 1}, {"date": "2026-07-07", "count": 263}, {"date": "2026-07-08", "count": 136}, {"date": "2026-07-09", "count": 101}, {"date": "2026-07-10", "count": 134}, {"date": "2026-07-11", "count": 8}, {"date": "2026-07-12", "count": 2}, {"date": "2026-07-13", "count": 71}, {"date": "2026-07-14", "count": 254}, {"date": "2026-07-15", "count": 134}, {"date": "2026-07-16", "count": 119}, {"date": "2026-07-17", "count": 174}, {"date": "2026-07-18", "count": 7}, {"date": "2026-07-19", "count": 4}, {"date": "2026-07-20", "count": 74}, {"date": "2026-07-21", "count": 223}, {"date": "2026-07-22", "count": 150}, {"date": "2026-07-23", "count": 128}, {"date": "2026-07-24", "count": 227}, {"date": "2026-07-25", "count": 8}, {"date": "2026-07-26", "count": 4}, {"date": "2026-07-27", "count": 103}, {"date": "2026-07-28", "count": 316}, {"date": "2026-07-29", "count": 187}, {"date": "2026-07-30", "count": 120}, {"date": "2026-08-19", "count": 167}];
+  const newsDayMap = new Map(newsDays.map((item) => [item.date, item]));
+  const articleBase = "data/articles/";
+  const summaryBase = "data/daily_summaries/";
+  const calendarMonth = document.getElementById("calendarMonth");
+  const calendarGrid = document.getElementById("calendarGrid");
+  const previousMonth = document.getElementById("previousMonth");
+  const nextMonth = document.getElementById("nextMonth");
+  const newsDateTitle = document.getElementById("newsDateTitle");
+  const newsDateCount = document.getElementById("newsDateCount");
+  const newsList = document.getElementById("newsList");
+  const weekdays = ["一", "二", "三", "四", "五", "六", "日"];
+  let selectedDate = newsDays.length ? newsDays[newsDays.length - 1].date : "";
+  let visibleMonth = selectedDate ? new Date(selectedDate + "T00:00:00") : new Date();
+  let requestToken = 0;
+
+  function pad(value) { return String(value).padStart(2, "0"); }
+  function dateKey(date) { return date.getFullYear() + "-" + pad(date.getMonth() + 1) + "-" + pad(date.getDate()); }
+  function escapeHtml(value) {
+    return String(value ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+  }
+  function formatPublishedDate(value) {
+    if (!value) return "";
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return String(value);
+    return new Intl.DateTimeFormat("zh-CN", {
+      year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", hour12: false,
+    }).format(parsed).replaceAll("/", "-");
+  }
+  function formatDate(date) {
+    const parts = date.split("-");
+    return parts[0] + "年" + Number(parts[1]) + "月" + Number(parts[2]) + "日";
+  }
+  function sourceLabel(source) {
+    if (source.includes("bleepingcomputer")) return "BleepingComputer";
+    if (source.includes("arxiv")) return "arXiv";
+    return "其他来源";
+  }
+  function monthKey(date) { return date.getFullYear() * 12 + date.getMonth(); }
+  const availableMonths = newsDays.map((item) => monthKey(new Date(item.date + "T00:00:00")));
+  const firstMonth = availableMonths.length ? Math.min(...availableMonths) : monthKey(new Date());
+  const lastMonth = availableMonths.length ? Math.max(...availableMonths) : firstMonth;
+  function updateMonthControls() {
+    const current = monthKey(visibleMonth);
+    previousMonth.disabled = current <= firstMonth;
+    nextMonth.disabled = current >= lastMonth;
+  }
+  function renderCalendar() {
+    const year = visibleMonth.getFullYear();
+    const month = visibleMonth.getMonth();
+    calendarMonth.textContent = year + "年" + (month + 1) + "月";
+    updateMonthControls();
+    const firstDay = (new Date(year, month, 1).getDay() + 6) % 7;
+    const dayCount = new Date(year, month + 1, 0).getDate();
+    const cells = weekdays.map((day) => `<span class="calendar-weekday">${day}</span>`);
+    for (let i = 0; i < firstDay; i += 1) cells.push('<span class="calendar-day"></span>');
+    for (let day = 1; day <= dayCount; day += 1) {
+      const key = year + "-" + pad(month + 1) + "-" + pad(day);
+      const info = newsDayMap.get(key);
+      const classes = ["calendar-day"];
+      const buttonClasses = [];
+      if (info) buttonClasses.push("has-news");
+      if (key === selectedDate) buttonClasses.push("selected");
+      const label = info ? `${key}，${info.count} 条新闻` : `${key}，无新闻`;
+      cells.push(`<span class="${classes.join(" ")}"><button class="${buttonClasses.join(" ")}" type="button" data-news-date="${key}" aria-label="${label}" ${info ? "" : "disabled"}>${day}</button></span>`);
+    }
+    calendarGrid.innerHTML = cells.join("");
+  }
+  function renderNews(articles) {
+    if (!articles.length) {
+      newsList.innerHTML = '<div class="news-status">这一天没有可展示的新闻。</div>';
+      return;
+    }
+    newsList.innerHTML = articles.map((article) => {
+      const categories = Array.isArray(article.categories) ? article.categories.slice(0, 2) : [];
+      const tags = categories.map((category) => `<span class="news-tag">${escapeHtml(category)}</span>`).join("");
+      const published = formatPublishedDate(article.published);
+      const meta = [sourceLabel(String(article.source || "")), article.author || "", published ? "发布于 " + published : ""].filter(Boolean).map(escapeHtml).join(" · ");
+      const title = article.title_zh || article.title || "无标题";
+      const description = article.summary_zh || article.intro || article.description || "暂无摘要";
+      return `<article class="news-row"><h4 class="news-title"><a href="${escapeHtml(article.link)}" target="_blank" rel="noopener noreferrer">${escapeHtml(title)}</a></h4><p class="news-description">${escapeHtml(description)}</p><div class="news-meta"><span>${meta}</span>${tags}</div></article>`;
+    }).join("");
+  }
+  async function selectDate(date) {
+    const info = newsDayMap.get(date);
+    if (!info) return;
+    selectedDate = date;
+    visibleMonth = new Date(date + "T00:00:00");
+    const url = new URL(window.location.href);
+    if (url.searchParams.get("date") !== date) {
+      url.searchParams.set("date", date);
+      window.history.replaceState(null, "", url);
+    }
+    renderCalendar();
+    newsDateTitle.textContent = formatDate(date);
+    newsDateCount.textContent = info.count + " 条新闻";
+    newsList.innerHTML = '<div class="news-status">正在加载新闻…</div>';
+    const token = ++requestToken;
+    try {
+      let articles;
+      const summaryResponse = await fetch(summaryBase + date + ".json");
+      if (summaryResponse.ok) {
+        const summaryPayload = await summaryResponse.json();
+        if (summaryPayload.complete && Array.isArray(summaryPayload.articles)) articles = summaryPayload.articles;
+      }
+      if (!articles) {
+        const response = await fetch(articleBase + date + ".jsonl");
+        if (!response.ok) throw new Error("request failed");
+        articles = [];
+        for (const line of (await response.text()).split(/\r?\n/)) {
+          if (!line.trim()) continue;
+          try {
+            const article = JSON.parse(line);
+            if (article && typeof article === "object") articles.push(article);
+          } catch {
+            // Keep displaying valid entries when a JSONL line is malformed.
+          }
+        }
+      }
+      if (token === requestToken) renderNews(articles);
+    } catch {
+      if (token === requestToken) newsList.innerHTML = '<div class="news-status">新闻加载失败，请稍后重试。</div>';
+    }
+  }
+  calendarGrid.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-news-date]");
+    if (button) selectDate(button.dataset.newsDate);
+  });
+  previousMonth.addEventListener("click", () => { if (previousMonth.disabled) return; visibleMonth = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() - 1, 1); renderCalendar(); });
+  nextMonth.addEventListener("click", () => { if (nextMonth.disabled) return; visibleMonth = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + 1, 1); renderCalendar(); });
+  window.addEventListener("popstate", () => {
+    const date = new URL(window.location.href).searchParams.get("date");
+    if (newsDayMap.has(date)) selectDate(date);
+  });
+  renderCalendar();
+  const requestedDate = new URL(window.location.href).searchParams.get("date");
+  if (newsDayMap.has(requestedDate)) selectedDate = requestedDate;
+  if (selectedDate) selectDate(selectedDate);
+  else { newsDateTitle.textContent = "暂无新闻"; newsDateCount.textContent = "0 条新闻"; newsList.innerHTML = '<div class="news-status">还没有抓取到新闻。</div>'; }
+</script>
 
 </body>
 </html>

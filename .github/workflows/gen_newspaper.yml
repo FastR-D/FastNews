@@ -22,11 +22,16 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_BASE_URL: ${{ secrets.OPENAI_BASE_URL }}
           LLM_MODEL: ${{ secrets.LLM_MODEL }}
+      - run: uv run python -m secnews.generate_daily_summary
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_BASE_URL: ${{ secrets.OPENAI_BASE_URL }}
+          LLM_MODEL: ${{ secrets.LLM_MODEL }}
       - name: Commit and push data
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add secnews/data/newspapers/
+          git add secnews/data/newspapers/ secnews/data/daily_summaries/ secnews/index.html index.html
           git diff --cached --quiet || git commit -m "generate newspaper $(date -u +'%Y-%m-%d')"
           git pull --rebase
           git push
