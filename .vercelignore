@@ -1,0 +1,12 @@
+# 静态页面自包含，不依赖以下目录，排除以加快部署
+.git
+.github
+.venv
+__pycache__/
+*.pyc
+*.py
+prompt/
+风格/
+secnews/data/
+top-conf/data/
+uv.lock
