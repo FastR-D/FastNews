@@ -1,0 +1,139 @@
+{
+  "date": "2026-08-22",
+  "generated_at": "2026-09-01T10:28:11.548047+00:00",
+  "model": "mimo-v2.5",
+  "source_file": "articles/2026-08-22.jsonl",
+  "article_count": 9,
+  "summary_count": 9,
+  "complete": true,
+  "articles": [
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/new-synkloader-malware-pushed-in-microsoft-teams-phishing-campaign/",
+      "source_hash": "e6f324c9be0af3487b926a7434ee9bca1e692befc9d7661487f534549001d6ac",
+      "title": "New SynkLoader malware pushed in Microsoft Teams phishing campaign",
+      "title_zh": "SynkLoader恶意软件在Microsoft Teams钓鱼活动中传播",
+      "summary_zh": "在Microsoft Teams钓鱼活动中，一种名为SynkLoader的新型恶意软件被分发。攻击者使用假锁屏来欺骗用户，以窃取登录凭据。这种恶意软件此前未知，通过社交工程手段针对企业用户，可能导致数据泄露和安全风险。影响范围包括使用Microsoft Teams的组织，关键结论是需要加强安全意识和防御措施。",
+      "link": "https://www.bleepingcomputer.com/news/security/new-synkloader-malware-pushed-in-microsoft-teams-phishing-campaign/",
+      "published": "Fri, 21 Aug 2026 14:01:30 -0400",
+      "author": "Bill Toulas",
+      "categories": [
+        "Security"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/hundreds-of-leaked-aws-keys-give-full-control-over-corporate-accounts/",
+      "source_hash": "02d653ddc305c3c179e6da17745826062772c08e564ced215f20345e4fe6d505",
+      "title": "Hundreds of leaked AWS keys give full control over corporate accounts",
+      "title_zh": "数百个泄露的AWS密钥提供对企业账户的完全控制",
+      "summary_zh": "在2022年8月至2026年8月期间，超过9,300个Amazon Web Services访问密钥被公开暴露，且这些密钥至今仍然活跃有效。泄露的密钥可能导致对企业AWS账户的完全控制，造成严重安全风险。受影响对象包括使用AWS的企业，影响范围广泛，关键结论是必须加强密钥管理和安全审计。",
+      "link": "https://www.bleepingcomputer.com/news/security/hundreds-of-leaked-aws-keys-give-full-control-over-corporate-accounts/",
+      "published": "Fri, 21 Aug 2026 11:55:15 -0400",
+      "author": "Bill Toulas",
+      "categories": [
+        "Security",
+        "Cloud"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/microsoft/microsoft-blames-windows-gaming-issues-on-rgb-lighting-devices/",
+      "source_hash": "715f8f71f4304fff8f658c91b1ff3dc9e121aa3a7981a383940d3c2e4854e572",
+      "title": "Microsoft blames Windows gaming issues on RGB lighting devices",
+      "title_zh": "Microsoft将Windows游戏问题归咎于RGB照明设备",
+      "summary_zh": "在Windows 2026年8月更新后，许多用户报告游戏崩溃或无法启动。Microsoft调查发现，问题可能源于RGB照明外设的兼容性。受影响对象为游戏爱好者和使用相关硬件的用户，影响范围广泛。关键结论是Microsoft建议检查外设驱动程序或暂时禁用RGB功能以解决问题。",
+      "link": "https://www.bleepingcomputer.com/news/microsoft/microsoft-blames-windows-gaming-issues-on-rgb-lighting-devices/",
+      "published": "Fri, 21 Aug 2026 10:54:49 -0400",
+      "author": "Sergiu Gatlan",
+      "categories": [
+        "Microsoft"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/is-online-privacy-possible-how-digital-identities-can-help/",
+      "source_hash": "bf1620529741a0d35556d45e6e13f2a644c5463dc67ac4e4ef7fdc98ec63f804",
+      "title": "Is Online Privacy Possible? How Digital Identities Can Help",
+      "title_zh": "在线隐私是否可能？数字身份如何提供帮助",
+      "summary_zh": "Anonyome Labs探讨了在线隐私的可行性，指出使用相同标识符会便利数据剖析。他们提出使用独立数字身份作为解决方案，以减少用户活动的关联性，从而降低数据泄露、垃圾邮件和身份盗窃的风险。研究问题是如何在数字时代保护隐私，方法是创建多个数字人格，实际价值是提供实用策略增强个人信息安全。",
+      "link": "https://www.bleepingcomputer.com/news/security/is-online-privacy-possible-how-digital-identities-can-help/",
+      "published": "Fri, 21 Aug 2026 10:00:10 -0400",
+      "author": "Sponsored by ANONYOME LABS",
+      "categories": [
+        "Security"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/microsoft/microsoft-rolls-out-classic-outlook-theme-for-new-outlook-users/",
+      "source_hash": "bd871ca8d6ce2f5e3e68222dfaf393b688c8a42bdf1da5e1fc176ee39e8a7fb5",
+      "title": "Microsoft rolls out Classic Outlook theme for New Outlook users",
+      "title_zh": "Microsoft为新Outlook用户推出经典Outlook主题",
+      "summary_zh": "Microsoft已开始为Outlook网页版和Windows新Outlook用户推出经典Outlook主题。受影响用户可以使用旧版界面设计，影响范围是用户界面体验。关键结论是此更新旨在平滑过渡，减少用户学习曲线，同时保留熟悉的设计元素。",
+      "link": "https://www.bleepingcomputer.com/news/microsoft/microsoft-rolls-out-classic-outlook-theme-for-new-outlook-users/",
+      "published": "Fri, 21 Aug 2026 09:39:35 -0400",
+      "author": "Sergiu Gatlan",
+      "categories": [
+        "Microsoft"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/cisa-orders-feds-to-patch-actively-exploited-trueconf-server-flaws/",
+      "source_hash": "364cfd0b6777dca61d93f32bc1a3848e6288fd9a2c8f976bee3e1033c51ed2af",
+      "title": "CISA orders feds to patch actively exploited TrueConf Server flaws",
+      "title_zh": "CISA命令联邦机构修补TrueConf Server的积极利用漏洞",
+      "summary_zh": "美国网络安全和基础设施安全局（CISA）针对TrueConf Server的两个安全漏洞发布紧急命令，要求联邦机构立即修补。这些漏洞正在被积极利用，可能影响通信安全。受影响对象为联邦机构，影响范围涉及关键基础设施。关键结论是修补是强制性的，以防范网络攻击。",
+      "link": "https://www.bleepingcomputer.com/news/security/cisa-orders-feds-to-patch-actively-exploited-trueconf-server-flaws/",
+      "published": "Fri, 21 Aug 2026 08:25:33 -0400",
+      "author": "Sergiu Gatlan",
+      "categories": [
+        "Security"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/microsoft/microsoft-warns-of-max-severity-entra-id-flaw-exploited-in-attacks/",
+      "source_hash": "4e2099615afd9322994954828599122eb86ae90666f1f763daa868ffc2025849",
+      "title": "Microsoft warns of max severity Entra ID flaw exploited in attacks",
+      "title_zh": "Microsoft警告Entra ID最高严重性漏洞在攻击中被利用",
+      "summary_zh": "Microsoft披露并修补了Entra ID身份和访问管理平台中的一个最高严重性安全漏洞，该漏洞已被攻击者利用。受影响对象为企业和组织使用Entra ID进行身份管理，影响范围广泛，可能导致未授权访问。关键结论是紧急修补已发布，建议立即更新以防范风险。",
+      "link": "https://www.bleepingcomputer.com/news/microsoft/microsoft-warns-of-max-severity-entra-id-flaw-exploited-in-attacks/",
+      "published": "Fri, 21 Aug 2026 07:04:10 -0400",
+      "author": "Sergiu Gatlan",
+      "categories": [
+        "Microsoft",
+        "Security"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/hackers-abuse-ftp-server-banners-to-deliver-new-windows-malware/",
+      "source_hash": "5aac12ffe11b4b005d74b96ce6988e883a1b9ab1d9ffc356d11a90d1104ab223",
+      "title": "Hackers abuse FTP server banners to deliver new Windows malware",
+      "title_zh": "黑客滥用FTP服务器横幅传播新Windows恶意软件",
+      "summary_zh": "黑客利用FTP服务器横幅作为载体，在其中嵌入恶意命令，从而传播名为E4del和PINHOLE的新型远程访问木马。受影响对象为Windows用户，影响范围涉及FTP服务器和客户端。关键结论是攻击者采用隐蔽技术逃避检测，增强恶意软件的隐蔽性。",
+      "link": "https://www.bleepingcomputer.com/news/security/hackers-abuse-ftp-server-banners-to-deliver-new-windows-malware/",
+      "published": "Fri, 21 Aug 2026 07:00:00 -0400",
+      "author": "Bill Toulas",
+      "categories": [
+        "Security"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/sickkids-data-breach-exposes-employee-and-job-applicant-info/",
+      "source_hash": "e9b489c02acfeb91ce3363277850b5373b6a6f66aa479bd88b98e6cb059e0ddd",
+      "title": "SickKids data breach exposes employee and job applicant info",
+      "title_zh": "SickKids数据泄露暴露员工和求职者信息",
+      "summary_zh": "多伦多SickKids医院表示，一次网络安全事件暴露了部分现任、前任员工和求职者的个人信息，源于第三方软件的漏洞。临床系统和患者记录未受影响。受影响对象是医院员工和求职者，影响范围是隐私信息泄露。关键结论是事件与患者数据无关，需加强第三方软件安全。",
+      "link": "https://www.bleepingcomputer.com/news/security/sickkids-data-breach-exposes-employee-and-job-applicant-info/",
+      "published": "Fri, 21 Aug 2026 06:10:42 -0400",
+      "author": "Ax Sharma",
+      "categories": [
+        "Security"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    }
+  ]
+}

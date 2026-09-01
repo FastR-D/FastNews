@@ -1,4 +1,6 @@
-# 静态页面自包含，不依赖以下目录，排除以加快部署
+# 注意：secnews/data/ 下的 articles 与 daily_summaries 必须保留！
+# secnews/index.html 是壳页面，浏览器按日期 fetch data/articles/*.jsonl
+# 和 data/daily_summaries/*.json 来渲染内容，排除会导致线上 404。
 .git
 .github
 .venv
@@ -7,6 +9,4 @@ __pycache__/
 *.py
 prompt/
 风格/
-secnews/data/
-top-conf/data/
 uv.lock

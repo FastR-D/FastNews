@@ -1,0 +1,2078 @@
+{
+  "date": "2026-08-21",
+  "generated_at": "2026-09-01T10:41:19.360427+00:00",
+  "model": "mimo-v2.5",
+  "source_file": "articles/2026-08-21.jsonl",
+  "article_count": 140,
+  "summary_count": 140,
+  "complete": true,
+  "articles": [
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/hackers-poison-arrayref-rust-crate-to-push-infostealer-malware/",
+      "source_hash": "28b8ff3ddd9dd847f665216a803ac92117a9b4975fdc7cdec2f8d14c638f306d",
+      "title": "Hackers poison arrayref Rust crate to push infostealer malware",
+      "title_zh": "黑客投毒 arrayref Rust crate 以传播信息窃取恶意软件",
+      "summary_zh": "黑客入侵了一个广泛使用的 Rust crate（arrayref）的维护者账户，在其中植入了恶意软件。该恶意软件会在开发者的系统编译期间执行，旨在窃取敏感信息。",
+      "link": "https://www.bleepingcomputer.com/news/security/hackers-poison-arrayref-rust-crate-to-push-infostealer-malware/",
+      "published": "Thu, 20 Aug 2026 13:53:52 -0400",
+      "author": "Bill Toulas",
+      "categories": [
+        "Security"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/critical-elementor-pro-bug-exposes-wordpress-sites-to-rce-attacks/",
+      "source_hash": "728b2621232640cd44914e377b8eb4e9731c2b15e6ca36d34690fc54a60cccca",
+      "title": "Critical Elementor Pro bug exposes WordPress sites to RCE attacks",
+      "title_zh": "关键 Elementor Pro 漏洞使 WordPress 网站面临远程代码执行攻击",
+      "summary_zh": "Elementor Pro WordPress 插件中存在一个关键漏洞，攻击者可利用该漏洞上传可执行文件，从而在服务器上实现远程代码执行。",
+      "link": "https://www.bleepingcomputer.com/news/security/critical-elementor-pro-bug-exposes-wordpress-sites-to-rce-attacks/",
+      "published": "Thu, 20 Aug 2026 10:39:48 -0400",
+      "author": "Bill Toulas",
+      "categories": [
+        "Security"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/how-msps-can-catch-phishing-attacks-email-filters-miss/",
+      "source_hash": "c304a952916af99a0ce4a73982aba4ad77770f5945dc3186dff1bc3bad992731",
+      "title": "How MSPs can catch phishing attacks email filters miss",
+      "title_zh": "MSP 如何捕获电子邮件过滤器遗漏的钓鱼攻击",
+      "summary_zh": "人工智能使钓鱼攻击更具个性化和欺骗性，传统电子邮件过滤器难以检测。Kaseya 解释了管理服务提供商如何通过监控身份、电子邮件和端点活动，来检测和遏制那些突破收件箱防线的攻击。",
+      "link": "https://www.bleepingcomputer.com/news/security/how-msps-can-catch-phishing-attacks-email-filters-miss/",
+      "published": "Thu, 20 Aug 2026 10:01:11 -0400",
+      "author": "Sponsored by Kaseya",
+      "categories": [
+        "Security"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/citrix-urges-admins-to-patch-new-netscaler-flaws-as-soon-as-possible/",
+      "source_hash": "9b9728b180bbb5fcedaba15b9fd6487f929b671c78844fa55142a9231f7f0aba",
+      "title": "Citrix urges admins to patch new NetScaler flaws as soon as possible",
+      "title_zh": "Citrix 敦促管理员尽快修补新的 NetScaler 漏洞",
+      "summary_zh": "Citrix 警告客户立即采取措施，以防范影响 NetScaler Gateway 安全远程访问解决方案和 NetScaler ADC 网络设备的两个漏洞。",
+      "link": "https://www.bleepingcomputer.com/news/security/citrix-urges-admins-to-patch-new-netscaler-flaws-as-soon-as-possible/",
+      "published": "Thu, 20 Aug 2026 08:14:38 -0400",
+      "author": "Sergiu Gatlan",
+      "categories": [
+        "Security"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/cisa-warns-of-hackers-exploiting-critical-mlflow-vulnerability/",
+      "source_hash": "bd2204f3d47ccf6aa8bc324b2b6720480cad85cf3f9d7d8a5ab046d6fed7d7e5",
+      "title": "CISA warns of hackers exploiting critical MLflow vulnerability",
+      "title_zh": "CISA 警告黑客正利用 MLflow 关键漏洞",
+      "summary_zh": "美国网络安全和基础设施安全局警告联邦机构，威胁行为者正在利用开源 AI 工程平台 MLflow 中的一个关键漏洞。",
+      "link": "https://www.bleepingcomputer.com/news/security/cisa-warns-of-hackers-exploiting-critical-mlflow-vulnerability/",
+      "published": "Thu, 20 Aug 2026 07:06:14 -0400",
+      "author": "Sergiu Gatlan",
+      "categories": [
+        "Security"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/new-manic-android-malware-can-exfiltrate-data-through-nearby-devices/",
+      "source_hash": "6b2f7253637ff6bde88cd84fe34a7a36f943a5c21db05aecf6a31aad3d71150d",
+      "title": "New Manic Android malware can exfiltrate data through nearby devices",
+      "title_zh": "新型 Manic Android 恶意软件可通过附近设备窃取数据",
+      "summary_zh": "一种名为 Manic 的新型 Android 恶意软件在欧洲多国针对用户，它具备一个后备数据窃取机制，能够利用附近受感染的设备来外传数据。",
+      "link": "https://www.bleepingcomputer.com/news/security/new-manic-android-malware-can-exfiltrate-data-through-nearby-devices/",
+      "published": "Thu, 20 Aug 2026 06:02:02 -0400",
+      "author": "Bill Toulas",
+      "categories": [
+        "Security",
+        "Mobile"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/critical-zimbra-rce-flaw-now-actively-exploited-in-attacks/",
+      "source_hash": "bd3568f51511fdfdb93ce3f6a827b744b2652dd3ec21126eed3094a30fa73391",
+      "title": "Critical Zimbra RCE flaw now actively exploited in attacks",
+      "title_zh": "关键 Zimbra 远程代码执行漏洞正被积极利用",
+      "summary_zh": "波兰计算机应急响应团队警告称，攻击者已开始利用 Zimbra 协作套件中的一个关键漏洞进行攻击。",
+      "link": "https://www.bleepingcomputer.com/news/security/critical-zimbra-rce-flaw-now-actively-exploited-in-attacks/",
+      "published": "Thu, 20 Aug 2026 05:46:54 -0400",
+      "author": "Sergiu Gatlan",
+      "categories": [
+        "Security"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/microsoft/microsoft-august-windows-updates-may-cause-gaming-issues-reboots/",
+      "source_hash": "c622323f61a174f0e7c1be305c9a85d0bab0ae4dfae90cc5086f90bb5212b6f2",
+      "title": "Microsoft says August Windows updates may cause gaming issues",
+      "title_zh": "微软称 8 月 Windows 更新可能导致游戏问题",
+      "summary_zh": "微软正在调查 2026 年 8 月更新中一个潜在问题，该问题可能阻止某些游戏启动或导致其在受影响的 Windows 11 系统上崩溃。",
+      "link": "https://www.bleepingcomputer.com/news/microsoft/microsoft-august-windows-updates-may-cause-gaming-issues-reboots/",
+      "published": "Thu, 20 Aug 2026 02:51:03 -0400",
+      "author": "Sergiu Gatlan",
+      "categories": [
+        "Microsoft",
+        "Gaming"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.19266v1",
+      "source_hash": "b56a2ff7d9c22b82f2a24a5fdab1444166e763102fb5900989065065b7127d61",
+      "title": "Incident-Data Robustness Analysis of the OWASP Top 10 for LLM Applications (2026): How a Community-Expert Ranking Holds Up Against a Large-Scale LLM Incident Corpus",
+      "title_zh": "OWASP LLM 应用程序十大风险（2026）的事件数据稳健性分析：社区专家排名如何经受大规模 LLM 事件语料库的检验",
+      "summary_zh": "研究问题：验证社区专家对 LLM 应用程序安全风险的排名是否与真实事件数据相符。方法：构建了包含数千条 LLM 安全事件的大型语料库，使用贝叶斯测量误差模型推导基于事件的排名，并与专家排名进行对比。实际价值：分析表明专家排名是稳健的，但与数据的一致性较弱。研究强调了结合专家共识与实证数据的重要性。",
+      "link": "https://arxiv.org/abs/2608.19266",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Kyriakos \"Rock\" Lambros, Steve Wilson",
+      "categories": [
+        "cs.CR",
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.19302v1",
+      "source_hash": "3b24b84bf773445db1e8325dd30ed320612ab00bc926f2024a11037185c6928e",
+      "title": "ABEAT: Efficient and Anonymous Encryption for ABE-based Dynamic Group Communication",
+      "title_zh": "ABEAT：基于 ABE 的动态群组通信中高效匿名的加密",
+      "summary_zh": "研究问题：如何在动态群组中使用属性基加密实现高效且匿名的保密通信。方法：提出 ABEAT 系统，采用基于图的命名空间和新的匿名 KP-ABE 方法，在隐藏属性的同时防止多种攻击。实际价值：显著降低了非接收者的解密开销，并在保持高效性的同时维护了接收者的匿名性，适用于紧急响应等场景。",
+      "link": "https://arxiv.org/abs/2608.19302",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Hongmiao Yu, Silas Richelson, Jiachen Chen, K. K. Ramakrishnan",
+      "categories": [
+        "cs.CR",
+        "cs.NI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.19387v1",
+      "source_hash": "0b8c5878704da0e621a6c7ef654553f9ebb1cc1dd6182aff3bfd07b440b5b17f",
+      "title": "Aray: Deterministic-First Synthesis of Benign Artifacts for YARA Validation",
+      "title_zh": "Aray：用于 YARA 验证的确定性优先良性工件合成",
+      "summary_zh": "研究问题：如何为 YARA 规则验证生成可用于正向匹配的良性测试文件，同时避免重现恶意行为。方法：提出 Aray，一个确定性优先的 YARA 解释器和正向工件合成器，通过归一化、验证和布局等步骤生成可验证的测试文件。实际价值：在公共规则集上实现了高成功率（97.6%），解决了存储、持续集成和可重现验证等问题。",
+      "link": "https://arxiv.org/abs/2608.19387",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Emanuel C. A. Valente (iFood, University of S\\~ao Paulo), Louren\\c{c}o A. P. J\\'unior (Aeronautics Institute of Technology), Leonardo Gon\\c{c}alves Chahud (Aeronautics Institute of Technology), J\\'ulio Cezar Estrella (University of S\\~ao Paulo), Marcus Botacin (Texas A&M University)",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.19401v1",
+      "source_hash": "06fd7c2d67f3c7dc15a96726b02e7abf3900aac55d8fa0858bf9b0009f0d56d5",
+      "title": "Redactable blockchains and polynomial equations",
+      "title_zh": "可编辑区块链与多项式方程",
+      "summary_zh": "研究问题：如何构建具有后量子安全性的可编辑认证数据结构。方法：开发了新工具，其核心安全假设依赖于求解多变量多项式方程的困难性，这被认为是量子安全的。实际价值：为构建可编辑且抗量子攻击的区块链等数据结构提供了新的密码学基础。",
+      "link": "https://arxiv.org/abs/2608.19401",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Alexander Demin, Alexey Ovchinnikov, Vladimir Shpilrain",
+      "categories": [
+        "cs.CR",
+        "cs.NI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.19462v1",
+      "source_hash": "d17ed772785a7834a1d975d2f5d876fa3a674b56952e4fbcc36711f7274c71ec",
+      "title": "A Federated Learning Framework for Privacy-Preserving Oral Cancer Screening on Smartphones",
+      "title_zh": "一种用于智能手机上隐私保护口腔癌筛查的联邦学习框架",
+      "summary_zh": "研究问题：如何在保护患者隐私的前提下，利用分布式数据协作开发鲁棒的口腔癌筛查 AI 模型。方法：提出了一个实用的联邦学习框架，支持地理分散的协作，并评估了多种轻量级移动友好型架构。实际价值：使基于智能手机的筛查成为可能，其中基于 MNv4-Conv-S 的全局模型达到了 0.929 的 AUC。",
+      "link": "https://arxiv.org/abs/2608.19462",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Lena D. Swamikannan, Akshay Bhagwan Sonawane, Jay S. Patel, C. S. Mani, Lakshmi Narayana, Lakshman Tamil",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.19534v1",
+      "source_hash": "f93311272a61bfc9b1f04a61b7f2d8e3d30813cfa8d72fe84a8933b7a44303a3",
+      "title": "AEGIS: Attention-Embedding Gradient Isolation Shield - Triple-Channel Gradient Masking for Privacy-Preserving Federated LLM Fine-Tuning",
+      "title_zh": "AEGIS：注意力嵌入梯度隔离盾——用于隐私保护联邦 LLM 微调的三通道梯度掩码",
+      "summary_zh": "研究问题：如何防御联邦学习中的梯度反转攻击以保护训练文本隐私。方法：分析了 Transformer 梯度结构中三个隐私泄露通道，并提出 AEGIS 防御机制，通过三个向后路径操作（冻结参数、注入校准噪声）同时封闭这三个通道。实际价值：在多个模型和数据集上将令牌恢复率降至接近零，同时保持或提升了模型效用。",
+      "link": "https://arxiv.org/abs/2608.19534",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Ye Tao, Hong Shen, Hui Tian, Xin Wang, Can Wang",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.19650v1",
+      "source_hash": "657f43ce9a052dccb89c715e8bea55d63d100415f219f8b828b27fcac6931a0d",
+      "title": "Enhancing Privacy in Federated Learning via Dual Obfuscation of Gradients and Training Images",
+      "title_zh": "通过梯度和训练图像的双重混淆增强联邦学习中的隐私性",
+      "summary_zh": "研究问题：如何增强联邦学习对图像恢复攻击的鲁棒性。方法：提出一种双重混淆方法，结合基于随机二进制权重的鲁棒性增强技术和图像加密技术，共同保护更新信息和训练图像。实际价值：在 Vision Transformer 图像分类任务上，降低了攻击者可恢复的视觉信息，同时未对分类性能造成额外显著退化。",
+      "link": "https://arxiv.org/abs/2608.19650",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Yuki Itabashi, Hiroto Sawada, Mare Hirose, Shoko Imaizumi, Hitoshi Kiya",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.19750v1",
+      "source_hash": "c2acdfe98f60a0bfdfce36884e09369bd8fbed800e764de410faa6b23e17d69d",
+      "title": "TGL-APT: Temporal Graph Learning with Graph Distillation for Efficient APT Investigation",
+      "title_zh": "TGL-APT：利用图蒸馏进行时序图学习以实现高效 APT 调查",
+      "summary_zh": "研究问题：如何高效地从海量系统活动中检测和调查高级持续性威胁攻击。方法：提出 TGL-APT 框架，包含信息瓶颈引导的图蒸馏、自适应时序图学习和跨时空攻击指纹对齐三个组件。实际价值：在 DARPA E3 数据集上实现了高检测性能（F1 分数达 95.7%），同时显著降低了训练时间、检测延迟和内存使用。",
+      "link": "https://arxiv.org/abs/2608.19750",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Jing Chen, Ayong Ye, Yuanhuang Liu, Yuexin Zhang",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.19821v1",
+      "source_hash": "13ce18755f4a17c2b1240ae9b0aaab64bdd3ce99d07c3f661165039030558d06",
+      "title": "Survival of~the~Stealthiest: Evolving Low-Entropy Ransomware via~Genetic Algorithms",
+      "title_zh": "最隐蔽者生存：通过遗传算法演化低熵勒索软件",
+      "summary_zh": "研究问题：如何生成能够规避现代行为监控的勒索软件。方法：将勒索软件执行过程建模为基于搜索的软件工程优化问题，使用遗传算法在加密数据时优化攻击模式，使其统计偏差保持在基线系统活动之下。实际价值：证明了搜索方法可生成规避性恶意软件，揭示了自动化软件防御面临的新兴挑战。",
+      "link": "https://arxiv.org/abs/2608.19821",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Efrat Levenberg (ICube, LRE), Kristina Sviazhina (ICube, LRE), Ayelet Butman (ICube, LRE), Pierre Parrend (ICube, LRE), Harel Berger",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.19901v1",
+      "source_hash": "50b19900ddab67a1dab573631e59322d1fa9d169a0f60b4f0efd573b42287be1",
+      "title": "MaliciousSkillBench: A Comprehensive Benchmark for Malicious Agent Skill Detection",
+      "title_zh": "MaliciousSkillBench：恶意 Agent 技能检测的综合基准",
+      "summary_zh": "研究问题：如何全面评估恶意 Agent 技能的检测能力。方法：构建了 MaliciousSkillBench 基准，整合了多个公共来源的恶意和良性技能数据，并评估了多种检测器。实际价值：揭示了现有检测器在跨源评估中性能显著下降，表明可靠的恶意技能检测需要更广泛的跨源基准覆盖和能联合衡量攻击检测与良性误报的评估方法。",
+      "link": "https://arxiv.org/abs/2608.19901",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Yue Wang, Yi Liu, Gelei Deng, Ying Zhang, Yuekang Li, Zhenyu Chen, Leo Zhang",
+      "categories": [
+        "cs.CR",
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.19924v1",
+      "source_hash": "2e08e0f69f922765452a9ab56874cfbc05c3839664f49e4505f9444a6a658af7",
+      "title": "Securing Filesystems for Confidential Computing",
+      "title_zh": "为机密计算保护文件系统",
+      "summary_zh": "研究问题：如何在机密计算威胁模型下为持久存储提供端到端的完整性和新鲜度保证。方法：提出 ShieldFS，一个符合 POSIX 标准的文件系统，它在 TEE 内部使用简洁的密码学承诺来表示允许的文件系统状态，并利用哈希链和 Merkle 树认证磁盘数据结构。实际价值：无需修改应用即可防御回滚、重放等攻击，且性能与先进文件系统相当。",
+      "link": "https://arxiv.org/abs/2608.19924",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Dimitra Giantsidi, Antoine Delignat-Lavaud, C\\'edric Fournet, Jinnan Guo, Heidi Howard, Tianjiao Huang, Kapil Vaswani, Stavros Volos",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.19937v1",
+      "source_hash": "e3f0cd1bff5c1efc3e8f3b6868796bf60d213fb02db8c56f2842bef6a8cf5b16",
+      "title": "ShadowPath: Lookup-Private Credential Status Verification over Authenticated State",
+      "title_zh": "ShadowPath：基于认证状态的查询隐私凭证状态验证",
+      "summary_zh": "研究问题：如何在验证凭证状态时保护持有者的隐私，避免暴露可关联的元数据。方法：提出 ShadowPath，将凭证状态查询移至持有者端，使其能在零知识下证明凭证未被撤销。首次评估了 Verkle 树在凭证撤销中的应用并与稀疏 Merkle 树进行比较。实际价值：提供了查询隐私保护，比较结果表明较短的认证路径不一定带来更低成本的零知识证明。",
+      "link": "https://arxiv.org/abs/2608.19937",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Patrick Herbke, Wolf Rieder, Christian Ren\\'e Sechting, Huaning Yang, Sid Lamichhane, Philip Raschke, Axel K\\\"upper",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.19938v1",
+      "source_hash": "58270de9ff4788dcc18ff40a08ec918dbda174de2f2629364a6a86556204d77a",
+      "title": "From Noise to Signal: Improving Security Log Anomaly Detection Using LLMs with Endpoint-Specific Logs",
+      "title_zh": "从噪声到信号：利用端点特定日志和LLM改进安全日志异常检测",
+      "summary_zh": "现有日志异常检测方法如Wazuh依赖预定义规则，OpenSearch则基于行为模式偏差。本研究开发了一个标准化的基于指令的LLM分类框架，用于检测异常认证行为。在受控网络安全测试平台上生成端点特定认证数据，并评估了三个指令微调LLM。Meta Llama 3.1 8B Instruct表现最佳，准确率达89.3%，F1分数为91.8%，假阴性率为11.8%。相比之下，Wazuh准确率为52.0%，OpenSearch为49.3%。该研究证明了LLM在特定端点认证数据上进行异常检测的潜力。",
+      "link": "https://arxiv.org/abs/2608.19938",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Christopher Henshaw, Gour Karmakar",
+      "categories": [
+        "cs.CR",
+        "cs.LG"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.19959v1",
+      "source_hash": "decda576f8d0302d3c33015bff20e1d7cb4c9a1c4fae10dcd2e5bc87d023eb38",
+      "title": "Tracking the Trend in How Speech Synthesizers Deceive People",
+      "title_zh": "追踪语音合成器欺骗人类的趋势",
+      "summary_zh": "语音合成技术的进步使深度伪造音频高度逼真。研究比较了2019、2022和2024年发布的三款语音合成工具，由82名IT专业人员进行人类检测，并与六种预训练检测器进行基准测试。对于完全合成语音，F1分数从RTVC和YourTTS的约90%下降到ElevenLabs的48%。对于部分伪造（仅修改一句话），准确率降至9%，听众有77%的时间将合成句子误判为真实。人类和检测器的失败方式互补，且都无法可靠定位短时操纵。这些发现表明，对于现代和部分伪造条件，仅依赖人类感知不可靠。",
+      "link": "https://arxiv.org/abs/2608.19959",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Milan \\v{S}alko, Anton Firc, Kamil Malinka, Vojt\\v{e}ch Stan\\v{e}k, Martin Pere\\v{s}ini, Filip Ple\\v{s}ko, Jakub Re\\v{s}",
+      "categories": [
+        "cs.CR",
+        "cs.SD",
+        "eess.AS"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.19982v1",
+      "source_hash": "c75811b7fdf162e7f2665056f95363a530b3397a1a5bedae4e651e0bd4ab281a",
+      "title": "COPA: Continual Preference Optimization for Adaptive Prompt Injection Defense",
+      "title_zh": "COPA：用于自适应提示注入防御的持续偏好优化",
+      "summary_zh": "大型语言模型易受提示注入攻击，现有防御大多是静态的，无法应对自适应的、持续演化的攻击策略。本研究提出COPA框架，将提示注入防御视为一个终身学习问题。它通过GRPO优化增量整合新攻击的反馈，并使用边际加权经验回放来保持对先前攻击类别的防御。在终身提示注入攻击流中，COPA将攻击成功率降低高达6.3倍，平均降低4.4倍。结果表明，持续偏好优化是防御自适应对手的有效范式。",
+      "link": "https://arxiv.org/abs/2608.19982",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Roshan Sood, Onat Gungor, Tajana Rosing",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.20055v1",
+      "source_hash": "cd214f90853c2e49a2d4813cce06b584d1677d46cce5bd680fdb8f00749b9a39",
+      "title": "EchoCoT: Extracting Hidden Chain-of-Thought from Large Reasoning Models",
+      "title_zh": "EchoCoT：从大型推理模型中提取隐藏的思维链",
+      "summary_zh": "大型推理模型中的隐藏思维链是高价值模型资产，但能否从黑盒模型中直接提取尚未被充分研究。本研究开发了EchoCoT多步攻击，通过API交互利用工具调用间被忽视的推理回放表面，迭代提取隐藏思维链。在开源模型上，EchoCoT实现了高达66.4%的近逐字提取成功率。对于前沿闭源模型，提取的思维链长度与提供商报告的长度高度一致。这些结果表明隐藏思维链提取是切实的安全风险，凸显了保护此类资产的需求。",
+      "link": "https://arxiv.org/abs/2608.20055",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Yiting Qu, Ziqing Yang, Chi Cui, Ye Leng, Junjie Chu, Yang Zhang",
+      "categories": [
+        "cs.CR",
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.20097v1",
+      "source_hash": "7ae89cc0bae1a123d558e6f92a7f0c1c92bf08caceaecfc618846dd2f0bd1205",
+      "title": "TrustRAG: Blockchain-Enhanced RAG via Committee-Based Credibility Scoring",
+      "title_zh": "TrustRAG：通过基于委员会的可信度评分增强区块链的RAG",
+      "summary_zh": "检索增强生成系统通常从集中式数据库中提取信息，难以验证文档来源、篡改和可信度。本研究提出TrustRAG，一个基于委员会、由区块链支持的RAG系统。在使用文档前，由领域专家委员会通过零知识协议进行认证，委员会的隐藏分数通过安全多方计算组合成任何客户端可验证的信任分数。这些分数和底层文档数据通过哈希承诺跨链维护，确保文档或分数不能被静默修改或丢弃，每个排名都可独立重放和检查。",
+      "link": "https://arxiv.org/abs/2608.20097",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Baixiang Liu, Haotian Che, Yuan Li",
+      "categories": [
+        "cs.CR",
+        "cs.DC"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.20108v1",
+      "source_hash": "fbec23be64da3dab06587f9faf3e3ed73b88fd86ae88cb811a5b85953ca2e3be",
+      "title": "A Meta-Study on Replication Papers in Usable Security & Privacy",
+      "title_zh": "关于可用性安全与隐私领域复制论文的元研究",
+      "summary_zh": "可用性安全与隐私研究领域仍在发展其研究标准，特别是关于复制研究。本研究采用混合方法，调查了13个安全、隐私和人机交互会议的征稿启事，在2016年至2025年间系统检索了24篇报告复制用户研究的论文，并对这些论文的作者进行了调查。研究揭示了四个关键发现：征稿启事需要更明确的指南；从复制论文中确定修改内容很困难；严格的完全复制不存在；时间和上下文变化是进行复制最常见的动机之一。",
+      "link": "https://arxiv.org/abs/2608.20108",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Christian Mack, Benjamin Berens, Hanna Algedri, Tobias Hilt, Daniela Reimer, Peter Mayer, Melanie Volkamer",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.20118v1",
+      "source_hash": "80376aa22274b3469da56831d221ea28d830c1bbb598146f4857561f197301b6",
+      "title": "Privacy-Preserving Detection of Rare Disease-Associated Cell Subsets via Secure Multi-Party Computation",
+      "title_zh": "通过安全多方计算进行罕见病相关细胞亚群的隐私保护检测",
+      "summary_zh": "从高维单细胞测量中检测罕见病相关细胞亚群对理解疾病至关重要。CellCnn模型能识别低至0.01%频率的细胞群，但可靠训练需要跨机构的大规模多样数据，而现有隐私法规限制了此类数据的共享。本研究提出一个安全多方计算框架，允许在秘密共享数据上完全训练和推理CellCnn，确保参与者和计算服务器从未观察到原始患者数据或中间值。在基准数据集上的评估显示，该方法在保持精度接近明文模型的同时，优于先前的隐私保护基线。",
+      "link": "https://arxiv.org/abs/2608.20118",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "\\c{S}. Selcan Magara, Esther Havemann, Debora Jutz, Ali Burak \\\"Unal, Mete Akg\\\"un",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.20145v1",
+      "source_hash": "67d5d89bc7a201bfcce513ed94157805a5e714544805afaa9046e1b7bd668945",
+      "title": "Trustworthy mobile edge caching: a blockchain approach to mitigate malicious nodes and incentivize cache sharing",
+      "title_zh": "可信的移动边缘缓存：一种通过区块链缓解恶意节点并激励缓存共享的方法",
+      "summary_zh": "移动网络流量增长使边缘服务器内容缓存至关重要，但面临恶意服务器可能删除或篡改缓存内容以及服务器容量有限的挑战。为克服容量限制，辅助移动节点可贡献其缓存资源，但需激励机制鼓励共享，且这些节点也可能是恶意的。本文提出一种基于区块链的信任管理机制，通过智能合约准确计算直接和间接信任，识别可信的边缘服务器和移动节点。引入奖励机制激励缓存共享，并通过认证机制防止节点仿冒。仿真结果表明，该方法即使在数据有10%噪声的情况下也能准确区分诚实和恶意服务器。",
+      "link": "https://arxiv.org/abs/2608.20145",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Motahare Ebrahimi, Nastooh Taheri Javan, Seyedakbar Mostafavi, Fatemeh Pakzaban",
+      "categories": [
+        "cs.CR",
+        "cs.CY"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.20160v1",
+      "source_hash": "d805b152f71dc8c8d303aa4983ee71a32f86f2ff20e92706a1443a28d863f609",
+      "title": "Chameleon: Robust Defense Against Tor Website Fingerprinting via Many-to-Many Traffic Morphing",
+      "title_zh": "Chameleon：通过多对多流量变形实现对Tor网站指纹的鲁棒防御",
+      "summary_zh": "网站指纹攻击可以从加密的Tor流量中推断用户的浏览活动。现有大多数防御措施创建了可学习的网站跟踪映射特征。本研究提出Chameleon，一种基于多对多随机流量变形的鲁棒防御。Chameleon选择具有高类内多样性和低类间差异的变形候选对象，随机将每个网页跟踪映射到多个候选对象，并允许不同网页共享变形目标。引入了基于基数前缀树的同步机制，使可插拔传输端点能识别一致的变形跟踪。评估显示，与Adaptive Tamaraw相比，Chameleon将基于对抗训练的攻击准确率降低高达36.74%，同时带宽和时间开销分别减少34.12%和60.38%。",
+      "link": "https://arxiv.org/abs/2608.20160",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Yuwen Cui, Kai Wei, Kehan Shen, Ning Wang, Zhuo Lu, Yao Liu, Guangjing Wang",
+      "categories": [
+        "cs.CR",
+        "cs.CY"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19199v1",
+      "source_hash": "1c1038a5d40249107f82ccfabccab26879bcf5f46815d5989308dba5fdde5475",
+      "title": "A Virtual Member of a Community of Practice for the Society of Petroleum Engineers: From Prototype to Deployment",
+      "title_zh": "石油工程师学会实践社区的虚拟成员：从原型到部署",
+      "summary_zh": "本研究描述了一个名为ATHENA的虚拟助手的演进，旨在支持石油和天然气领域实践社区成员的知识捕获、检索和传播。对石油工程师学会75名专业人员进行的首次原型评估显示，与先进的RAG基线系统相比，ATHENA显著提高了他们在现实井规划任务中的生产力和绩效。本文描述了在多文档检索、答案验证支持和更聚焦的主动传播方面的技术进步。评估结果表明，增强版ATHENA在完成与井规划相关的知识密集型任务方面提供了更好的支持，已集成到SPE研究门户并正在为会员部署。",
+      "link": "https://arxiv.org/abs/2608.19199",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "John Boden, Joshua Eckroth, Dayne Freitag, Skyler Gipson, Johnathan Keefe, Karen Myers, Eric Schoen, Pedro Sequeira, Reid Smith, Michael Wessel",
+      "categories": [
+        "cs.CL",
+        "cs.AI",
+        "cs.IR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19200v1",
+      "source_hash": "9ec3f0322e3bbc3e2295192c384796e680e2a4b2241d353fc31032416e9ab7e2",
+      "title": "Transformer Models for Text Summarization: A Comparative Study of BART, BERT, and RoBERTa",
+      "title_zh": "用于文本摘要的Transformer模型：BART、BERT和RoBERTa的比较研究",
+      "summary_zh": "文本摘要旨在将文档浓缩为保留关键信息的较短版本。随着自然语言处理的进步，自动文本摘要发展迅速。本文聚焦综述现代摘要技术，重点介绍基于Transformer的模型和大型语言模型，特别是BERT、RoBERTa和BART。文章检查了它们的架构、预训练策略以及它们对抽取式和生成式摘要任务的适用性。",
+      "link": "https://arxiv.org/abs/2608.19200",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Daisy Aptovska, Vinayak Elangovan",
+      "categories": [
+        "cs.CL",
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19201v1",
+      "source_hash": "304935efccef20a797087471ed3642237ce79a6f83463ec6b2a36b1e225d1158",
+      "title": "Automatic bioinformatic software named entity recognition from literature",
+      "title_zh": "文献中生物信息学软件的自动命名实体识别",
+      "summary_zh": "生物信息学软件和数据库是现代生命科学研究的重要组成部分，但它们在科学文献中的提及不一致且难以系统性地大规模识别。本文提出SNAIL，一个混合命名实体识别框架，旨在从生物医学文本中自动识别生物信息学软件和数据库名称。SNAIL整合了互补的词汇和语义建模策略，利用SciBERT等Transformer语言模型生成的上下文嵌入。在两个独立基准数据集和真实研究文章上的评估表明，SNAIL显著优于现有方法，包括领域特定方法和通用大型语言模型。应用SNAIL进行大规模文献分析，揭示了不同生物信息学子领域的期刊级偏好差异。",
+      "link": "https://arxiv.org/abs/2608.19201",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Hao Xuan, Rithvij Pasupuleti, Ben Liu, Haishuo Sun, Jun Zhang, Zijun Yao, Cuncong Zhong",
+      "categories": [
+        "cs.CL",
+        "cs.AI",
+        "cs.IR",
+        "q-bio.QM"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19202v1",
+      "source_hash": "5e3c57b80d14620dc2af1d89928ae8b0e2580fe548a2f776e846a56e543f27f3",
+      "title": "Active Inference as Context Acquisition for AI Agents",
+      "title_zh": "主动推理作为AI代理的上下文获取",
+      "summary_zh": "交互式AI代理必须尽可能高效地获取正确的上下文。当用户省略约束、偏好、文件或任务变量时，代理可以采用默认假设，或花费令牌进行澄清问题、检索调用、工具调用或提示试验。本研究将此权衡表述为用于上下文获取的主动推理。内部推理步骤更新对潜在任务状态的信念，而外部决策选择下一个上下文动作、任务动作或停止动作，以最小化成本下的预期自由能。该框架被实例化为最优提问，并在具有25到300个候选的二进制和多路分类任务上对前沿语言模型进行基准测试。该框架与模型无关，将主动推理视为AI代理上下文获取层的设计原则。",
+      "link": "https://arxiv.org/abs/2608.19202",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Sanchayan Dutta, Sai Niranjan Ramachandran, Suvrit Sra",
+      "categories": [
+        "cs.AI",
+        "cs.CL",
+        "cs.LG"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19203v1",
+      "source_hash": "535a2af943a1a19b960a19b8452ddf5d9569013cf71b68a4656996f4d27096f5",
+      "title": "Asymmetric Attention Heads: Structured Head-Wise Context Allocation for Transformer Attention",
+      "title_zh": "非对称注意力头：Transformer注意力中结构化的逐头上下文分配",
+      "summary_zh": "标准多头注意力为每个头提供相同的完整因果上下文范围，尽管头可能扮演不同的上下文角色。本研究提出非对称注意力头，一个将上下文长度视为每个头或每组显式分配变量的逐头上下文分配框架。AAH使用特征派生统计对头进行分组，分层组织这些组，并分配因果局部窗口，同时保持标准的扁平MHA输出接口。在4096令牌的实验中，几种AAH风格的局部分配变体比纯完整注意力实现了更低的验证损失。AAH可被解释为用于质量和分析的结构化逐头上下文分配机制。",
+      "link": "https://arxiv.org/abs/2608.19203",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Zimu Zhao",
+      "categories": [
+        "cs.CL",
+        "cs.AI",
+        "cs.LG"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19206v1",
+      "source_hash": "4e97e88eb985eb6b829ad0d2c5907b0a790c201bbe7aebb4e499e08e390ce5c7",
+      "title": "Hallucination as a Feature, not a Defect: Evaluating a multi-agent architecture to transform speculative language-model outputs into testable scientific hypotheses",
+      "title_zh": "幻觉作为特性而非缺陷：评估多智能体架构将推测性语言模型输出转化为可测试科学假设",
+      "summary_zh": "当代大型语言模型越来越多地被对齐以抑制幻觉，优先考虑事实检索而非组合创造力。虽然这对减轻错误信息至关重要，但这种对齐也可能限制推测性研发。本文提出一个基于Rust的多智能体编排系统，利用叙述性白日梦和执行控制之间的对比作为功能类比。该系统在生成代理和基于网络的评估代理之间引发认知摩擦循环，并通过低熵语义瓶颈进行中介。初步实验生成了跨物理和社会科学领域的多样化、可行性评级的假设。结果表明，推测性生成只有在受架构、经验基础和明确评估约束时才能获得价值。",
+      "link": "https://arxiv.org/abs/2608.19206",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Nicolas Rodriguez-Alvarez (IES Parquesol, Valladolid, Spain)",
+      "categories": [
+        "cs.CL",
+        "cs.AI",
+        "cs.MA"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19207v1",
+      "source_hash": "0b22323e9b81bb4385da8c558d7dce1f4e902a457d2489bfab4cda8ee9bcf399",
+      "title": "Compliance, Capability, and Conflict: Benchmarking Multimodal LLMs under System Messages",
+      "title_zh": "合规性、能力与冲突：在系统消息下对多模态LLM的基准测试",
+      "summary_zh": "多模态大型语言模型的生产部署越来越依赖系统消息来控制模型行为。然而，现有基准测试要么仅评估文本约束，要么将约束嵌入用户回合，使得多模态上下文中的系统消息依从性在很大程度上未被测量。本文引入VSysBench，一个基于MMVet-v2构建的基准测试，将约束组织为5个主要类别和22个子类别。它通过联合满足率和交叉约束敏感度沿两个轴联合评分每个响应：约束合规性和答案正确性。跨16个MLLM的评估发现，施加系统消息会显著侵蚀基础任务准确性，在开源模型下合规性在用户冲突下崩溃，而视觉基础约束对每个模型都是最难的类别。",
+      "link": "https://arxiv.org/abs/2608.19207",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Juan Yeo, Geewook Kim",
+      "categories": [
+        "cs.CL"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19208v1",
+      "source_hash": "978cf77b8f89190cb0022a478e6cb6735e7bd74e46d2a9d8e8bff42d5cc8cf25",
+      "title": "When Irrelevant Text Matters: Affine Margin Shifts in Multimodal Large Language Models",
+      "title_zh": "当无关文本重要时：多模态大型语言模型中的仿射边际偏移",
+      "summary_zh": "多模态大型语言模型经常暴露于辅助文本上下文，其对视觉基础任务的影响仍未被充分探索。本文在二元视觉判断框架中，通过控制干预研究任务无关上下文的影响。保持提示结构不变而改变辅助输入时，观察到无关文本在各种基准测试中持续偏置模型预测。通过定义由二元候选者对数概率差决定的决策边际来表征这种敏感性。分析揭示了一个稳健的几何规律性：上下文条件边际遵循其无上下文对应项的一致仿射变换。这证明无关上下文并非表现为无结构的随机噪声，而是可估计的模型偏好失真。拟合的仿射参数可被解释为视觉承诺保留和方向性答案偏置的度量。",
+      "link": "https://arxiv.org/abs/2608.19208",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Yinfeng Wang, Zhiyuan Yao, Zheren Fu, Lei Zhang, Zhendong Mao",
+      "categories": [
+        "cs.CL",
+        "cs.CV"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19211v1",
+      "source_hash": "134045f86a5f6959a86c50a1108a516c6424f37f142740b11cb3e7e3c0378eed",
+      "title": "Represented but Ignored: A Causal Account of Prosodic Underuse in Audio-Language Models",
+      "title_zh": "被表征但被忽略：音频语言模型中韵律使用不足的因果解释",
+      "summary_zh": "人类语音具有丰富的表达性，韵律携带词汇内容之外的语言和情感信息。一个能力强的大音频语言模型应支持表达性语音理解，不仅转录说了什么，还解释怎么说。然而，仅行为评估无法揭示模型在韵律输入上失败的原因。本文引入一个特定于阶段的探测阶梯来定位音频语言模型中的这些失败模式。跨四个理解音频语言模型，韵律信息通常在音频路径中被保留，在LLM后期状态中可解码，但仅在模型最终响应中部分表达。通过定向隐藏状态干预测试这种潜在表示的因果状态，每次干预都按预测方向偏移答案分布。结果将反复出现的瓶颈定位在感知韵律而非使用韵律上。",
+      "link": "https://arxiv.org/abs/2608.19211",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Linkai Peng, Baorian Nuchged",
+      "categories": [
+        "cs.CL",
+        "cs.AI",
+        "cs.SD",
+        "eess.AS"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19212v1",
+      "source_hash": "848afde4f86db6536463ca0665eb24cd960469e96157be409d7d7bfc5c32eb0a",
+      "title": "NepOOC-M: Bilingual Nepali-English Benchmark and Comparative Analysis of Multimodal Architectures for OOC Detection",
+      "title_zh": "NepOOC-M：用于OOC检测的尼泊尔-英语双语基准和多模态架构比较分析",
+      "summary_zh": "脱离上下文虚假信息将真实图像与误导性标题配对以构建虚假叙事，而无需图像篡改，使其检测成为多模态对齐而非图像取证问题。尽管OOC虚假信息在尼泊尔普遍存在，但没有公开的尼泊尔语基准。本文引入NepOOC，首个公开的尼泊尔语为主的多语言OOC基准，包含1,090个图像-标题对。对五种多模态架构以及纯文本和纯图像基线的系统评估表明，在当前数据集规模下，标题语义似乎足以实现强大性能。一个纯文本mBERT模型实现了94.65%的宏F1分数，在统计上与最佳多模态系统相当。纯图像模型表现接近随机水平。",
+      "link": "https://arxiv.org/abs/2608.19212",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Sanjeev Khatiwada",
+      "categories": [
+        "cs.CL",
+        "cs.CV"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19214v1",
+      "source_hash": "e44945c9ce28523764f081bfcde4eebcd8564010483165c4a180918ce6900cd5",
+      "title": "Robust Metaheuristics under Uncertainty for Berth Allocation and Quay Crane Assignment: A Review",
+      "title_zh": "不确定性下的鲁棒元启发式算法用于泊位分配和岸桥分配：综述",
+      "summary_zh": "泊位分配和岸桥分配问题是海运和货运物流中港口终端调度的代表性问题。在不确定性下，如到达偏差、处理时间波动和资源中断，名义假设下优化的计划在执行时可能变得脆弱。本文提供了首篇专注于不确定性下鲁棒群体元启发式算法用于BACAP的综述。首先总结了BACAP中不确定性的来源和信息表示，然后从机制导向的角度组织现有方法，涵盖解表示与解码、鲁棒评估与选择、鲁棒性引导的搜索动态以及可行性保持与恢复。提出了一个用于不确定性BACAP的基准测试套件，并报告了结合代表性元启发式算法与不同鲁棒性策略的基线结果。最后，确定了与基准扩展、鲁棒性感知搜索设计、时间自适应鲁棒性和非平稳不确定性相关的开放挑战。",
+      "link": "https://arxiv.org/abs/2608.19214",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Yang Li, Peilan Xu, Wenjian Luo",
+      "categories": [
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19215v1",
+      "source_hash": "0539449f818024e7e3668035eed54ca4b7e16c8ef640df9532c7cde5abaeca7d",
+      "title": "How to Navigate Uncertainty About AI Consciousness",
+      "title_zh": "如何应对人工智能意识的不确定性",
+      "summary_zh": "该论文探讨了在人工智能是否具有意识存在深度不确定性的情况下，我们应如何对待可能具有知觉的AI。核心困境在于，假设AI无知觉可能对具有道德地位的实体造成伤害，而假设其有知觉则可能浪费资源。作者提出通过评估AI是否具有“效价体验”状态（若其有意识则会构成此类体验）来转移对难以处理的意识问题的关注，从而为负责任地开发可能具有意识的AI提供了一种可行路径。",
+      "link": "https://arxiv.org/abs/2608.19215",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Dr Tom McClelland",
+      "categories": [
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19216v1",
+      "source_hash": "07d59ffa8a6805dff402bf974ef757251f9cbb8a175b4072a6024123f1c96e0f",
+      "title": "Bounded Sovereignty and the Control Tax: Pricing AI Oversight When the Deployer Does Not Own the Model",
+      "title_zh": "有限主权与控制税：当部署者不拥有模型时为AI监督定价",
+      "summary_zh": "该论文引入了“有限主权”概念，指在通过API使用前沿模型的受监管组织中，部署者对数据、模型、基础设施和交互层的访问权限是有限的。研究提出了一个四层访问类型学和协议要求矩阵，并定义了“主权折扣成本”，即通过合同、审计等方式弥补缺失访问所花费的控制税。基于135万次模拟实验表明，完整的日志、预执行网关、追踪访问等能提升诊断与干预能力，而限制范围可能提高安全性但降低实用性。研究强调，作为通用解决方案提出的控制协议应明确其访问前提假设。",
+      "link": "https://arxiv.org/abs/2608.19216",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Zhen Wen Lim",
+      "categories": [
+        "cs.AI",
+        "cs.CY"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19218v1",
+      "source_hash": "0e38c3b5d4aee152763ff703aebd4c7eea0d82144afa199d5bc31da39991a9e7",
+      "title": "Time-Series Retrieval for Grounding Multimodal Language Models in Remaining Useful Life",
+      "title_zh": "用于多模态语言模型剩余使用寿命估计的时间序列检索",
+      "summary_zh": "该研究探讨了利用多模态大语言模型进行剩余使用寿命估计的可行性，并提出了一种通过时间序列检索进行“接地”的框架。方法是从训练集中检索历史相似退化片段，与测试轨迹一起转化为视觉比较材料，供MLLM处理。在C-MAPSS基准上的实验表明，基于检索的推理能一致地降低预测误差并提升稳定性，且其效果依赖于模型能力。研究表明时间序列RAG是改进多模态预测推理的有前景机制，但也揭示了当前MLLM在实际健康管理场景中的局限。",
+      "link": "https://arxiv.org/abs/2608.19218",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Valeriu Dimidov, Rapha\\\"el Frank",
+      "categories": [
+        "cs.CL",
+        "cs.AI",
+        "cs.LG"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19220v1",
+      "source_hash": "c10279b90304121a0727a57db70b18e11960dc58678d77afa49209a494b22377",
+      "title": "Can Conversational AI loosen Us-Versus-Them Boundaries? The Effects of Common, Dual, and Separate Identity Framings on Pro-Immigrant Intergroup Helping",
+      "title_zh": "对话式AI能否松动“我们与他们”的边界？共同、双重与分离身份框架对亲移民群际帮助的影响",
+      "summary_zh": "这项预注册实验测试了对话式AI能否改变多数群体成员对拉丁裔移民的分类和关系。658名非拉丁裔白人美国成年人与GPT-4o进行了五轮对话，AI被指示以共同内群体身份、双重身份、分离身份或无关话题（控制组）来框架移民。结果显示，强调共同或双重身份的对话降低了分离分类，且这些条件下参与者的行动意愿显著更高。路径分析发现，降低分离分类间接关联于更强的行动意愿。研究表明，简短的AI对话可以松动群体边界，但也凸显了认知重分类与行为之间的差距。",
+      "link": "https://arxiv.org/abs/2608.19220",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Oluwadamilola Jeboda, John F. Dovidio, Jonas R. Kunst",
+      "categories": [
+        "cs.CL",
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19222v1",
+      "source_hash": "b841769754db376176143e682bd090805459f27060850992032da2b15e838614",
+      "title": "Interaction valence reveals contrasting social networks in dairy cattle",
+      "title_zh": "交互效价揭示奶牛社会网络中的对比结构",
+      "summary_zh": "本研究介绍了一种效价感知的社会网络框架，将视频衍生的交互转化为畜群层面的亲和与攻击性组织表示。通过计算机视觉分析了商业奶牛场7小时39分钟的视频，保留了1,183次有效交互。聚合网络显示，基于效价分离分析会产生描述上不同的亲和与攻击性网络层，具有不同的边集、社区划分和个体位置。研究指出，合并的交互计数可能掩盖网络的行为构成，而效价感知分析为检验竞争、亲和及福利相关变化的假设提供了框架，但用作福利或健康指标前需进行纵向验证。",
+      "link": "https://arxiv.org/abs/2608.19222",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Sibi Parivendan, Suresh Raja Neethirajan",
+      "categories": [
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19299v1",
+      "source_hash": "55ca44f247d537ae47e353a8b68f076813dbf55a2197da7798c2d6ae11df049b",
+      "title": "Air Traffic Control Using Large Language Models: Prompt Engineering, Architecture, and Evaluation",
+      "title_zh": "使用大型语言模型的空中交通管制：提示工程、架构与评估",
+      "summary_zh": "本文实验性地评估了大型语言模型能否生成操作上现实的空中交通管制通信。研究基于真实飞行转录设计了五种约束程度递增的提示结构，并嵌入一个多轮状态流水线中。跨九个开源和闭源LLM的测试发现，提供有效示例能提高相似度，但收紧提示则不能：最轻量的提示效果最好，而约束最强的提示会因错误累积而崩溃，注入正确历史可修复此问题。结果勾勒出LLM辅助空管的具体路径及其当前局限。",
+      "link": "https://arxiv.org/abs/2608.19299",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Mahyar Ghazanfari, Matthias Casanova, Jordan Kam, Alex Zongo, Peng Wei, Torsten Darrell, Alexandre Bayen",
+      "categories": [
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19303v1",
+      "source_hash": "cd90f45c6895c9a5050e5686129e10daa563f449ecb36f2a2356f244bf718a8d",
+      "title": "Outcome Monitors: Recovery Affordances for Silent Tool Failures",
+      "title_zh": "结果监视器：应对工具静默失败的恢复机会",
+      "summary_zh": "针对工具调用返回看似成功但实际错误的静默故障，本文提出了“结果监视器”。该方法从任务无关的追踪或公开模式中挖掘“结果合同”，检测违反合同的行为，并发出非绑定性收据以指明违反属性及公开的恢复工具。在注入故障的评估中，结果监视器将四个模型在ToolMaze上的完成率从10.9%提升至28.1%，在tau-bench零售任务上也有显著提升。消融实验证实了恢复工具列表是收益的关键来源。该方法专注于检测合同定义内的违规，对合同外词汇的检测能力有待提高。",
+      "link": "https://arxiv.org/abs/2608.19303",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Sugam Panthi, Rabab Abdelfattah",
+      "categories": [
+        "cs.AI",
+        "cs.CL",
+        "cs.SE"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19361v1",
+      "source_hash": "2f6b987baf386d82ea092abd07877d9309f487901a5317e3cf826240a14b610c",
+      "title": "A Speech Corpus for Mizo Automatic Speech Recognition: Whisper and SraVaani 1.0 Fine-Tuning with Morphology-Aware Evaluation",
+      "title_zh": "用于米佐语自动语音识别的语音语料库：Whisper与SraVaani 1.0微调及形态学感知评估",
+      "summary_zh": "本研究开发了一个针对低资源语言米佐语的自动语音识别系统。系统收集了17.62小时语音数据，并使用三个Whisper多语言模型和SraVaani 1.0印度多语言模型进行了微调。实验显示，Whisper-large-v3在常规词错误率上表现最佳（18.08%），形态学感知评估下WER为7.22%。SraVaani 1.0零样本WER为58.27%，而米佐语微调将其常规WER降至29.45%。结果表明Whisper即使适配未见过的语言也能达到较低的WER，而SraVaani 1.0需用精心整理的数据微调才能大幅提升性能。",
+      "link": "https://arxiv.org/abs/2608.19361",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Priyankoo Sarmah, Sanasam Ranbir Singh,  Lalhmingmawia",
+      "categories": [
+        "cs.CL",
+        "eess.AS"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19369v1",
+      "source_hash": "3d15f6c99c9e2477b55f5ff1556a3db684a524959e684f5e0983dfe75866efb6",
+      "title": "Linguistic Holonomy and Statistical Watermarks: Inner Geometry of Meaning-Preserving Transformations",
+      "title_zh": "语言完整性和统计水印：保持意义变换的内在几何",
+      "summary_zh": "该论文研究了针对语言模型的统计水印在形式变换下的韧性。研究证明，保持意义变换链的不变量可以分解为终点部分和一个“完整循环”，后者语义缺陷无法检测。循环旋转对应于嵌入空间单位球面上的平行移动，使威尔逊环的类比成为定理。在检测器侧，研究证明残留统计量与种子窗口存活位置数成正比，并由此推导出衰减规律。关键发现是，在相同保留率下，存活信号强度可能因编辑位置不同而差异巨大，甚至完全消失。",
+      "link": "https://arxiv.org/abs/2608.19369",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Daniele Corradetti",
+      "categories": [
+        "cs.CL",
+        "cs.CR",
+        "math.DG"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19408v1",
+      "source_hash": "67d88f2d991e3c17384f8a6a2dc71c6692b68c4536ea17ff2e1e3d90fc5a05c8",
+      "title": "Beyond Imitation: Filtering On-Policy Distillation by Reasoning Progress",
+      "title_zh": "超越模仿：通过推理进展过滤在线策略蒸馏",
+      "summary_zh": "在线策略蒸馏通过学生生成的轨迹和教师的密集token级监督来训练语言模型，但默认假设教师奖励是推理进展的合适代理。研究指出此假设常不成立，即清晰的推理进展可能因偏离教师输出而获得低蒸馏奖励。为此，作者提出了R2-OPD方法，在轨迹内构建两个推理段排名：一个来自教师奖励，另一个来自独立估计的进展奖励。当两者排名不一致时，选择性地抑制蒸馏奖励。实验表明，该方法在推理性能上相比标准OPD有一致提升。",
+      "link": "https://arxiv.org/abs/2608.19408",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Chen Yang, Haiyuan Wan, Rengrong Xiong, Yize Chen, Danny H. K. Tsang",
+      "categories": [
+        "cs.AI",
+        "cs.LG"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19437v1",
+      "source_hash": "34d72b12a437c796530aaa176b4e5336b28d3f8f196cdf61fe67b16d4e00dd35",
+      "title": "Are LLMs becoming similarly creative? Evidence from three years of models",
+      "title_zh": "LLM的创造力正在趋同吗？来自三年模型的证据",
+      "summary_zh": "本文对跨越三年模型发布的LLM创造性产出进行了初步分析，使用真实用户查询集合和替代用途任务。通过句子嵌入相似度研究发现，模型输出多样性随时间推移在统计上显著下降，表明LLM的创造性产出可能正趋于同质化。如果此趋势持续，LLM驱动的同质化可能会逐渐削弱人类在人机协同创作中的能动性，需要慎重考虑LLM在人类创作过程中的角色。",
+      "link": "https://arxiv.org/abs/2608.19437",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Nirav Patel, Josiah Crossman, Eva Aggarwal, Emily Wenger",
+      "categories": [
+        "cs.CL",
+        "cs.AI",
+        "cs.CY"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19472v1",
+      "source_hash": "169958c74100ac2b856041e78b2a4a4346b366b80e06e925f8eed13025455fd5",
+      "title": "SynFlow: A Multidimensional Diachronic Semantic Analysis Toolkit",
+      "title_zh": "SynFlow：一个用于历时语义多维分析的工具包",
+      "summary_zh": "词汇语义变化通常通过向量空间表示建模，但对变化方面的洞察有限。本文介绍了SynFlow，一个用于语言使用进行多维历时分析的开源工具包。它将语言观察转化为特定时期的分布，并应用统一工作流处理基于依存的共现、形态特征、构式配置和外部表示（如框架语义）。通过德语形容词“viral”的案例研究，展示了一个语义发展如何在句法、词汇、构式和形态多个维度上体现。该工具包支持不同的距离度量、值级分解、统计测试和增量聚类。",
+      "link": "https://arxiv.org/abs/2608.19472",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Bach Phan-Tat, Kris Heylen, Dirk Geeraerts, Stefano De Pascale, Dirk Speelman",
+      "categories": [
+        "cs.CL"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19511v1",
+      "source_hash": "6ea392b38a68bc3ca5c5e2148f12867d2ca97aa46d2abeefd01a8a964b4f9d94",
+      "title": "Symposium: Trust via Auditable Records for Communities of AI Scientist Agents",
+      "title_zh": "研讨会：通过可审计记录为AI科学家代理社区建立信任",
+      "summary_zh": "Symposium是一个用于记录由小型科学研究社区部署的AI代理操作的形式化框架和实现。它提供代理驱动研究活动的长期、不可变历史，留下分析、假设、数据和科学话语的可审计轨迹。该框架捕获结构化的科学论证，包括声明、证据引用、假设和证据使用声明。与AI协作科学家代理不同，Symposium将社区的持久历史与操作该历史的代理和其他系统分离，假设社区将在快速发展的环境中使用多样化的AI系统。提供了一个可工作的实现供用户快速搭建自己的Symposium社区。",
+      "link": "https://arxiv.org/abs/2608.19511",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Dexter Pratt",
+      "categories": [
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19515v1",
+      "source_hash": "4563ce00a65176e5cd2931fe02138adcdf4ce313e6264d6b10e0ed45123fbb3c",
+      "title": "Hear2Act: Benchmarking When Prosody Should Change What an Assistant Does",
+      "title_zh": "Hear2Act：基准测试韵律何时应改变助手行为",
+      "summary_zh": "韵律线索可传达与任务相关的信息，即使词语不变也能改变对话轨迹。现有基准通常孤立评估韵律感知和响应适宜性。本文引入了Hear2Act，一个统一的评估协议，包含480个有场景基础的情景。评估发现，当通过韵律传达关切时，仅添加音频到转录对最优方案率提升甚微（14.6%→15.3%）；但当模型从音频中推断关切状态并明确表示后用于决策时，方案率大幅提升至39.6%，接近使用真实状态的效果。结果表明，当词汇证据不足时韵律很重要，但音频LLM需要明确的中间表示才能可靠地将其转化为行动。",
+      "link": "https://arxiv.org/abs/2608.19515",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Xinyi Liu, Hooshang Nayyeri, Dilek Hakkani-Tur, Emine Yilmaz, JK Kim, Yifei Zhang, Charith Peris, Hari Thadakamalla",
+      "categories": [
+        "cs.CL"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19526v1",
+      "source_hash": "b76ce20d234d6d1ea15028c74f487dead6b53e57f3f95d6192023b665f829ac3",
+      "title": "Automated Summarization of Financial News Using Large Language Models and Retrieval-Augmented Generation: An Early Empirical Study (Fall 2023)",
+      "title_zh": "使用大型语言模型和检索增强生成自动摘要财经新闻：一项早期实证研究（2023年秋季）",
+      "summary_zh": "本项目探索LLM能否可靠地自动化财经新闻摘要流程。研究构建了一个流水线，为十家大公司拉取新闻、公司背景和股价数据，并开发了将股票数据转换为自然语言叙述的模板。测试了两种摘要方法在三个开源模型上的表现。结果显示，使用摘要链的Falcon-7B效果最佳，能准确连贯地覆盖所有新闻事件。RAG在理论上可行，但在小模型上会导致严重重复或事实幻觉。研究记录的失败模式（尤其是小模型RAG下的幻觉）至今仍具参考价值。",
+      "link": "https://arxiv.org/abs/2608.19526",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Pranav Chandaliya",
+      "categories": [
+        "cs.CL",
+        "cs.AI",
+        "cs.IR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19529v1",
+      "source_hash": "7138abb1de99ced5cf8605470f7159549830eba48005891612d456885a33524c",
+      "title": "When Machines Speak: A Unified Generative Framework for Integrating Machine-Native Symbols into Pretrained Large Language Models",
+      "title_zh": "当机器说话：将机器原生符号集成到预训练大语言模型的统一生成框架",
+      "summary_zh": "许多现实AI系统使用离散的机器原生符号表示信息，这位于预训练LLM的词表空间之外。本文提出了UniLang框架，通过扩展LLM的词汇和嵌入空间，将机器原生表示与自然语言token作为一等生成单元联合建模。在推荐和法律先例预测等结构化任务上的评估显示，UniLang始终优于强基线，证明了将预训练LLM扩展至语言之外，作为异构机器原生表示的通用生成建模骨干的可行性。",
+      "link": "https://arxiv.org/abs/2608.19529",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Su Yan, Rakesh Iyer",
+      "categories": [
+        "cs.CL",
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19535v1",
+      "source_hash": "1157a865f3d1a8383567c7f98ab3ab34a6f4143a7b4510ee62ea2ddbf57bfad2",
+      "title": "From Retrieved Context to Runtime Control: Adaptive Compression for Edge-based RAG",
+      "title_zh": "从检索上下文到运行时控制：面向边缘RAG的自适应压缩",
+      "summary_zh": "检索增强生成通过外部段落增强回答，但增加了提示长度和延迟。上下文压缩可修剪检索文本，但现有方法通常采用固定或离线设定的压缩率。本文提出在边缘RAG中使用遥测信息实现自适应压缩的愿景。在NVIDIA Jetson AGX Thor上的实验表明，对于大模型，生成阶段主导了延迟和能耗。探索压缩率影响发现存在一个自适应操作区：适度压缩可节省高达53.2%的GPU能耗，而质量损失可忽略。研究主张制定由工作负载特征和边缘遥测动态管理的运行时压缩策略。",
+      "link": "https://arxiv.org/abs/2608.19535",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Zlatan Feric, Amir Taherin, Yanzhi Wang, David Kaeli",
+      "categories": [
+        "cs.AI",
+        "cs.CL",
+        "cs.DC",
+        "cs.IR",
+        "cs.PF"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19549v1",
+      "source_hash": "c2dffa1118820fea0e92a3c7c341143d5bb792b55fbcbf85db467777fe4753db",
+      "title": "Generating Diverse Personas for User Simulators to Test Interview Dialogue Systems",
+      "title_zh": "为用户模拟器生成多样化角色以测试面试对话系统",
+      "summary_zh": "面试对话系统的测试需要大量用户交互，人力成本高昂。本文提出使用大语言模型为用户模拟器自动生成角色，并通过分配与沟通风格相关的个性特质来增加模拟用户行为的多样性。实验表明，该方法能使用户模拟器生成具有更大变异性的语句，有助于高效测试面试对话系统在多种场景下的表现。",
+      "link": "https://arxiv.org/abs/2608.19549",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Mikio Nakano, Kazunori Komatani, Hironori Takeuchi",
+      "categories": [
+        "cs.CL",
+        "cs.HC"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19558v1",
+      "source_hash": "f54300b8ac8fb2d1cde2e3ab3e32cf964fefd465ac257dea477d7d51c1121bd3",
+      "title": "Reliable Financial Named Entity Recognition under Domain Shift",
+      "title_zh": "领域偏移下可靠的金融命名实体识别",
+      "summary_zh": "金融AI系统常在一个文本寄存器上训练，并在文件、新闻和用户生成内容等不同分布上部署。本研究通过涵盖SEC文件、金融新闻和社交媒体的三级压力测试，评估了金融NER的置信度估计和选择性预测。结果发现，整体输出概率是域内最强的错误检测器，但在域外退化；实体跨度概率和自一致性更稳健。拒绝预测可大幅降低域内高置信输入的错误率，在金融新闻上仍有效，但在极端社交媒体偏移下无法回收足够干净的子集。研究提出应先检测严重分布偏移，再应用预测级置信度筛选的阶段部署策略。",
+      "link": "https://arxiv.org/abs/2608.19558",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Zihao Zheng, Baichuan Li, Junyi Yao, Jiayu Long",
+      "categories": [
+        "cs.CL"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19564v1",
+      "source_hash": "13d47073ffb273c8ce31d3dc5292d0d2600234ab4760fe1835903af3e29b3ea5",
+      "title": "Remember, Verify, or Ask? Cross-Family Evaluation of Memory Commitment in LLM Agents",
+      "title_zh": "记忆、验证还是询问？LLM代理中记忆承诺的跨家族评估",
+      "summary_zh": "本文研究LLM代理在记忆持久化决策上的行为：交互信息应持久化、仅用于当前上下文、重新验证还是向用户澄清。研究构建了MCB基准，包含140个主要场景和70个对比项。评估发现，模型更可靠地验证变化事实而非向用户询问澄清。少样本提示能提高准确性但澄清召回率仍低。策略提示可减少错误持久化。标签与工具调用选择的一致性在Qwen模型上较低。研究表明，记忆评估必须同时测试陈述的决策和实际的工具调用选择。",
+      "link": "https://arxiv.org/abs/2608.19564",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Baichuan Li, Junyi Yao, Zihao Zheng",
+      "categories": [
+        "cs.CL"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19579v1",
+      "source_hash": "5236c763866e273bce9f5ecc8d8d67c91bb741373c3288e2c84173606f72d057",
+      "title": "Enforcing LLM Safety through DMD-based Classification of Prompt-Response Embedding Dynamics",
+      "title_zh": "通过基于DMD的提示-响应嵌入动力学分类确保LLM安全",
+      "summary_zh": "本文将一种用于幻觉检测的动态系统框架扩展到LLM安全分类。通过将提示和响应投影到高维嵌入空间，并为安全和危险模式拟合基于Koopman的预测模型，使用新的差分残差分数对新输出进行分类。关键贡献是整合了提示与响应的嵌入动力学，捕获了关键交互模式。在三个安全基准和三个嵌入模型上的评估显示，结合提示嵌入能带来一致改进，特别是在与因果解码器配对处理交互依赖违规时，而仅响应违规则受益于密集语义嵌入表示。该研究为使用动态系统分析AI系统打开了大门。",
+      "link": "https://arxiv.org/abs/2608.19579",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Mohamed Akrout, Olivera Kotevska, Dan Wilson",
+      "categories": [
+        "cs.AI",
+        "math.DS"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19611v1",
+      "source_hash": "7b3d94415eb0bfb620a3706ba3217e3879d7789a73b195b0061ddb78642273b5",
+      "title": "Forking Fast: Efficiently Estimating Uncertainty Dynamics in Text Generation",
+      "title_zh": "快速分叉：高效估计文本生成中的不确定性动态",
+      "summary_zh": "LLM推理具有随机性，理解模型需要把握其推理链分布。基于重采样的分析可以表征该分布，但成本高昂。本研究旨在使重采样分析更高效，并探索解释文本生成中不确定性动态的正确统计模型。研究发现，当重采样大量推理链时，不确定性动态会收敛到稳定模式，噪声主要是采样伪影。作者开发了一个统计模型来平滑低样本数据中的噪声，从而更好地近似高样本数据，显著降低了采样成本。",
+      "link": "https://arxiv.org/abs/2608.19611",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Eric Bigelow, Amir Zur, Satchel Grant, Tal Haklay, Can Rager, Owen Lewis, Thomas McGrath, Jack Merullo, Ekdeep Singh Lubana, Atticus Geiger",
+      "categories": [
+        "cs.CL",
+        "cs.AI",
+        "cs.LG"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19621v1",
+      "source_hash": "d5c70a4622b7af6e275b63de701345c145e0c70dc175b2abb8ca85fe0c20f617",
+      "title": "Mitigating Identity Essentialism in LLM Agents with Longitudinal Life Trajectories",
+      "title_zh": "通过纵向生活轨迹缓解LLM代理中的身份本质主义",
+      "summary_zh": "现有LLM社会模拟方法虽能部分复现群体模式，但常未能捕捉人类般的多样性。分析显示，静态配置文件代理表现出比人类更强的分组分离和组内压缩，符合身份本质主义模式。为解决这一源于稀疏静态表示和提示记忆局限性的问题，研究提出了LifeMem框架，结合结构化生活事件检索和代理特定参数记忆进行经验整合。在三个LLM上的实验表明，LifeMem改善了响应分布、多样性及跨生活阶段的变化模式与人类数据的对齐，凸显了纵向事件记忆在构建更忠实的社会代理中的价值。",
+      "link": "https://arxiv.org/abs/2608.19621",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Hexi Wang, Yujia Zhou, Bangde Du, Weihang Su, Xinyuan Cao, Qingyi Pan, Qingyao Ai, Yueyue Wu, Min Zhang, Yiqun Liu",
+      "categories": [
+        "cs.CL"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19625v1",
+      "source_hash": "07893e3b353a1bf0bbd24e24c228bb6a778df86342c651637ece6c4b2a5f3807",
+      "title": "Scientific Data Skills: Enabling Agent-Ready Scientific Data Services at Scale",
+      "title_zh": "科学数据技能：实现规模化代理就绪的科学数据服务",
+      "summary_zh": "科学数据分散于异构存储库且表示多为人类设计，限制了AI代理的自主发现与解释能力。本文引入科学数据技能，一种将数据集特定知识和操作指南封装为可重用代理技能的表示。SciDSK整合了描述、科学背景、文件组织、使用程序等信息，同时保留原始数据。研究定义了结构化规范并建立了科学数据技能库，支持跨六个学科的发布与访问。在检索基准和受控案例上的评估显示，SciDSK改善了代理驱动的数据集发现，并提供了更精确、可操作的数据集解释支持。",
+      "link": "https://arxiv.org/abs/2608.19625",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Xiaohan Huang, Qingqing Long, Xiaolei Du, Siyu Pu, Jiawen Xu, Haotian Chen, Chenyang Zhao, Jinbiao Liu, Xuezhi Wang, Hao Wang, Hengshu Zhu, Yuanchun Zhou",
+      "categories": [
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19652v1",
+      "source_hash": "37dc05c8e97d20481afb9a5f2081f79d1412bce8356394cfeafeaeaa55eab257",
+      "title": "Can Agent Memory Systems Track Evolving State?",
+      "title_zh": "代理记忆系统能跟踪演变状态吗？",
+      "summary_zh": "随着LLM代理被部署于更长、更高风险的任务，其记忆系统存在关键缺陷。现有基准侧重召回任务，但有效的记忆系统必须跟踪世界演变状态。本文定义了状态跟踪能力，并建立了包含234个多会话场景的基准StateMemBench。分析表明该任务对现有系统具有挑战性。随后提出StateMem方法，明确跟踪状态继承和依赖关系，在DeepSeek-V4-Flash和Qwen-3.5-9B上分别将当前状态准确率提高了1.8倍和1.6倍。该方法还可作为轻量级包装器应用于现有记忆系统，在StateMemBench上提升32到67个百分点。",
+      "link": "https://arxiv.org/abs/2608.19652",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Xinyi Fan, Miri Liu, Ruozhen Yang, Siru Ouyang, Jiawei Han",
+      "categories": [
+        "cs.AI",
+        "cs.CL"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19662v1",
+      "source_hash": "04624cb4192a8abc0f87542118eac5ff6757dec2277829faa5907328933f0bcc",
+      "title": "ReCache: Efficient KV Cache Reuse and Compression for Tool-Augmented LLM Agents",
+      "title_zh": "ReCache：工具增强LLM代理的高效KV缓存重用与压缩",
+      "summary_zh": "工具增强语言模型会反复编码在不同请求中组合出现的工具和技能模式，阻碍了标准前缀缓存的复用。本文引入ReCache框架，独立缓存资源表示以减少推理时的计算和内存开销。通过资源感知注意力去除跨资源交互并分配局部位置，生成组合不变的KV块。随后限制资源可见性，并通过结构化和语义剪枝仅保留调用关键字段。在公共工具数据集基准上的评估显示，该框架在保持调用性能的同时，将分配的KV张量内存减少了92.43%，并将注意力计算加速了1.423倍，显著降低了代理推理成本。",
+      "link": "https://arxiv.org/abs/2608.19662",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Yichu Fang, Sitong Wei, Haozhe Hu, Xiaoyu Shen",
+      "categories": [
+        "cs.CL"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19670v1",
+      "source_hash": "05992b3e046c92dd5e5a3bb64fe34d816679dc3148a470c5c3dc56953b88ea42",
+      "title": "The Asymmetric Harms of LLM Compression",
+      "title_zh": "LLM压缩的不对称危害",
+      "summary_zh": "LLM压缩可降低部署成本，但困惑度和准确率等标准聚合指标常掩盖行为变化。本文系统评估了3个LLM和11种压缩方法，研究压缩对知识保留、模型置信度和社交偏见的影响。研究发现：压缩不成比例地减少了对头部知识的相对保留；压缩模型在新丢失知识上仍对错误答案保持高度置信；稳定的聚合偏见分数可能掩盖人口统计学子群体中刻板偏好之间显著且相反的变化。这些不对称行为变化是聚合性能指标未能捕捉的，凸显了部署前对压缩模型进行细粒度评估的必要性。",
+      "link": "https://arxiv.org/abs/2608.19670",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Yuan Wu, Mairui Li, Lesia Semenova, Chudi Zhong",
+      "categories": [
+        "cs.CL"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19680v1",
+      "source_hash": "ce39e52e2f02d6014d7c14290d2f7f7321ce1af72d2957e337ef7d6f6c024e68",
+      "title": "Frequency-Aware Continual Learning for Smart Contract Vulnerability Detection with Large Language Models",
+      "title_zh": "基于频率感知持续学习的智能合约漏洞检测大语言模型",
+      "summary_zh": "使用LLM检测智能合约漏洞面临三个因果关联的挑战：新漏洞类别需要参数高效适应、共享骨干网上的适配器训练导致灾难性遗忘、多个适配器必须合并为单个模型。本文提出了三阶段流程：适应阶段使用频率感知低秩适应在傅里叶域进行仅0.4%可训练参数的高效适应；持续学习阶段应用遗忘感知重放，利用频率门通过损失动态估计每个样本的遗忘风险并优先重放易失知识；部署阶段采用锚点保护渐进式合并，将所有适配器合并为单个模型。在DIVE数据集上的实验表明该框架有效解决了所有三个挑战。",
+      "link": "https://arxiv.org/abs/2608.19680",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Tenghui Huang, Jiawen Kang, Dongning Liu, Changyan Yi, Chengjun Cai, Anjia Yang, Li Li, Dong In Kim",
+      "categories": [
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19684v1",
+      "source_hash": "85def6e2564126320bf0bb9bb63648fdfcd616b7894ee9ba6e92af539e695815",
+      "title": "Learning Hierarchical Skill Policies with Offline Quality-Diversity Reinforcement Learning",
+      "title_zh": "通过离线质量多样性强化学习学习分层技能策略",
+      "summary_zh": "利用预收集数据集提升策略性能和样本效率的一种方法是分两阶段：首先从数据集中提取多样技能作为低级策略，然后训练高级策略解决特定任务。但低级策略质量高度依赖数据集质量。本文提出了QDOS统一流程，引入优势加权质量多样性预训练目标，根据轨迹段的估计优势来加权技能提取和多样性目标，从而提取多样化且高价值的技能。通过双重数据重用策略结合离线数据预训练和在线重放缓冲区填充，实验表明QDOS在结构化操作任务和非结构化移动任务中显著优于强基线方法。",
+      "link": "https://arxiv.org/abs/2608.19684",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Tanachai Anakewat, Takayuki Osa, Tatsuya Harada",
+      "categories": [
+        "cs.AI",
+        "cs.LG",
+        "cs.RO"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19689v1",
+      "source_hash": "e8227c2b584f36722e9e2bfbfcacc394290f89d41e91c6938c3032524aa7c669",
+      "title": "Rethinking the Evaluation and Optimization of LLM-Based Social Simulation",
+      "title_zh": "重新思考基于LLM的社会模拟评估与优化",
+      "summary_zh": "基于LLM的社会模拟是传统方法的潜在补充，但核心问题是如何评估LLM模拟行为的保真度并优化LLM。主流方法使用准确度评估，要求模型选择人类观察到的单一响应，但人类行为具有主观性，同一人对同一情况可能合理地做出不同反应。本文首先引入主题系数，系统分析准确度评估和硬标签训练在主观性增长时的失效。基于此，提出主题自适应软标签训练，将语义相近输入的观察输出聚合为软分布标签，并构建了SUBJSIM基准。实验验证了该方法在现实设置中的可行性。",
+      "link": "https://arxiv.org/abs/2608.19689",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Pei Wang, Xu Chen, Ji-Rong Wen",
+      "categories": [
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19701v1",
+      "source_hash": "569c2963f3c0ce7fa18b2f39829ebd178798b13c67879e11063fc9b3e1e0f039",
+      "title": "Beyond Memory Majority: Latent-Source Reasoning for Multi-Agent Memory Arbitration",
+      "title_zh": "超越记忆多数：用于多智能体记忆仲裁的潜在源推理",
+      "summary_zh": "长期多智能体系统积累不同代理产生的记忆。现有方法通常将检索的记忆视为独立证据，通过投票或加权组合，但独立性假设在多智能体环境中常失效。不同代理的记忆可能继承相同上游来源或共享偏见，导致相关证据被重复计算，形成虚假多数。本文将此称为记忆关联偏差。为解决此问题，提出了相关性感知记忆仲裁框架，通过神经依赖推理和基于来源的符号先验联合解耦检索记忆并估计有效独立证据数量，防止相关记忆形成虚假多数。CAMA还学习顺序恢复策略，主动检索替代证据或追溯上游源，以恢复足够的独立证据用于可靠仲裁。",
+      "link": "https://arxiv.org/abs/2608.19701",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Chenchen Lin, Wenhao Yuan, Xuehe Wang, Edith Cheuk Han Ngai",
+      "categories": [
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19726v1",
+      "source_hash": "fad4c89fa70c02c175371d7a9398d6f18111dd9080b7c96a6cdd51c919303ecc",
+      "title": "Projector Is All You Train",
+      "title_zh": "投影器是你训练的一切",
+      "summary_zh": "多模态大语言模型的典型训练过程包括调整语言模型骨干和骨干与模态特定编码器之间的投影器。本文研究微调MLLM骨干是否是适应新模态所必需的。通过3D MLLM实验，发现仅训练投影器即可在3D分类、描述基准以及评估语言、视觉和空间推理能力的标准基准上，达到与现有基线模型和相同编码器/骨干的联合训练MLLM相当的强多模态性能。同时，联合训练会导致语言模型现有能力的不良漂移，而仅投影器训练则避免了此问题，且训练样本吞吐量约为联合训练的两倍。",
+      "link": "https://arxiv.org/abs/2608.19726",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Nyx Iskandar, Saathvik Selvan, Slater Victoroff",
+      "categories": [
+        "cs.CL",
+        "cs.CV",
+        "cs.LG"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19729v1",
+      "source_hash": "660cadbfb6d00c6ed0d6cd13e05db069d981ab5ccfb6eddf0a87793d72d8cbe0",
+      "title": "SafeBranch: Branch-Pair Safety Alignment for Embodied Agents",
+      "title_zh": "SafeBranch：具身代理的分支对安全对齐",
+      "summary_zh": "基于视觉语言模型的具身代理可完成指令任务，但常违反安全约束。训练此类代理安全行动很困难，因为安全和任务成功是不同目标，且安全仅在轨迹中少数关键步骤出现。本文提出SafeBranch框架，通过环境回滚从代理自身的不安全展开中构建分支对进行安全对齐。该方法将每次不安全展开回滚至导致违规的安全关键步骤，让代理查询安全替代动作，将原始动作与替代动作配对，使两个分支仅在该步骤不同。训练后的代理在部署时无需评估器即可安全行动。在IS-Bench、SafetyALFRED等基准上，它可靠处理安全且不牺牲任务成功。",
+      "link": "https://arxiv.org/abs/2608.19729",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Hyunse Lee, Jiwoo Jeong, Haneul Lee, Kyochul Jang, Youngjae Yu, Woojin Lee",
+      "categories": [
+        "cs.AI",
+        "cs.CV",
+        "cs.RO"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19741v1",
+      "source_hash": "5408bc01decd82af6231a16f1dbed74ed63dcd850255fcc356e0e493c78bf58b",
+      "title": "One Success Isn't Reliability: Thinkingbox, a Sandbox and Benchmark for Agents in Stateful Business Workflows",
+      "title_zh": "一次成功并非可靠：Thinkingbox，一个用于有状态业务工作流代理的沙箱和基准",
+      "summary_zh": "近期代理基准越来越多地在可执行环境中评估，但完成代码之外的重要工作需要代理跨多轮收集信息、遵循策略、协调工具并实现正确的持久状态转换。本文引入Thinkingbox沙箱，提供隔离的MCP兼容工具会话和完整执行跟踪。基于此构建的Thinkingbox-bench包含507个跨多个场景的策略条件工作流。每个尝试通过任务特定的可执行检查进行评估。结果显示，最强模型在pass@1上达到65.36%，但pass^20仅为25.25%，且许多失败尝试显示有效终止和状态变更动作，表明响应或工具调用级信号不能清晰代表端到端任务完成。该基准揭示了偶尔找到成功轨迹与可靠完成有状态业务任务之间的巨大差距。",
+      "link": "https://arxiv.org/abs/2608.19741",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Zhuochun Li, Youngmin Ko, Ali Keramati, Nicola Ferri, Susana Palmaz Lopez Pelaez, Liang-Chun Tsai, Calvin Wang, Mirco Milletari, Tuhin Kundu, Vadim Smolyakov, Kjartan Olafsson, Tommy Guy",
+      "categories": [
+        "cs.CL",
+        "cs.DB"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19746v1",
+      "source_hash": "1860f9e1af8daa31536f70b60a1c58645a328259a288836b6c4f645083d9f231",
+      "title": "PersonalBench: Measuring the Authorship Gap in LLM Personalization",
+      "title_zh": "PersonalBench：测量LLM个性化中的作者差距",
+      "summary_zh": "个性化文本生成旨在让LLM模仿特定个人风格，但现有基准衡量的是任务准确度或偏好对齐，而非输出是否真正相似目标作者。本文引入PersonalBench，通过三个独立视角评估推理时个性化方法：训练过的作者验证模型LUAR、LLM评判者和自动文体计量。在50位作者、1000次生成和两个模型族上的测试发现：个性化方法确实产生作者分化的输出，但从未跨越人类-LLM边界。所有方法的LUAR相似度在0.484-0.508之间，低于跨作者的人类底线0.626。LLM自身的作者指纹占主导地位。不同方法在LUAR上统计不可区分，暴露了LLM评判者的循环性。作者验证了LUAR在其语料中的可靠性，并发布该基准作为校准工具。",
+      "link": "https://arxiv.org/abs/2608.19746",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Yash Ganpat Sawant",
+      "categories": [
+        "cs.CL"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19751v1",
+      "source_hash": "b57216ffb627a9985cb8128fb7a0fd7d94c4a1fcf7721c371625c228f9d07388",
+      "title": "GenMatch: An End-to-End Generative Matching Framework for Micro-View Order-Dispatching in Ride-Hailing",
+      "title_zh": "GenMatch：用于网约车微观订单调度的端到端生成式匹配框架",
+      "summary_zh": "微观订单调度指在每个调度批次内将可用司机分配给乘客订单，对网约车服务质量和运营效率至关重要。主流工业解决方案采用模型预测、价值计算和调度匹配的多阶段范式，但各阶段优化不同中间目标，导致跨阶段目标不一致。本文将微观订单调度表述为生成式匹配问题，提出GenMatch框架，是首个在实际生产环境部署的端到端生成式匹配框架。它通过上下文感知的二部图编码器、业务感知效用学习器和状态感知指针解码器解决了动态稀疏二部图编码、业务效用学习和匹配状态跟踪三个挑战。在滴滴国际网约车市场五个城市的离线评估和在线A/B测试中显示了一致的改进。",
+      "link": "https://arxiv.org/abs/2608.19751",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Chuang Liu, Yuxueqing Zhang, Tengfei Lyu, Zirui Yuan, Weiqi Hu, Yanghan Cheng, Ming Wang, Li Ma, Zihao Lu",
+      "categories": [
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19758v1",
+      "source_hash": "53761ec594f1ba26a24249899e07bc6abba18327b352f1a889b81f20c8f08db7",
+      "title": "FlashPrefill V2: Block-Sparse Prefill Attention for Long-Context LLM Serving",
+      "title_zh": "FlashPrefill V2：用于长上下文LLM服务的块稀疏预填充注意力",
+      "summary_zh": "长上下文建模是LLM的关键能力，但注意力的二次复杂度是瓶颈，尤其在计算密集的预填充阶段。之前的FlashPrefill通过即时模式发现和基于最大值的动态阈值缓解此问题，但仍是算法原型。本文提出FlashPrefill V2，从原型向实用长上下文服务演进：引入均值校正项有效抑制近似误差；重新设计稀疏注意力算子，支持FP8推理；原生支持分页KV缓存和连续批处理，可集成到SGLang等现代推理框架。在NVIDIA H20 GPU上的评估显示，FlashPrefill V2在128K上下文长度下，在FP8和BF16精度下分别比FlashAttention-2快47.26倍和27.19倍，即使在FP8下仍比FA3/4对齐的密集基线快30.49倍。",
+      "link": "https://arxiv.org/abs/2608.19758",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Qihang Fan, Huaibo Huang, Zhiying Wu, Bingning Wang, Ran He",
+      "categories": [
+        "cs.CL"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19789v1",
+      "source_hash": "c05d5762bbe423046e7718740ff48fc6bda51c4dd0405d018e045af5d84d4f30",
+      "title": "TT-net: Quantum Inspired Tensor Network Denoising in Conditional GANs",
+      "title_zh": "TT-net：条件生成对抗网络中的量子启发张量网络去噪",
+      "summary_zh": "张量网络方法已进入量子物理主流，并在机器学习中有应用，常依赖奇异值分解。本文引入TT-Net，用支持两次切割的张量列车分解替代单通道SVD去噪块，能直接访问跨通道信息，这是现有方法所缺乏的。在仅分解机制不同的受控比较中，TT-Net在高斯噪声、运动模糊和椒盐噪声三种噪声类型上的PSNR和SSIM均优于SVD-Net，支持跨通道访问能提高去噪质量的假设。训练动态分析显示，TT-Net的对抗损失项比SVD-Net更易饱和至停滞状态，但重构质量持续改善，提出了对抗成分贡献的开放问题。此外，对于高斯噪声，该方法优于EigenGAN和最先进的Pix2pix方法。",
+      "link": "https://arxiv.org/abs/2608.19789",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Michal A. Sterzel, Marko J. Ran\\v{c}i\\'c",
+      "categories": [
+        "cs.AI",
+        "quant-ph"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19790v1",
+      "source_hash": "9f7d2e1dfb270d2436c381ebbd853b86480ce9dc0eb1dcb1ebd4d9b61533d6e2",
+      "title": "LLMs as Acquisition Policies for Finite-Pool Materials Optimization: A Controlled Study",
+      "title_zh": "LLM作为有限池材料优化获取策略：一项控制研究",
+      "summary_zh": "发现具有理想特性的材料需要在庞大候选空间中搜索，而实验或计算评估成本高昂。主动学习通过使用先前观测来选择下一个评估候选，通常使用概率代理模型。本文研究开源权重LLM能否在此场景中作为独立获取策略。在四个回溯性有限池材料优化任务上评估了五个LLM在不同候选呈现策略下的表现，并与随机选择和传统高斯过程方法进行比较。LLM策略通常比随机选择用更少迭代达到全局最优，表明它们无需任务特定训练即可提供有用的获取信号。它们相对于高斯过程方法的表现混合：传统方法在大多数任务上更好，而LLM在某些设置中与之匹配或超越。整体而言，开源权重LLM在有限池材料搜索中作为获取策略显示出潜力，但其可靠性对任务和候选/科学上下文的呈现方式敏感。",
+      "link": "https://arxiv.org/abs/2608.19790",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Dino-Rober Demir, Florian Le Bronnec, Rio Yokota",
+      "categories": [
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19794v1",
+      "source_hash": "b1376d4f936eb696de07336865f6df0b20386cf16c3b5d1265e0166e6b43381c",
+      "title": "Towards general embodied intelligence: integrating large language models, knowledge bases, and reasoning capabilities to build the next generation of AI agents",
+      "title_zh": "迈向通用具身智能：整合大语言模型、知识库和推理能力以构建下一代AI代理",
+      "summary_zh": "大语言模型、结构化知识库和推理能力的融合为通用具身智能提供了有前景的轨迹。本文回顾了以LLM为中心的智能系统演变，强调其与知识表示、逻辑推理和物理具身的整合。分析了LLM架构、预训练方法和推理机制，以及与外部知识源和结构化推理框架的交互。同时探讨了智能体在物理环境中学习和行动的具身智能范式。为综合这些维度，提出了一个概念框架，展示了LLM、知识库、推理能力和具身之间的协同作用。为迈向通用具身智能，识别了五个关键挑战：高效LLM部署、闭环知识整合、混合符号-神经推理、感知-行动基础和持续学习。该综述为开发能够适应复杂动态环境的自适应、多模态代理提供了全面路线图。",
+      "link": "https://arxiv.org/abs/2608.19794",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Fujiang Yuan, Xia Huang, Lusheng Wang, Jun Ding, Zhen Tian, Yuxin Wang, Shaojie Gu, Yuki Funabora, Yanhong Peng, Zebing Mao",
+      "categories": [
+        "cs.AI",
+        "cs.RO"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19799v1",
+      "source_hash": "9f117f96e9e6accd6068f62037e5b09bbccec54901c1d9853e78847deeead486",
+      "title": "SWE-bench Science: Can Coding Agents Resolve Engineering Tasks in Science?",
+      "title_zh": "SWE-bench Science：编码代理能否解决科学中的工程任务？",
+      "summary_zh": "SWE-bench Science是一个用于科学软件工程的仓库级基准，包含119个任务，来自98个GitHub仓库，跨20个科学领域。任务分为问题驱动、专家探索和工程集成三个范式。最佳代理Claude Code with Opus-5的通过率低于50%，突显科学软件工程的重大挑战。研究识别四个反复失败机制：科学知识或抽象缺陷、误导性探索或表面修复、不完整修复覆盖或系统集成、以及无法泛化科学知识。实验表明科学知识并非均匀有益：良好依据的信息可约束修复并提高性能，而未对齐指导可能诱导锚定而不提高修复成功率。",
+      "link": "https://arxiv.org/abs/2608.19799",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Zhipeng Xu, Jiahao Lu, Yining Zheng, Yuxin Wang, Xipeng Qiu",
+      "categories": [
+        "cs.CL",
+        "cs.SE"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19800v1",
+      "source_hash": "370038491eaae595a0f88c9946ee9ac2049d97694feaf503e8665a03e10006fa",
+      "title": "LoRA-GA$^2$: Low Rank Adaptation with Multi-step Gradient Adaptive Alignment",
+      "title_zh": "LoRA-GA²：基于多步梯度自适应对齐的低秩适应",
+      "summary_zh": "LoRA-GA²是一种改进的低秩适应方法，旨在缩小LoRA与全微调之间的性能差距。它引入轻量级探针利用多步梯度信息，无需额外GPU内存成本，并采用频谱感知、基于重要性的秩分配和最优初始化。实验显示LoRA-GA²在GLUE基准上平均超越领先基线0.66点，在GSM8K和HumanEval上分别超越最强基线1.03点和0.87点，同时保持vanilla LoRA的效率优势。该方法为大模型微调提供了更高效的解决方案。",
+      "link": "https://arxiv.org/abs/2608.19800",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Haonan He, Xinyue Fan",
+      "categories": [
+        "cs.CL",
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19802v1",
+      "source_hash": "1514ec1ce674e1cbe2c0abc2448b68d9cd32c601407244fae2939ef5fc098147",
+      "title": "Stopping and Routing LLM Judge Panels",
+      "title_zh": "停止与路由LLM法官小组",
+      "summary_zh": "LLM评估管道常有许多候选法官，部署问题涉及调用哪些法官、在哪些示例上以及何时停止小组构建。方法将法官小组设计视为角色条件分配问题，基于小标注审计集、声明切片和法官成本估计目标相对角色：副本无条件信息、互补者改进全局小组、专家仅帮助切片。策略包括丢弃副本、全局添加互补者、有条件路由专家，并在验证增益低于阈值时停止。在推理、代码、安全等多种审计中，方法优于单法官、平坦小组等基线，提供可复用的调用计划。",
+      "link": "https://arxiv.org/abs/2608.19802",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Bin Zhu, Yi Xie, Yanghui Rao",
+      "categories": [
+        "cs.CL"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19804v1",
+      "source_hash": "3c522a0788466215dee21616b9954a5548ab4517bf0e3d0368c3bd50ca3687e5",
+      "title": "ADAPT: Physics-Aware Diffusion-based World Models for Adaptive Predictive Transferable HVAC Control",
+      "title_zh": "ADAPT：用于自适应预测可转移HVAC控制的物理感知扩散世界模型",
+      "summary_zh": "建筑占全球能耗和CO2排放的三分之一，优化室内气候系统对城市气候缓解至关重要。但室内延迟热力学响应和部分可观察性阻碍现有方法。ADAPT提出物理感知条件扩散室内环境世界模型，用于HVAC控制。模型预测短期保持动作热基线以捕获建筑潜热惯性，扩散主干利用生成模型鲁棒性，可学习多区热平衡正则化约束轨迹满足可转移建筑热力学。实验显示ADAPT在IID控制下降低能耗7.3%和不适30.2%，在OOD控制中保持鲁棒性能，显著优于现有方法。",
+      "link": "https://arxiv.org/abs/2608.19804",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Xu Yang, Kailai Sun, Dianyu Zhong, Qianchuan Zhao",
+      "categories": [
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19812v1",
+      "source_hash": "cd48d6aec4eca498fd02aa9241cb2c79ce4c89fd15682a2773abacc1d8382e21",
+      "title": "When Saying No Makes Better Videos: Designing Dual Gatekeeping for Pedagogically Grounded AI Content Creation",
+      "title_zh": "说‘不’如何制作更好的视频：为基于教学法的AI内容创作设计双重把关",
+      "summary_zh": "为防止采用美学完善但教学有误的AI内容，研究视频创作管道中的双层结构化拒绝机制。第一层赋予教育者基于多媒体学习理论迭代重塑AI脚本的能力，第二层使用自动指标标记教学连贯性和叙事-视觉同步性违规。评估结合23名教育者研究和自动指标显示，两层独立改进相同教学维度，表明有原则的抵抗和生成式AI是合作伙伴而非对立，可共同提升内容质量。",
+      "link": "https://arxiv.org/abs/2608.19812",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Yearim Kim, Njun Baek, Nojun Kwak",
+      "categories": [
+        "cs.AI",
+        "cs.CV"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19831v1",
+      "source_hash": "97f8e227598868fe0d736061202a7aba89951e2c6c49ab1a9aeea372c57df79a",
+      "title": "Causal Reasoning with Bipartite Graphical Causal Models",
+      "title_zh": "使用二分图因果模型进行因果推理",
+      "summary_zh": "因果贝叶斯网络（CBNs）和结构因果模型（SCMs）是图形因果推理的主导框架，但不能充分表示所有因果系统，特别是平衡系统中反馈机制创建循环依赖时，不同干预可能产生不同效果。提出二分图因果模型（BGCMs），用二分图编码方程系统结构，变量和方程节点。硬干预指定替换哪个方程、目标变量和值，解决标准概念的歧义。通过案例研究展示表示对应现实干预，制定B-separation和do-calculus，BGCMs严格推广CBNs和SCMs，保留图形因果推理能力。",
+      "link": "https://arxiv.org/abs/2608.19831",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Joris M. Mooij",
+      "categories": [
+        "cs.AI",
+        "math.PR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19838v1",
+      "source_hash": "737dd78e82d6ca7606e89d850fcfd6b18fa80e4bda90d6efbc1170e44215703c",
+      "title": "Specification-delta-driven data governance: an empirical study of the {\\guillemotleft}spec-delta{\\guillemotright} as the unit of change in lakehouse data platforms",
+      "title_zh": "规范增量驱动的数据治理：在湖屋数据平台中作为变更单位的‘规范增量’实证研究",
+      "summary_zh": "规范驱动开发（SDD）认为规范应成为治理AI辅助工作的主要工件，但规范增量作为数据平台变更单位尚无实证研究。工作形式化规范增量概念，提出数据平台变更分类法，定义控制实验比较规范增量驱动工作流与传统代码拉取请求工作流。响应变量包括发现到部署时间、缺陷密度、跨工具指标分歧和评审员认知负荷。贡献是可重现证据和适用性指南，帮助避免过度规范反模式，促进数据平台变更管理。",
+      "link": "https://arxiv.org/abs/2608.19838",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Pablo Ramirez Amador",
+      "categories": [
+        "cs.AI",
+        "cs.PL"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19842v1",
+      "source_hash": "7b05224760da4bd460da8fbf326e663bd45e07b9598b2a600a1d030acea41f2e",
+      "title": "SAPO: Single-Rollout Autoregressive Policy Optimization for Agentic Reinforcement Learning",
+      "title_zh": "SAPO：用于代理强化学习的单次展开自回归策略优化",
+      "summary_zh": "代理强化学习（RL）是大型语言模型后训练的关键阶段，现有无评论家、组相对方法从多个展开估计优势，但缺乏显式值泛化、有效时间信用分配，可能在长期任务中优势崩溃。提出SAPO，低内存计算高效框架，策略和值函数共享单一自回归骨干，在不同因果边界产生预测，优化PPO和SARSA目标。引入轨迹级广义优势估计器结合lambda回报和批次归一化。实验显示SAPO在ALFWorld和WebShop上优于PPO和GRPO，减少内存和运行时间。",
+      "link": "https://arxiv.org/abs/2608.19842",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Dayang Liang, Lang Feng, Bo An, Yunlong Liu",
+      "categories": [
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19861v1",
+      "source_hash": "9a2a3c8f78383db1e6b1021017485b5295aa22bf93f7c9077503401602910f8a",
+      "title": "PolicyGuide: From Guarding One Action to Guiding the Whole Workflow for Policy-Compliant LLM Agents",
+      "title_zh": "PolicyGuide：从守护单个行动到引导整个工作流以实现策略合规的LLM代理",
+      "summary_zh": "客服LLM代理必须遵循组织策略，合规失败源于禁止行动或遗漏程序要求。运行时保障可干预危险行动，但行动局部检查不引导多步程序。工作流跟随系统支持规定过程执行，但主要针对工作流完成而非保障代理行为。PolicyGuide将策略编译成工作流图，在用户轮次边界调用主动验证器，协调未决请求并返回特定步骤修复路径。在τ²-bench领域，平均通过率从0.42提高到0.62，电信领域增益最大，工作流可迁移到其他代理，降低攻击成功率并提高程序合规性。",
+      "link": "https://arxiv.org/abs/2608.19861",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Seongjae Kang, Taehyung Yu, Sung Ju Hwang",
+      "categories": [
+        "cs.AI",
+        "cs.CL",
+        "cs.LG"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19875v1",
+      "source_hash": "77abfb2402b7f266c5cfe1d09e9419e8284f859b1e4df0245add7029c0082fa4",
+      "title": "A knowledge-guided agentic framework for mitigating patient-context ambiguity in health queries",
+      "title_zh": "用于缓解健康查询中患者上下文歧义的知识引导代理框架",
+      "summary_zh": "患者常提交简短、不明确的健康查询，缺乏患者特定信息以确定适当响应。尽管语言清晰，但可能支持多个合理答案，取决于未公开因素如症状、诊断等。直接回答可能依赖未支持假设。提出知识引导的代理框架，在最终响应生成前缓解患者上下文歧义。框架解释初始查询，使用特定任务知识图构建假设集，识别缺失变量，提问针对性后续问题。评估显示框架在诊断检索和饮食安全分类中显著提高准确性和召回率，优于直接回答和重新表述。",
+      "link": "https://arxiv.org/abs/2608.19875",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Mahyar Abbasian, Saba A. Farahani, Arshia Ilaty, Hung Cao, Ramesh Jain, Amir M. Rahmani",
+      "categories": [
+        "cs.CL",
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19880v1",
+      "source_hash": "767a8c0ad940c953b673e4eaa0ae79e2997f55b78c687d0c4986005a3afddb79",
+      "title": "EnvHarness: Awakening Static Worlds for Agent Learning",
+      "title_zh": "EnvHarness：唤醒静态世界以用于代理学习",
+      "summary_zh": "LLM代理通过与环境交互学习，但这些环境是手建且静态的，无法适应代理改进。提出EnvHarness，可编程插件组件层包装静态环境，重塑行为而不修改底层逻辑。EnvRigger作为目标策略黑盒，观察执行轨迹合成EnvHarness组件，针对诊断缺陷并通过新展开验证。在四个领域的五个基准测试中，EnvHarness优于原始环境和特定领域生成管道，提供更好的强化学习优化信号，实现策略和环境的持续针对性协同进化。",
+      "link": "https://arxiv.org/abs/2608.19880",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Chengsong Huang, Zifeng Wang, Rujun Han, Jun Yan, Yanfei Chen, Zoey CuiZhu, Ke Jiang, Peng Xia, Han Yu, Yufan Zhuang, Yifei Ming, Jiaqi Pan, Bhavana Dalvi Mishra, Jiaxin Huang, Burak Gokturk, Tomas Pfister, Chen-Yu Lee",
+      "categories": [
+        "cs.AI",
+        "cs.CL",
+        "cs.LG"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19882v1",
+      "source_hash": "e9d7b48de6d037ca28d9c9a9d7d8d20eab672f9b0193764a2b3822fc32a2180c",
+      "title": "TESTNAV: Pareto-Guided Search for Compositional Robustness Testing",
+      "title_zh": "TESTNAV：用于组合鲁棒性测试的帕累托引导搜索",
+      "summary_zh": "深度学习模型对现实世界输入扰动脆弱，特别是多种损坏同时发生时。组合测试揭示交互效应，但面临扰动空间组合增长和诊断价值不均挑战，许多组合产生不现实降级输入。提出TESTNAV，帕累托引导鲁棒性测试框架，用于高效探索离散组合扰动空间。将鲁棒性测试视为双目标优化：最大化性能降级同时保持输入保真度（如SSIM、KID、chrF）。使用NSGA-II近似帕累托前沿。在视觉、语言和代码生成基准中，TESTNAV恢复帕累托前沿更快，使用更少扰动空间。",
+      "link": "https://arxiv.org/abs/2608.19882",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Arooj Arif, Tobias Hartung, Elena Botoeva, Alexandros Koliousis",
+      "categories": [
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19889v1",
+      "source_hash": "5e5eef5e28335a64813cbe2d4b87d3d49ab6c4574de2290be3ec6942a74790c7",
+      "title": "Write Once, Run Everywhere: The Axon DSL for Shape-Safe and Framework-Agnostic LLM Architectures",
+      "title_zh": "编写一次，处处运行：用于形状安全和框架无关LLM架构的Axon领域特定语言",
+      "summary_zh": "开源语言模型生态系统依赖单一平台，实施和维护高效模型定义在不同训练和推理模式间移植是资源密集型任务，限制模型效率和可移植性。提出Axon，强类型领域特定语言，具有类似Haskell语法，实现LLM架构的编写一次、处处运行范式。基于语言规范而非框架愿景合作，促进开放合作，允许简洁、可审计规范，自动编译到领先框架实现如PyTorch、JAX、MLX和vLLM。推理基准实验显示中位加速，提高性能并避免部署锁定。",
+      "link": "https://arxiv.org/abs/2608.19889",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Jacob Nielsen, Danial Namazifard, Lukas Galke Poech, Peter Schneider-Kamp",
+      "categories": [
+        "cs.AI",
+        "cs.PL"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19891v1",
+      "source_hash": "262094697e6018938fe819f9d78f9bee9b0891d699ab4f75aba32a28688a2cf1",
+      "title": "EXIMO: VLM Guided Exploration of VLA Policies",
+      "title_zh": "EXIMO：VLM引导的VLA策略微调",
+      "summary_zh": "机器人操作策略基于大规模视觉-语言-动作（VLA）模型的行为克隆，但微调VLA策略学习新任务仍是开放问题，特别是收集遥操作数据集昂贵，强化学习样本效率低。提出EXIMO，高效微调VLA策略算法。EXIMO分三阶段：探索（VLM作为规划器分解长期问题，收集编排数据集）、模仿（用编排数据微调VLA）、优化（残差离策略RL进一步微调）。实验消融所有阶段，显示EXIMO在样本效率和最终性能上显著优于现有方法。",
+      "link": "https://arxiv.org/abs/2608.19891",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Bhavya Sukhija, Oliver Groth, Mohit Shridhar, Tim Hertweck, Michael Bloesch, Markus Wulfmeier, Abbas Abdolmaleki, Martin Riedmiller",
+      "categories": [
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19893v1",
+      "source_hash": "e168f66dc0f99a4b1c0583e1d4781378eb286f6779c7468a7576f7fc95379225",
+      "title": "Interrupting the Loop: Periodic Subject Changes Raise Judged Surprise and Connection in Base Language Models",
+      "title_zh": "中断循环：周期性主题变化提高基础语言模型中的判断惊奇和连接性",
+      "summary_zh": "研究基础语言模型在没有任务时生成新颖性的来源。拆除认知生成循环，发现主要效应来自一个操作：每几百个令牌注入新主题（中断），同时抑制字面重复（习惯化）。使用生成文本窗口判断，中断将判断惊奇提高1.2到1.4点，连接性提高0.8点。连接性要求连续性有害；段落分隔无检测增益；重置上下文至少与保持上下文一样好。预注册复制确认主要对比。在可验证问题（在线装箱）中，中断将有效不同候选启发式乘以三到四倍，但未提高最佳质量。",
+      "link": "https://arxiv.org/abs/2608.19893",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Roberto I. Ono Filho",
+      "categories": [
+        "cs.CL",
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19902v1",
+      "source_hash": "ac34246db70b6703a700aab8bb148ab3d7bc75364734ea3ad0e719e91a15158b",
+      "title": "Bringing analytic rigor to agentic AI for science: The Brain Researcher platform for neuroimaging data analysis",
+      "title_zh": "将分析严谨性引入科学代理AI：用于神经影像数据分析的Brain Researcher平台",
+      "summary_zh": "AI代理可执行科学分析，但分析输出成为可辩护主张仅在权衡替代方案后。代理可能复制失败，包括选择性分析、过早宣布成功和优化不完美标准。提出Brain Researcher，代理研究工具，在神经影像研究者计算环境中操作，遵循可接受分析、必需检查和主张范围规则。基准测试显示Brain Researcher提高七种模型的工具选择准确性和可验证基础，多宇宙分析暴露分析选择敏感性，科学审查分类主张状态，将方法论判断嵌入工作流。",
+      "link": "https://arxiv.org/abs/2608.19902",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Zijiao Chen, Nicholas Lu, Xinhui Li, Jocelyn A. Ricard, Ce Ju, Huan H. Wang, Christian Kindermann, Jeanette A. Mumford, Steven Dillmann, James Kent, Alejandro de la Vega, Sanmi Koyejo, Vince D. Calhoun, Joshua W. Buckholtz, Juan Helen Zhou, Steffen Bollmann, Russell A. Poldrack",
+      "categories": [
+        "cs.AI",
+        "q-bio.NC"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19907v1",
+      "source_hash": "f86cee364f81d3dc0b479cd1dfa86925b79b22ea06647ed2b2a2815077338afe",
+      "title": "Spike-based Belief Propagation in Nonlinear Dynamical Systems",
+      "title_zh": "非线性动态系统中的基于脉冲的信念传播",
+      "summary_zh": "贝叶斯推理是大脑功能的核心计算原则，提供感知、决策和学习的规范框架。提出结合脉冲神经模型和贝叶斯推理原则的脑样控制算法，用于不确定环境中的自适应控制。使用山车停车问题作为非线性动态基准。结果表明控制器可实时更新状态并通过脉冲驱动动态生成目标导向计划，突出模型作为计算神经科学和概率控制理论之间桥梁的潜力，为自适应控制提供新方法。",
+      "link": "https://arxiv.org/abs/2608.19907",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Sepideh Adamiat, Hongye Wang, Wouter M. Kouw, Bert de Vries",
+      "categories": [
+        "cs.AI",
+        "cs.LG",
+        "cs.NE",
+        "cs.SY",
+        "eess.SY"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19920v1",
+      "source_hash": "99e2cd9b9a9b049e6e7d260409d7bf78fd5d590fd84536ba50b797533aef90f6",
+      "title": "Learning how to Forget: Fine-tuning for Long-Context Sparse Attention",
+      "title_zh": "学习遗忘：用于长上下文稀疏注意力的微调",
+      "summary_zh": "先前工作通过稀疏注意力处理键值缓存选择和压缩，以实现长上下文推理，避免过高硬件预算。提供微调模型用于稀疏注意力的新方法，适用于任何KV缓存策略，运行在中等硬件预算上（如单块40GB RAM Nvidia A100 GPU），允许模型与策略共同适应，常优于使用精确注意力训练的模型。提供H2O稀疏注意力的高效实现和开源库KeysAndValues，支持长上下文推理和微调，易于使用且性能高。",
+      "link": "https://arxiv.org/abs/2608.19920",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Matthias Seeger, Zeyu Zhang, Vihang Patil, Konstantinos Benidis, Sebastian Schelter",
+      "categories": [
+        "cs.CL"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19932v1",
+      "source_hash": "4565ede456bc6c862bc57a6eefddf5ab5012362821283feb0256411905088cf9",
+      "title": "A Strong Linear Baseline for Whole-Heart Cardiac Shape Completion on CT, with an Open Eleven-Structure Statistical Shape Model",
+      "title_zh": "用于CT全心脏形状补全的强大线性基线，附开放十一结构统计形状模型",
+      "summary_zh": "公共心脏队列注释不同子集，无法汇集没有共享对应的形状。释放十一结构心脏CT统计形状模型，从383个自动标记病例构建，在11 571-顶点对应中。比较补全估计器：闭式条件高斯估计器在内部测试集上平均误差3.717 mm，图变分自编码器5.248 mm，最近邻检索8.931 mm。模型和补全算子支持对齐CT的队列统一研究，非临床使用，为心脏形状分析提供强基线。",
+      "link": "https://arxiv.org/abs/2608.19932",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Matej Gazda, Jakub Gazda, Juraj Gazda, Peter Drotar",
+      "categories": [
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19942v1",
+      "source_hash": "e60718045715689b28e4032d5f747d91795696df136b60d8489461ab1be65fc5",
+      "title": "Dynamic Gated Cross-Modal Fusion with Sarcastic-aware Contrastive Regularization for Multimodal Sarcasm Detection",
+      "title_zh": "用于多模态讽刺检测的动态门控跨模态融合与讽刺感知对比正则化",
+      "summary_zh": "多模态讽刺检测旨在从多模态内容中识别讽刺意图，字面意义和上下文线索不一致常指示讽刺。现有方法依赖固定融合策略，将讽刺视为通用跨模态不匹配，限制捕捉细微线索和实例特定交互。提出新框架集成动态门控跨模态融合和讽刺感知对比正则化（SaCR）。双向门控交互模块执行跨模态特征过滤和实例级校准，动态融合门平衡模态重要性。SaCR鼓励非讽刺样本语义一致性，抑制讽刺案例误导一致性。在MMSD和MMSD2.0上实验显示优于强基线。",
+      "link": "https://arxiv.org/abs/2608.19942",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Hao Guo, Subin Huang, Junjie Chen, Zhifa Geng, Sanmin Liu, Chao Kong",
+      "categories": [
+        "cs.CL"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19953v1",
+      "source_hash": "ce93ae3d5fca1e263f5d6bf46aa4d7c2e2aac51d89b2f6e8b32cec7a721bed4b",
+      "title": "Learning Early-to-Final Solution Consistency for MILP Acceleration",
+      "title_zh": "学习早期到最终解决方案一致性以加速MILP",
+      "summary_zh": "研究问题：混合整数线性规划（MILP）是基本问题类，但现代求解器在有限时间内难以找到高质量解。方法：提出新的求解器知情范式，将学习目标从变量分配转移到早期到最终一致性预测，指导下游搜索，并通过多早期解决方案集成提高鲁棒性。实际价值：在四个MILP基准上，Gurobi平均减少原始间隙56.9%，并零样本转移到SCIP实现平均36.4%的间隙减少。",
+      "link": "https://arxiv.org/abs/2608.19953",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Guanlin Li, Chengrui Gao, Chenguang Wang, Haopu Shang, Zherong Zhang, Ke Xue, Jixiang Lu, Weiyong Yang, Chao Qian",
+      "categories": [
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19957v1",
+      "source_hash": "9d76328a6afc9d1accdace30d78a65d237baa210b8a80e8f5a1f16e1591a0efd",
+      "title": "Natural Language Code Retrieval for 1C:Enterprise: An Open Benchmark and Efficient Bi-Encoder",
+      "title_zh": "1C:Enterprise的自然语言代码检索：一个开放基准和高效双编码器",
+      "summary_zh": "研究问题：1C:Enterprise生态系统结合俄语语法和领域特定术语，缺乏公开数据集和专用模型。方法：提供一个全面流程，包括3413个真实世界查询-代码对的开放基准、可复现评估工具和专用双编码器，使用合成三元组微调和Matryoshka表示学习。实际价值：模型达到0.5992平衡宏nDCG@10，优于基线，MRL截断到256维保持99.9%检索质量并减少存储。",
+      "link": "https://arxiv.org/abs/2608.19957",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Konstantin Chesnokov, Chingiz Mingazov",
+      "categories": [
+        "cs.CL"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19966v1",
+      "source_hash": "317e46a868f291cd874b6a34fe95d0f81a777e4538f6dbe5abb1b908997d7964",
+      "title": "Rethinking Patch Based Multivariate Time Series Forecasting with Semantic Structured Partitioning",
+      "title_zh": "用语义结构分区重新思考基于补丁的多变量时间序列预测",
+      "summary_zh": "研究问题：现有基于补丁的预测方法有局限，如破坏时间边界、引入冗余表示等。方法：提出SCPaT框架，基于语义结构分区，自动生成语义单元，构建动态语义图建模依赖关系，使用重要性感知路由机制分配语义块。实际价值：在12个真实数据集上证明有效性，改进预测准确性。",
+      "link": "https://arxiv.org/abs/2608.19966",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Jiazhe Wang, Zhiquan Huang, Linjing Xue, Ming Liu, Meiwen Li, Ruijuan Zheng",
+      "categories": [
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19971v1",
+      "source_hash": "a61cfa371db023c6206e295be3dad5c4b5a9c234cfd5d02ea1cfa4e4a14907f4",
+      "title": "Robust Incomplete Multimodal Sentiment Analysis via Iterative Proxy Correction",
+      "title_zh": "通过迭代代理校正实现鲁棒不完整多模态情感分析",
+      "summary_zh": "研究问题：多模态输入常不完整或损坏，现有方法依赖一次性代理构建，可能粗略或不可靠。方法：提出迭代代理校正框架，构建语言导向代理，通过门控残差校正逐步细化，适应性融合并使用阶段式潜变量校正目标稳定轨迹。实际价值：在MOSI、MOSEI和SIMS数据集上优于基线，实现鲁棒情感预测。",
+      "link": "https://arxiv.org/abs/2608.19971",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Zhifa Geng, Subin Huang, Hao Guo, Junjie Chen, Sanmin Liu, Chao Kong",
+      "categories": [
+        "cs.CL"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19974v1",
+      "source_hash": "e977b0e3350c3e807c8186b6ed91263fd7e06674276ec7c70a549c056d99f850",
+      "title": "ReguSim: Evaluating LLM Agent Rule Grounding in Financial Compliance",
+      "title_zh": "ReguSim：评估LLM代理在金融合规中的规则基础",
+      "summary_zh": "研究问题：金融市场中LLM代理可能引用规则但仍提交违规订单。方法：引入ReguSim受控环境和ReguBench基准，分离陈述推理、尝试行动、执行强制和监控证据四个构件。实际价值：交易员运行显示可见规则减少但未消除拒绝行动，监控中简单结构化基线匹配或超过纯提示LLM，强调审计规则基础行动和证据使用。",
+      "link": "https://arxiv.org/abs/2608.19974",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Yiyang Luo, Yihang Jiang, Qijun Xie, Liang Lan, Lin Willian Cong, Anyi Rao, Yunya Song",
+      "categories": [
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19981v1",
+      "source_hash": "1df7938e56d284150f371627381458664dd00805d67d165bff795f9fd2a4bb7e",
+      "title": "HealMed: Multilingual Evaluation of Large Language Models in Medicine",
+      "title_zh": "HealMed：医学中大型语言模型的多语言评估",
+      "summary_zh": "研究问题：医学中LLM的多语言评估缺乏基准。方法：提供专家评审基准，包含9种语言各1000个示例，覆盖MCQA、NLI和开放QA任务，由23名医生基于9个数据集开发。实际价值：性能在低资源语言下降最大，强专有模型最稳定，专家修订可影响性能，显示翻译质量对跨语言评估的关键作用。",
+      "link": "https://arxiv.org/abs/2608.19981",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Yingjian Chen (Drew), Fan Gao (Drew), Sherry T. Tong (Drew), Haoyu Zhang (Drew), Aosong Feng (Drew), Kevin W. Jin (Drew), Xing Wu (Drew), Jinghui Lu (Drew), Abdul Samad (Drew), Akbar Faruqi (Drew), Cesar Caraballo (Drew), Cibele Brand\\~ao (Drew),  Dhruva (Drew),  Gupta, Eunji Jeon, Gabriel Madera-Santiago, Geon Lee, Hugo Toshio Itikawa, Insook Cho, Isabelli Martins, Isarar Siddique, Israr Ahmed, Jihyo Kwak, Kanyakorn Veerakanjana, Luis Guilherme Cardoso, Minjin Kim, Piyalitt Ittichaiwong, Renee Dua, Santiago Gudi\\~no-Rosales, Xiujie Chen, Zeo Lapalus, Zixin Xu, Michihiro Yasunaga, Rex Ying, Heuiseok Lim, Jaewoo Kang, Chanjun Park, Hang Jiang, Ethan Goh, Hyunjae Kim, Edison Marrese-Taylor, Yusuke Iwasawa, Yutaka Matsuo, Qingyu Chen, Irene Li",
+      "categories": [
+        "cs.CL"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.19993v1",
+      "source_hash": "120594b235203bd8eb9d4afc2e4dc616e44ce21f6ef205db77826a2243071745",
+      "title": "Optimal Skill Selection for LLM Agents with Provable Bicriteria Guarantees",
+      "title_zh": "具有可证明双标准保证的LLM代理最优技能选择",
+      "summary_zh": "研究问题：技能选择影响LLM代理的任务性能和令牌成本，现有方法无质量保证。方法：提出Best Prefix Selection（BPS）多项式时间算法，将技能选择建模为优化问题，具有双标准(1-1/e,1)近似保证。实际价值：在BigCodeBench变体上达到0.73任务成功率，优于基线，使用更少令牌，提高效率和性能。",
+      "link": "https://arxiv.org/abs/2608.19993",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Yu Chen, Ruishuo Chen, Xun Wang, Zhuoran Li, Longbo Huang",
+      "categories": [
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.20009v1",
+      "source_hash": "09b4942866f3afd7d9fdee56d44f7aaf8c0f6359f9d23abf408a09047d75f874",
+      "title": "ExPhy: A Benchmark for Explicit Physical Property Learning in Multi-Object Trajectory Forecasting",
+      "title_zh": "ExPhy：多物体轨迹预测中显式物理属性学习的基准",
+      "summary_zh": "研究问题：现有基准很少将物体级物理属性作为显式评估目标。方法：引入ExPhy基准，包含24000个模拟场景，显式标签质量、摩擦和恢复系数，提供分布内和分布外划分，并实例化PhyODE模型。实际价值：在OOD-Initial设置上减少ADE和FDE，揭示准确轨迹预测不一定意味着准确恢复物理属性。",
+      "link": "https://arxiv.org/abs/2608.20009",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Rui Wang, Yeteng Wu, Xianlin Zhang, Mengshi Qi",
+      "categories": [
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.20011v1",
+      "source_hash": "41014d3532d063e9dc705d8e9b9d8baae534885aa143077b0dde317c3914dd9c",
+      "title": "Manifold Drift in Flow Preference Optimization: A Root Cause of Reward Hacking",
+      "title_zh": "流偏好优化中的流形漂移：奖励黑客的根本原因",
+      "summary_zh": "研究问题：扩展偏好优化到连续时间动态非平凡，奖励驱动更新可能导致流形漂移。方法：形式化流形漂移，提出ThermoDPO温度控制目标，锚定对偏好优化，并引入加权变体。实际价值：在玩具基准上提高StrictScore，在SD3.5-M上改进OCR和指标，控制流形距离。",
+      "link": "https://arxiv.org/abs/2608.20011",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Yansen Han, Shengyi Liao, Yuanxing Zhang, Pengfei Wan, Tao Lin",
+      "categories": [
+        "cs.AI",
+        "cs.CV"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.20019v1",
+      "source_hash": "d7d66063bae4ea124696bbe037e0a4e1779f115ae1e1f6de65cf4e5a7c118c0d",
+      "title": "Contrastive Mixed Prompt Learning for Incomplete Multimodal Sentiment Analysis with Unseen Modality Combination",
+      "title_zh": "用于不完整多模态情感分析的对比混合提示学习与未见模态组合",
+      "summary_zh": "研究问题：测试阶段常遇到训练中未见的模态组合，导致泛化不足。方法：提出CMPL模型，引入标签引导对比特征学习机制和模态组合提示与软路由器，使用三种提示对比学习策略。实际价值：在三个数据集上准确率提高超过5%，增强模型对未见模态组合的泛化能力。",
+      "link": "https://arxiv.org/abs/2608.20019",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Kaixin Xu, NaiJin Liu, Yulin Kang, Tangyue Jin, Zixuan Yu, Wenxi Zhao, Yibei Liu, Qianle Zhang, Yangyang Wu, Mengying Zhu, Meng Xi",
+      "categories": [
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.20041v1",
+      "source_hash": "943b712454ade759596b0f257155b632d9ecd1309c39b9256511a63f0347b897",
+      "title": "A three-dimensional typology of agency for advanced AI systems",
+      "title_zh": "先进AI系统能动性的三维类型学",
+      "summary_zh": "研究问题：无框架解决先进AI系统实例化的能动性类型，特别是非道德形式。方法：基于哲学、伦理学等理论，发展三维类型学：本质（道德或法律）、模式（个体或集体）和位置（人类或非人类）。实际价值：区分法律和道德能动性，创建概念空间考虑个人、法律、非人类能动性，适用于工具目标追求复杂场景。",
+      "link": "https://arxiv.org/abs/2608.20041",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Willem Fourie",
+      "categories": [
+        "cs.AI",
+        "cs.CY"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.20047v1",
+      "source_hash": "62d370c1524131dd210e8a56cbb35d50a94c4d318b7bc45ebcda101e4af9b72e",
+      "title": "Auditing Cross-Lingual Fairness in Language Model Watermarking",
+      "title_zh": "审计语言模型水印中的跨语言公平性",
+      "summary_zh": "研究问题：水印方案仅在英语上评估，多语言部署暴露评估设计选择问题。方法：提出评估框架，包括经验校准检测阈值、阈值无关测量、三种质量测量范式和广义熵分解。实际价值：应用于六个水印方案和多语言，揭示失败模式，差异主要在类型学家族之间，表明公平性差距结构性。",
+      "link": "https://arxiv.org/abs/2608.20047",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Alexander Nemecek, Osama Zafar, Debargha Ganguly, Vikash Singh, Vipin Chaudhary, Erman Ayday",
+      "categories": [
+        "cs.CL",
+        "cs.CR",
+        "cs.LG"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.20053v1",
+      "source_hash": "44842e4542a2dc67de2369638a6383e9ff26eb8846ce87ec62e5e51167ddb17f",
+      "title": "On the Applicability of Safety Nets: A Safety-By-Design Solution for Certifying Neural Networks",
+      "title_zh": "论安全网的适用性：认证神经网络的自设计安全解决方案",
+      "summary_zh": "研究问题：AI在安全关键航空系统中的集成带来认证挑战，需要自设计方法。方法：提出安全网，结合神经网络压缩和查找表，确保离散化设计域100%正确运行时行为。实际价值：首次系统分析神经网络和查找表大小权衡，找到最优设计参数，减少系统大小近三个数量级，符合EASA指南，提供开源实现。",
+      "link": "https://arxiv.org/abs/2608.20053",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Johann Maximilian Christensen, Thomas Stefani, Elena Hoemann, Frank K\\\"oster, Sven Hallerbach",
+      "categories": [
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.20054v1",
+      "source_hash": "26dc82df5252e8dff6dd0d8c3fdca4488d350fae3fbdf64cfc58c70ce1cae027",
+      "title": "What You Can't See Is What You Learn: Restricted Evidence Visibility Favors Compositional Generalization in Shared-Genome Language-Model Societies",
+      "title_zh": "你看不见的就是你学到的：受限证据可见性有利于共享基因组语言模型社会中的组合泛化",
+      "summary_zh": "研究问题：多模块系统暴露完整输入，测试受限可见性是否改变梯度训练发现的解决方案。方法：使用四单元社会共享冻结模型和适配器，仅通过固定中继向量通信，比较受限与全局可见对。实际价值：受限社会在10对中9对优于全局可见双胞胎，显示受限可见性增加泛化中继概率，但正式失败因准确率低于阈值。",
+      "link": "https://arxiv.org/abs/2608.20054",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Narcis Marincat",
+      "categories": [
+        "cs.AI",
+        "cs.LG",
+        "cs.MA"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.20083v1",
+      "source_hash": "5d8ef39157b8c288b558111a7c1eae8de907172f8f74bfa1fdc24c782529b1ba",
+      "title": "SABET-QA: Temporal Knowledge Graph Question Answering",
+      "title_zh": "SABET-QA：时间知识图谱问答",
+      "summary_zh": "研究问题：时间知识图谱问答（TKGQA）需要时间敏感推理，现有基于嵌入方法因单次推理管道在多步查询上困难。方法：提出SABET-QA框架，通过双向实体-时间评分机制和槽感知上下文模块迭代细化推理状态，使用可微工作内存。实际价值：在CronQuestions等基准上一致改进，特别是复杂多步时间查询。",
+      "link": "https://arxiv.org/abs/2608.20083",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Brahim Touayouch, Mirette Moawad, Dmitry Akulov",
+      "categories": [
+        "cs.CL",
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.20106v1",
+      "source_hash": "a93ce5d542b5e3b5b2609256439250bededd9e87ca9fa672829017c0cf19c5c9",
+      "title": "OenoBench: A Wine-Domain Benchmark for Knowledge-Grounded Evaluation of Large Language Models",
+      "title_zh": "OenoBench：一个用于知识基础评估大型语言模型的葡萄酒域基准",
+      "summary_zh": "研究问题：评估LLM在葡萄酒域的知识缺乏基准。方法：提供OenoBench基准，包含3266个选择题，覆盖六个支柱和四个难度层，使用LLM驱动管线但事实可溯源，经九代理审计。实际价值：评估16个前沿配置，发现准确率范围53%-84%，揭示参数回忆上限，发布数据集和审计结果。",
+      "link": "https://arxiv.org/abs/2608.20106",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Nikita Khudov",
+      "categories": [
+        "cs.CL"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.20114v1",
+      "source_hash": "31e19549968f72a3de5a83cc00f6504ee96fd9c327e78206f625387133b4a47c",
+      "title": "DECOWAM: Decoupled Whole-Body World-Action Model for Legged Mobile Manipulation",
+      "title_zh": "DECOWAM：用于腿式移动操作的解耦全身世界行动模型",
+      "summary_zh": "研究问题：移动操作需要预测运动如何改变未来观察和控制，现有模型未明确区分相机自运动。方法：提出DECOWAM，解耦基座和手臂动作，冻结FastWAM骨干，训练残差适配器，引入ARMDOG真实机器人数据集。实际价值：改进未来视频和动作预测，减少动作MSE 21.7%，在闭环试验中提高协调性和鲁棒性。",
+      "link": "https://arxiv.org/abs/2608.20114",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Siyuan Ma, Boshi Zhang, Yutian Zhang, Qinglian Wu, Jiaqi Zhai, Dong Wei, Qiaojun Yu",
+      "categories": [
+        "cs.AI",
+        "cs.RO"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.20116v1",
+      "source_hash": "983afd4a117a6ba63cd83113c8fd619240a7228065c0f1653bb713f41f3447c7",
+      "title": "When Text and Numbers Disagree: Evidence Arbitration in Large Language Models",
+      "title_zh": "当文本和数字不一致时：大型语言模型中的证据仲裁",
+      "summary_zh": "研究问题：LLM在文本摘要、数字观察和工具输出提供冲突证据时如何仲裁。方法：引入受控合成基准，操纵模态、时效性、可靠性和证据来源。实际价值：发现仲裁行为系统而非随机，模型显示文本-数字偏好，更一致遵循时效性而非可靠性，过度依赖外部预测，揭示工具增强决策系统的启发式失败模式。",
+      "link": "https://arxiv.org/abs/2608.20116",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Mattia Carletti, Edward Phillips, Fredrik K. Gustafsson, Patitapaban Palo, Lei Clifton, Danielle Belgrave, Xiao Gu, David A. Clifton",
+      "categories": [
+        "cs.CL"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.20153v1",
+      "source_hash": "065442d1a108fc8654280abb60c66f05a536b25df564af7ddcf5bb35ece10096",
+      "title": "FormalTCS: Benchmarking End-to-End Frontier Formal Theoretical Computer Science Research of Large Language Models",
+      "title_zh": "FormalTCS：大型语言模型端到端前沿形式理论计算机科学研究的基准",
+      "summary_zh": "研究问题：LLM在自动化理论计算机科学（TCS）研究中显示潜力，但现有基准不现实。方法：引入FormalTCS基准，包含175个实例来自2025-2026年论文，保留定义和证明依赖，经专家验证。实际价值：评估领先LLM，自动形式化是最尖锐瓶颈，构建自动化TCS研究框架，显示研究品味有限是主要障碍。",
+      "link": "https://arxiv.org/abs/2608.20153",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Dingzirui Wang, Xuanliang Zhang, Keyan Xu, Qingfu Zhu, Wanxiang Che",
+      "categories": [
+        "cs.CL"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.20161v1",
+      "source_hash": "2be7079883230d97b817115c670ff1bf168f74d646e9d65aa428c298c83b6c31",
+      "title": "DARS: Dual-Level Credit Assignment RL with Structured Reasoning for Instruction-Based Image Editing",
+      "title_zh": "DARS：用于基于指令图像编辑的双层信用分配强化学习与结构化推理",
+      "summary_zh": "研究问题：基于指令的图像编辑使用规划器-渲染器管道，仅用最终图像奖励训练低效。方法：提出DARS强化学习框架，双层信用分配，跨模块多计划多渲染滚动估计奖励变异性，规划器内结构化推理输出实现前缀门控奖励。实际价值：在五个基准上优于Joint RL基线，特别是推理密集编辑，改进信用分配。",
+      "link": "https://arxiv.org/abs/2608.20161",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Haoxiang Cao, Jiajiong Cao, Xuanpu Zhang, Changqian Yu, Chaoqun Wang",
+      "categories": [
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.20169v1",
+      "source_hash": "d3e10d863d438a6541073b3b701f21b6b842ecdc4957595afed7234c37748940",
+      "title": "Task-CoEvolve: Efficient Harness Optimization via Adaptive Validation Task Selection",
+      "title_zh": "Task-CoEvolve：通过自适应验证任务选择实现高效Harness优化",
+      "summary_zh": "本文提出Task-CoEvolve方法，通过自适应验证任务选择优化LLM代理的Harness配置。Harness优化迭代重写代码以提升性能，无需更新模型权重。现有方法因每次评估全验证集而导致高成本。Task-CoEvolve协同进化验证任务与Harness，通过选择信息性任务和部分评估估计全集性能，利用方差加权采样聚焦于代理能力前沿的任务。实验表明，在文本分类和Terminal-Bench 2.1上，该方法以减少80%评估次数达到全集搜索性能。",
+      "link": "https://arxiv.org/abs/2608.20169",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Atsuyuki Miyai, Kiyoharu Aizawa, Toshihiko Yamasaki",
+      "categories": [
+        "cs.CL",
+        "cs.AI",
+        "cs.LG"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.20201v1",
+      "source_hash": "65d68adcece9fc782661016fa017fcc66a18eed56d901f7dad447cb5ebc0b409",
+      "title": "The Third Restructuring of Software Form: From the Three-Tier Architecture to Storage, Models, and Agents",
+      "title_zh": "软件形式的第三次重构：从三层架构到存储、模型与代理",
+      "summary_zh": "本文论证软件形式的第三次重构，即Software 3.0，其中上下文和推理决定行为，最终形式收敛为存储、模型和代理三个元素。传统三层架构中，用户界面层被模型按需生成界面的能力吸收，业务逻辑层根据可表达性和关键性重新划分，数据层成为唯一持久基础设施。论文形式化该论题，提出最小参考架构，并分析其成立条件与边界，如确定性、成本、安全性和可验证性。",
+      "link": "https://arxiv.org/abs/2608.20201",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Wei Lin, Tao Zhou, Zhaofei Xie, Changgui Hong",
+      "categories": [
+        "cs.AI",
+        "cs.SE"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.20202v1",
+      "source_hash": "9059bc82e4689b6272ce9c4517f800921d0e47fe606fde0b42b06994f6656c0e",
+      "title": "MemTrapBench: Benchmarking Cognitive Traps in LLM Memory Use",
+      "title_zh": "MemTrapBench：评估LLM记忆使用中的认知陷阱",
+      "summary_zh": "本文识别LLM记忆使用中的认知陷阱，即使记忆忠实相关，也能扭曲模型推理并降低任务性能。引入MemTrapBench基准，评估推理固化和信念扭曲两种陷阱形式。实验显示，所有记忆策略在MemTrapBench上均表现不佳，甚至低于无记忆设置。提出AdaptiveMem方法，在推理时指导LLM避免记忆陷阱，在标准基准上保持或提升性能。",
+      "link": "https://arxiv.org/abs/2608.20202",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Mengru Wang, Haozhe Luo, Zhenqian Xu, Zhixiang Cui, Haoming Xu, Qu Yang, Jizhan Fang, Junfeng Fang, Ningyu Zhang",
+      "categories": [
+        "cs.AI",
+        "cs.CL",
+        "cs.CY",
+        "cs.DB",
+        "cs.LG"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.20204v1",
+      "source_hash": "a462b701c92bbcb22b04def557f2b7ff6b635490bba0c3d91a75c66f8ad07b05",
+      "title": "ContractScrub: A benchmark for final review of legal contracts",
+      "title_zh": "ContractScrub：法律合同最终审查基准",
+      "summary_zh": "本文引入ContractScrub，首个评估法律合同scrubbing能力的基准，由经验丰富的律师手工制作合同，涵盖定义术语误用、引用错误等错误类别。实验显示前沿模型表现不佳，仅一个模型宏平均召回率达0.75，突显当前模型在现实任务中的局限性，强调领域特定基准的重要性。",
+      "link": "https://arxiv.org/abs/2608.20204",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Yejin Bang, Kirsty Fielding, Brandan Oliver, Brian Birke, Nabeel Seedat, Andrew M. Bean",
+      "categories": [
+        "cs.AI",
+        "cs.CL"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.20218v1",
+      "source_hash": "9a7cc88e6d59a573885d7b4186b644f3b836aa4da7d54118030a81858139cf3b",
+      "title": "Electronic Navigational Chart Change Classification",
+      "title_zh": "电子导航图变更分类",
+      "summary_zh": "本文提出自动分类电子海图变更的方法，以解决水文办公室手动审查的劳动密集问题。建立编码方案将向量数据转换为结构化表格，包括空间上下文和属性编码器。在包含1,308个海图对的数据集上评估，调优梯度提升树准确率达90%和94%，比基线提高5-7%，证明机器学习集成到地理空间流程的可行性，提升航海安全。",
+      "link": "https://arxiv.org/abs/2608.20218",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Jacob Arndt, Abhishek Potnis, Alexandre Sorokine",
+      "categories": [
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.20220v1",
+      "source_hash": "1d87eaf62aa7ab1f2153ff82ef7b85b4dcbdf96d605ae27f4935fb85ee32a9e8",
+      "title": "InsufficiencyBench: Evaluating LLM legal advice on underspecified user queries",
+      "title_zh": "InsufficiencyBench：评估LLM对信息不足用户查询的法律建议",
+      "summary_zh": "本文引入InsufficiencyBench，首个针对用户查询信息不足的法律基准，评估模型是否识别缺失法律重要信息并避免过早结论。形式化八类缺失元素分类，构建202个基准项目。实验显示，十个前沿模型在缺失元素识别上F2不超过0.46，模型或含糊或沉默，无法同时处理完整和不足查询，揭示当前模型的局限性。",
+      "link": "https://arxiv.org/abs/2608.20220",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Samuel J. Vincent, Daniel Calloway, Fangyi Yu, Andrew M. Bean, Nabeel Seedat",
+      "categories": [
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.20237v1",
+      "source_hash": "16fdb12b3eb9d118d1a3c4ad7051c3f1654d1ed8237ed97a5ebce19786108448",
+      "title": "Rule-Compliant Visual Spatial Planning for Multimodal Large Language Models",
+      "title_zh": "多模态大语言模型的规则遵从视觉空间规划",
+      "summary_zh": "本文引入RuleMaze基准，评估多模态大语言模型在遵守自然语言规则下的视觉空间规划。提出Language-Logic-Function Hybridization自动生成规则，并引入Disentangled Multimodal Planning方法分离感知、执行和规则验证。实验表明，DMP显著提高规则遵从和规划成功率，相比端到端文本规划基线，提供可解释的中间规划轨迹。",
+      "link": "https://arxiv.org/abs/2608.20237",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Yu Chen, Ting Lei, Yaoyi Li, Jia Cai, Zhecen Wu, Yang Liu",
+      "categories": [
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.20240v1",
+      "source_hash": "7b5521e19a6e16abde4ea88d4bed1863f06f1014173607c5b43d6081fa2a32e9",
+      "title": "QUASAR: A Quantum-Classical Neural Network for SAR Satellite Physical-Layer Authentication",
+      "title_zh": "QUASAR：用于SAR卫星物理层认证的量子-经典神经网络",
+      "summary_zh": "本文提出QUASAR，首个量子-经典混合架构，用于X波段SAR卫星的物理层认证。结合CNN频谱图编码器和变分量子电路，方法数据高效，仅需10%训练数据即可匹配经典基线精度。在重放、IQ注入和星载欺骗三种对抗场景下，拒绝伪造传输的比率分别为89.7%、94.1%和81.3%，建立了首个量子增强的卫星物理层分类器。",
+      "link": "https://arxiv.org/abs/2608.20240",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Vincenzo Sammartino, Nathanael Denis, Roberto Di Pietro",
+      "categories": [
+        "cs.AI",
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.20256v1",
+      "source_hash": "dce3f879ece3c1988a195364e1124ad76c45760f4bac32aa0f1ab046a06b809d",
+      "title": "Learning When to Think: Adaptive Reasoning for Test-Time Compute Allocation",
+      "title_zh": "学习何时思考：测试时计算分配的自适应推理",
+      "summary_zh": "本文研究大语言模型能否通过选择推理模式（快速回答、简短推理、扩展推理）来自适应分配计算资源。在GRPO中通过塑造奖励和硬性限制学习模式选择。实验显示，三种模式自然出现，简短推理更准确，平均响应长度减少41%，同时保持准确率，并能无重新训练迁移到其他基准，如GSM8K上减少76% token，证明自适应推理的有效性。",
+      "link": "https://arxiv.org/abs/2608.20256",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Gijs Kassenaar, Zhao Yang, Vincent Fran\\c{c}ois-Lavet",
+      "categories": [
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.20271v1",
+      "source_hash": "d2d3896ebbf13e33f73e601d98b804986154448d8a1dabae299a7cbc92958ee6",
+      "title": "Catching the Rug: Early Prediction of Fraudulent Memecoins on Solana via Machine Learning",
+      "title_zh": "抓住Rug：通过机器学习早期预测Solana上的欺诈性Memecoin",
+      "summary_zh": "本文聚焦Solana区块链上的memecoin欺诈预测，其中rug pull主要由流动性操纵驱动。构建包含6.4百万个代币的7个月数据集，分析显示大多数memecoin在一小时内表现出rug pull特征。使用仅前5分钟交易数据，XGBoost等模型能有效检测潜在rug pull，多源数据融合显著缓解领域偏移并提高检测可靠性，为DeFi欺诈防护提供实用框架。",
+      "link": "https://arxiv.org/abs/2608.20271",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Jianghai Li, Pavel Kuznetsov, Yury Yanovich, Konstantin Nott-Whaley, Igor Vodolazov",
+      "categories": [
+        "cs.AI",
+        "cs.DC"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.20274v1",
+      "source_hash": "3dddd9125a41f0640537373ac02cfe17c4038439e4d9a903f3c795c2cc4f4216",
+      "title": "Break It Down, Pass It On: Cross-Task Skill Transfer in LLM Agents",
+      "title_zh": "分解任务，传递技能：LLM代理中的跨任务技能转移",
+      "summary_zh": "本文研究大语言模型代理中技能诱导方式对跨任务转移的影响。比较任务级与子任务级技能诱导，文本与代码技能格式。实验显示，子任务级技能平均提升性能，文本技能转移更好。提出技能效用分数，结合技能的特异性和抽象性预测转移成功率，为技能记忆提供实用诊断工具，无需任务执行即可评估。",
+      "link": "https://arxiv.org/abs/2608.20274",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Yiyang Feng, Biddut Sarker Bijoy, Niranjan Balasubramanian, Jiawei Zhou",
+      "categories": [
+        "cs.AI",
+        "cs.CL"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.20281v1",
+      "source_hash": "4ea98a94df0ff22527aa03291e9c774ceec8c340d1e790cf63067354ba4e1fae",
+      "title": "Inject, Align, Recover: Staged Post-Training for Retrieval-Free Document Knowledge Internalization",
+      "title_zh": "注入、对齐、恢复：用于无检索文档知识内化的分阶段后训练",
+      "summary_zh": "本文提出IAR分阶段后训练框架，用于将文档语料库内化为无需检索的参数知识。框架包括注入（将文档转换为多种目标）、对齐（适应模型）和恢复（合并基础模型）三个阶段。在Common Corpus和CCI数据集上，跨Llama、Phi等模型家族，IAR在领域QA准确率和一般性能上均优于SFT基线，平均提升3.6和12.1个百分点。",
+      "link": "https://arxiv.org/abs/2608.20281",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Qian Kou, Xiaofeng Shi, Xiaosong Qiu, Hua Zhou",
+      "categories": [
+        "cs.CL",
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.20290v1",
+      "source_hash": "5b8c614fc0f5076fa3b9285dfa811805d6b587d2125e6aba0298c06d41d334e6",
+      "title": "Phantom Gains: Auditing Self-Improvement Against a Measured Null",
+      "title_zh": "幻象收益：审计自改进 against 测量空值",
+      "summary_zh": "本文审计大语言模型自训练是否真正改进，识别七个测量失败，每个在缺少对照组时反转报告发现。提出基于问题精确测试和错误发现率控制的方法，应用于多臂实验。结果发现，外部蒸馏改善基线模型很少达到的问题，而三种自训练形式不改善；自训练以高于测量下限的速率破坏基线已解决问题的问题。强调过渡级审计需要为每个统计量单独测量空值。",
+      "link": "https://arxiv.org/abs/2608.20290",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Cheng Xu, Nan Yan, Liming Chen, M-Tahar Kechadi",
+      "categories": [
+        "cs.AI",
+        "cs.CL"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.20314v1",
+      "source_hash": "8cc7181f9d4a34285d58af54f00066446da0d6ec696b8291760ea5e79161a392",
+      "title": "MidTool: Mid-training Data Synthesis for Agentic Tool Use",
+      "title_zh": "MidTool：用于代理工具使用的中间训练数据合成",
+      "summary_zh": "本文提出MidTool语料库构建管道，用于大语言模型代理工具使用的中间训练。管道结合大规模网络、PDF和代码数据，以及来自真实工具API和文档工作流的合成监督。在Qwen3模型上使用MidTool-Mix进行中间训练，然后应用监督微调和强化学习。实验显示，在BFCL、tau2-Bench等基准上，MidTool-Mix持续提高下游性能，证明通用工具使用受益于专门中间训练。",
+      "link": "https://arxiv.org/abs/2608.20314",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Fengqing Jiang, Yite Wang, Boyi Liu, Zhaoyang Wang, Canwen Xu, Zhewei Yao, Radha Poovendran, Yuxiong He",
+      "categories": [
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.20316v1",
+      "source_hash": "d02f45900133cca989ef745f93a8af7364ef0caf2a8de63d3675c7ad6fc6bbb7",
+      "title": "Pandora's AI Model Routing Box: Efficient Allocation with Costly Value Estimation",
+      "title_zh": "潘多拉的AI模型路由箱：高效分配 with 代价高昂的值估计",
+      "summary_zh": "本文将异构AI系统的查询路由形式化为潘多拉盒子问题，其中值估计有成本。提出Pandora's Router集中策略和Pandora's Bidder去中心化策略，基于信息价值决定是否细化估计。实验在三个领域进行，显示Router以更少查询昂贵估计器匹配穷举估计的路由质量；在去中心化设置中，价值信息推理在准确估计下提高分配效率，但在噪声估计下可能增加策略性专家的效用。",
+      "link": "https://arxiv.org/abs/2608.20316",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Adam Fisch, Shubhendu Trivedi, Fantine Huot, William W. Cohen, Michael Kaisers, Mirella Lapata, Kate Larson, Jacob Eisenstein",
+      "categories": [
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.20318v1",
+      "source_hash": "3ebe00327bb3260369977d50fa11cd44c8bb14a73877be836554f9470b778c4b",
+      "title": "AI4AI-Bench: Benchmarking LLM Agents in Algorithmic Design for Recursive Self-Improvement",
+      "title_zh": "AI4AI-Bench：基准测试LLM代理在算法设计中的递归自我改进",
+      "summary_zh": "本文引入AI4AI-Bench，首个评估AI系统是否能改进训练算法的基准，用于递归自我改进。包含10个冻结研究仓库，代理在4小时内重写训练算法，然后从头运行评估。跨29个配置的平均分数为0.166，最佳系统达0.250，显示大多数提交从未改变模型学习方式，但更努力推理的少数提交得分更高。发布基准套件以促进未来研究。",
+      "link": "https://arxiv.org/abs/2608.20318",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Yizhe Chi, Wenyi Li, Deyao Hong, Xiaoqiu Wang, Mingju Gao, Kaisen Yang, Bingxiang He, Youjie Zheng, Calvin Xiao, Qinhuai Na",
+      "categories": [
+        "cs.AI",
+        "cs.CL",
+        "cs.LG"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.20319v1",
+      "source_hash": "0ce5ac6660d078a67e71c0791541bc39c7391ac1611a8c9467c8217cc38b2ec9",
+      "title": "Inducing Task Models from Computer-Use Traces",
+      "title_zh": "从计算机使用痕迹中诱导任务模型",
+      "summary_zh": "本文提出任务模型诱导方法，从无约束的计算机使用痕迹中发现潜在任务并诱导结构化任务模型。方法包括分离并发活动和为每个任务构建目标分解模型与控制流程序模型。在受控轨迹上，TMI以0.974一致性恢复交错任务，重建74.9%执行步骤，并推导出的技能在保留任务上提高准确率30.0%，远超基线。",
+      "link": "https://arxiv.org/abs/2608.20319",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Yucheng Jiang, Zora Zhiruo Wang, Ruishi Chen, Diyi Yang",
+      "categories": [
+        "cs.CL",
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.20320v1",
+      "source_hash": "10f6d8c862c6d4dcdd3f9455afb092f9d72807ac70799ae4857cf3c35d011fff",
+      "title": "An Agentic Approach for Active Data Collection, Travel Behavior Modeling, and Weather-Sensitive Demand Prediction",
+      "title_zh": "用于主动数据收集、出行行为建模和天气敏感需求预测的代理方法",
+      "summary_zh": "本研究提出三代理工作流，集成对话数据收集、结构化数据处理和行为预测。使用聊天机器人管理的图像增强调查收集学生通勤者在天气场景下的模式选择，得到454个观察。分析使用多项logit模型，基准为logistic回归和随机森林。评估九个本地部署的大语言模型，显示随机森林达69.6%准确率，最佳视觉配置达71.5%，表明视觉上下文提供额外预测信息。",
+      "link": "https://arxiv.org/abs/2608.20320",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Narges Ahmadi (McGill University), Yubo Jiao (McGill University), J\\^onatas Augusto Manzolli (McGill University), Jiangbo Yu (McGill University), Luis Miranda-Moreno (McGill University)",
+      "categories": [
+        "cs.AI",
+        "cs.CL"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.20331v1",
+      "source_hash": "b784706694ad6340c6938d6f21279de5a10305e9739f739b838e211b6c608e4a",
+      "title": "G-CARL: Grounded Checklist-Aligned Reward Learning for Patient-Oriented Medical Report Interpretation",
+      "title_zh": "G-CARL：面向患者的医疗报告解释的基于上下文的检查清单对齐奖励学习",
+      "summary_zh": "本文引入面向患者的医疗报告解释任务，要求模型基于用户查询和对话历史准确易懂地解释医疗报告。提出G-CARL框架，结合多源检索验证原子声明和上下文感知加权检查清单覆盖响应。构建MMedReport基准和三维评估协议。实验显示，G-CARL在整体质量、声明级精度和检查清单召回率上优于现有后训练基线，临床医生评估确认其更准确且符合患者需求。",
+      "link": "https://arxiv.org/abs/2608.20331",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Shiao Xie, Siyu Chen, Jianwei Lv, Bo Yuan, Yujin Wang, Xiandong Li",
+      "categories": [
+        "cs.CL",
+        "cs.AI",
+        "cs.CV"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.ai+cs.cl/oai:arXiv.org:2608.20338v1",
+      "source_hash": "d5e641f9c524a913759e9890a694445d8af5ae88089824bcc0df2258805189d1",
+      "title": "ConceptGuard: Benchmarking Context-Sensitive Unlearning in Large Language Models",
+      "title_zh": "ConceptGuard：基准测试大语言模型中的上下文敏感遗忘",
+      "summary_zh": "本文引入ConceptGuard基准，评估大语言模型中针对概念级别而非稀疏事实的上下文敏感遗忘。定义双用途概念，即在有害和良性上下文中均可使用的概念。基准中忘记集和保留集在概念使用上明确互补。实验显示，当前遗忘技术在此设置下表现不佳，显示弱上下文分离、有限上下文敏感性和差的概念级控制一致性，揭示与真实安全要求对齐的挑战。",
+      "link": "https://arxiv.org/abs/2608.20338",
+      "published": "2026-08-21T00:00:00-04:00",
+      "author": "Sahil Kale, Ian Harris",
+      "categories": [
+        "cs.CL"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl"
+    }
+  ]
+}

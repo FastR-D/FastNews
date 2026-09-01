@@ -1,0 +1,790 @@
+{
+  "date": "2026-09-01",
+  "generated_at": "2026-09-01T10:23:17.966261+00:00",
+  "model": "mimo-v2.5",
+  "source_file": "articles/2026-09-01.jsonl",
+  "article_count": 53,
+  "summary_count": 53,
+  "complete": true,
+  "articles": [
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.28794v1",
+      "source_hash": "0440980067c3f9d06ac8c7199256298825ecd854145b7c454a236f336bcdd871",
+      "title": "Breaking Darknet CAPTCHAs with general purpose LLM",
+      "title_zh": "使用通用大语言模型破解暗网验证码",
+      "summary_zh": "该研究评估了自动化方法破解暗网环境验证码的有效性。暗网验证码通常不依赖JavaScript，具有独特特征。研究考察了三种典型验证码类型：开圆定位、基于旋转的对齐和物体选择。实验发现当前多模态大语言模型在精确空间定位和几何变换方面存在系统性局限。论文提出一种混合框架，将多模态大语言模型作为高层推理层，通过模型上下文协议将几何计算委托给确定性算法，该系统在所有评估的验证码类型上成功率超过90%，证明了结合多模态大语言模型与传统计算机视觉能构建更准确高效的破解器。",
+      "link": "https://arxiv.org/abs/2608.28794",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Benjamin Fehrensen, Jens Hubler",
+      "categories": [
+        "cs.CR",
+        "cs.CV"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.28882v1",
+      "source_hash": "9f30c0df19d943f36c8dd8e8ba20ebf34d33b29c32c7bcd970b4f51287b3901a",
+      "title": "Enhancing Web Application Firewalls with BERT-GNN for SQL Injection Detection",
+      "title_zh": "利用BERT-GNN增强Web应用防火墙的SQL注入检测",
+      "summary_zh": "本文针对Web应用安全中检测复杂SQL注入攻击这一关键挑战，提出一种优化的BERT-GNN混合流程。该方法将SQL查询分词并编码为BERT上下文嵌入，用以初始化图神经网络的节点特征，并通过Optuna对模型架构进行调优。优化后的模型在攻击类别上达到99.67%的准确率、99.71%的精确率、99.39%的召回率和99.55%的F1分数。敏感性分析表明模型在扰动下预测稳定，平均敏感度得分仅为0.0037。研究验证了结合BERT的上下文理解与GNN的结构建模能力，能有效检测复杂SQL注入攻击向量。",
+      "link": "https://arxiv.org/abs/2608.28882",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Lilliane Linnet Musoke, Atta Badii, Ahmed Ashlam",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.28889v1",
+      "source_hash": "7f726e3ec7d426f4036ecf551af7438a3178932406fe379344cbe014d7a92af3",
+      "title": "Enhancing Web Application Firewalls with Machine Learning for SQL Injection Detection",
+      "title_zh": "利用机器学习增强Web应用防火墙的SQL注入检测",
+      "summary_zh": "本研究系统综述了SQL注入检测领域的研究空白，并设计优化了一个DistilBERT-堆叠集成流程以提升检测效率和鲁棒性。该流程对数据进行预处理和分词，提取DistilBERT嵌入，训练并基于多项指标排名多个分类器。三个表现最佳的模型（逻辑回归、XGBoost和SVM）通过神经元学习器组合成堆叠集成。该集成通过快速梯度符号法生成的对抗样本进行强化训练，并使用Optuna调优，最终在所有指标上达到99.81%的性能，同时将推理延迟降低了约140倍。研究贡献在于设计并验证了一个具有最先进精度、实时速度且对FGSM攻击具有鲁棒性的SQL注入检测器。",
+      "link": "https://arxiv.org/abs/2608.28889",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Lilliane Linnet Musoke, Atta Badii, Ahmed Ashlam",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.28921v1",
+      "source_hash": "f25ca92b5bc84f986db4534653d2bd067254e1426175d841d467a525a529e14e",
+      "title": "Identity by Design, Demographics by Accident: Demographic Leakage and Suppression in Behavioral Biometric Embeddings",
+      "title_zh": "设计的身份，意外的人口统计信息：行为生物特征嵌入中的泄漏与抑制",
+      "summary_zh": "行为生物特征认证系统使用深度学习模型将生物信号转化为身份嵌入用于用户认证。然而，这些嵌入可能无意中泄露性别、年龄等敏感人口统计属性。本文首次系统审计了行为生物特征认证系统中的人口统计信息泄漏问题，评估了覆盖四种生物特征模态、9个数据集上的11个模型，并对四种事后抑制方法进行了基准测试。分析揭示不同模态、模型架构和学习目标之间在泄漏程度和可抑制性上存在显著差异。例如，语音嵌入泄漏高但可有效抑制，而按键/触摸嵌入泄漏较低但更难净化。该研究揭示了行为生物特征认证中的一项根本性隐私风险。",
+      "link": "https://arxiv.org/abs/2608.28921",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Iyadh Khan, Patrick Nilackshan, Mohamed Aathif, Mohamed Theesan, Sandareka Wickramanayake, Sanka Rasnayaka",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.28929v1",
+      "source_hash": "180856a516aa0b55a2aeeb5a53743b38d5feff1be02b6bd16e8fd7da9ddcfb84",
+      "title": "Membership is Ownership: A Robust Ownership Verification Framework for Diffusion Models",
+      "title_zh": "成员即所有权：面向扩散模型的稳健所有权验证框架",
+      "summary_zh": "本文针对大规模扩散模型知识产权保护问题，提出了“成员即所有权”验证框架。该框架基于对私有成员证据数据集的总体假设检验，通过成员推理进行模型归属，并通过与公共参考模型分离进行验证，两者均在极高的统计显著性水平下进行检验。研究在不修改所有者模型或其采样流水线的前提下，在DDIM和Stable Diffusion模型上评估了MiO，报告了在固定假阳性目标下的真正率。MiO在不同的事后微调和权重扰动下保持稳定，相比水印方法展现出更好的鲁棒性。该工作解决了现有基于训练时水印方法的结构局限性，以最小的模型效用损失实现场景化所有权验证。",
+      "link": "https://arxiv.org/abs/2608.28929",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Feng Jiang, Zuobin Xiong, An Huang, Zhipeng Cai, Yingshu Li",
+      "categories": [
+        "cs.CR",
+        "cs.CV"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.28992v1",
+      "source_hash": "f4fb4d26ebc9abca1a13f8680c7d436b33fc08b12de6c307f7f58ac743a57894",
+      "title": "CARVY-FL: Client Anticlustering for Robust Voting in Provably Secure Federated Learning",
+      "title_zh": "CARVY-FL：面向可证明安全联邦学习的反聚类客户端投票",
+      "summary_zh": "联邦学习易受恶意客户端影响。基于投票的联邦学习通过分组训练模型并多数投票聚合预测来提升鲁棒性。但在类别不平衡的非独立同分布数据下，无视分布的分组会导致认证准确率波动。本文提出CARVY-FL，通过一次训练轮次的模型更新估算客户端分布类型，并使用反聚类方法增加组内分布多样性。在固定分组下，CARVY-FL保持了基于投票的认证准确率保证，同时增加了投票优势。在MNIST和Fashion-MNIST上的实验表明，CARVY-FL的认证准确率优于FLCert。在面对具有模型替换能力的BadNets攻击时，CARVY-FL将100%攻击成功率下的曲线下面积分别提升了11.1%和14.9%。",
+      "link": "https://arxiv.org/abs/2608.28992",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Masaki Nakada, Honoka Anada, Tatsuya Kaneko, Hiroshi Nakamura, Shinya Takamaeda-Yamazaki, Hideki Takase",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.29077v1",
+      "source_hash": "cd84774cb88f52de52f8ed984b864b6755c72488f13c4fbaf9ead719e123c8c2",
+      "title": "A Comprehensive Survey on Linguistic Steganography: Methods, Countermeasures, Evaluation, and Challenges",
+      "title_zh": "语言隐写术综述：方法、对策、评估与挑战",
+      "summary_zh": "该综述从四个轴线系统梳理了语言隐写术领域：148种隐写方法、60种语言隐写分析对策、23种评估指标和9个开放挑战，每部分都包含分类、评述和采用情况分析。研究指出大语言模型时代带来了五个具体的范式转变：从掩蔽文本修改到仅基于提示的生成、从启发式安全到可证明安全、从白盒对称语言模型到黑盒或非对称访问、从以安全为中心的设计到联合优化、以及从文本质量关注到工程问题。该综述旨在作为大语言模型时代负责任且实用的语言隐写术的参考和路线图。",
+      "link": "https://arxiv.org/abs/2608.29077",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Ruiyi Yan, Chenhui Chu, Zhongliang Yang, Yugo Murawaki",
+      "categories": [
+        "cs.CR",
+        "cs.CL"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.29084v1",
+      "source_hash": "e3ded438919e0f6b4cafda7aa9e1162f696687232873371c4a19c3554052becb",
+      "title": "UiAs: User-Independent 3D Facial Anti-Spoofing via Multi-modal Wireless Signals",
+      "title_zh": "UiAs：基于多模态无线信号的用户独立3D人脸防伪",
+      "summary_zh": "本文提出了一种名为UiAs的多模态用户独立3D人脸防伪系统，利用电磁（毫米波）和机械（声波）两种无线信号。高保真3D面具可以复制面部外观和几何形状，但无法复制活体组织的固有物理响应，而这可通过无线信号探测。然而，无线信号捕获的活体线索与用户相关的面部几何信息纠缠，限制了跨用户泛化能力。UiAs利用两种模态共享类似的用户相关几何变化，通过跨模态相减在保留各模态特有活体线索的同时抑制这些变化，并利用互补的物理响应提升活体/伪造的辨别能力。该系统通过皮肤锚定对比学习处理实际部署中的多种材料偏差。在真实3D伪造攻击评估中，UiAs对未注册用户实现了93.25%的准确率。",
+      "link": "https://arxiv.org/abs/2608.29084",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Zhiwei chen, Lebin Lyu, Yimo Zhang, Dingyu Zhong, Yijie Li, Yichao Chen, Dian Ding, Jiguo Yu, Xiaosong Zhang, Yongzhao Zhang",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.29111v1",
+      "source_hash": "a9af024e8b66384a4aa85c25ec7e3c13fb84c60b331ae29cfc33e3fe5fc2c4d8",
+      "title": "Auditing and Mitigating Privacy Leakage in Cloud-Edge Collaborative Decoding",
+      "title_zh": "审计与缓解云边协同解码中的隐私泄漏",
+      "summary_zh": "针对云端大语言模型与边缘设备协同解码范式（即私有数据留在边缘，由小型语言模型生成下一令牌分布，再与仅在公有数据上运行的云端大语言模型的预测融合）的隐私风险，本文使用构建的问答数据集建立了一个新颖的评估框架，系统分析了此类协作可能暴露大量私有上下文信息。为应对隐私泄漏，论文提出了CoVeil防御机制，在解码时动态优化传输信号以抑制泄漏，同时保持协作质量。大量评估表明，CoVeil通过将数据泄漏降低高达87.2%且仅造成最小精度损失，始终如一地提升了隐私-效用权衡，优于现有基线方法。",
+      "link": "https://arxiv.org/abs/2608.29111",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Kejia Zhang, Tianyuan Zou, Zixuan GU, Yang Liu",
+      "categories": [
+        "cs.CR",
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.29134v1",
+      "source_hash": "3ce86cfb03214cb2254853b62d97df2f699e8f7f333553af2cd53df7f329b4e8",
+      "title": "Mechanizing Typed Regulatory Actions for Security Tokens: Semantics, Falsification, and Bounded EVM Evidence",
+      "title_zh": "为安全代币机械化类型化监管操作：语义、可证伪性与有界EVM证据",
+      "summary_zh": "本文在Isabelle/HOL中形式化了ERC-8319提出的六种监管操作语义，包括冻结、扣押、没收、清算、限制和恢复，区分了应用、拒绝和操作失败结果，并机械化了重置、重放、纪元等属性，且未添加未证明的占位符或公理。模型证明了外部事实边界：两个关于所有权、结算和权利主张不一致的具体世界会产生相同的内核观察，因此这些外部事实无法从有界输入建立。通过构造性见证和直接突变展示了故障集的可达性和可证伪性。针对一个ERC-TRUST候选标准，报告了Foundry、Certora等多方面的形式化证据。当前发布的所有核心和强制性支持义务均已满足，但贡献在于提供了一个机器检查的领域语义和一份关于已证、有界证据、假设和开放问题的可证伪地图。",
+      "link": "https://arxiv.org/abs/2608.29134",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Jinwook Kim (Oraclizer Labs)",
+      "categories": [
+        "cs.CR",
+        "cs.LO"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.29136v1",
+      "source_hash": "df8584ce99b20ee670ef74232586b3ef099097bd98b9db4bc07d34d79816ceeb",
+      "title": "Not the Same Protector: Deployment-Dependent Protective Intervention in LLMs",
+      "title_zh": "非同一保护者：大型语言模型中依赖部署方式的保护性干预",
+      "summary_zh": "本研究探究了当用户以语音而非文本方式与模型交互时，模型是否以相同方式保护用户。通过一个模拟人身伤害的困境场景，研究者使用语音、文本和原始API三种部署条件，对四个前沿模型进行了匹配输入测试，并对响应编码了五个二元保护指标。结果发现，三个模型在语音界面下的响应显著短于文本界面，且保护行为随长度压缩而收缩：在API和文本条件下均达到上限的医疗指令在语音条件下对所有测试模型均下降，且这种收缩不能完全归因于长度。在原始API访问下，没有模型曾询问用户的安全状况一次。这些结果表明保护性干预对请求到达的表面敏感，且不能仅用对话长度解释。",
+      "link": "https://arxiv.org/abs/2608.29136",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Eunna Lee, Soomyoung Lee, Jungpyo Nam, Heonjin Ha, Jamin Jung, Kyunam Choi, Sunjun Hwang, Yeonghun Kim, Seok-Jae Lim",
+      "categories": [
+        "cs.CR",
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.29151v1",
+      "source_hash": "37e05766cff061012eacf7e5a8cbcbfed57cb4513893a12d2a9ddc6df6390a47",
+      "title": "WoE Wrote It? Watermarking Mixture-of-Experts LLMs for Black-Box Text Provenance",
+      "title_zh": "WoE写就？面向混合专家模型大语言模型的黑盒文本溯源水印",
+      "summary_zh": "现有大语言模型水印主要依赖推理时采样器方法且聚焦于稠密模型，在模型权重被窃取后无法进行事后溯源。本文提出“专家水印”新方法，利用稀疏混合专家模型的独特结构特性。WoE通过偏置特定专家的词汇表并将水印信号嵌入从不可执行的推理包装器转移到模型参数中，确保水印内置于模型参数。这使得防御者能够对窃取的权重、泄露的检查点以及从窃取架构蒸馏出的次级稠密模型生成的文本进行溯源。在八个混合专家模型上的评估表明，WoE在1%假阳性率下平均达到90.1%的真正率，并在对抗性微调、模型提取和输出级改写下仍可检测，迫使恶意行为者陷入权衡困境。",
+      "link": "https://arxiv.org/abs/2608.29151",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Jona te Lintelo, Lichao Wu, Stjepan Picek",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.29184v1",
+      "source_hash": "386f8c41248c8b0ac1d10460e521a7afbb8234f47ba4d63338043c5d5a5818d4",
+      "title": "GhostSplat: Input-Triggered Backdoors for Multi-View-Consistent 3D Content Manipulation in Feed-Forward Gaussian Splatting",
+      "title_zh": "GhostSplat：用于前馈式高斯泼溅中多视角一致3D内容操控的输入触发后门",
+      "summary_zh": "前馈式3D高斯泼溅从稀疏图像重建3D场景，其共享预训练权重暴露了供应链攻击面。本文引入GhostSplat，这是一种在前馈式3D高斯泼溅中植入持久行为的输入触发后门。在输入图像上添加低幅度图案会导致投毒生成器在未见过的受害者场景上渲染攻击者选择的有效载荷。通过将有效载荷锚定到一个3D点并重新投影到每个目标视角，使其具有多视角一致性。GhostSplat训练框架在多个架构和数据集上成功实施，最强的注入和删除设置分别达到96%和100%的攻击成功率，且无假阳性，并能抵御JPEG、模糊和重采样。仅使用精确投影的防御因此不足；有效的缓解需要超出同集一致性投影的信息或干预。",
+      "link": "https://arxiv.org/abs/2608.29184",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Yudong Gao, Zongjian Ding, Linghan Chen, Yajing Chen, Yu Xinglin, Jiale Liu, Shan Huang, Mingjun Cheng",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.29191v1",
+      "source_hash": "ce74d07401f76d226457d8c6e0c96b4ac0da294f2d44ee7b02ec07eaf5606ee8",
+      "title": "A Broadcast Authenticated Encryption with Keyword Search in the Standard Model: Tightly Secure in Multi-User, Multi-Challenge Settings",
+      "title_zh": "标准模型下的广播认证可搜索加密：在多用户多挑战场景下的紧密安全",
+      "summary_zh": "本文研究了广播认证可搜索加密在现实最场景下的安全性。作者提出了在多用户（具有自适应腐败）和多挑战（密文和陷门交错）设置下BAEKS的新安全定义，并探讨了其不可伪造性问题。研究指出强隐含性要求已隐含了显著的不可伪造性。随后，在双线性配对群中提出了一种新的BAEKS构造，并在（几乎）标准的MDDH假设下证明了该方案实现了自适应紧密的全隐含安全性。将该构造限制为单一接收者时，也能得到一个高效且紧密安全的PAEKS构造。论文最后通过实验对方案进行了实现和评估。",
+      "link": "https://arxiv.org/abs/2608.29191",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Sayantan Mukherjee",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.29212v1",
+      "source_hash": "554fbf67dc3aeb9cc695d9665b07551324c59b53708cfc13450962bcfd0a9ed9",
+      "title": "Asymmetric Phase Coding Video Watermarking",
+      "title_zh": "非对称相位编码视频水印",
+      "summary_zh": "现有视频水印系统是对称的：能验证水印的一方也能嵌入水印，导致白盒伪造能击败所有评测方法。本文提出一种无需训练的非对称视频水印，移除了共享密钥。签名者将完整的Ed25519签名嵌入到色度平面的相位谱中；任何持有32字节公钥和公有视频元数据的一方可离线验证，无需模型、注册表或网络。其载荷量（带纠错的1024位签名消息）比常见学习载荷高出一个数量级，通过三个设计元素实现：一种通过相关性识别载荷组且不读取帧索引的行程时间布局、一种无需载荷的搜索从载体本身恢复缩放、旋转和平移，以及一种通过未修改的公共验证器进行自验证的闭环签名流程。在1000个未整理的真实视频片段上，系统为99.3%的语料库提供了可验证的签名，并在1000次尝试中零次接受错误公钥。攻击感知的接受门控使得嵌入能抵御H.264重编码（100%）和50%缩放（97.4%），且签名可通过实际的显示-捕获循环验证。",
+      "link": "https://arxiv.org/abs/2608.29212",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Guang Yang, Fengchen Liu",
+      "categories": [
+        "cs.CR",
+        "cs.CV",
+        "cs.GR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.29283v1",
+      "source_hash": "bdf74b144435e54ac7d2688765190832a330dfdfaf1955fbf7f3b94baafa425c",
+      "title": "A Multi-Month Study of Git Commit Signing",
+      "title_zh": "Git提交签名的多月研究",
+      "summary_zh": "Git提交签名是软件供应链中确立提交来源的一种机制，但开发者自主采用率较低且使用经验研究不足。本研究对22名高年级本科生和研究生（作为初级开发者的代理）进行了为期三个月的研究。参与者独立配置签名，在四个课程项目中使用，扩展到第二设备，检查一个包含异常提交的外部仓库，并回答安全推理提示。研究发现，虽然几乎所有参与者都成功签署了所有提交并认为常规签署正面，但许多人在设置、多设备配置和仓库验证时遇到困难。尽管整个学期都在签名，但在验证时他们难以发现异常提交，超过四分之一的人未发现任何异常。近一半人对签名保证或密钥管理存在至少一个误解。研究结论是，仅使签名更容易不足以确保有效的安全使用，安全的采用还需要支持签名验证、解释缺失签名和未知密钥，以及正确推理密钥生命周期操作的工具和教育。",
+      "link": "https://arxiv.org/abs/2608.29283",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Abubakar Sadiq Shittu, John Sadik, Scott Ruoti",
+      "categories": [
+        "cs.CR",
+        "cs.SE"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.29381v1",
+      "source_hash": "9d8bdd47c6cf50140c2128039fa089efc8394c5f12d513ef27cbb3fb0f4110ab",
+      "title": "Safe to Resume? Breaking Execution Continuity of Agent Execution via Rollback",
+      "title_zh": "可以恢复吗？通过回滚打破智能体执行的连续性",
+      "summary_zh": "AI智能体正朝着持久、有状态的执行发展，其累积的执行状态和外部效应在故障后重建成本高昂。检查点与回滚机制对恢复至关重要，但其安全影响尚未得到充分探索。正确的回滚并不意味着安全的恢复：忠实恢复的检查点可能恢复一个其状态、假设和外部效应从未在任何有效历史中共存的执行。本文首次系统研究了现有智能体系统中检查点与回滚的安全性。通过分析代表性机制，刻画了其设计空间并建立了通用执行模型，从中识别出五种基本故障模式，涵盖不完整或不一致的内部状态、过时的外部依赖、非确定性重放和未记录的外部效应。通过在三个系统上的端到端攻击演示了其安全影响，实现了恶意软件验证绕过、未授权邮件转发和重复支付。跨五个框架的评估显示，这些故障在异构设计中反复出现，源于检查点恢复的状态与安全继续执行所需依赖之间的共同差距。",
+      "link": "https://arxiv.org/abs/2608.29381",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Guanlong Wu, Dahui Li, Ke Jiang, Jianyu Niu, Cong Wang, Yinqian Zhang",
+      "categories": [
+        "cs.CR",
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.29463v1",
+      "source_hash": "967c7b3d7a70191afaeb0dc33def089706b160ab14aa35e490932dd5550d08d8",
+      "title": "Benchmark Contamination: A Taxonomy Organized by Defeated Mitigation",
+      "title_zh": "基准污染：按被击败的缓解措施组织的分类法",
+      "summary_zh": "基准分数是模型、评估工具、诱导预算、采样总体和污染状态的联合属性。排行榜只发布模型和分数，使能力和泄漏在观测上等价。现有分类法为自动检测而分类污染，而非报告者发布时面临的问题：在已应用缓解措施的前提下，哪些有效性威胁仍然开放。本文引入一种按每种类型击败的缓解措施（直接、衍生、时间、分布和习得）组织的分类法，涵盖训练时和评估时泄漏。保持私有测试集仅关闭第一种。第五种在评估过程中获得；因其是一次运行的属性，必须随分数报告而非基准发布记录。作者将其操作化为一个四字段披露协议，并提供了JSON模式、验证器和示例。两名外部编码者对41份文件应用了预注册工具，报告了其可靠性和当前披露情况的测量结果。",
+      "link": "https://arxiv.org/abs/2608.29463",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Johanna Angulo, V\\'ictor Yeste, Hector Espinos-Morato",
+      "categories": [
+        "cs.CR",
+        "cs.AI",
+        "cs.CL",
+        "cs.LG"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.29489v1",
+      "source_hash": "5d4d606626e908cef227a8a0852fb82922d67c3a406d4b5aee6374d254e57134",
+      "title": "SpatialTrust: A Benchmark for Environmental Risk Recognition in Secure Authentication",
+      "title_zh": "SpatialTrust：安全认证中环境风险识别的基准",
+      "summary_zh": "视觉环境风险识别在安全认证中扮演重要角色，用户环境可能泄露敏感信息或引入安全风险。然而，现有对多模态大语言模型的评估很少考察其能否在空间接地的认证场景中可靠地识别、定位和解释此类风险。本文提出了SpatialTrust，一个用于评估安全认证中环境风险识别能力的问答基准。SpatialTrust评估了五种互补能力：敏感因素检测、直接因素识别、间接因素识别、直接因素解释和间接因素解释。对专有和开源多模态大语言模型的评估发现，当前模型表现有限，尤其在理解和解释间接风险方面，表明空间风险感知仍是多模态大语言模型的一项挑战性能力。此外，本文引入SpatialTrustGuard，一个结构化问答与审计流程，将Qwen3-VL-30B-A3B-Instruct的整体性能从36.78%提升至41.12%。研究强调了为安全认证中多模态大语言模型的可信度开发专用基准和结构化推理方法的必要性。",
+      "link": "https://arxiv.org/abs/2608.29489",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Junbin Lu, Hsiang-Wei Huang, Saesha Wadhwa, Yu Ting Hsu, Jenq-Neng Hwang",
+      "categories": [
+        "cs.CR",
+        "cs.CV"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.29531v1",
+      "source_hash": "1239dd5e1671ac85c8195c3426ac03d3dc3b549d9bb2173a8ef765d8279f69c1",
+      "title": "Context or Digits? Balancing Memorability and Efficiency in Virtual Reality Authentication",
+      "title_zh": "上下文还是数字？平衡虚拟现实认证中的可记忆性与效率",
+      "summary_zh": "本文提出了一种面向虚拟现实、基于知识的认证方法——自适应方向认证。它通过强制密码创建基于虚拟环境上下文，同时在认证期间支持基于上下文和数字两种输入方式，从而在时间上解耦用户需求。此设计优先考虑新密码的可记忆性，并提供高效且易记的选项以支持用户演变的需求。一项与66名参与者进行的为期2-3周的远程纵向研究，将ADBA与6位PIN码进行了比较。结果显示ADBA实现了更优的可记忆性和更低的感知任务负荷。有趣的是，研究中没有参与者选择通过数字输入，但他们仍然认为ADBA具有很高的效率，尽管客观输入时间更长。ADBA还通过随机生成的数字表示提供了安全优势，尽管在某些特定虚拟环境中观察到了一定程度的密码同质性。研究发现ADBA相比传统PIN码具有坚实优势，并在所考虑的使用场景下成功解决了效率、可记忆性和安全性之间的权衡问题。",
+      "link": "https://arxiv.org/abs/2608.29531",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Yuxuan Huang, Qiao Jin, Tongyu Nie, Victoria Interrante, Evan Suma Rosenberg",
+      "categories": [
+        "cs.CR",
+        "cs.HC"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.29568v1",
+      "source_hash": "cd5ebdda6f80edb6f40f26e723de84a7a571d2d5d5eb35ebf695107a00ea8012",
+      "title": "OASIS: Optimizing Attacker Sequences for Hard-Label Black-Box Text Attacks",
+      "title_zh": "OASIS：优化硬标签黑盒文本攻击的攻击者序列",
+      "summary_zh": "针对硬标签黑盒文本攻击，本文提出OASIS方法，通过一次性双目标攻击链搜索优化攻击者序列，平衡攻击成功率和扰动，并在攻击执行时重用固定全局链。实验在多个数据集和大型语言模型上进行，显示OASIS优于独立攻击者和手动组合链，表明攻击者组合是改进攻击的实际优化目标。",
+      "link": "https://arxiv.org/abs/2608.29568",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Qian Chen, Shiliang Xiao, Yuzhi Liang",
+      "categories": [
+        "cs.CR",
+        "cs.CL"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.29737v1",
+      "source_hash": "924186372fc1cc0c88c5f288c654b65b04114e5bb75689fdffd667d4da1281ba",
+      "title": "Reactive Peripheral Modeling for Faithful Firmware Rehosting",
+      "title_zh": "用于忠实固件重托管的反应性外设建模",
+      "summary_zh": "现有固件重托管方法无法深入应用状态，因外设建模不忠实。本文提出反应性外设建模，将硬件外设建模为反应性和有状态系统，使用事件-条件-动作语义捕捉中断、MMIO和DMA交互、隐式状态转换和跨外设交互。在Bluezz中实现用于BLE固件重托管和模糊测试，提高基本块覆盖率2.6倍以上，发现五个新漏洞，且可推广到其他嵌入式固件。",
+      "link": "https://arxiv.org/abs/2608.29737",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Qinying Wang, Florian Hofhammer, Eduard Vlad, Jianqiang Wang, Marcel Busch, Shouling Ji, Mathias Payer",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.29745v1",
+      "source_hash": "dad8a6a59606f10fddeb25e30d70d44bb0dcf6447aec256ed1ae1fcb010e3e52",
+      "title": "JITterFlip: Uncovering Fault Attack Surfaces in JIT-Compiled LLM Serving",
+      "title_zh": "JITterFlip：揭示JIT编译LLM服务中的故障攻击面",
+      "summary_zh": "针对JIT编译的LLM服务，本文提出JITterFlip，首个针对主机端控制平面的位翻转攻击。通过故障化CPU端服务决策而非模型计算，实现乱码输出和正确输出海绵攻击。使用决策引导故障易感代码分析识别漏洞代码，实验显示攻击跨模型可转移，产生高PPL比率和延迟放大，并绕过现有LLM防御。",
+      "link": "https://arxiv.org/abs/2608.29745",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Tairui Wang, Zhi Zhang, Yansong Gao, Xin Zhang, Qingni Shen, Zhonghai Wu",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.29758v1",
+      "source_hash": "2e178278f6c271005dfea310d03b5302ac4e7265365c56796c3cefd01f1a99aa",
+      "title": "Building the Truman Show: A TrustZone-Based Framework for Lightweight Out-of-band Kernel Security Monitoring",
+      "title_zh": "构建楚门世界：基于TrustZone的轻量级带外内核安全监控框架",
+      "summary_zh": "传统内核保护机制与内核同特权级，易被绕过。本文提出LOOM，基于ARM TrustZone的轻量级带外监控架构，建立抗篡改监控环境。设计轻量级语义重建机制捕捉关键内核对象状态，引入双阶段危险预防机制结合原子内存保护和中断驱动代理检测内核rootkit。在Phytium D2000平台实现原型，开销小，监控能力强，能检测和缓解各种内核攻击。",
+      "link": "https://arxiv.org/abs/2608.29758",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Zhenling Duan, Pan Dong, Renshuang Jiang, Xiaoxiang Fang, Bao Li",
+      "categories": [
+        "cs.CR",
+        "cs.SE"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.29773v1",
+      "source_hash": "7300902a1832efcbad0e1aa257bf6b4a5c305b6dda05e4fb34bb4bde2ac2c18d",
+      "title": "HSMLog: Small Language Model-Assisted Hardware Security Module Log Anomaly Detection with Behavioral Analysis",
+      "title_zh": "HSMLog：小型语言模型辅助的硬件安全模块日志异常检测与行为分析",
+      "summary_zh": "硬件安全模块日志异常来自事件序列关系而非孤立事件。本文提出HSMLog两阶段框架：第一阶段使用小型语言模型从滑动窗口识别候选警报并进行策略指导评估；第二阶段检索策略和历史记录进行保守审查和事件分析。在真实工业HSM日志上评估，达到高精度和召回率，有效进行异常警报和事件分诊。",
+      "link": "https://arxiv.org/abs/2608.29773",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Chia-Hsuan Wu, Dar-Hsin Dustin Wu, Rui Fang, Yi-Ting Lee, Chia-Chih Lin, Ming-Syan Chen",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.29808v1",
+      "source_hash": "0007d9b1f451d8eab1326302e12b7b4f72217607f4781180dc2587e8e530fc17",
+      "title": "POLYFLOW: A Neuro-Symbolic Framework for Static Cross-Language Information Flow Analysis",
+      "title_zh": "POLYFLOW：用于静态跨语言信息流分析的神经符号框架",
+      "summary_zh": "多语言软件系统导致跨语言漏洞。本文提出PolyFlow神经符号框架，结合大语言模型和静态分析，利用控制流表示指导LLM识别隐式流事实，传播数据流。通过静态分析指导范围、上下文管理和事实检查克服LLM局限，并在Python-C和Java-C系统上实验，揭示先前未知漏洞，优于现有基线。",
+      "link": "https://arxiv.org/abs/2608.29808",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Haoran Yang, Zhixuan Zhong, Jiawei Guo, Haipeng Cai",
+      "categories": [
+        "cs.CR",
+        "cs.PL",
+        "cs.SE"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.29942v1",
+      "source_hash": "b3bcb41dbc62ff45a4aa0ea3b7e9fffa36d49972b5605957209c8d710fe844cc",
+      "title": "Influence Is Not Authority: When Causal Guardrail Signals Make Legitimate Tool Use Look Like an Attack in Tool-Using LLM Agents",
+      "title_zh": "影响非权威：当因果护栏信号在工具使用LLM代理中使合法工具使用看起来像攻击",
+      "summary_zh": "当前基于影响的护栏在区分合法用户授权动作和恶意未授权动作时不可靠。通过授权等价审计，发现当所需值来自工具而非用户时，因果信号偏向攻击区域。架构评估显示，语义监控虽降低攻击成功率但减少效用；基于阴影的护栏允许所有无害运行但未更好拒绝未授权动作。结果表明因果信号揭示动作形成但不编码授权，引用构造对安全决策至关重要。",
+      "link": "https://arxiv.org/abs/2608.29942",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Tanzim Ahad, Ismail Hossain, Md Jahangir Alam, Sai Puppala, Syed Bahauddin Alam, Sajedul Talukder",
+      "categories": [
+        "cs.CR",
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.29977v1",
+      "source_hash": "a79cedf1754b73f3ccbe5b7e1380ffd2cb4ae917709ff73f042a54d981d60106",
+      "title": "A New Algebraic Algorithm for LWE",
+      "title_zh": "LWE的新代数算法",
+      "summary_zh": "LWE问题是现代密码学和后量子安全核心。本文提出新代数算法解决Search-LWE问题，结合线性代数技术和Groebner基计算的S多项式方法。提供直接复杂度分析，避免半正则性假设和度正则性复杂度界限，实现相对于先前Groebner基方法的多项式改进。",
+      "link": "https://arxiv.org/abs/2608.29977",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Luca Campa, Massimo Fumiani, Arnab Roy",
+      "categories": [
+        "cs.CR",
+        "math.AG"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.29979v1",
+      "source_hash": "146902e07d6597f145ec16b2c976e787f677cd44edfb09a008075351963d74b2",
+      "title": "Breaking Ambient Trust: In-Network Per-Process Access Control Against Lateral Movement",
+      "title_zh": "打破环境信任：针对横向移动的网络内每进程访问控制",
+      "summary_zh": "企业网络易受APT攻击，现有防御无法跟踪进程级用户移动，授予环境信任。本文提出NetZone网络内访问控制，引入AccessScope抽象，将轻量级访问能力绑定到用户进程，并嵌入网络流量进行验证。随着用户移动，AccessScope传播并持久化，确保一致策略。开发数据平面协同设计，集成可编程交换机和eBPF，实现线速处理，有效防御攻击场景且开销小。",
+      "link": "https://arxiv.org/abs/2608.29979",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Osama Bajaber, Bo Ji, Peng Gao",
+      "categories": [
+        "cs.CR",
+        "cs.NI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.30004v1",
+      "source_hash": "9a8a644459401b4ead32766672316943eb563124127be59f2d991b6b74b0ab32",
+      "title": "Beyond Object Authentication: Context-Closed Post-Quantum Authentication for the WebPKI",
+      "title_zh": "超越对象认证：WebPKI的上下文闭合后量子认证",
+      "summary_zh": "后量子迁移增加WebPKI认证成本，但认证压缩证书对象本身不保留可变授权上下文。本文形式化上下文闭合，提出LRp两平面构造，在更新平面认证可变CA上下文状态，热路径仅携带状态局部依赖引用。在固定CCADB重建中评估，显示依赖数量少，热选择器成本低，保留所有视图闭合状态小，生命周期交叉高，适用于企业部署。",
+      "link": "https://arxiv.org/abs/2608.30004",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Anis Bkakria",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.30038v1",
+      "source_hash": "584a26efc49b7b53924eb5317195b40ee260cfc395d080889dc4ca9849f5baf4",
+      "title": "ActReal: System-Level Mobile Agents Challenge Mobile Automation Detection",
+      "title_zh": "ActReal：系统级移动代理挑战移动自动化检测",
+      "summary_zh": "系统级移动代理能控制触摸屏和传感器，绕过现有自动化检测。本文提出ActReal物理动作攻击框架，将语义代理动作转换为任务有效触摸和惯性测量单元事件，使用真实轨迹适应和物理指导IMU生成。实验显示事件级攻击成功率77.5%，即使联合观察触摸和IMU，成功率仍达71.1%，挑战移动自动化检测。",
+      "link": "https://arxiv.org/abs/2608.30038",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Mingshuo Wang, Hanqing Guo, Huining Li, Yuliang Fu, Jing Xu, Chenhan Xu",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.30041v1",
+      "source_hash": "3356267ba397e065d943c7d1bf0efed198fa95a40d27c8bf77bd347adc08a242",
+      "title": "Reachability-Based Capability Confinement for LLM Agents under Indirect Prompt Injection",
+      "title_zh": "间接提示注入下LLM代理的可达性能力限制",
+      "summary_zh": "LLM代理使用外部技能输出，易受间接提示注入。现有防御未处理非信任数据进入状态后如何限制未来权威。本文提出SkillGuard作为工具级执行层，将此视为污染事件，使用技能影响图和可操纵性签名表示安全相关转移，内联引用监控调解调用。通过二进制、分数或分数流策略计算能力限制，无需额外模型推理。评估显示在AgentDojo套件上消除或降低攻击成功率，优于基线。",
+      "link": "https://arxiv.org/abs/2608.30041",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Wujie Xiong, Rabimba Karanjai, Yang Lu, Weidong Shi, Lei Xu",
+      "categories": [
+        "cs.CR",
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.30083v1",
+      "source_hash": "184dffc7ad2d3551e360c37a1042e389106e37f984cd51a9df424f7c51d61a0e",
+      "title": "Zero-Knowledge Predicate Proofs Between AI Agents: A Measured, Cross-Protocol Gateway and the Source-Integrity Gap",
+      "title_zh": "AI代理间的零知识谓词证明：一个经过测量的跨协议网关和源完整性差距",
+      "summary_zh": "多代理AI平台信任建立原始，过度共享或不可验证。本文提出零知识证明网关，代理交换治理定义谓词证明而非数据本身，防止设计上泄露。提出插槽并在MCP和Agent2Agent上实现，证明和验证速度快，系统部署到Kubernetes。案例研究证明零售订单限额而不透露金额，实例化GDPR数据最小化原则。地址源完整性差距，融合enclave证明和证明，验证时联合认证谓词成立和值由特定二进制读取。",
+      "link": "https://arxiv.org/abs/2608.30083",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Ashok Subbabhatta Gopalakrishna",
+      "categories": [
+        "cs.CR",
+        "cs.MA"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.30105v1",
+      "source_hash": "8859af3ed41f833187229f19b2ca03b1cb98c8facd8b9b5a3a48891ade216bda",
+      "title": "A Simple Transformer Pipeline for Full-Key Side-Channel Attacks on Uncropped Datasets",
+      "title_zh": "用于未裁剪数据集全密钥侧信道攻击的简单Transformer流水线",
+      "summary_zh": "深度学习侧信道分析聚焦单字节目标和裁剪迹线，可能丢弃可利用泄漏。本文提出开源Transformer实现，用于未裁剪迹线的全密钥攻击，使用标准Transformer编码器，仅调整输入输出层。发布实现、训练食谱和预训练权重，在ASCADv1f、ASCADv1r和CHES-CTF-2018上达到竞争性能，内存使用少于10GB，训练时间短，促进侧信道分析研究。",
+      "link": "https://arxiv.org/abs/2608.30105",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Jimmy Gammell, Kaushik Roy",
+      "categories": [
+        "cs.CR",
+        "cs.LG"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.30112v1",
+      "source_hash": "8439ddf773bc3d5c84c7d8db6d10a6e5d941567f236fdc56eeb1cf1453b17902",
+      "title": "Drishti: AI-Led Human-Directed Vulnerability Auditing for 5G Cores",
+      "title_zh": "Drishti：AI引导人类指导的5G核心漏洞审计",
+      "summary_zh": "AI辅助代码审查产生缺陷候选，但验证和影响评估稀缺，尤其在5G核心关键基础设施。本文提出Drishti框架，包括验证反模式目录、可达性关键路径分诊、影响同心验证和修复完整补丁审查。对Open5GS和free5GC审计产生三个发现：Open5GS NRF解析器预认证NULL解引用、free5GC NGAP解码器内存放大，以及CVE-2025-69248的缺陷补丁，展示框架有效性。",
+      "link": "https://arxiv.org/abs/2608.30112",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Sriram Ramachandran, Levente Csikor, Dinil Mon Divakaran",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.30141v1",
+      "source_hash": "2f173fa2e144b93c05543e36e47946d1a85228d7abb0a2703e4d503fe4f53fc8",
+      "title": "Balancing Privacy, Utility, and Safety in LLM Alignment through Preference Optimization",
+      "title_zh": "通过偏好优化在LLM对齐中平衡隐私、效用和安全",
+      "summary_zh": "偏好优化对齐LLM，但数据组成影响隐私相关记忆。本文研究在DPO中添加合成隐私偏好对是否降低canary记忆信号，提出P3M数据组成协议，变化隐私偏好数据量。评估显示隐私偏好混合与较低mean canary后缀对数似然和较低成员推理攻击性能相关，但不均匀；关系因模型而异。P3M应作为轻量级经验协议检查隐私-效用-权衡，而非正式隐私保证。",
+      "link": "https://arxiv.org/abs/2608.30141",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Dishu Yang, Jingjing Liu, Jize Li",
+      "categories": [
+        "cs.CR",
+        "cs.LG"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.30171v1",
+      "source_hash": "470514c5bbe4c5ba37f07992997fe3f77c6a120667f1c666378f1ff04dc4fed8",
+      "title": "Reducio: Optimized Confidential Serverless Cloud Deployments for Enterprise Customers",
+      "title_zh": "Reducio：为企业客户优化机密无服务器云部署",
+      "summary_zh": "基于机密虚拟机的无服务器平台解决隐私问题，但要求基础设施更改和高内存。本文提出Reducio，无需基础设施更改，显著减少平台内存需求。使用两个关键组件：基于内核去特权特性的CVM内函数隔离框架，和分层缓存方法有效使用小内存函数缓存。评估显示显著减少平台要求和函数内存消耗，适用于企业云部署。",
+      "link": "https://arxiv.org/abs/2608.30171",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Vikram Ramaswamy, Chuqi Zhang, Adil Ahmad",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.30177v1",
+      "source_hash": "612f1f59f61d5c2e7f492471afbdd9b5e04876ccc80c7a691f56942e86c0086d",
+      "title": "Understanding Stage-Wise Utility-Risk Trade-offs in LLM Agent Memory",
+      "title_zh": "理解LLM代理记忆中的阶段效用-风险权衡",
+      "summary_zh": "长期记忆是LLM代理核心能力，但保留更多信息影响效用和记忆投毒风险。现有评估孤立测量效用或风险。本文提出MemGauge框架，在清洁和中毒条件下分别变化写入准入、管理策略和检索暴露。跨11个LLM和两个基准评估揭示三个不同剖面：写入时阈值状风险转换、管理时策略依赖局部解耦、检索时效用和风险耦合增长。应用于现有记忆系统显示一致关联，推动阶段感知评估和控制。",
+      "link": "https://arxiv.org/abs/2608.30177",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Chuanchao Zang, Zijian Cao, Xiangtao Meng, Jianing Wang, Wenyu Chen, Xinyu Gao, Li Wang, Zheng Li, Shanqing Guo",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.30207v1",
+      "source_hash": "0820e4eee0052b0e7ce0bc5113f816763e27e4e390bd4c4a33e1159064a23171",
+      "title": "SIR: Self-improving Red-teaming for Compute Use Agents",
+      "title_zh": "SIR：计算使用代理的自我改进红队",
+      "summary_zh": "计算机使用代理易受间接提示注入。现有基准评估固定注入，低估适应性攻击者。本文提出SIR黑盒攻击，从可重用原则库组合隐蔽注入，使用迭代反馈循环诊断失败轨迹并提炼绕过策略。针对操作系统级代理，使用完全确定性预言机评分。实验显示组合原则提高攻击成功率，例如在Claude Opus 4.8上从4%到24%，原则可跨模型转移，提升红队效果。",
+      "link": "https://arxiv.org/abs/2608.30207",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Chen Xiong, Zhiyuan He, Pin-Yu Chen, Stjepan Picek, Tsung-Yi Ho",
+      "categories": [
+        "cs.CR",
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.30288v1",
+      "source_hash": "3d86a3a1eaf247baf3cf925502f4ee9d07316969a05aaec65bb997fd049de9cd",
+      "title": "Extracting Knowledge from Tools in LLM Agents",
+      "title_zh": "从LLM代理中的工具提取知识",
+      "summary_zh": "LLM代理使用知识工具，引入工具介导知识提取风险：源内容可能从输出中恢复。本文系统研究此风险，识别工具调用引入的挑战：工具选择不确定性和工具参数压缩。提出ToolSiphon查询仅提取攻击，引入目标辨别信号（通过工具对比分析）和响应接地事实信号（通过证据链反馈）。在三种工具和六个数据集上，ToolSiphon平均恢复74.3%源记录，即使无工具信息也恢复66.3%，并对防御和真实平台有效。",
+      "link": "https://arxiv.org/abs/2608.30288",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Chuanchao Zang, Jianing Wang, Wenyu Chen, Xiangtao Meng, Li Wang, Xinyu Gao, Yingkai Dong, Zheng Li, Shanqing Guo",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.30332v1",
+      "source_hash": "3884fc42a008101e4a07eab9f84ea6b7ebf05331201723653bcf096f5bb49268",
+      "title": "A Roadmap to Available ICS Datasets and Testbeds for Cybersecurity Research",
+      "title_zh": "可用ICS数据集与网络安全研究测试平台路线图",
+      "summary_zh": "工业控制系统面临网络安全挑战，缺乏标准数据集和实验环境。本文提供现有ICS网络安全数据集、测试平台和数字孪生的路线图，对工具的架构、特点、能力及优缺点进行系统分析，指出存在缺乏标准化基准数据集、现代攻击场景、真实操作流量数据集等问题，并给出识别研究差距和创建新工具的建议。",
+      "link": "https://arxiv.org/abs/2608.30332",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Ebtesam J. Alqahtani, Mohammad Hammoudeh",
+      "categories": [
+        "cs.CR",
+        "cs.SY",
+        "eess.SY"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.30379v1",
+      "source_hash": "954f32386db2d780f719bc0f364071f61c9870d2a757cdea125296233dd61705",
+      "title": "KORD: Breaking the Key-Generation Bottleneck in Dealerless FSS via Protocol--Hardware Co-Design",
+      "title_zh": "KORD：通过协议-硬件协同设计突破无经销商FSS的密钥生成瓶颈",
+      "summary_zh": "函数秘密共享需要可信经销商生成密钥，限制了其部署。现有无经销商协议通信开销大且轮次随输入位宽线性增长。KORD提出一种协议-硬件协同设计，使用一对专用芯片通过相互认证建立信任根并重构密钥，将交互压缩为一轮，独立于GGM深度。该方案将每密钥生成通信量减少数千倍，在私有ResNet-18推理中将密钥生成耗时占比从超96%降至11.9%。",
+      "link": "https://arxiv.org/abs/2608.30379",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Yijing Peng, Lin Liu, Yujie Xue, Shaojing Fu, Shaoqing Li, Yaohua Wang, Rongmao Chen, Yang Guo",
+      "categories": [
+        "cs.CR",
+        "cs.AR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.30383v1",
+      "source_hash": "0763615c7779197571eb7b7029c039115cf01b5699725411426979ac303cf3cc",
+      "title": "Using Hyper-V Sockets for Real-time Data Extraction from a Malware Analysis Sandbox",
+      "title_zh": "使用Hyper-V套接字从恶意软件分析沙箱中实时提取数据",
+      "summary_zh": "本文展示Hyper-V套接字可用作恶意软件分析沙箱的实时通信通道。研究表明，与WinSock TCP套接字相比，Hyper-V套接字不受TCP/IP层阻塞限制，且不被常见的TCP连接枚举工具列出。文章还比较了两种通信通道在不同缓冲区大小下的吞吐量。",
+      "link": "https://arxiv.org/abs/2608.30383",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Istv\\'an-Attila Cs\\'asz\\'ar, Radu-Marian Portase, Adrian Cole\\c{s}a, Adrian Groza",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.30387v1",
+      "source_hash": "ba3729b6fc1e325045d5f3129239bca532d337f7a1266140964ab863be857322",
+      "title": "Attesting Outputs and Delegation Ancestry in Multi-Agent AI Systems",
+      "title_zh": "多智能体AI系统中的输出认证与委托溯源",
+      "summary_zh": "多智能体应用跨独立部署器委托工作，事后需验证发布者和授权情况。本文提出一个两层认证设计，用于无共享权威、公共日志或预承诺工作流的动态委托。可信部署器运行时签署输出哈希，溯源证据记录边授权。比较了签名链表、Merkle链和联合签名DAG，在Apple M1 Pro上溯源检查延迟为24.3-499.2微秒，在本地和AWS部署中验证了方案的有效性。",
+      "link": "https://arxiv.org/abs/2608.30387",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Lifei Liu, Haoran Yu",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.30403v1",
+      "source_hash": "d09bb246f3d48977694efe2efeb7b42912a18c28abff7220b1438d3cac6d59d2",
+      "title": "Why Are LLM Backdoor Defenses Fragmented? A Feature-Level Explanation with Sparse Autoencoders",
+      "title_zh": "LLM后门防御为何碎片化？基于稀疏自编码器的特征级解释",
+      "summary_zh": "后门攻击对大语言模型构成严重威胁，但现有防御对脏标签和干净标签攻击不统一。本文首次使用稀疏自编码器对LLM后门进行系统性的特征级机制分析，将后门诱导的逻辑值偏移追溯到高贡献特征，并将其分为交互、抑制、混合和权重修改四类。分析揭示脏标签后门由孤立交互特征主导，而干净标签后门依赖于混合和权重修改特征的异构混合，这解释了防御碎片化的根源。",
+      "link": "https://arxiv.org/abs/2608.30403",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Yizhe Zeng, Chenxu Niu, Wei Zhang, Hao Huang, Yunpeng Li, Dongxu Han, Dan Du, Cheng Hong, Hequn Xian, Yuling Liu",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.30441v1",
+      "source_hash": "d235f626758d057195d036de94257afda9b49fa516197c5314a6727efd3d5bd7",
+      "title": "ECLIPSE: Self-Evolving Stealthy Prompt Injection Attack against Long-Horizon Agentic Systems",
+      "title_zh": "ECLIPSE：针对长周期智能体系统的自进化隐蔽提示注入攻击",
+      "summary_zh": "LLM智能体通过工具调用执行长周期任务，这为提示注入创造了机会。现有攻击易检测或不可靠。本文提出ECLIPSE，一个针对长周期智能体系统的自进化隐蔽提示注入框架，结合直接用户提示注入和间接工具侧注入，通过轨迹合成和转移，在LASE-Bench基准测试中，无防御时攻击成功率高达96.7%，在常见安全过滤器下仍达69.2%，超越最强基线27.5个百分点。",
+      "link": "https://arxiv.org/abs/2608.30441",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Shiqian Zhao, Yangfan Zhou, Xinfeng Li, Runyi Hu, Yechao Zhang, Yi Xie, Tianwei Zhang, Luu Anh Tuan",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.30615v1",
+      "source_hash": "9bb2ca60e08397ad6d0a5925e3b128d853151f82a7b17e297d20d3fa3687b576",
+      "title": "Towards Operator-Empowered Vulnerability Hotfixing for 5G Radio Access Networks",
+      "title_zh": "面向运营商赋能的5G无线接入网络漏洞热修复",
+      "summary_zh": "蜂窝协议漏洞可能在标准组织、供应商和运营商协调永久修复期间长期存在。本文介绍Buckler框架，使移动网络运营商能在无线接入网络中部署临时、本地、可逆的热修复。Buckler在标准化的L2/L3信道边界放置钩子，提供DROP、MODIFY和RELEASE三种操作。研究在23篇论文中识别出64个基于标准协议行为的攻击，为其中43个找到了RAN端的干预点，并为其中20个构建了热修复，在srsRAN和OpenAirInterface上进行了实现和验证。",
+      "link": "https://arxiv.org/abs/2608.30615",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Dong Hyeok Kim, Xin Zhe Khooi, Hocheol Nam, Seungjin Baek, Mun Choon Chan, CheolJun Park, Min Suk Kang",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.30648v1",
+      "source_hash": "d8d2511f20d0bbf3b9e434a05c0a2db6b5e16ae5e11927991e4fc2abb7fc187b",
+      "title": "Lie to Me: Finding Bugs in ZK DSL Toolchains with Adversarial Witness Injection",
+      "title_zh": "欺骗我：通过对抗性证人注入发现ZK DSL工具链中的漏洞",
+      "summary_zh": "零知识领域特定语言工具链将程序编译为约束系统，其漏洞可能导致证明系统不健全。本文提出Liezz测试框架，通过生成ZK DSL程序并注入对抗性证人（将一个执行的输入与另一个执行的输出拼接）来暴露漏洞。若工具链接受此无效证人，则表明存在健全性漏洞。Liezz支持Circom、Corset、Gnark和Noir，发现了13个漏洞，其中7个具有健全性影响，证明了对抗性证人注入能发现有效执行测试无法揭示的失败。",
+      "link": "https://arxiv.org/abs/2608.30648",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Sebastian Watzinger, Christoph Hochrainer, Valentin W\\\"ustholz, Maria Christakis",
+      "categories": [
+        "cs.CR",
+        "cs.SE"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.30686v1",
+      "source_hash": "08e8da9bea0b5522b508960fce914d0ecc83bfd7b0206f0167c0d1f21768ccd1",
+      "title": "Beyond the Payload: How User Invocation Shapes Coding Agent Vulnerability to Repository Poisoning",
+      "title_zh": "超越有效载荷：用户调用如何影响编码代理对仓库投毒的脆弱性",
+      "summary_zh": "编码代理用于从第三方仓库引导项目，其脆弱性受用户日常调用选择影响。本文引入提示级别配置概念和CIPR基准测试，系统变化这些配置。评估揭示：脆弱性高度依赖上下文，任务类型可导致攻击成功率相差4.5倍，测试执行任务构成高成功率、低警报率的静默攻击面；提示表达间接改变风险，不完整提示因截断执行深度而降低成功率，嘈杂提示因使恶意内容不明显而抑制警报。",
+      "link": "https://arxiv.org/abs/2608.30686",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Fukang Zhu, Binbin Zhao, Ruixiao Lin, Ping He, Tianyu Du, Shouling Ji",
+      "categories": [
+        "cs.CR",
+        "cs.CL"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.30703v1",
+      "source_hash": "9c19b0b2f49080ca96a03c945777177f4a0695ef2a36dc3d4cfc761f5a5e77a4",
+      "title": "SingProbe Technical Report",
+      "title_zh": "SingProbe技术报告",
+      "summary_zh": "运行时护栏对大语言模型部署至关重要，但现有方法通常依赖外部模型，增加推理成本和延迟。本文介绍SingProbe，一种轻量级内在运行时护栏，直接重用LLM推理中产生的隐藏状态，在统一框架中持续预测查询意图、响应安全性和幻觉风险，护栏推理开销可忽略不计。实验表明，SingProbe以仅约200万参数和低于0.5%的额外开销，达到或优于更大独立护栏的性能，并能指导约束安全解码。",
+      "link": "https://arxiv.org/abs/2608.30703",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Sing Team",
+      "categories": [
+        "cs.CR",
+        "cs.AI",
+        "cs.CL",
+        "cs.LG"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.30748v1",
+      "source_hash": "0e5fa9546d9be6d227b25b366ebded82ab501eb707fc3b56fd3283dbc54bfdd0",
+      "title": "The Fragility of Jailbreak Robustness Across Operational States",
+      "title_zh": "越狱鲁棒性在操作状态下的脆弱性",
+      "summary_zh": "现有越狱评估通常在默认配置下测量单一攻击成功率。本文发现越狱鲁棒性对操作状态变化高度脆弱：仅改变一个不影响安全性的普通系统提示，就可显著改变攻击成功率。在七个对齐模型和三种代表性攻击上进行的研究显示，在某些情况下，成功率因操作状态变化而增加高达56个百分点。这些成功率增加甚至发生在原始设计和优化于默认状态的攻击上。研究进一步表明，状态相关的鲁棒性变化与隐藏表示沿拒绝相关轴的差异系统相关。",
+      "link": "https://arxiv.org/abs/2608.30748",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Yuna Park, Hwang Youn Kim, Yujin Kim, Won Woo Ro, Suhyun Kim, Jae-In Hwang",
+      "categories": [
+        "cs.CR",
+        "cs.CL"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.30969v1",
+      "source_hash": "13bf32a171e3129383ecac9bae95846b15e38da3041c8c6e17d11e66c186fc4a",
+      "title": "DP-VOXLET: Provable Speaker Anonymization for Disentangled Speech Representations",
+      "title_zh": "DP-VOXLET：针对解耦语音表示的可证明说话者匿名化",
+      "summary_zh": "说话者匿名化系统在保持语义内容和韵律的同时混淆说话者。现有方案依赖解耦表示，替换说话者属性。本文引入基于差分隐私框架的说话者差分隐私正式定义，并提出可证明满足该定义的匿名化机制。与以往启发式系统相比，该方法为任何可能的对手提供了重识别成功率的可证明下界，并在兼容现有解耦表示的框架中实现，相比先前的差分隐私说话者匿名化工作，实现了显著更高的效用。",
+      "link": "https://arxiv.org/abs/2608.30969",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Ivoline Ngong, Jack D'Iorio, Hailey Schoppe, Christopher Liberatore, Nichole Schimanski, Taisa Kushner, Joseph P. Near",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2608.31062v1",
+      "source_hash": "0d6a6a6f5d1c817d6b117e7837107d159564571b8539fd49f70ba345e846fa77",
+      "title": "The Exclusion Ratchet: False-Positive Suppression Accumulates and Persists in Detection Rule Repositories",
+      "title_zh": "排除棘轮：误报抑制在检测规则仓库中积累并持续",
+      "summary_zh": "当检测规则产生过多误报时，分析师会添加排除项，使规则不再告警。这种决策在局部合理，但其集体影响未知。本文在SigHMA语料库九年、8234次修订的数据中，通过语义方法测量排除项的添加与撤回（比例为5.4:1，单条规则级别达13:1）。发现86.7%的排除项在三年后仍然有效，且其持久性与规则是否为其ATT&CK技术的唯一覆盖无关。31%的排除项缩小对结构比较不可见。排除项抑制会积累、很少被重新审查，且未按后果进行分类。本文提出了优先审查排除项的标准。",
+      "link": "https://arxiv.org/abs/2608.31062",
+      "published": "2026-09-01T00:00:00-04:00",
+      "author": "Sudaroli Dhananjeyan, Kumaran U",
+      "categories": [
+        "cs.CR",
+        "cs.SE"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    }
+  ]
+}

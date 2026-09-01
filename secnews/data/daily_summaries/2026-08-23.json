@@ -1,0 +1,40 @@
+{
+  "date": "2026-08-23",
+  "generated_at": "2026-09-01T07:34:12.733201+00:00",
+  "model": "mimo-v2.5",
+  "source_file": "articles/2026-08-23.jsonl",
+  "article_count": 2,
+  "summary_count": 2,
+  "complete": true,
+  "articles": [
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/hackers-infect-android-car-head-units-with-proxy-botnet-malware/",
+      "source_hash": "0e4e859fa1d988a58688ac66cfdcca80f296291faac148d1072c6cb5fa7518c6",
+      "title": "Hackers infect Android car head units with proxy botnet malware",
+      "title_zh": "黑客利用代理僵尸网络恶意软件感染Android车载主机",
+      "summary_zh": "针对基于Android的车载主机的供应链攻击，利用合法的设备更新应用传播恶意软件。该恶意软件将受感染的设备纳入代理僵尸网络，或利用这些设备进行广告欺诈。攻击通过供应链途径影响车载信息娱乐系统。",
+      "link": "https://www.bleepingcomputer.com/news/security/hackers-infect-android-car-head-units-with-proxy-botnet-malware/",
+      "published": "Sat, 22 Aug 2026 10:14:24 -0400",
+      "author": "Bill Toulas",
+      "categories": [
+        "Security",
+        "Hardware"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/named-pipes-under-attack-securing-windows-interprocess-communication/",
+      "source_hash": "10f9309e669347da4909b0e2088bd1d16e017882cc33f36df59c508daaed3d5c",
+      "title": "Named Pipes Under Attack: Securing Windows Interprocess Communication",
+      "title_zh": "命名管道遭攻击：保护Windows进程间通信安全",
+      "summary_zh": "Windows命名管道提供快速进程间通信，但弱访问控制可能使特权服务暴露给不可信进程。研究阐述了如何通过端点验证、命令授权、严格输入验证和最小范围权限来保护命名管道通信。该研究旨在为开发者提供防御此类攻击的实践方法，提升Windows系统安全性。",
+      "link": "https://www.bleepingcomputer.com/news/security/named-pipes-under-attack-securing-windows-interprocess-communication/",
+      "published": "Sat, 22 Aug 2026 09:00:09 -0400",
+      "author": "Sponsored by ThreatLocker",
+      "categories": [
+        "Security"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    }
+  ]
+}

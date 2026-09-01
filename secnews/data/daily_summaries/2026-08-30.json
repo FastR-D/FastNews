@@ -1,0 +1,41 @@
+{
+  "date": "2026-08-30",
+  "generated_at": "2026-09-01T10:30:46.359855+00:00",
+  "model": "mimo-v2.5",
+  "source_file": "articles/2026-08-30.jsonl",
+  "article_count": 2,
+  "summary_count": 2,
+  "complete": true,
+  "articles": [
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/artificial-intelligence/anthropic-is-cutting-claude-codes-current-weekly-limits-by-17-percent/",
+      "source_hash": "4d01481b2478f5b50abc8a99b3f8c0145e459988e766ed0471585fa3216caf0f",
+      "title": "Anthropic is cutting Claude Code's current weekly limits by 17%",
+      "title_zh": "Anthropic 将 Claude Code 当前的每周使用限制削减 17%",
+      "summary_zh": "Anthropic 公司宣布永久提高 Claude Code 的标准每周使用限制 25%，适用于 Pro、Max、Team 和基于座位的企业计划用户。尽管这是一次提升，但官方指出其实际效益可能不如表面所显示的那样显著，用户需注意潜在限制。",
+      "link": "https://www.bleepingcomputer.com/news/artificial-intelligence/anthropic-is-cutting-claude-codes-current-weekly-limits-by-17-percent/",
+      "published": "Sat, 29 Aug 2026 19:11:51 -0400",
+      "author": "Mayank Parmar",
+      "categories": [
+        "Artificial Intelligence",
+        "Technology"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/brave-browser-adds-email-aliases-to-help-users-evade-tracking/",
+      "source_hash": "72e3e87314581a2e202a15f411cfcc2af3fc2127bf5ec125b2cdf8d92a2d3e0d",
+      "title": "Brave browser adds email aliases to help users evade tracking",
+      "title_zh": "Brave 浏览器添加电子邮件别名以帮助用户规避追踪",
+      "summary_zh": "Brave 浏览器 1.94 版本引入了‘电子邮件别名’功能，允许用户生成一次性电子邮件地址用于注册新服务。该功能旨在帮助用户规避电子邮件追踪，增强隐私保护，减少数据泄露风险。",
+      "link": "https://www.bleepingcomputer.com/news/security/brave-browser-adds-email-aliases-to-help-users-evade-tracking/",
+      "published": "Sat, 29 Aug 2026 10:19:23 -0400",
+      "author": "Bill Toulas",
+      "categories": [
+        "Security",
+        "Software"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    }
+  ]
+}

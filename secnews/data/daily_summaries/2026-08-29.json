@@ -1,0 +1,54 @@
+{
+  "date": "2026-08-29",
+  "generated_at": "2026-09-01T10:29:42.067349+00:00",
+  "model": "mimo-v2.5",
+  "source_file": "articles/2026-08-29.jsonl",
+  "article_count": 3,
+  "summary_count": 3,
+  "complete": true,
+  "articles": [
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/mckesson-discloses-breach-after-shinyhunters-claims-patient-data-theft/",
+      "source_hash": "6fd2dacc44b2aac91891e2268c7dcbda4fdb309b4a0809186f33cc64553a06d0",
+      "title": "McKesson discloses breach after ShinyHunters claims patient data theft",
+      "title_zh": "McKesson披露数据泄露事件，ShinyHunters声称窃取患者数据",
+      "summary_zh": "医疗和药品分销巨头McKesson披露了一起网络安全事件，涉及未经授权访问第三方应用程序和数据盗窃。ShinyHunters勒索组织声称窃取了2.84亿条患者数据记录，影响范围广泛，关键结论是数据安全受到严重威胁。",
+      "link": "https://www.bleepingcomputer.com/news/security/mckesson-discloses-breach-after-shinyhunters-claims-patient-data-theft/",
+      "published": "Fri, 28 Aug 2026 18:40:17 -0400",
+      "author": "Lawrence Abrams",
+      "categories": [
+        "Security",
+        "Healthcare"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/papercut-releases-second-emergency-patch-for-exploited-flaws/",
+      "source_hash": "c90c0bc91663a627fbcbd4b901b5e0bc3a796d0f597bfe9bf4250c68036257a4",
+      "title": "PaperCut releases second emergency patch for exploited flaws",
+      "title_zh": "PaperCut发布第二个紧急补丁修复已利用漏洞",
+      "summary_zh": "PaperCut针对其PaperCut NG和MF打印管理软件中的两个活跃漏洞发布了第二个紧急安全更新。研究人员发现多种方法可以绕过初始修复，因此攻击方法涉及漏洞利用，受影响对象是打印管理软件，关键结论是需要额外补丁加强防护。",
+      "link": "https://www.bleepingcomputer.com/news/security/papercut-releases-second-emergency-patch-for-exploited-flaws/",
+      "published": "Fri, 28 Aug 2026 15:08:26 -0400",
+      "author": "Lawrence Abrams",
+      "categories": [
+        "Security"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/givewp-wordpress-donation-plugin-flaw-lets-hackers-execute-server-commands/",
+      "source_hash": "06eb210ccf38d35fbce4039b7fc740d915846cc9207c07c60669a842d1ad732f",
+      "title": "GiveWP WordPress donation plugin flaw lets hackers execute server commands",
+      "title_zh": "GiveWP WordPress捐赠插件漏洞允许黑客执行服务器命令",
+      "summary_zh": "WordPress的GiveWP捐赠插件存在一个最大严重性漏洞，允许未经身份验证的攻击者远程执行任意服务器命令。受影响对象是使用该插件的WordPress网站，影响范围涉及托管服务器安全，关键结论是漏洞可能导致严重安全风险。",
+      "link": "https://www.bleepingcomputer.com/news/security/givewp-wordpress-donation-plugin-flaw-lets-hackers-execute-server-commands/",
+      "published": "Fri, 28 Aug 2026 14:18:55 -0400",
+      "author": "Bill Toulas",
+      "categories": [
+        "Security"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    }
+  ]
+}
