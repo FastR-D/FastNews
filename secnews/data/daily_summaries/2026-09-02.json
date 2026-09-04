@@ -1,0 +1,381 @@
+{
+  "date": "2026-09-02",
+  "generated_at": "2026-09-04T10:36:03.608051+00:00",
+  "model": "deepseek-v4-flash",
+  "source_file": "articles/2026-09-02.jsonl",
+  "article_count": 25,
+  "summary_count": 25,
+  "complete": true,
+  "articles": [
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/us-charges-russian-for-infecting-80-000-freelancers-with-malware/",
+      "source_hash": "53cc861e23e38e14bb5752adf3443f56a8e0a4d2895407260864ea062697a63f",
+      "title": "US charges Russian for infecting 80,000 freelancers with malware",
+      "title_zh": "美国起诉用恶意软件感染8万名自由职业者的俄罗斯人",
+      "summary_zh": "美国加利福尼亚州联邦大陪审团对一名俄罗斯国民提出起诉，指控其参与一场网络钓鱼行动，利用TVRAT和DarkVNC恶意软件感染了约8万名自由职业者。该恶意软件感染规模庞大，受害人遍布自由职业者群体，此次起诉针对的是该人在感染行动中的具体角色。",
+      "link": "https://www.bleepingcomputer.com/news/security/us-charges-russian-for-infecting-80-000-freelancers-with-malware/",
+      "published": "Wed, 02 Sep 2026 05:06:48 -0400",
+      "author": "Sergiu Gatlan",
+      "categories": [
+        "Security"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/sality-botnet-infrastructure-dismantled-in-joint-global-takedown/",
+      "source_hash": "9cd5baebe00a50094d87a7c6de3ded84cfa4df2c74f47dd88a08526639ad4127",
+      "title": "Sality botnet infrastructure dismantled in joint global takedown",
+      "title_zh": "国际合作行动摧毁Sality僵尸网络基础设施",
+      "summary_zh": "国际执法机构与私营合作伙伴联合开展行动，查封了Sality恶意软件的基础设施，以打击并摧毁这一使用点对点（P2P）架构的僵尸网络。此次联合清剿旨在切断Sality僵尸网络的运营基础，削弱其恶意活动能力，是跨部门、跨国合作应对僵尸网络威胁的一次重要行动。",
+      "link": "https://www.bleepingcomputer.com/news/security/sality-botnet-infrastructure-dismantled-in-joint-global-takedown/",
+      "published": "Wed, 02 Sep 2026 04:00:43 -0400",
+      "author": "Sergiu Gatlan",
+      "categories": [
+        "Security"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/sonicwall-warns-of-actively-exploited-sma1000-zero-day-flaws/",
+      "source_hash": "7a3391d7bc523f649446577fd2c852b39918c1c09271137031a702f651448e2f",
+      "title": "SonicWall warns of actively exploited SMA1000 zero-day flaws",
+      "title_zh": "SonicWall警告SMA1000零日漏洞正遭积极利用",
+      "summary_zh": "SonicWall警告客户，威胁行为者正将两个新的SMA1000零日漏洞组合利用，实施远程代码执行攻击。这两个零日漏洞已被积极利用，攻击链可使攻击者在目标设备上执行任意代码。SonicWall提醒用户注意风险并检查相关防护措施，避免因未修复漏洞而遭受入侵。",
+      "link": "https://www.bleepingcomputer.com/news/security/sonicwall-warns-of-actively-exploited-sma1000-zero-day-flaws/",
+      "published": "Wed, 02 Sep 2026 02:39:29 -0400",
+      "author": "Sergiu Gatlan",
+      "categories": [
+        "Security"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/hackers-abuse-faronics-deploy-admin-tool-to-install-screenconnect/",
+      "source_hash": "508163faeab9e460980ce936589ac0c0afd9e619d9bbf8e20948f7a06da0d6b0",
+      "title": "Hackers abuse Faronics Deploy admin tool to install ScreenConnect",
+      "title_zh": "黑客滥用Faronics Deploy管理工具安装ScreenConnect",
+      "summary_zh": "钓鱼攻击者滥用合法的Faronics Deploy端点管理平台，获取受害者计算机的远程管理控制权限，并安装ScreenConnect远程支持软件。通过这种手法，攻击者可借助可信管理工具隐蔽地在受害者系统中部署远程访问能力，从而对受害系统进行远程管理。",
+      "link": "https://www.bleepingcomputer.com/news/security/hackers-abuse-faronics-deploy-admin-tool-to-install-screenconnect/",
+      "published": "Tue, 01 Sep 2026 16:53:23 -0400",
+      "author": "Bill Toulas",
+      "categories": [
+        "Security"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/aesto-health-says-data-breach-affects-over-95-million-patients/",
+      "source_hash": "59d83a098e5a13cdc1e9ff1992c88d6c8991f198d698034ad824717e3b77e934",
+      "title": "Aesto Health says data breach affects over 9.5 million patients",
+      "title_zh": "Aesto Health称数据泄露影响超过950万名患者",
+      "summary_zh": "Aesto LLC（以Aesto Health名义经营）宣布，近期发现的一起数据泄露事件影响了超过950万名患者。该公司披露了这一大规模数据暴露事件，事件波及人数众多，相关数据泄露的细节尚未公布。该事件展示医疗数据服务商面临严重的安全风险，受影响用户需保持警惕。",
+      "link": "https://www.bleepingcomputer.com/news/security/aesto-health-says-data-breach-affects-over-95-million-patients/",
+      "published": "Tue, 01 Sep 2026 15:28:17 -0400",
+      "author": "Bill Toulas",
+      "categories": [
+        "Security",
+        "Healthcare"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/critical-langflow-flaw-exploited-to-steal-openai-and-aws-keys/",
+      "source_hash": "20732f2d3cbaa7523a783808b36a830b6946f894956545092fe69349041920ac",
+      "title": "Critical Langflow flaw exploited to steal OpenAI and AWS keys",
+      "title_zh": "Langflow严重漏洞遭利用，窃取OpenAI和AWS密钥",
+      "summary_zh": "攻击者正在利用Langflow（用于构建AI应用的开源框架）中的一个未授权远程代码执行漏洞CVE-2026-0768，窃取OpenAI、AWS等服务的凭据、令牌和密钥。该漏洞无需认证即可被远程利用，攻击者借此控制相关实例并盗取敏感访问凭证，影响使用了Langflow的AI开发与部署环境。",
+      "link": "https://www.bleepingcomputer.com/news/security/critical-langflow-flaw-exploited-to-steal-openai-and-aws-keys/",
+      "published": "Tue, 01 Sep 2026 13:54:22 -0400",
+      "author": "Bill Toulas",
+      "categories": [
+        "Security"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/hackers-push-malicious-virtualizor-update-in-bgp-hijacking-attack/",
+      "source_hash": "da67b97ac45af7820d4b41e7579dd2ef1c4afc757e41916b95d66c233bbb8e43",
+      "title": "Hackers push malicious Virtualizor update in BGP hijacking attack",
+      "title_zh": "黑客通过BGP劫持攻击推送恶意Virtualizor更新",
+      "summary_zh": "攻击者劫持了Virtualizor VPS管理软件更新基础设施的BGP路由，将更新请求重定向到恶意服务器，进而向用户推送恶意更新。通过篡改软件更新链路，攻击者可在用户升级Virtualizor时植入恶意代码，影响大量依赖该面板管理VPS的服务商和维护者。此次事件展示了供应链攻击中BGP劫持与恶意更新结合的手段。",
+      "link": "https://www.bleepingcomputer.com/news/security/hackers-push-malicious-virtualizor-update-in-bgp-hijacking-attack/",
+      "published": "Tue, 01 Sep 2026 10:45:06 -0400",
+      "author": "Bill Toulas",
+      "categories": [
+        "Security"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/novocure-data-breach-affects-more-than-1-400-cancer-patients/",
+      "source_hash": "d07010b3277924b21fb66bcba2fd3b01042d0c7ce5d25d493931bf9c96c2de85",
+      "title": "Novocure data breach affects more than 1,400 cancer patients",
+      "title_zh": "Novocure数据泄露影响逾1400名癌症患者",
+      "summary_zh": "医疗科技公司Novocure披露，8月中旬的一次网络攻击导致数量不明的员工数据及超过1400名美国癌症患者的数据遭到暴露。该事件涉及患者健康信息，属于针对医疗行业的数据泄露。Novocure已确认攻击造成数据外泄，目前正在评估事件影响并响应处理。",
+      "link": "https://www.bleepingcomputer.com/news/security/novocure-data-breach-affects-more-than-1-400-cancer-patients/",
+      "published": "Tue, 01 Sep 2026 10:28:40 -0400",
+      "author": "Sergiu Gatlan",
+      "categories": [
+        "Security",
+        "Healthcare"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/why-even-the-best-edge-security-still-misses-high-risk-sessions/",
+      "source_hash": "cd2d19736e60506c8b16c56f905338ea35858208bd24277b9477e995cb2ad990",
+      "title": "Why Even the Best Edge Security Still Misses High-Risk Sessions",
+      "title_zh": "为什么即使最好的边缘安全仍会漏掉高风险会话",
+      "summary_zh": "攻击者可借助住宅代理、VPN等网络基础设施隐藏真实来源，使恶意会话在边缘安全设备眼中显得合法，造成漏检。文章介绍安全厂商Spur提出的会话增强方案，通过为每个会话补充更多数据维度，帮助安全团队识别高风险流量并做出更严格、更准确的阻断决策。该思路弥补了仅依赖传统边缘安全检测的盲区。",
+      "link": "https://www.bleepingcomputer.com/news/security/why-even-the-best-edge-security-still-misses-high-risk-sessions/",
+      "published": "Tue, 01 Sep 2026 10:01:11 -0400",
+      "author": "Sponsored by Spur Intelligence",
+      "categories": [
+        "Security"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/nearly-22-000-microsoft-exchange-servers-vulnerable-to-hijack-attacks/",
+      "source_hash": "5be8c8b4417d6856b4eff9a6cae4e3cdeebfe612337e12f96e3e276f48198b0e",
+      "title": "Nearly 22,000 Microsoft Exchange servers vulnerable to hijack attacks",
+      "title_zh": "近2.2万台Microsoft Exchange服务器面临劫持攻击风险",
+      "summary_zh": "研究发现，互联网上近2.2万台Microsoft Exchange服务器仍未修复一个高危身份验证绕过漏洞，攻击者利用该漏洞可劫持用户的所有邮箱。高严重性漏洞影响Exchange邮件系统安全，未修补的服务器容易成为账户接管攻击的目标。管理员应优先更新补丁并核查邮件系统是否存在异常访问。",
+      "link": "https://www.bleepingcomputer.com/news/security/nearly-22-000-microsoft-exchange-servers-vulnerable-to-hijack-attacks/",
+      "published": "Tue, 01 Sep 2026 08:38:35 -0400",
+      "author": "Sergiu Gatlan",
+      "categories": [
+        "Security",
+        "Microsoft"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2609.00052v1",
+      "source_hash": "1462ba8e58d55ba011d7d05f5a889b4553dbffc90a2b22fc0ee8c81dbacddf44",
+      "title": "AgentProv: Auditing Agentic LLM API Providers via Tool-use Policy Probes",
+      "title_zh": "AgentProv：通过工具使用策略探测审计智能体LLM API提供者",
+      "summary_zh": "商业LLM API可能被静默替换、量化或包装，现有审计依赖文本输出，在智能体API中因服务栈只暴露结构化工具调用而失效。论文提出AgentProv，首个基于动作的模型身份审计方法：通过工具调用类别分布形成指纹，利用MMD置换检验判断身份。在630个检查点对上识别所有替换模型，系统提示注入下误报率仅7%，优于MET和RUT，为审计第三方LLM API提供了新途径。",
+      "link": "https://arxiv.org/abs/2609.00052",
+      "published": "2026-09-02T00:00:00-04:00",
+      "author": "Xun Wang, Bihe Zhao, Michael Backes, Franziska Boenisch, Adam Dziedzic",
+      "categories": [
+        "cs.CR",
+        "cs.CL",
+        "cs.LG"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2609.00060v1",
+      "source_hash": "825852b35c70b811b03fe49f54acb1ca2fd91dceecd5d89104a152dce2f363a3",
+      "title": "A Formal Analysis of Agent Payment Protocols",
+      "title_zh": "智能体支付协议的形式化分析",
+      "summary_zh": "智能体支付协议的安全依赖跨越多个参与者和阶段，现有规范缺少系统分析。作者在Tamarin中形式化建模x402、MPP、ACP和AP2四种协议，统一支付生命周期视角，通过反例归纳出18条共享安全原则。在86个验证案例中复现46个已知结果，发现40个此前未记录的形式一致性问题；对每个违规通过最小增强模型重新验证，并用实现级证明确认。结论是委托授权必须与其经济和服务效果在各阶段保持一致。",
+      "link": "https://arxiv.org/abs/2609.00060",
+      "published": "2026-09-02T00:00:00-04:00",
+      "author": "Ke Jiang, Mohan Yu, Yuan Chang, Mohit Kumar Jangid, Jianyu Niu, Cong Wang, Yinqian Zhang",
+      "categories": [
+        "cs.CR",
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2609.00171v1",
+      "source_hash": "db78c822c80cfd1f06cb5154046b75cd9f315c6636d476db79d18e371bf5f186",
+      "title": "Explainable Artificial Intelligence for Industrial Cybersecurity: A Review of Methods, Operational Integration, and Research Challenges",
+      "title_zh": "面向工业网络安全的可解释人工智能：方法、运营集成与研究挑战综述",
+      "summary_zh": "工业数字化和IT/OT融合扩大了攻击面，AI多被用于安全运营中心，但其不透明决策影响信任与合规。该综述系统梳理可解释AI（XAI）在工业网络安全中的应用，涵盖特征归因、替代模型、规则解释、可视化等方法在工业SOC场景的适用性，并讨论有限标注数据、可靠性、性能权衡及工具集成等挑战。文章指出需要开发领域特定、可信且可落地的XAI方案。",
+      "link": "https://arxiv.org/abs/2609.00171",
+      "published": "2026-09-02T00:00:00-04:00",
+      "author": "Amr S. Mohamed, Charlotte Fritz, Ahmad Mohammad Saber, Yiqun Ma, Ratinder Kaur, Mohammed Al-Darwbi, Daniela Friedrich, Deepa Kundur",
+      "categories": [
+        "cs.CR",
+        "cs.SY",
+        "eess.SY"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2609.00259v1",
+      "source_hash": "413967e3f093a05e6fb03a920f6da4c4dd3499dda84cf1921c980428c325144f",
+      "title": "DUPIN: Attack Learning Is Still Needed! Demonstrating Few-Shot after Unsupervised Pretraining Is A Nimble Forensics Learner",
+      "title_zh": "DUPIN：攻击学习不可或缺——无监督预训练后的小样本取证学习",
+      "summary_zh": "提出DUPIN，一种基于学习的攻击取证方法。它先在海量审计事件（形式为来源图）上进行无监督预训练，然后通过少量标注攻击样本进行小样本微调，以适应特定攻击检测任务。作者在38至52天、总计7.3TB的审计日志上预训练，并在来自四个数据源的25个APT活动上评估，验证了其检测能力，表明无需大量攻击标签也能获得灵活有效的取证效果。",
+      "link": "https://arxiv.org/abs/2609.00259",
+      "published": "2026-09-02T00:00:00-04:00",
+      "author": "Chanwoo Bae, Hailun Ding, Shiqing Ma, Xiangyu Zhang",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2609.00267v1",
+      "source_hash": "c1f544dc266aeffa89f0d14b518598d470a0893348903c68b0ddfe505a79c550",
+      "title": "Delegation Without Trust: An Empirical Gap Analysis of Identity, Authorization, and Runtime Governance in Multi-Agent LLM Systems",
+      "title_zh": "无信任的委托：多智能体LLM系统中身份、授权与运行时治理的实证差距分析",
+      "summary_zh": "LLM代理可能被劫持，系统必须在不可信模型假设下确保代理即使被完全注入也不能越权。文章给出四种敌手模型和八项安全需求，分析LangGraph、CrewAI、AutoGen和MCP发现多数缺乏内置约束。作者实现授权代理，能阻断所有四种威胁、抵抗直接攻击，将受损子代理限制在委托任务内，并微秒级完成决策；该方案已部署于生产系统。",
+      "link": "https://arxiv.org/abs/2609.00267",
+      "published": "2026-09-02T00:00:00-04:00",
+      "author": "Panduranga Sai Varma Dantuluri, Jyotirmoy Sundi",
+      "categories": [
+        "cs.CR",
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2609.00309v1",
+      "source_hash": "01778625cbf0fa3e8ba68b4b92242c8c6bd692be96afa0475beafb94e866854e",
+      "title": "Workload Identification with Physical Side Channels for AI Governance",
+      "title_zh": "利用物理侧信道进行工作负载识别以支持AI治理",
+      "summary_zh": "研究用GPU功耗作为物理侧信道识别AI工作负载类别，以支持AI治理和合规验证。作者记录NVIDIA H200上约930段功耗轨迹，覆盖多个开源LLM与非AI负载，能区分训练、推理及其他计算，准确率97%。面对对抗性掩盖策略时，检测器对多数策略仍保持至少99%检出率；LoRA变体结合附加规则也达到98%以上，可独立于操作者合作审计算力使用。",
+      "link": "https://arxiv.org/abs/2609.00309",
+      "published": "2026-09-02T00:00:00-04:00",
+      "author": "Simone Gargiulo, Gabriel Kulp",
+      "categories": [
+        "cs.CR",
+        "cs.AI",
+        "cs.CY",
+        "cs.LG"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2609.00340v1",
+      "source_hash": "480c759643a205d4726b15e02131c38dd95faec89bb247ec4b9265ca20fb2d3f",
+      "title": "OreProof: Verifiable Provenance with Limited Disclosure for Critical-Minerals Supply Chains Using Zero-Knowledge Proofs",
+      "title_zh": "OreProof：利用零知识证明实现关键矿产供应链可验证溯源与有限披露",
+      "summary_zh": "关键矿产供应链存在“监管需要可验证溯源”和“上游不愿披露敏感数据”的矛盾。文章以黄金为例提出OreProof原型平台，采用链上/链下混合数据模型、Groth16零知识证明实现选择性披露，并用Merkle批量锚定提升吞吐。相比透明基线，可推断的机密属性从三类/四类降至零，兼顾可验证性和隐私，还提出四项设计原则。",
+      "link": "https://arxiv.org/abs/2609.00340",
+      "published": "2026-09-02T00:00:00-04:00",
+      "author": "Oleksandr Hrabar, Hossein Arshadi Soufiani, Henry M. Kim, Chien-Chih Chen, Ali Vazirizadeh, Hjalmar Turesson",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2609.00390v1",
+      "source_hash": "7911239329366f5a6c703173dfba6f29a523ab7f5194a6da6600d30d06aa1825",
+      "title": "NeuroPriv: Adversarial Representation Learning for Privacy in Wearable EEG Systems",
+      "title_zh": "NeuroPriv：可穿戴脑电图系统中的对抗表征学习隐私保护",
+      "summary_zh": "可穿戴EEG设备在支持认知监测时可能泄露身份、性别、年龄等神经隐私。论文以EEGMAT为例，发现常用EEG特征分类认知状态的准确率为0.788，但可被同时用于推断性别、年龄和身份，准确率分别达0.858、0.789和0.692。提出的NeuroPriv对抗表征学习将任务性能保持在0.781，同时把这些推断准确率降至0.563、0.467和0.206，证明目的受限表示和隐私审计可缓解泄露。",
+      "link": "https://arxiv.org/abs/2609.00390",
+      "published": "2026-09-02T00:00:00-04:00",
+      "author": "Sarmistha Sarna Gomasta, Bhawana Chhaglani, Prashant Shenoy",
+      "categories": [
+        "cs.CR",
+        "cs.HC",
+        "cs.LG"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2609.00404v1",
+      "source_hash": "c20309121cccfcd6145a616af75879857c3eafca8576755fe5c54d4ef1186e9f",
+      "title": "Federated Trust for Embodied Robot Capability Marketplaces",
+      "title_zh": "具身机器人能力市场的联合信任机制",
+      "summary_zh": "LLM驱动的机器人技能市场若依靠集中式PKI，难以适应异构合规、隔空部署等场景。论文提出联邦信任模型：各部署桥梁维护独立可信签名目录，通过Ed25519签名信封做本地成员校验，无需访问中心CA。实现含CLI、注册服务器和安装门，严格模式可拒绝全部伪造、篡改、撤销和降级攻击，多部署测试显示不同信任目录可产生差异化安装裁决，兼顾分布式信任和物理安全。",
+      "link": "https://arxiv.org/abs/2609.00404",
+      "published": "2026-09-02T00:00:00-04:00",
+      "author": "Xue Qin, Simin Luan, Cong Yang, Zhijun Li",
+      "categories": [
+        "cs.CR",
+        "cs.RO",
+        "cs.SE"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2609.00430v1",
+      "source_hash": "bc2d3511a2d83fee94d485167c545b3de05f912a9dfe30be0dd0b05a33b25efd",
+      "title": "Don't Trust the Code, Check Its Effects: Runtime Refinement for Regenerated Systems Code Under an Adversarial Generator",
+      "title_zh": "别信代码，看效果：对抗生成器下重生成系统代码的运行时精化",
+      "summary_zh": "LLM按规范重生成系统代码的已有方法假设效果可恢复且生成器诚实，但在驱动等不可逆效果和对抗生成器环境下会失效。论文主张取消生成代码的执行权：代码仅提出计划，由固定可信中介判定并执行规范允许的效果。以参考监视器形式应用于设备驱动，给出“可中介性包络”的六个条件，为安全化重生成代码提供设计约束。",
+      "link": "https://arxiv.org/abs/2609.00430",
+      "published": "2026-09-02T00:00:00-04:00",
+      "author": "Jinhao Hu, Ashvin Goel, Laurent Bindschaedler",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2609.00445v1",
+      "source_hash": "c1957558a7081fc1dc26bde9f6680a7eae819aad5fcf5e127b7870922a6514e7",
+      "title": "Capability-Gated Language Models: Security Composes, Utility Does Not",
+      "title_zh": "能力门控语言模型：安全可组合，效用不可组合",
+      "summary_zh": "部署的LLM防护措施在权重外因主体而异，但同一组权重内所有请求配置相同。作者定义能力门控部署，在一组权重内实现按主体访问控制，配置构成格结构，并经稀疏秩门控实例化。该方法利用一次归因引导配置文件搜索，从预注册的分割读取结果。研究表明安全属性在meet操作下可组合并增强，而效用不可组合：单独无害的配置文件组合会导致保留与流畅性受损，且不存在组合边界。",
+      "link": "https://arxiv.org/abs/2609.00445",
+      "published": "2026-09-02T00:00:00-04:00",
+      "author": "Patrikas Vanagas, Augustas Ma\\v{c}ijauskas, Laurynas Lopata",
+      "categories": [
+        "cs.CR",
+        "cs.AI",
+        "cs.LG"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2609.00464v1",
+      "source_hash": "e8b5bf989333509286b3761c91098832a608aea4685fb569d01a409e4a557c1a",
+      "title": "Does Reasoning Mitigate Backdoor Attacks? A Neuro-Symbolic Perspective",
+      "title_zh": "推理能否缓解后门攻击？一种神经符号视角",
+      "summary_zh": "神经符号AI将神经感知与符号推理结合，通常被视为天然鲁棒，但其对抗鲁棒性被忽视。本文首次系统评估神经符号模型的后门攻击，比较DeepProbLog与基线神经网络，覆盖8种后门设置和4种推理任务。结果显示，神经符号模型平均比纯神经网络更鲁棒，但其鲁棒性高度依赖推理过程的严格程度及与攻击目标的兼容性。实验源代码已公开。",
+      "link": "https://arxiv.org/abs/2609.00464",
+      "published": "2026-09-02T00:00:00-04:00",
+      "author": "Marco Antonio Corallo, Andrea Agiollo, Mauro Conti, Alberto Giaretta",
+      "categories": [
+        "cs.CR",
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2609.00502v1",
+      "source_hash": "1adfb6b38fe8d8be6829a32d1b2ce168c20db130b1768689f825fbe2db8745ed",
+      "title": "GlitchLab: A Hardware-in-the-Loop Optimizer for Physical Fault Injection",
+      "title_zh": "GlitchLab：面向物理故障注入的硬件在环优化器",
+      "summary_zh": "物理故障注入可将短暂硬件扰动转化为密钥恢复、认证绕过和控制流破坏等安全事件，但有效故障搜索空间大、反馈有限。GlitchLab搭建在线硬件在环平台，将延迟作为时序门，电压与脉冲宽度作为严重性控制，硬件结果作为结构化反馈，实现基于Q学习的RL-Q和基于模型的SOBAS两种策略。在AES、密码及控制流任务中均能发现目标故障，相比基线尝试次数减少2至85倍、耗时降低26至1237倍；密码任务中基线5000次内失败，而两者均成功。SOBAS复现故障频率达7.3至21倍，RL-Q识别出更多AES设置。",
+      "link": "https://arxiv.org/abs/2609.00502",
+      "published": "2026-09-02T00:00:00-04:00",
+      "author": "Tanvir Hossain, Abhinav Mahadevan, Jasper Van Woudenberg, Rajesh Velegalati, Arindam Bhattacharyya",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2609.00519v1",
+      "source_hash": "bbcf009890798038fb3509b884e055492d3e2d1aebd667544c351026551c19c5",
+      "title": "The Safeguard Worked. Is the LLM System Safer?",
+      "title_zh": "防护措施生效，LLM系统就更安全吗？",
+      "summary_zh": "已部署LLM系统常以拒绝率、攻击成功率等指标评估防护，但这些只反映测试请求上的表现，而非攻击者持续适应后仍能获取多少有害帮助。本文提出用同一部署标准比较不同防护族的证据，并指出证据要求不对称：一次成功的攻击即可证明残余危险，此类攻击在记录中反复出现；而证明残余危险极小，除防护自身指标外还需系统在防护执行后周边允许的额外证据。只有少数深度编码声明支持该证据。因此，本地评分提高不等于部署系统更安全，防护研究须以实际部署安全性增益为标尺。",
+      "link": "https://arxiv.org/abs/2609.00519",
+      "published": "2026-09-02T00:00:00-04:00",
+      "author": "Pingyu Wu, Weiming Zhang, Nenghai Yu",
+      "categories": [
+        "cs.CR",
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2609.00523v1",
+      "source_hash": "a9d4d8a3989d73c4aa2a087d8bceb0fa2ee4af031f5614d0090a6524ba4c6157",
+      "title": "Transferable End-to-End Optimization for Indirect Long-Term Memory Poisoning in LLM Agents",
+      "title_zh": "面向LLM智能体间接长期记忆投毒的端到端可迁移优化",
+      "summary_zh": "长期记忆可将不可信外部内容转化为对LLM智能体未来决策的持续影响，形成间接记忆投毒攻击。现有方法多为阶段内优化，忽略记忆写入、检索与利用之间的耦合，导致单一阶段改进被上游变换抹除。据此，作者提出PipePoison，将威胁建模为端到端优化问题：从本地影子系统收集细粒度反馈，借助链式损失定位瓶颈阶段，并以稳定性校准权重提高迁移性。实验覆盖三框架、四记忆机制，其攻击利用率提升19.1个百分点，对未知配置仍领先最强基线16个百分点，在八种防御下保持有效。",
+      "link": "https://arxiv.org/abs/2609.00523",
+      "published": "2026-09-02T00:00:00-04:00",
+      "author": "Chuanchao Zang, Jianing Wang, Wenyu Chen, Xiangtao Meng, Li Wang, Xinyu Gao, Zheng Li, Shanqing Guo",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    }
+  ]
+}

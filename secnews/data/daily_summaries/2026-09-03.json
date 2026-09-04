@@ -1,0 +1,381 @@
+{
+  "date": "2026-09-03",
+  "generated_at": "2026-09-04T10:38:40.824479+00:00",
+  "model": "deepseek-v4-flash",
+  "source_file": "articles/2026-09-03.jsonl",
+  "article_count": 25,
+  "summary_count": 25,
+  "complete": true,
+  "articles": [
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/microsoft/microsoft-teams-outlook-fail-to-launch-on-arm-based-windows-pcs/",
+      "source_hash": "30eb37f0e8550fbcb41f9c56587f9522677f06063246a32a7f978c848f4e5662",
+      "title": "Microsoft Teams, Outlook fail to launch on ARM-based Windows PCs",
+      "title_zh": "微软 Teams 和 Outlook 在基于 ARM 的 Windows PC 上无法启动",
+      "summary_zh": "微软正在修复一个已知问题：在基于 ARM 的 Windows PC 上，用户安装 2026 年 8 月补丁星期二以来发布的更新后，Microsoft Teams 和新版 Outlook 会出现崩溃或无法启动。相关用户受影响，微软正在调查并准备修复方案。",
+      "link": "https://www.bleepingcomputer.com/news/microsoft/microsoft-teams-outlook-fail-to-launch-on-arm-based-windows-pcs/",
+      "published": "Thu, 03 Sep 2026 04:55:25 -0400",
+      "author": "Sergiu Gatlan",
+      "categories": [
+        "Microsoft"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/hackers-exploit-sangoma-switchvox-flaw-to-deploy-reverse-shells/",
+      "source_hash": "33d4f3d4bf0d8069c8899774a0e132b549d12a4dfb172f1d03a41fe58c836da0",
+      "title": "Hackers exploit Sangoma Switchvox flaw to deploy reverse shells",
+      "title_zh": "黑客利用 Sangoma Switchvox 漏洞部署反向 Shell",
+      "summary_zh": "攻击者正积极利用 CVE-2026-9586 漏洞，该漏洞为 Sangoma Switchvox VoIP 平台中的未认证 SQL 注入，可导致远程代码执行。攻击者利用其部署反向 Shell 并控制受影响的 VoIP 系统。",
+      "link": "https://www.bleepingcomputer.com/news/security/hackers-exploit-sangoma-switchvox-flaw-to-deploy-reverse-shells/",
+      "published": "Wed, 02 Sep 2026 17:00:13 -0400",
+      "author": "Bill Toulas",
+      "categories": [
+        "Security"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/wordpress-backup-plugin-flaw-exposes-millions-of-sites-to-takeover-attacks/",
+      "source_hash": "f5d78de8fe366301884b3e4cd794c48c9b8a32ee3701a882fba846d8400d4d7b",
+      "title": "WordPress backup plugin flaw exposes millions of sites to takeover attacks",
+      "title_zh": "WordPress 备份插件漏洞导致数百万网站面临劫持攻击",
+      "summary_zh": "WordPress 的 All-in-One WP Migration and Backup 插件存在 SQL 注入漏洞，未认证的攻击者可利用该漏洞执行远程代码并完全控制受影响的网站。该插件用户广泛，漏洞可能导致数百万网站遭受劫持攻击，后果严重。",
+      "link": "https://www.bleepingcomputer.com/news/security/wordpress-backup-plugin-flaw-exposes-millions-of-sites-to-takeover-attacks/",
+      "published": "Wed, 02 Sep 2026 15:28:46 -0400",
+      "author": "Bill Toulas",
+      "categories": [
+        "Security"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/hackers-exploit-critical-jfrog-artifactory-flaw-to-forge-admin-tokens/",
+      "source_hash": "abcde54394d0d67bfc72316cd9017f4e602c5eed94c4350a8e04df563b752206",
+      "title": "Hackers exploit critical JFrog Artifactory flaw to forge admin tokens",
+      "title_zh": "黑客利用 JFrog Artifactory 严重漏洞伪造管理员令牌",
+      "summary_zh": "JFrog Artifactory 中存在编号为 CVE-2026-82329 的严重认证绕过漏洞，目前正被攻击者利用。攻击者可利用该漏洞伪造具有管理员权限的访问令牌，绕过认证并获取 JFrog Artifactory 的管理级访问能力，影响相关企业用户。",
+      "link": "https://www.bleepingcomputer.com/news/security/hackers-exploit-critical-jfrog-artifactory-flaw-to-forge-admin-tokens/",
+      "published": "Wed, 02 Sep 2026 11:47:08 -0400",
+      "author": "Bill Toulas",
+      "categories": [
+        "Security"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/ransomware-protection-for-msps-a-6-point-checklist-for-faster-recovery/",
+      "source_hash": "43adeb04853a15d47ef9a646d268336b2f773a0f3ecf4fa334252bf1afcd39bb",
+      "title": "Ransomware protection for MSPs: A 6-point checklist for faster recovery",
+      "title_zh": "面向 MSP 的勒索软件防护：加快恢复的六点检查清单",
+      "summary_zh": "针对勒索软件攻击，仅靠备份或端点检测并不足够。Acronis 面向托管服务提供商（MSP）提出六项能力检查清单，建议在客户环境中进行测试，涵盖减少攻击暴露、检测攻击、保留恢复点以及快速恢复业务操作等环节，以帮助 MSP 提升勒索软件防御与恢复速度。",
+      "link": "https://www.bleepingcomputer.com/news/security/ransomware-protection-for-msps-a-6-point-checklist-for-faster-recovery/",
+      "published": "Wed, 02 Sep 2026 10:02:12 -0400",
+      "author": "Sponsored by Acronis",
+      "categories": [
+        "Security"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/dropbox-accounts-breached-through-lenovo-email-verification-flaw/",
+      "source_hash": "ac7f25aee7c091cf582d52d114550ef89be16645f9e5c30d80d143879b1ae9c6",
+      "title": "Dropbox accounts breached through Lenovo email verification flaw",
+      "title_zh": "Dropbox 账户因联想电子邮件验证缺陷被入侵",
+      "summary_zh": "Dropbox 警告部分用户，其账户遭到未授权访问。攻击者利用联想电子邮件验证流程中的缺陷注册了欺诈性的联想 ID，并借此进入用户的 Dropbox 账户。",
+      "link": "https://www.bleepingcomputer.com/news/security/dropbox-accounts-breached-through-lenovo-email-verification-flaw/",
+      "published": "Wed, 02 Sep 2026 08:30:22 -0400",
+      "author": "Bill Toulas",
+      "categories": [
+        "Security",
+        "Cloud"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://www.bleepingcomputer.com/feed//https://www.bleepingcomputer.com/news/security/microsoft-defender-flags-legitimate-google-search-links-as-malicious/",
+      "source_hash": "2ece948b28a3f417a2fca7c1b08e0908ce0a76503e29fdd6ddad0c3312648b20",
+      "title": "Microsoft Defender flags legitimate Google search links as malicious",
+      "title_zh": "Microsoft Defender 将合法 Google 搜索链接误判为恶意",
+      "summary_zh": "微软正在调查一个已知问题，该问题导致 Microsoft Defender for Office 365 安全软件错误地将合法的 Google 搜索链接标记为恶意并阻止其访问。此问题影响使用相关安全功能访问 Google 搜索的用户，微软正在解决。",
+      "link": "https://www.bleepingcomputer.com/news/security/microsoft-defender-flags-legitimate-google-search-links-as-malicious/",
+      "published": "Wed, 02 Sep 2026 06:29:39 -0400",
+      "author": "Sergiu Gatlan",
+      "categories": [
+        "Security",
+        "Google",
+        "Microsoft"
+      ],
+      "source": "https://www.bleepingcomputer.com/feed/"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2609.01663v1",
+      "source_hash": "e4a9e07857d538864161cb2cbf49b10f6ecb26ad3fcad27ae8cfe270993cc949",
+      "title": "Context Inference Attacks Without Jailbreaks",
+      "title_zh": "无需越狱的上下文推断攻击",
+      "summary_zh": "该论文研究 Agentic AI 的敏感数据泄露，提出无需越狱的上下文推断攻击。作者用安全游戏形式化攻击，评估已知、未知及智能体工具检索三种上下文，并区分灰盒与黑盒。实验中即使采用不泄露指令、logit 抑制与上下文稀释，泄露仍然存在；单一攻击在未知场景达 78.9 AUROC，黑盒代理评分达 92.5 AUROC，表明现有防护不足。",
+      "link": "https://arxiv.org/abs/2609.01663",
+      "published": "2026-09-03T00:00:00-04:00",
+      "author": "Prince Jha, Samuele Poppi, Nils Lukas",
+      "categories": [
+        "cs.CR",
+        "cs.LG"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2609.01667v1",
+      "source_hash": "245584e814cda55ce4742d83471b5b279afbfe9bb449b2e9ff78a2f848419d09",
+      "title": "Private Computation Space: Experience with Trusted Multi-Cluster Federated Learning for Agriculture",
+      "title_zh": "私有计算空间：农业可信多集群联邦学习实践经验",
+      "summary_zh": "该论文针对农业 AI 采用中农民对数据共享的隐私顾虑，提出开源机器学习系统 Private Computation Space（PCS），整合多集群编排、异步联邦学习、差分隐私和可信执行环境，使农场在不泄露数据的情况下参与。系统部署在纽约氮监测（6个月）和加州蒸散预测（10个月）上，分别取得 DSC 0.71 和 R² 0.84，比最差单站点模型提升22.4%和9.1%，同时保护隐私和适应农村网络。",
+      "link": "https://arxiv.org/abs/2609.01667",
+      "published": "2026-09-03T00:00:00-04:00",
+      "author": "Shuangyu Lei, Muhammad Salman Abid, Jacob Belding, Sam Mosher, Manushi B. Trivedi, Shivranjani Baruah, Liam Wickes-Do, Andrew Anderson, Braulio Dumba, Alyssa Whitcraft, Ritvik Sahajpal, Sijin Li, Kelly Robbins, Michael Gore, Margaret Frank, Steven Wolf, Liz Jones, Abraham Stroock, Kaitlin Gold, Hakim Weatherspoon",
+      "categories": [
+        "cs.CR",
+        "cs.LG"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2609.01671v1",
+      "source_hash": "2960dbcc297a1ab869a5ee52bcbfd152450162cee909e4cc24f9bae5b6292b8f",
+      "title": "Ranked by the Matcher: A Reproducibility Audit of Knowledge Graph Extraction from Threat Reports",
+      "title_zh": "由匹配器排名：威胁报告知识图谱提取的可复现性审计",
+      "summary_zh": "论文对威胁报告知识图谱抽取工具的评分可复现性进行审计。作者发现 triple-F1 依赖三元组匹配规则，12个系统中仅5个可复现所述规则；按8种协议重评10个系统，翻转45对排序中的11对，同一预测集F1在0.16至0.70间变动。GRID外部校准集上机械匹配与多评审一致性低于71%，LLM达86%。构建CTIForge固定提取后，验证配置抬高托管后端精度而降低离线后端。代码、协议与审计记录已发布。",
+      "link": "https://arxiv.org/abs/2609.01671",
+      "published": "2026-09-03T00:00:00-04:00",
+      "author": "Safayat Bin Hakim, Houbing Herbert Song",
+      "categories": [
+        "cs.CR",
+        "cs.AI",
+        "cs.CL"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2609.01677v1",
+      "source_hash": "a4dd33cdea164bc4a12b348567c44759343d73e4aba1735665740d3fe598b550",
+      "title": "Skill-as-API: Confidential Multi-Agent Coordination for Agentic Software Engineering",
+      "title_zh": "Skill-as-API：面向智能体软件工程的保密多智能体协调",
+      "summary_zh": "针对 AI 编码智能体协作时暴露专有技能的问题，该论文提出 Skill-as-API 协议层方案。该协议只向对等方公开技能的名称、描述、类型化输入输出模式和信任层级，技能主体以闭包形式保留在所有者进程内，不经过网络传输，并通过四层机制在结构上限制提示注入。作者提供了基于 XMTP 的开源 Python 实现，跨洲热重连延迟 1.8-2.9 秒；在三智能体 PR 审查案例中各智能体保留了专有分析提示。",
+      "link": "https://arxiv.org/abs/2609.01677",
+      "published": "2026-09-03T00:00:00-04:00",
+      "author": "Ziwei Zhao, Yu Gu, Haojun Liang, Chen Zhang, Xizhi Ding",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2609.01693v1",
+      "source_hash": "363512c932bd6dfe1eacf0a87d35447b93d061c9c9573b26eedfa0df3cb82293",
+      "title": "Public-Sharing Labels and Verbatim Field Egress in an MCP-to-A2A Agent Configuration: A Controlled Multi-Model Study",
+      "title_zh": "MCP-to-A2A 智能体配置中的公共共享标签与逐字字段外发：受控多模型研究",
+      "summary_zh": "论文通过受控实验测量隐私标签对同时使用 MCP 与 A2A 的智能体外发文字的影响。测试中 10 个记录场景分别标注“机密”“无标签”“公共可共享”，结果以外部消息出现原文字段为准；4模型×3条件×4重复共480次试验。场景级结果显示“机密”与无标签对比因地板效应无法证明有效；添加“公共可共享”与外发增加相关（Claude Sonnet 5 平均差+0.800，10/10场景），其他模型影响不一。作者指出这仅是关联，并发布代码与追踪数据。",
+      "link": "https://arxiv.org/abs/2609.01693",
+      "published": "2026-09-03T00:00:00-04:00",
+      "author": "Arpan Kumar Mahapatra",
+      "categories": [
+        "cs.CR",
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2609.01723v1",
+      "source_hash": "df99cb2d0cbeaead217180984ceaa890a63ced982dd720e021b1a9d739866b1a",
+      "title": "Hearing the Whispers: Black-Box Membership Inference Attacks on Finetuned TTS Models",
+      "title_zh": "倾听低语：针对微调 TTS 模型的黑盒成员推断攻击",
+      "summary_zh": "论文研究文本到语音（TTS）模型在私有数据上微调后的隐私泄露，提出首个专门针对 TTS 的黑盒成员推断攻击框架，支持说话人级和录音级推断。对查询空间进行刻画并建立两个标准，发现背诵式查询最有效；使用多级语音表示和时间对齐进行比较。在 CosyVoice2、F5-TTS、XTTS-v2 及两个数据集上实验，说话人级 AUC 高于0.80并接近1.0，录音级 AUC 为0.80-0.90，即使成员与非成员来自同一说话人仍有效，揭示严重隐私风险。",
+      "link": "https://arxiv.org/abs/2609.01723",
+      "published": "2026-09-03T00:00:00-04:00",
+      "author": "Kunlin Cai, Kaiyuan Zhang, Zihang Xiang, Jinghuai Zhang, Abeer Alwan, Fnu Suya, Yuan Tian",
+      "categories": [
+        "cs.CR",
+        "cs.LG",
+        "cs.SD",
+        "eess.AS"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2609.01730v1",
+      "source_hash": "f914ae3a42abca0382e2f967593b748b8a457bd02095d3ec6969e739e376440e",
+      "title": "HEAT: Faster Fully Homomorphic Inference via Approximations-Weights Co-Adaptation",
+      "title_zh": "HEAT：通过近似与权重协同适配加速全同态加密推理",
+      "summary_zh": "全同态加密（FHE）能直接在加密提示上运行语言模型，但速度过慢。论文提出 HEAT 微调方法，将模型中每个非线性操作的近似迭代次数变为可学习参数，在训练中与权重协同适配，从而平衡精度与计算深度。在加密 GPT-2 解码实验中，HEAT 将迭代次数减少3.1倍，bootstrap 减少1.6倍，端到端延迟降低1.4倍，同时改善了解码一致性，为 FHE 推理加速提供了模型侧优化手段。",
+      "link": "https://arxiv.org/abs/2609.01730",
+      "published": "2026-09-03T00:00:00-04:00",
+      "author": "Alessandro Zirilli, Davide Marincione, Evgenios M. Kornaropoulos, Giuseppe Ateniese, Emanuele Rodol\\`a",
+      "categories": [
+        "cs.CR",
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2609.01758v1",
+      "source_hash": "80cbf1a4eb949bcea42cfb11a85044517334ac31e4ae27931775f4a795975b18",
+      "title": "Towards Behavior Tree-Guided Vulnerability Detection with Lightweight LLMs",
+      "title_zh": "面向轻量级 LLM 的行为树引导漏洞检测",
+      "summary_zh": "论文研究 LLM 漏洞检测中输入表示的影响，提出用行为树（BT）作为紧凑的中间表示。作者先将 Java 源码解析为 AST，再转换为编码控制流、条件和执行动作的 BT；使用量化本地模型 Mistral Small 3.2 24B 在 460 个 Juliet Java 样本上比较原始代码、AST 和 BT。结果显示短样本上 BT 提升召回率但原始代码精度更高；长样本上 BT 综合表现更优，且许多 AST 会超出上下文限制。结论是 BT 适合本地量化 LLM 的漏洞检测。",
+      "link": "https://arxiv.org/abs/2609.01758",
+      "published": "2026-09-03T00:00:00-04:00",
+      "author": "Enna Basic, Alberto Giaretta",
+      "categories": [
+        "cs.CR",
+        "cs.SE"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2609.01836v1",
+      "source_hash": "dc98e6668d1a7b51803ce0848fc3feb51d3eb10007db77e0750cebba83605ba1",
+      "title": "Agent Memory Is a Surface for Endogenous Authorization Laundering",
+      "title_zh": "智能体记忆是内生授权清洗的攻击面",
+      "summary_zh": "论文提出并测量 LLM 智能体持久内存的“内生授权清洗”现象：当内存错误保存权限状态时，智能体会依据虚假权限执行未经授权的操作，无需外部攻击。作者构建 EAL-Bench，让5个LLM写入内存、2个执行任务，覆盖采购、网络安全和金融。结果显示，增量更新中写入者为多达50.2%的未授权请求制造假权限；假权限存在时执行率高达98.6%。两种防护手段可降低清洗，但也会误拒许多合法操作，体现安全与效用的取舍。",
+      "link": "https://arxiv.org/abs/2609.01836",
+      "published": "2026-09-03T00:00:00-04:00",
+      "author": "Tommaso Cerruti, Mika Okamoto, Ansel Kaplan Erol",
+      "categories": [
+        "cs.CR",
+        "cs.AI"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2609.01856v1",
+      "source_hash": "742f60beb4acbc16ecfb9324cc8754ee2abca15cfb694d9a75912d889a4967b8",
+      "title": "Adversarial Vulnerabilities of Neural Biomarker Identification Systems",
+      "title_zh": "神经生物标志识别系统的对抗性脆弱性",
+      "summary_zh": "论文研究 EEG 信号作为生物识别凭证的安全性问题。此前对抗测试主要针对白盒深度分类器，作者开发了一组自适应攻击算法，通过定向修改窃取的 EEG 记录来欺骗认证系统，且不需要认证系统内部知识。在6个公共数据集和三种记录条件（视觉刺激、想象手部运动、静息）下的测试显示，不同神经特征提取方法的脆弱性差异明显，记录任务条件也会显著影响欺骗攻击成功率，并据此提出改进建议。",
+      "link": "https://arxiv.org/abs/2609.01856",
+      "published": "2026-09-03T00:00:00-04:00",
+      "author": "Polina Tapal, Bryce-Allen Bagley",
+      "categories": [
+        "cs.CR",
+        "q-bio.NC"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2609.01931v1",
+      "source_hash": "784a24251b3ad151717c52b1610bdb90778a452df14644aae1f6bd11c2ee27d5",
+      "title": "Agent Flight Recorder: Tamper-Evident Audit Trails with On-Chain Anchoring for Long-Horizon Tool-Using Agents",
+      "title_zh": "Agent 飞行记录器：面向长周期工具使用智能体的防篡改审计追踪与链上锚定",
+      "summary_zh": "面向长周期智能体的事故取证，该论文提出 Agent Flight Recorder：将每个动作编码为含意图到来源等8个语义字段的结构化事件，经哈希链和 Merkle 批处理实现防篡改，并周期性地将 epoch 根锚定到链上，供任何验证者独立核验。评估显示，完整机制每事件仅增加约48微秒延迟和512字节存储，L2锚定每10万事件成本2.30美元；它能以100%检测编辑、删除、重排与分叉篡改且零误报，结构化取证查询精确率1.0，优于非结构化搜索。",
+      "link": "https://arxiv.org/abs/2609.01931",
+      "published": "2026-09-03T00:00:00-04:00",
+      "author": "Laurent Bindschaedler, Quentin Botha, Christoph Siebenbrunner",
+      "categories": [
+        "cs.CR",
+        "cs.MA"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2609.01939v1",
+      "source_hash": "b5f74e23cb5092ba55ca442f70f8bf067a1f2d3250ad8a89d74ad75f0954f89f",
+      "title": "Bonded Recourse for Smart-Contract Settlement of Compensable Agent Side Effects",
+      "title_zh": "基于抵押追索权的智能合约结算可补偿智能体副作用",
+      "summary_zh": "该论文提出 Recourse，一种用智能合约解决智能体副作用补偿的协议。它把每次被允许的动作绑定到范围、恢复、证据、支付和抵押，并将事前资格与事后可结算性分离：客观索赔经类型化收据在乐观预言机挑战下结算，主观或不完整的索赔进入 ERC-792 仲裁或排除。作者在 Base Sepolia 部署合约，为 Postgres、Git 和云沙箱构建适配器，并通过确定性测试、对抗扫描和属性模糊测试评估。与仅授权和本地补偿相比，绑定抵押降低了未补偿损害，链上环节提供中立托管、公共挑战及非合作支付能力。",
+      "link": "https://arxiv.org/abs/2609.01939",
+      "published": "2026-09-03T00:00:00-04:00",
+      "author": "Laurent Bindschaedler, Quentin Botha, Christoph Siebenbrunner",
+      "categories": [
+        "cs.CR",
+        "cs.DC",
+        "cs.MA"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2609.01944v1",
+      "source_hash": "cd95e83b566c820c9261c5697c5e337bc21c9ecc9787217b734e232c4d4dcdd5",
+      "title": "Privacy Amplification Without Independence: How Far Negative Dependence Carries the Guarantees of Poisson Subsampling",
+      "title_zh": "无独立性的隐私放大：负相关性在多大程度保留泊松子采样的保证",
+      "summary_zh": "论文研究不依赖独立参与时的差分隐私放大保证。实际系统常用随机分配等结构化参与方式，普遍认为不比泊松子采样弱。作者针对高斯和相关噪声矩阵机制证明：若参与指示向量负相关，则在所有整数 Rényi 阶 α≥2 下其隐私散度不超过匹配的独立泊松机制；但整数阶限制关键，随机分配在 α<3/2（含 KL）时优势反转，并确定了泊松支配失效的阈值。结果提供了隐私核算替代映射，阐明何时可用泊松计算、何时失效及替代方案成本。",
+      "link": "https://arxiv.org/abs/2609.01944",
+      "published": "2026-09-03T00:00:00-04:00",
+      "author": "Xujun Che, Depeng Xu",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2609.01945v1",
+      "source_hash": "3e0edb951a851808e2d81ab43161875cde73ff7a9a591b496287334c00c32fa5",
+      "title": "Pushing Forward Multi-Secret-Key Homomorphic Encryption for Private Average Aggregation",
+      "title_zh": "推进面向私有平均聚合的多密钥同态加密",
+      "summary_zh": "针对联邦学习中的隐私聚合需求，提出基于 RLWE 的轻量级多密钥同态加密协议。每个客户端用自己的密钥加密更新，无需集体公钥即可支持同态聚合与协作解密，并显式抵消解密噪声，省去大幅值 smudging 噪声。协议含基于 BFV 与 CKKS 的变体，在半诚实模型下证明能抵御聚合器和至多 L-1 个客户端合谋。实验显示密文扩展与在线成本低于现有 MHE 聚合方案。",
+      "link": "https://arxiv.org/abs/2609.01945",
+      "published": "2026-09-03T00:00:00-04:00",
+      "author": "Miguel Morona-M\\'inguez, Fernando P\\'erez-Gonz\\'alez, Alberto Pedrouzo-Ulloa",
+      "categories": [
+        "cs.CR",
+        "cs.LG"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2609.02007v1",
+      "source_hash": "b4a6f30efb13cefded533cda6417a1d703702673dd8782260a528cd86befd997",
+      "title": "C$^2$T-OpenMax: A Novel Open-Set WiFi RF Fingerprinting Method via Center Constrained Learning and Confidence-Guided Tail Modeling",
+      "title_zh": "C²T-OpenMax：一种基于中心约束学习与置信度引导尾部建模的开放集 WiFi 射频指纹识别新方法",
+      "summary_zh": "针对开放集 WiFi 射频指纹识别，提出 C²T-OpenMax 框架。它用中心约束学习提高类内紧凑性，再用置信度引导尾部建模，只保留正确高置信度 logits 做均值激活向量估计和 Weibull 拟合，降低边界样本偏差。公开 WiFi CSI 数据上，该方法在 8 个位置组中 7 个取得最佳开放集准确率，AUROC 与 OSCR 全面超过基线；最大开放度下准确率提升 12.31%，AUROC 提升 0.0887。",
+      "link": "https://arxiv.org/abs/2609.02007",
+      "published": "2026-09-03T00:00:00-04:00",
+      "author": "Yuanyu Zhang, Junjie Yang, Ji He, Shuangrui Zhao, Lele Zheng, Yulong Shen",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2609.02035v1",
+      "source_hash": "9c9751aecd6114dd5492b89c552c5793044e493605d94220d0c271b1c531b9e8",
+      "title": "Implicit Manipulation for Skill Selection in LLM Agents with Semantic Matching",
+      "title_zh": "基于语义匹配的 LLM 智能体技能选择隐式操纵",
+      "summary_zh": "针对 LLM 智能体技能选择，作者发现提示与技能描述分开看都无害时，仍可通过塑造它们的语义关系来引导选择攻击者技能。提出的 ISM 方法联合改动技能元数据和可复用提示，扩展语义覆盖且无显式选择指令。在四个任务域、八个选择器上，平均目标选择率从 15.2% 升至 63.5%；人类仅 2.9% 判断阻止，LLM 检查器平均放行率 82.9%，并可回避 PPL-W、Llama Prompt Guard 2 等检测。",
+      "link": "https://arxiv.org/abs/2609.02035",
+      "published": "2026-09-03T00:00:00-04:00",
+      "author": "Qikai Wang (University of Electronic Science and Technology of China), Yongzhao Zhang (University of Electronic Science and Technology of China), Zhiwei Chen (University of Electronic Science and Technology of China), Yimiao Sun (Tsinghua University), Jiguo Yu (University of Electronic Science and Technology of China), Xiaosong Zhang (University of Electronic Science and Technology of China)",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2609.02048v1",
+      "source_hash": "95937018eadb3eebeb60fce5c5235e479402e7eaf571bf816f4b94be6e798698",
+      "title": "Type-Directed, Secure-by-Construction Enclave Partitioning for LLVM",
+      "title_zh": "面向 LLVM 的类型导向、构造性安全的飞地分区",
+      "summary_zh": "TEE 的 enclave 硬件隔离尚不能保证信息流安全。本文给出 SIR 与 SIREN 演算，并实现 SPLITR：SIR 以 LLVM IR 为基础，用内存安全限制低层攻击；SIREN 扩展后防御可观察任意非 enclave 内存的更强威胁；SPLITR 以类型驱动、保类型编译自动划分 enclave，免去手动分区且保留边界控制。在 Intel SGX 上可运行至 OpenSSL（42.6 万条 IR 指令）；优化过渡次数后 host-enclave 切换由 393 降至 187，长任务开销趋近原生。",
+      "link": "https://arxiv.org/abs/2609.02048",
+      "published": "2026-09-03T00:00:00-04:00",
+      "author": "Wesley B. Nuzzo, Samuel Dodson, Benjamin Houle, Tarakaram Gollamudi, Anitha Gollamudi",
+      "categories": [
+        "cs.CR",
+        "cs.PL"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    },
+    {
+      "_id": "https://rss.arxiv.org/atom/cs.cr/oai:arXiv.org:2609.02127v1",
+      "source_hash": "8259a3c1e0b762a730c01625097f271a009a21889cbc93629d1db57f65277dae",
+      "title": "Stored Is Not Supported: Typed Provenance and Assertion Guardrails for Persistent AI Agents",
+      "title_zh": "存储不等于支持：持久化 AI 智能体的类型化来源与断言护栏",
+      "summary_zh": "持久化 AI 智能体可从输入、提示注入或模型推断获得内容并写入自传状态，但存储或检索不意味着被支持。作者设计类型化来源图与断言护栏：来源图区分来源、依赖、认知角色与披露范围，解析器评估状态并返回证据状态、冲突/过期/隐瞒标志，生成-验证-修订中介在发布前把关。在 24 个人工一致性案例中，该方法未放行任何无保留的不安全候选（0/19），保留五个受支持控制；普通规则放行 19/19 或 18/19。",
+      "link": "https://arxiv.org/abs/2609.02127",
+      "published": "2026-09-03T00:00:00-04:00",
+      "author": "Jun He, Deying Yu",
+      "categories": [
+        "cs.CR"
+      ],
+      "source": "https://rss.arxiv.org/atom/cs.cr"
+    }
+  ]
+}
