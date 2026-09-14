@@ -1,0 +1,76 @@
+.paper-search {
+  display: grid;
+  gap: 12px;
+  padding: 14px 16px 16px;
+  background: var(--soft);
+  border-bottom: 1px solid var(--border);
+}
+.paper-search-mode, .paper-search-modes { border-radius: 0; }
+.paper-search-modes {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+.paper-search-mode {
+  min-height: 32px;
+  padding: 0 14px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+.paper-search-mode.is-active {
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+.paper-search-mode:hover:not(.is-active) { color: var(--text); }
+.paper-search-pane.is-hidden { display: none; }
+.paper-fuzzy-field { width: 100%; max-width: none; }
+.related-work-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.15fr) auto;
+  gap: 10px;
+  align-items: end;
+}
+.related-work-submit { display: flex; justify-content: flex-end; }
+.related-work-submit .button { min-height: 38px; white-space: nowrap; }
+.related-work-hint,
+.related-work-status {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.related-work-status[data-kind="error"] { color: #b42318; }
+.related-work-status[data-kind="ok"] { color: var(--primary); }
+.related-work-status[data-kind="fallback"] { color: var(--accent-text); }
+.related-work-status[data-kind="pending"] { color: var(--primary-deep); }
+.conference-reason {
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  color: var(--primary-deep);
+  font-size: 12px;
+  line-height: 1.65;
+  background: var(--primary-soft);
+  border-left: 3px solid var(--primary);
+}
+.conference-reason::before {
+  content: "\4e3a\4f55\76f8\5173 \00b7 ";
+  font-weight: 700;
+}
+.conference-score {
+  margin-left: auto;
+  color: var(--primary);
+  font: 700 11px/1 "JetBrains Mono", ui-monospace, monospace;
+}
+.conference-row.has-reason::before { background: var(--primary); }
+@media (max-width: 920px) {
+  .related-work-grid { grid-template-columns: 1fr; }
+  .related-work-submit { justify-content: stretch; }
+  .related-work-submit .button { width: 100%; }
+}

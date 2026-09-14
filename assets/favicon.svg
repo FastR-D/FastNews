@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <style>
+    .bg { fill: #087f78; }
+    .bolt { fill: #ffffff; }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #0c171d; }
+      .bolt { fill: #65ead9; }
+    }
+  </style>
+  <rect class="bg" width="32" height="32" rx="7"/>
+  <path class="bolt" transform="translate(5.2 5.2) scale(0.9)" d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/>
+</svg>

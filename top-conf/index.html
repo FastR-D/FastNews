@@ -4,13 +4,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>顶会论文总结 - FastNews</title>
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
 <script>
   (() => {
-    const saved = window.localStorage.getItem("fastnews.theme");
-    const dark = saved === "dark" || (saved !== "light" && window.matchMedia("(prefers-color-scheme: dark)").matches);
-    document.documentElement.classList.toggle("dark", dark);
+    const applyTheme = () => {
+      const saved = window.localStorage.getItem("fastresearch-theme") ?? window.localStorage.getItem("fastnews.theme");
+      document.documentElement.classList.toggle("dark", saved !== "light");
+    };
+    applyTheme();
+    window.addEventListener("pageshow", applyTheme);
   })();
 </script>
+<style>html:not(.fastnews-ready) .app-shell{visibility:hidden!important}</style>
+<script src="../assets/gate.js"></script>
 <style>
   :root {
     --app-bg: #f6f7f5; --muted-bg: #eef2ef; --surface: #fff; --soft: #f8faf8;
@@ -250,7 +259,158 @@
     .news-list-head { align-items: flex-start; flex-direction: column; gap: 3px; padding: 12px 14px; }
     .news-row { padding: 14px 14px 14px 18px; }
   }
+  /* FastResearch console layer */
+  :root { --app-bg:#f4f8f7; --muted-bg:#e8f1ef; --surface:#fff; --soft:#f4f8f7; --border:rgba(42,103,104,.2); --input-border:#b8cfcc; --primary:#087f78; --primary-deep:#075f5a; --primary-soft:rgba(8,127,120,.08); --primary-border:rgba(8,127,120,.3); --accent:#c2410c; --accent-soft:#fff7ed; --accent-border:#fed7aa; --accent-text:#c2410c; --text:#14282c; --muted:#5c7779; --subtle:#648083; --focus:rgba(8,127,120,.16); }
+  html.dark { --app-bg:#0b1a14; --muted-bg:#12261d; --surface:#12261d; --soft:#173028; --border:rgba(141,198,200,.18); --input-border:#2d4b50; --primary:#65ead9; --primary-deep:#9cfff2; --primary-soft:rgba(101,234,217,.08); --primary-border:rgba(101,234,217,.35); --accent:#ffc36d; --accent-soft:rgba(255,195,109,.1); --accent-border:rgba(255,195,109,.35); --accent-text:#ffc36d; --text:#e7f1f0; --muted:#89a1a3; --subtle:#587478; }
+  html:not(.dark) { --app-bg:#f4f8f7; --muted-bg:#e8f1ef; --surface:#fff; --soft:#f4f8f7; --border:rgba(42,103,104,.2); --input-border:#b8cfcc; --primary:#087f78; --primary-deep:#075f5a; --primary-soft:rgba(8,127,120,.08); --primary-border:rgba(8,127,120,.3); --accent:#c2410c; --accent-soft:#fff7ed; --accent-border:#fed7aa; --accent-text:#c2410c; --text:#14282c; --muted:#5c7779; --subtle:#648083; --focus:rgba(8,127,120,.16); }
+  body { font-family:'Space Grotesk','Noto Sans SC',Inter,sans-serif; background:var(--app-bg); color:var(--text); }
+  html.dark body { background:radial-gradient(circle at 80% -10%,rgba(28,77,56,.65),transparent 35%),var(--app-bg); }
+  .app-shell { background:transparent; } html.dark .sidebar { background:rgba(18,38,29,.88); border-color:var(--border); } html.dark .topbar { background:rgba(11,26,20,.78); border-color:var(--border); backdrop-filter:blur(14px); }
+  .page { max-width:1240px; padding:30px 24px 42px; } .brand-name { letter-spacing:.08em; text-transform:uppercase; }
+  h1 { font-family:'Space Grotesk','Noto Sans SC',sans-serif; font-size:clamp(28px,4vw,48px); font-weight:500; letter-spacing:-.04em; } .description { line-height:1.8; }
+  html.dark .surface { background:rgba(18,38,29,.88); border-color:var(--border); box-shadow:0 8px 28px rgba(0,0,0,.16); } html.dark .section-head, html.dark .news-list-head { background:rgba(23,48,40,.86); }
+  .stat-value { color:var(--primary); font-family:'JetBrains Mono',monospace; } .report-title a,.conference-title a,.article-title a,.news-title a { color:var(--primary); }
+  .report-row:hover,.conference-row:hover,.article:hover,.news-row:hover,.gateway-row:hover,.author-row:hover { background:rgba(101,234,217,.06); } .conference-row::before,.news-row::before { background:var(--accent); }
+  .badge,.conference-tag,.news-tag { font-family:'JetBrains Mono',monospace; }
+  @media (max-width:920px) { .page { padding:22px 16px 32px; } h1 { font-size:32px; } }
+  /* Match FastResearch shell exactly */
+  html.dark body, html.dark .app-shell { background:#0b1a14 !important; color:#e7f1f0 !important; }
+  html.dark .sidebar { background:#12261d !important; border-color:rgba(141,244,231,.14) !important; }
+  html.dark .topbar { height:72px !important; padding:0 clamp(18px,5vw,76px) !important; background:rgba(11,26,20,.72) !important; border-color:rgba(141,244,231,.14) !important; }
+  html.dark .brand-mark { color:#e7f1f0 !important; } html.dark .brand-mark:first-child { background:transparent !important; border:0 !important; }
+  html.dark .brand-mark .icon { color:#05150d !important; background:#65ead9 !important; }
+  html.dark .page { max-width:1240px; padding:30px 24px 42px; }
+  html.dark h1 { color:#eaf3f2 !important; font-size:clamp(32px,5vw,56px) !important; font-weight:500 !important; letter-spacing:-.05em !important; }
+  html.dark .surface { background:rgba(18,38,29,.72) !important; border-color:rgba(141,198,200,.18) !important; box-shadow:none !important; }
+  html.dark .section-head, html.dark .news-list-head { background:rgba(23,48,40,.72) !important; }
+  html.dark .gateway-title, html.dark .report-title, html.dark .conference-title, html.dark .news-title { color:#e7f1f0 !important; }
+  html.dark .gateway-description, html.dark .report-row .meta, html.dark .conference-summary, html.dark .news-description { color:#87a0a3 !important; }
+  html.dark .gateway-row:hover, html.dark .report-row:hover, html.dark .conference-row:hover, html.dark .news-row:hover, html.dark .author-row:hover { background:rgba(24,52,40,.92) !important; }
+  html.dark .button-primary { color:#04140c !important; background:#65ead9 !important; border-color:#65ead9 !important; }
+  html.dark .button-primary:hover { background:#9cfff2 !important; border-color:#9cfff2 !important; }
+  html.dark .button, html.dark .icon-button { background:transparent; color:#9cb4b5; border-color:rgba(143,198,200,.2); }
+  html.dark .icon-button:hover, html.dark .button:hover { color:#65ead9; border-color:#65ead9; background:rgba(101,234,217,.07); }
+  html.dark .field { color:#d8e9e8; background:#0d1f18; border-color:#2d4b50; }
+  html:not(.dark) .topbar { height:72px; }
+  html:not(.dark) .page { max-width:1240px; }
+  /* FastResearch series shell: shared with the control center */
+  html.dark body { background:#0b1a14 !important; }
+  html.dark body::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.16; background-image:linear-gradient(rgba(86,168,126,.16) 1px,transparent 1px),linear-gradient(90deg,rgba(86,168,126,.16) 1px,transparent 1px); background-size:54px 54px; mask-image:linear-gradient(to bottom,#000,transparent 86%); z-index:0; }
+  html.dark .app-shell { display:block; min-height:100vh; background:radial-gradient(circle at 80% -10%,#1c4d38 0,transparent 35%),#0b1a14 !important; }
+  html.dark .sidebar { display:none; }
+  html.dark .main { position:relative; z-index:1; }
+  html.dark .topbar { height:72px !important; padding:0 clamp(18px,5vw,76px) !important; background:rgba(11,26,20,.72) !important; border-color:rgba(141,244,231,.14) !important; }
+  html.dark .breadcrumb { display:flex; align-items:center; gap:10px; color:#69878a !important; font:700 14px 'Space Grotesk',sans-serif; letter-spacing:.14em; text-transform:uppercase; }
+  html.dark .breadcrumb strong { color:#e7f1f0 !important; font-weight:700; }
+  html.dark .breadcrumb strong::first-letter { color:#65ead9; }
+  html.dark .breadcrumb::after { content:'SYSTEM ONLINE'; margin-left:18px; color:#69878a; font:10px 'JetBrains Mono',monospace; letter-spacing:.12em; }
+  html.dark .page { max-width:1240px; padding:58px 24px 42px !important; }
+  html.dark .page-header { margin-bottom:34px; }
+  html.dark .header-copy { gap:0; }
+  html.dark .header-icon { display:none; }
+  html.dark h1 { max-width:760px; margin:0 !important; color:#eaf3f2 !important; font-size:clamp(42px,6vw,72px) !important; line-height:.98 !important; font-weight:500 !important; letter-spacing:-.05em !important; }
+  html.dark h1::first-line { color:#eaf3f2; }
+  html.dark .description { max-width:520px; margin-top:20px !important; color:#8ca7a9 !important; font-size:15px !important; line-height:1.8 !important; }
+  html.dark .badge { align-self:flex-end; margin-top:8px; color:#65ead9; background:rgba(101,234,217,.08); border-color:rgba(101,234,217,.35); font:10px 'JetBrains Mono',monospace; letter-spacing:.12em; }
+  html.dark .surface { border-radius:0 !important; background:rgba(18,38,29,.72) !important; border-color:rgba(141,198,200,.18) !important; box-shadow:none !important; }
+  html.dark .stats { margin-bottom:14px; }
+  html.dark .stat { padding:18px 20px; border-color:rgba(141,198,200,.14); }
+  html.dark .stat-value { color:#65ead9 !important; font-size:22px; }
+  html.dark .stat-label, html.dark .section-count, html.dark .generated { color:#587478 !important; font:10px 'JetBrains Mono',monospace; letter-spacing:.08em; }
+  html.dark .section-head, html.dark .news-list-head { min-height:64px; background:rgba(23,48,40,.86) !important; border-color:rgba(141,198,200,.14); }
+  html.dark h2 { color:#d5e9e7 !important; font-size:15px; font-weight:500; letter-spacing:.02em; }
+  html.dark .section-description { color:#69878a !important; }
+  html.dark .gateway-row, html.dark .author-row, html.dark .report-row, html.dark .conference-row, html.dark .news-row { border-color:rgba(141,198,200,.13); }
+  html.dark .gateway-row:hover, html.dark .author-row:hover, html.dark .report-row:hover, html.dark .conference-row:hover, html.dark .news-row:hover { background:rgba(24,52,40,.92) !important; }
+  html.dark .gateway-title, html.dark .report-title, html.dark .conference-title, html.dark .news-title { color:#e7f1f0 !important; font-weight:500; }
+  html.dark .gateway-description, html.dark .conference-summary, html.dark .news-description, html.dark .meta { color:#87a0a3 !important; }
+  html.dark .gateway-meta { color:#65ead9 !important; }
+  html.dark .gateway-icon, html.dark .stat-icon { border-radius:0; background:rgba(101,234,217,.08); border-color:rgba(101,234,217,.35); color:#65ead9; }
+  html.dark .gateway-icon.orange { color:#ffc36d; background:rgba(255,195,109,.08); border-color:rgba(255,195,109,.35); }
+  html.dark .button, html.dark .icon-button { border-radius:0; }
+  html.dark .field { border-radius:0; }
+  html.dark .author-form { border-radius:0; background:#12261d; border-color:rgba(101,234,217,.38); }
+  @media (max-width:920px) { html.dark .page { padding:42px 16px 32px !important; } html.dark h1 { font-size:43px !important; } html.dark .breadcrumb::after { display:none; } }
+  html:not(.dark) body { background:#f4f8f7 !important; color:#14282c !important; }
+  html:not(.dark) .app-shell { display:block; min-height:100vh; background:radial-gradient(circle at 80% -10%,#d9f5f0 0,transparent 36%),#f4f8f7 !important; }
+  html:not(.dark) .sidebar { display:none; }
+  html:not(.dark) .main { position:relative; z-index:1; }
+  html:not(.dark) .topbar { height:72px !important; padding:0 clamp(18px,5vw,76px) !important; background:rgba(244,248,247,.82) !important; border-color:rgba(31,99,100,.18) !important; }
+  html:not(.dark) .breadcrumb { display:flex; align-items:center; gap:10px; color:#648083 !important; font:700 14px 'Space Grotesk',sans-serif; letter-spacing:.14em; text-transform:uppercase; }
+  html:not(.dark) .breadcrumb strong { color:#14282c !important; }
+  html:not(.dark) .breadcrumb::after { content:'SYSTEM ONLINE'; margin-left:18px; color:#648083; font:10px 'JetBrains Mono',monospace; letter-spacing:.12em; }
+  html:not(.dark) .page { max-width:1240px; padding:58px 24px 42px !important; }
+  html:not(.dark) .page-header { margin-bottom:34px; }
+  html:not(.dark) .header-copy { gap:0; } html:not(.dark) .header-icon { display:none; }
+  html:not(.dark) h1 { max-width:760px; margin:0 !important; color:#14282c !important; font-size:clamp(42px,6vw,72px) !important; line-height:.98 !important; font-weight:500 !important; letter-spacing:-.05em !important; }
+  html:not(.dark) .description { max-width:520px; margin-top:20px !important; color:#5c7779 !important; font-size:15px !important; line-height:1.8 !important; }
+  html:not(.dark) .badge { align-self:flex-end; margin-top:8px; color:#087f78; background:rgba(8,127,120,.08); border-color:rgba(8,127,120,.3); font:10px 'JetBrains Mono',monospace; letter-spacing:.12em; }
+  html:not(.dark) .surface { border-radius:0 !important; background:rgba(255,255,255,.72) !important; border-color:rgba(42,103,104,.22) !important; box-shadow:none !important; }
+  html:not(.dark) .section-head, html:not(.dark) .news-list-head { background:rgba(244,248,247,.86) !important; border-color:rgba(42,103,104,.16); }
+  html:not(.dark) .stat { border-color:rgba(42,103,104,.14); } html:not(.dark) .stat-value { color:#087f78 !important; font-family:'JetBrains Mono',monospace; }
+  html:not(.dark) .stat-label, html:not(.dark) .section-count, html:not(.dark) .generated { color:#648083 !important; font:10px 'JetBrains Mono',monospace; letter-spacing:.08em; }
+  html:not(.dark) .gateway-row, html:not(.dark) .author-row, html:not(.dark) .report-row, html:not(.dark) .conference-row, html:not(.dark) .news-row { border-color:rgba(42,103,104,.14); }
+  html:not(.dark) .gateway-row:hover, html:not(.dark) .author-row:hover, html:not(.dark) .report-row:hover, html:not(.dark) .conference-row:hover, html:not(.dark) .news-row:hover { background:rgba(255,255,255,.96) !important; }
+  html:not(.dark) .gateway-title, html:not(.dark) .report-title, html:not(.dark) .conference-title, html:not(.dark) .news-title { color:#14282c !important; font-weight:500; }
+  html:not(.dark) .gateway-description, html:not(.dark) .conference-summary, html:not(.dark) .news-description, html:not(.dark) .meta { color:#5c7779 !important; }
+  html:not(.dark) .gateway-meta { color:#087f78 !important; } html:not(.dark) .gateway-icon, html:not(.dark) .stat-icon { border-radius:0; }
+  html:not(.dark) .button, html:not(.dark) .icon-button, html:not(.dark) .field { border-radius:0; }
+  @media (max-width:920px) { html:not(.dark) .page { padding:42px 16px 32px !important; } html:not(.dark) h1 { font-size:43px !important; } html:not(.dark) .breadcrumb::after { display:none; } }
+  /* Ambient motion shared with FastResearch */
+  :root { --pointer-x:50vw; --pointer-y:40vh; }
+  body::after { content:""; position:fixed; inset:0; z-index:0; pointer-events:none; background:radial-gradient(360px circle at var(--pointer-x) var(--pointer-y), rgba(101,234,217,.12), transparent 72%); transition:background .15s ease; }
+  html:not(.dark) body::after { background:radial-gradient(360px circle at var(--pointer-x) var(--pointer-y), rgba(8,127,120,.11), transparent 72%); }
+  html:not(.dark) body::before { content:""; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.24; background-image:linear-gradient(rgba(39,107,108,.13) 1px,transparent 1px),linear-gradient(90deg,rgba(39,107,108,.13) 1px,transparent 1px); background-size:54px 54px; mask-image:linear-gradient(to bottom,#000,transparent 86%); }
+  html.dark body::before, html:not(.dark) body::before { animation:fr-grid 22s linear infinite; }
+  .main { position:relative; z-index:1; }
+  .topbar { position:sticky; z-index:5; }
+  .page-header, .stats, .workspace > *, .conference-explorer { animation: fr-rise .55s ease both; }
+  .stats { animation-delay:.06s; } .workspace > *:nth-child(2) { animation-delay:.12s; }
+  .gateway-row, .report-row, .conference-row, .news-row, .author-row { will-change:transform; transition:transform .25s ease, background .25s ease, border-color .25s ease; }
+  .gateway-row:hover, .report-row:hover, .conference-row:hover, .news-row:hover, .author-row:hover { transform:translateY(-3px); }
+  .button, .icon-button, .calendar-day button { transition:transform .2s ease, background .2s ease, color .2s ease, border-color .2s ease; }
+  .button:active, .icon-button:active, .calendar-day button:active, .gateway-row:active { transform:scale(.97); }
+  .is-pressed { transform:scale(.97) !important; }
+  @keyframes fr-rise { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+  @keyframes fr-grid { from { background-position:0 0,0 0; } to { background-position:54px 54px,54px 54px; } }
+  @media (max-width:620px) { .gateway-row:hover, .report-row:hover, .conference-row:hover, .news-row:hover, .author-row:hover { transform:none; } body::after { background:radial-gradient(220px circle at var(--pointer-x) var(--pointer-y),rgba(101,234,217,.08),transparent 72%); } }
+  @media (prefers-reduced-motion:reduce) { body::after { display:none; } .page-header, .stats, .workspace > *, .conference-explorer { animation:none; } .gateway-row, .report-row, .conference-row, .news-row, .author-row { transition:none; } }
+  .pagination { display:flex; align-items:center; justify-content:flex-end; gap:8px; padding:12px 16px; border-top:1px solid var(--border); background:var(--soft); }
+  .pagination button { min-width:32px; height:30px; padding:0 9px; color:var(--muted); background:transparent; border:1px solid var(--border); border-radius:0; cursor:pointer; font:11px 'JetBrains Mono',monospace; }
+  .pagination button:hover:not(:disabled), .pagination button.is-current { color:var(--primary); border-color:var(--primary); background:var(--primary-soft); }
+  .pagination button:disabled { cursor:default; opacity:.45; }
+  .pagination .pagination-info { margin-right:auto; color:var(--subtle); font:10px 'JetBrains Mono',monospace; letter-spacing:.05em; }
+  @media (max-width:620px) { .pagination { justify-content:center; padding:10px 12px; } .pagination .pagination-info { display:none; } }
+  html:not(.dark) { color-scheme: light; }
+  html:not(.dark) .news-list-head,
+  html:not(.dark) .pagination {
+    background: rgba(244,248,247,.86) !important;
+    border-color: rgba(42,103,104,.16) !important;
+    color: #14282c;
+  }
+  html:not(.dark) .news-date-title { color:#14282c !important; }
+  html:not(.dark) .news-date-sub,
+  html:not(.dark) .news-list-head .section-count { color:#5c7779 !important; }
+  html:not(.dark) #newsDetailToggle {
+    color: #14282c !important;
+    background: rgba(255,255,255,.92) !important;
+    border-color: rgba(42,103,104,.22) !important;
+  }
+  html:not(.dark) #newsDetailToggle:hover {
+    color: #075f5a !important;
+    background: rgba(8,127,120,.10) !important;
+    border-color: rgba(8,127,120,.32) !important;
+  }
+  html:not(.dark) #newsDetailToggle[aria-pressed="true"],
+  html:not(.dark) #newsDetailToggle[aria-pressed="true"]:hover {
+    color: #075f5a !important;
+    background: rgba(8,127,120,.10) !important;
+    border-color: rgba(8,127,120,.32) !important;
+  }
 </style>
+
+<link rel="stylesheet" href="../assets/related-work.css">
+
 </head>
 <body>
 <svg class="icon-sprite" aria-hidden="true" focusable="false">
@@ -289,7 +449,7 @@
   <main class="main">
     <header class="topbar">
       <div class="breadcrumb"><strong>FastNews</strong><span> / Top Conference</span></div>
-      <div class="topbar-actions"><span class="generated">更新于 2026-09-04 10:51 UTC</span><button class="icon-button" id="themeToggle" type="button" aria-label="切换深色模式" title="切换深色模式"><svg class="icon theme-sun"><use href="#icon-sun"></use></svg><svg class="icon theme-moon"><use href="#icon-moon"></use></svg></button></div>
+      <div class="topbar-actions"><span class="generated">更新于 2026-09-08 02:41 UTC</span><button class="icon-button" id="themeToggle" type="button" aria-label="切换深色模式" title="切换深色模式"><svg class="icon theme-sun"><use href="#icon-sun"></use></svg><svg class="icon theme-moon"><use href="#icon-moon"></use></svg></button></div>
     </header>
     <nav class="mobile-nav" aria-label="移动端导航">
       <a class="" href="../index.html"><span><svg class="icon"><use href="#icon-dashboard"></use></svg>总览</span></a>
@@ -308,14 +468,33 @@
       </section>
       <div class="workspace single-column">
         <section class="surface conference-explorer" id="conferencePapers">
-          <div class="section-head"><div><h2>论文筛选</h2><p class="section-description">按年份、会议和研究类别浏览已完成的论文总结</p></div><span class="section-count" id="visibleConferenceCount">1138 条结果</span></div>
+          <div class="section-head"><div><h2>论文筛选</h2><p class="section-description">按年份、会议和类别筛选，再用模糊搜索或相关工作推荐定位论文</p></div><span class="section-count" id="visibleConferenceCount">1138 条结果</span></div>
           <div class="filter-grid" aria-label="顶会论文筛选条件">
             <div class="filter-group"><label class="label" for="conferenceYear">年份</label><select class="field" id="conferenceYear"><option value="">全部年份</option><option value="2026">2026</option><option value="2025">2025</option></select></div>
             <div class="filter-group"><label class="label" for="conferenceName">会议</label><select class="field" id="conferenceName"><option value="">全部会议</option></select></div>
             <div class="filter-group"><label class="label" for="conferenceCategory">类别</label><select class="field" id="conferenceCategory"><option value="">全部类别</option></select></div>
           </div>
+          <div class="paper-search" id="paperSearchPanel">
+            <div class="paper-search-modes" role="tablist" aria-label="论文搜索方式">
+              <button class="paper-search-mode is-active" type="button" role="tab" id="paperSearchModeFuzzy" aria-selected="true" data-mode="fuzzy">模糊搜索</button>
+              <button class="paper-search-mode" type="button" role="tab" id="paperSearchModeRelated" aria-selected="false" data-mode="related">相关工作</button>
+            </div>
+            <div class="paper-search-pane" id="paperFuzzyPane">
+              <label class="search-field paper-fuzzy-field" for="paperSearch"><svg class="icon"><use href="#icon-search"></use></svg><input class="field" id="paperSearch" type="search" placeholder="搜索标题、摘要、作者或类别" aria-label="模糊搜索论文"></label>
+            </div>
+            <form class="paper-search-pane is-hidden" id="paperRelatedPane" autocomplete="off">
+              <div class="related-work-grid">
+                <div class="filter-group"><label class="label" for="relatedTopic">研究方向</label><input class="field" id="relatedTopic" type="text" placeholder="例如：ML 安全、侧信道、隐私计算" maxlength="120"></div>
+                <div class="filter-group"><label class="label" for="relatedKeywords">关键词</label><input class="field" id="relatedKeywords" type="text" placeholder="LLM jailbreak, membership inference" maxlength="200"></div>
+                <div class="related-work-submit"><button class="button button-primary" id="relatedWorkSubmit" type="submit"><svg class="icon"><use href="#icon-zap"></use></svg>推荐相关工作</button></div>
+              </div>
+              <p class="related-work-hint">先用上方筛选收窄范围，再根据研究方向与关键词从已总结论文中推荐 related work。</p>
+            </form>
+            <p class="related-work-status" id="relatedWorkStatus" hidden></p>
+          </div>
           <div class="conference-list" id="conferenceList"></div>
           <div class="empty" id="conferenceEmpty" hidden>没有符合筛选条件的论文。</div>
+          <div class="pagination" id="conferencePagination" aria-label="论文分页"></div>
         </section>
         <section class="surface" id="reports">
           <div class="section-head"><div><h2>报告列表</h2><p class="section-description">选择报告打开 HTML 版本</p></div><span class="section-count">4 files</span></div>
@@ -348,10 +527,22 @@
   themeToggle.addEventListener("click", () => {
     const dark = !root.classList.contains("dark");
     root.classList.toggle("dark", dark);
+    window.localStorage.setItem("fastresearch-theme", dark ? "dark" : "light");
     window.localStorage.setItem("fastnews.theme", dark ? "dark" : "light");
     updateThemeButton();
   });
   updateThemeButton();
+  function renderPagination(container, current, total, onChange) {
+    if (!container || total <= 1) { if (container) container.innerHTML = ''; return; }
+    const buttons = [];
+    buttons.push(`<button type="button" data-page="${current - 1}" ${current === 1 ? 'disabled' : ''} aria-label="上一页">‹</button>`);
+    const first = Math.max(1, Math.min(current - 2, total - 4));
+    const last = Math.min(total, first + 4);
+    for (let page = first; page <= last; page += 1) buttons.push(`<button type="button" data-page="${page}" class="${page === current ? 'is-current' : ''}" aria-label="第 ${page} 页">${page}</button>`);
+    buttons.push(`<button type="button" data-page="${current + 1}" ${current === total ? 'disabled' : ''} aria-label="下一页">›</button>`);
+    container.innerHTML = `<span class="pagination-info">PAGE ${current} / ${total}</span>${buttons.join('')}`;
+    container.querySelectorAll('button[data-page]').forEach((button) => button.addEventListener('click', () => { if (!button.disabled) onChange(Number(button.dataset.page)); }));
+  }
 </script>
 
 
@@ -362,11 +553,25 @@
   const conferenceCategory = document.getElementById("conferenceCategory");
   const conferenceList = document.getElementById("conferenceList");
   const conferenceEmpty = document.getElementById("conferenceEmpty");
+  const conferencePagination = document.getElementById("conferencePagination");
   const visibleConferenceCount = document.getElementById("visibleConferenceCount");
+  const paperSearch = document.getElementById("paperSearch");
+  const paperFuzzyPane = document.getElementById("paperFuzzyPane");
+  const paperRelatedPane = document.getElementById("paperRelatedPane");
+  const relatedTopic = document.getElementById("relatedTopic");
+  const relatedKeywords = document.getElementById("relatedKeywords");
+  const relatedWorkSubmit = document.getElementById("relatedWorkSubmit");
+  const relatedWorkStatus = document.getElementById("relatedWorkStatus");
   const reportSearch = document.getElementById("reportSearch");
   const reportRows = Array.from(document.querySelectorAll(".report-row"));
   const visibleReportCount = document.getElementById("visibleReportCount");
   const reportEmpty = document.getElementById("reportEmpty");
+  let conferencePage = 1;
+  let searchMode = "fuzzy";
+  let relatedResults = null;
+  const PAGE_SIZE = 20;
+  const RELATED_CANDIDATE_LIMIT = 40;
+  const RELATED_RESULT_LIMIT = 12;
 
   function escapeHtml(value) {
     return String(value ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
@@ -383,11 +588,41 @@
     select.replaceChildren(...options);
     select.value = values.some((item) => item.value === selectedValue) ? selectedValue : "";
   }
+  function tokenize(value) {
+    return String(value || "").toLowerCase().split(/[^a-z0-9\u4e00-\u9fff]+/i).map((part) => part.trim()).filter((part) => part.length >= 2);
+  }
+  function paperBlob(paper) {
+    return [paper.title, paper.summary, paper.author, paper.category, paper.conference_label, paper.year].join(" ").toLowerCase();
+  }
+  function matchesFuzzy(paper, query) {
+    const terms = String(query || "").trim().toLowerCase().split(/\s+/).filter(Boolean);
+    if (!terms.length) return true;
+    const hay = paperBlob(paper);
+    return terms.every((term) => hay.includes(term));
+  }
+  function lexicalScore(paper, terms) {
+    if (!terms.length) return 0;
+    const title = String(paper.title || "").toLowerCase();
+    const summary = String(paper.summary || "").toLowerCase();
+    const category = String(paper.category || "").toLowerCase();
+    const author = String(paper.author || "").toLowerCase();
+    let score = 0;
+    terms.forEach((term) => {
+      if (title.includes(term)) score += 4;
+      if (category.includes(term)) score += 3;
+      if (summary.includes(term)) score += 2;
+      if (author.includes(term)) score += 1;
+    });
+    return score;
+  }
   function availablePapers({ includeConference = true, includeCategory = true } = {}) {
+    const includeSearch = includeConference && includeCategory && searchMode === "fuzzy";
+    const query = includeSearch ? paperSearch.value : "";
     return conferencePapers.filter((paper) => {
       if (conferenceYear.value && String(paper.year) !== conferenceYear.value) return false;
       if (includeConference && conferenceName.value && paper.conference !== conferenceName.value) return false;
       if (includeCategory && conferenceCategory.value && paper.category !== conferenceCategory.value) return false;
+      if (includeSearch && !matchesFuzzy(paper, query)) return false;
       return true;
     });
   }
@@ -397,7 +632,7 @@
     replaceOptions(
       conferenceName,
       Array.from(conferences, ([value, label]) => ({ value, label })).sort((a, b) => a.label.localeCompare(b.label, "zh-CN")),
-      "全部会议"
+      "\u5168\u90e8\u4f1a\u8bae"
     );
   }
   function updateCategoryOptions() {
@@ -405,36 +640,208 @@
     replaceOptions(
       conferenceCategory,
       Array.from(categories).sort((a, b) => a.localeCompare(b, "zh-CN")).map((value) => ({ value, label: value })),
-      "全部类别"
+      "\u5168\u90e8\u7c7b\u522b"
     );
   }
-  function renderConferencePapers() {
-    const papers = availablePapers();
-    visibleConferenceCount.textContent = papers.length + " 条结果";
-    conferenceEmpty.hidden = papers.length !== 0;
-    conferenceList.hidden = papers.length === 0;
-    conferenceList.innerHTML = papers.map((paper) => {
-      const url = safeHttpUrl(paper.link);
-      const title = escapeHtml(paper.title);
-      const titleMarkup = url ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${title}</a>` : title;
-      const author = paper.author ? `<span>${escapeHtml(paper.author)}</span>` : "";
-      return `<article class="conference-row"><h3 class="conference-title">${titleMarkup}</h3><p class="conference-summary">${escapeHtml(paper.summary || "暂无中文总结")}</p><div class="conference-meta"><span>${escapeHtml(paper.year + " · " + paper.conference_label)}</span><span class="conference-tag">${escapeHtml(paper.category)}</span>${author}</div></article>`;
-    }).join("");
+  function localReason(paper, terms) {
+    const title = String(paper.title || "").toLowerCase();
+    const category = String(paper.category || "").toLowerCase();
+    const summary = String(paper.summary || "").toLowerCase();
+    const hits = terms.filter((term) => title.includes(term) || category.includes(term) || summary.includes(term));
+    if (hits.length && paper.category) return `\u4e0e\u300c${paper.category}\u300d\u65b9\u5411\u91cd\u53e0\uff0c\u5e76\u547d\u4e2d ${hits.slice(0, 3).join("\u3001")}`;
+    if (hits.length) return `\u6807\u9898\u6216\u6458\u8981\u547d\u4e2d ${hits.slice(0, 3).join("\u3001")}`;
+    return `\u4e0e ${paper.year} ${paper.conference_label} \u7684 ${paper.category} \u7814\u7a76\u76f8\u8fd1`;
   }
-  conferenceYear.addEventListener("change", () => { updateConferenceOptions(); updateCategoryOptions(); renderConferencePapers(); });
-  conferenceName.addEventListener("change", () => { updateCategoryOptions(); renderConferencePapers(); });
-  conferenceCategory.addEventListener("change", renderConferencePapers);
+  function pickCandidates(papers, topic, keywords) {
+    const terms = tokenize(`${topic} ${keywords}`);
+    const scored = papers.map((paper) => ({ paper, score: lexicalScore(paper, terms) }));
+    scored.sort((a, b) => b.score - a.score || b.paper.year - a.paper.year);
+    const picked = [];
+    const used = new Set();
+    scored.forEach((item) => {
+      if (item.score > 0 && picked.length < RELATED_CANDIDATE_LIMIT) {
+        picked.push(item.paper);
+        used.add(item.paper.id);
+      }
+    });
+    scored.forEach((item) => {
+      if (picked.length >= RELATED_CANDIDATE_LIMIT || used.has(item.paper.id)) return;
+      picked.push(item.paper);
+      used.add(item.paper.id);
+    });
+    return picked;
+  }
+  function localRelated(papers, topic, keywords) {
+    const terms = tokenize(`${topic} ${keywords}`);
+    const ranked = papers
+      .map((paper) => ({ paper, score: lexicalScore(paper, terms), reason: localReason(paper, terms) }))
+      .filter((item) => item.score > 0)
+      .sort((a, b) => b.score - a.score);
+    const max = ranked[0] ? ranked[0].score : 1;
+    return ranked.slice(0, RELATED_RESULT_LIMIT).map((item) => ({
+      paper: item.paper,
+      score: item.score / max,
+      reason: item.reason,
+    }));
+  }
+  function serializeCandidate(paper) {
+    return {
+      id: paper.id,
+      title: paper.title,
+      category: paper.category,
+      conference: paper.conference_label,
+      year: paper.year,
+      summary: String(paper.summary || "").slice(0, 240),
+    };
+  }
+  function setRelatedStatus(message, kind = "") {
+    if (!relatedWorkStatus) return;
+    relatedWorkStatus.hidden = !message;
+    relatedWorkStatus.textContent = message;
+    relatedWorkStatus.dataset.kind = kind;
+  }
+  function paperArticle(entry) {
+    const paper = entry.paper || entry;
+    const url = safeHttpUrl(paper.link);
+    const title = escapeHtml(paper.title);
+    const titleMarkup = url ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${title}</a>` : title;
+    const author = paper.author ? `<span>${escapeHtml(paper.author)}</span>` : "";
+    const reason = entry.reason ? `<p class="conference-reason">${escapeHtml(entry.reason)}</p>` : "";
+    const score = Number.isFinite(Number(entry.score)) ? `<span class="conference-score">${Math.round(Number(entry.score) * 100)}</span>` : "";
+    return `<article class="conference-row${entry.reason ? " has-reason" : ""}"><h3 class="conference-title">${titleMarkup}</h3><p class="conference-summary">${escapeHtml(paper.summary || "\u6682\u65e0\u4e2d\u6587\u603b\u7ed3")}</p>${reason}<div class="conference-meta"><span>${escapeHtml(paper.year + " \u00b7 " + paper.conference_label)}</span><span class="conference-tag">${escapeHtml(paper.category)}</span>${author}${score}</div></article>`;
+  }
+  function visibleEntries() {
+    if (searchMode === "related" && relatedResults) return relatedResults;
+    return availablePapers().map((paper) => ({ paper }));
+  }
+  function renderConferencePapers() {
+    const entries = visibleEntries();
+    visibleConferenceCount.textContent = entries.length + " \u6761\u7ed3\u679c";
+    conferenceEmpty.textContent = searchMode === "related" && relatedResults ? "\u6ca1\u6709\u5339\u914d\u7684\u76f8\u5173\u5de5\u4f5c\u3002" : "\u6ca1\u6709\u7b26\u5408\u7b5b\u9009\u6761\u4ef6\u7684\u8bba\u6587\u3002";
+    conferenceEmpty.hidden = entries.length !== 0;
+    conferenceList.hidden = entries.length === 0;
+    const totalPages = Math.max(1, Math.ceil(entries.length / PAGE_SIZE));
+    conferencePage = Math.min(Math.max(conferencePage, 1), totalPages);
+    const start = (conferencePage - 1) * PAGE_SIZE;
+    conferenceList.innerHTML = entries.slice(start, start + PAGE_SIZE).map(paperArticle).join("");
+    renderPagination(conferencePagination, conferencePage, entries.length ? totalPages : 0, (page) => { conferencePage = page; renderConferencePapers(); conferenceList.scrollIntoView({ behavior: "smooth", block: "start" }); });
+  }
+  function setSearchMode(mode) {
+    searchMode = mode;
+    paperFuzzyPane.classList.toggle("is-hidden", mode !== "fuzzy");
+    paperRelatedPane.classList.toggle("is-hidden", mode !== "related");
+    document.querySelectorAll(".paper-search-mode").forEach((button) => {
+      const active = button.dataset.mode === mode;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-selected", active ? "true" : "false");
+    });
+    if (mode === "fuzzy") {
+      relatedResults = null;
+      setRelatedStatus("");
+    }
+    conferencePage = 1;
+    renderConferencePapers();
+  }
+  function onFilterChange(level) {
+    relatedResults = null;
+    if (searchMode === "related") setRelatedStatus("\u7b5b\u9009\u5df2\u66f4\u65b0\uff0c\u8bf7\u91cd\u65b0\u63a8\u8350\u76f8\u5173\u5de5\u4f5c\u3002");
+    conferencePage = 1;
+    if (level === "year") { updateConferenceOptions(); updateCategoryOptions(); }
+    else if (level === "name") updateCategoryOptions();
+    renderConferencePapers();
+  }
+  async function requestRelatedWork(topic, keywords, candidates) {
+    const response = await fetch("/api/related-work", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ topic, keywords, candidates: candidates.map(serializeCandidate) }),
+    });
+    if (!response.ok) throw new Error("related-work http " + response.status);
+    const payload = await response.json();
+    const items = Array.isArray(payload.items) ? payload.items : [];
+    const byId = new Map(candidates.map((paper) => [String(paper.id), paper]));
+    const mapped = [];
+    const used = new Set();
+    items.forEach((item) => {
+      const paper = byId.get(String(item.id));
+      if (!paper || used.has(paper.id)) return;
+      used.add(paper.id);
+      mapped.push({ paper, score: Number(item.score), reason: String(item.reason || "").trim() });
+    });
+    if (!mapped.length) throw new Error("empty llm ranking");
+    return mapped.slice(0, RELATED_RESULT_LIMIT);
+  }
+  async function runRelatedWork(event) {
+    event.preventDefault();
+    const topic = relatedTopic.value.trim();
+    const keywords = relatedKeywords.value.trim();
+    if (!topic && !keywords) {
+      setRelatedStatus("\u8bf7\u586b\u5199\u7814\u7a76\u65b9\u5411\u6216\u5173\u952e\u8bcd\u3002", "error");
+      relatedTopic.focus();
+      return;
+    }
+    const pool = availablePapers();
+    if (!pool.length) {
+      relatedResults = [];
+      setRelatedStatus("\u5f53\u524d\u7b5b\u9009\u8303\u56f4\u5185\u6ca1\u6709\u8bba\u6587\u3002", "error");
+      renderConferencePapers();
+      return;
+    }
+    const candidates = pickCandidates(pool, topic, keywords);
+    relatedWorkSubmit.disabled = true;
+    setRelatedStatus("\u6b63\u5728\u6839\u636e\u7814\u7a76\u65b9\u5411\u68c0\u7d22 related work\u2026", "pending");
+    try {
+      relatedResults = await requestRelatedWork(topic, keywords, candidates);
+      setRelatedStatus(`\u5df2\u6839\u636e\u300c${topic || keywords}\u300d\u63a8\u8350 ${relatedResults.length} \u7bc7\u76f8\u5173\u5de5\u4f5c\u3002`, "ok");
+    } catch {
+      relatedResults = localRelated(candidates, topic, keywords);
+      if (!relatedResults.length) setRelatedStatus("\u6ca1\u6709\u627e\u5230\u8db3\u591f\u76f8\u5173\u7684\u8bba\u6587\uff0c\u8bd5\u8bd5\u653e\u5bbd\u7b5b\u9009\u6216\u66f4\u6362\u5173\u952e\u8bcd\u3002", "error");
+      else setRelatedStatus(`\u63a8\u8350\u670d\u52a1\u6682\u4e0d\u53ef\u7528\uff0c\u5df2\u7528\u672c\u5730\u76f8\u5173\u5ea6\u6392\u5e8f ${relatedResults.length} \u7bc7\u3002`, "fallback");
+    } finally {
+      relatedWorkSubmit.disabled = false;
+      conferencePage = 1;
+      renderConferencePapers();
+    }
+  }
+
+  document.querySelectorAll(".paper-search-mode").forEach((button) => {
+    button.addEventListener("click", () => setSearchMode(button.dataset.mode));
+  });
+  paperSearch.addEventListener("input", () => { conferencePage = 1; renderConferencePapers(); });
+  paperRelatedPane.addEventListener("submit", runRelatedWork);
+  conferenceYear.addEventListener("change", () => onFilterChange("year"));
+  conferenceName.addEventListener("change", () => onFilterChange("name"));
+  conferenceCategory.addEventListener("change", () => onFilterChange("category"));
 
   reportSearch.addEventListener("input", () => {
     const query = reportSearch.value.trim().toLowerCase();
     let visible = 0;
     reportRows.forEach((row) => { const match = !query || row.dataset.search.includes(query); row.classList.toggle("is-hidden", !match); if (match) visible += 1; });
-    visibleReportCount.textContent = visible + " 条结果"; reportEmpty.hidden = visible !== 0;
+    visibleReportCount.textContent = visible + " \u6761\u7ed3\u679c"; reportEmpty.hidden = visible !== 0;
   });
   updateConferenceOptions();
   updateCategoryOptions();
   renderConferencePapers();
 </script>
 
+<script>
+  (() => {
+    let frame = 0;
+    document.addEventListener('pointermove', (event) => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        document.documentElement.style.setProperty('--pointer-x', `${event.clientX}px`);
+        document.documentElement.style.setProperty('--pointer-y', `${event.clientY}px`);
+        frame = 0;
+      });
+    }, { passive: true });
+    document.addEventListener('pointerdown', (event) => {
+      const target = event.target.closest('button, a, .gateway-row, .report-row, .conference-row, .news-row, .author-row');
+      if (!target) return;
+      target.classList.add('is-pressed');
+      window.setTimeout(() => target.classList.remove('is-pressed'), 180);
+    });
+  })();
+</script>
 </body>
 </html>

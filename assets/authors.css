@@ -1,0 +1,61 @@
+/* Author editor and task notifications share the FastResearch theme. */
+:root { --author-panel: #f8fcfb; --author-muted: #5c7779; --author-line: #b8cfcc; --author-chip: rgba(8,127,120,.08); --author-error: #b42318; }
+html.dark { --author-panel: #12261d; --author-muted: #89a1a3; --author-line: #2d4b50; --author-chip: rgba(101,234,217,.08); --author-error: #ff8686; }
+.author-dialog { width: min(600px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); margin: auto; padding: 0; overflow-y: auto; color: var(--text); background: var(--author-panel); border: 1px solid var(--primary-border); box-shadow: 0 22px 80px rgb(0 0 0 / .3); }
+.author-dialog::backdrop { background: rgb(3 12 8 / .66); backdrop-filter: blur(6px); }
+html:not(.dark) .author-dialog::backdrop { background: rgb(30 58 60 / .36); }
+.author-editor { padding: 24px; }
+.author-editor .editor-head { padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+.author-editor .editor-title { margin: 0; color: var(--primary); font-size: 18px; font-weight: 500; }
+.author-editor .editor-head > button { flex: 0 0 32px; }
+.author-editor .field-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+.author-editor .research-fields { grid-column: 1 / -1; }
+.author-editor .field { border-color: var(--author-line); }
+.author-editor .editor-actions { justify-content: flex-end; padding-top: 18px; border-top: 1px solid var(--border); }
+.author-editor .editor-actions .button { min-height: 38px; }
+.research-fields { min-width: 0; margin: 0; padding: 0; border: 0; }
+.research-fields legend { margin-bottom: 6px; }
+.research-hint, .custom-tag-label { display: block; margin: 0 0 10px; color: var(--author-muted); font-size: 12px; }
+.research-options { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.research-tag { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; min-height: 32px; padding: 6px 10px; color: var(--author-muted); font-size: 12px; line-height: 1.5; text-align: left; overflow-wrap: anywhere; background: transparent; border: 1px solid var(--author-line); cursor: pointer; transition: color .2s, border-color .2s, background .2s; }
+.research-tag::before { content: "+"; flex: 0 0 12px; text-align: center; }
+.research-tag[aria-pressed="true"] { color: var(--primary); background: var(--author-chip); border-color: var(--primary); }
+.research-tag[aria-pressed="true"]::before { content: "✓"; }
+.research-tag:hover { color: var(--primary); border-color: var(--primary); }
+.custom-tag-entry { display: flex; align-items: stretch; gap: 8px; }
+.custom-tag-entry .field { flex: 1; min-width: 0; }
+.custom-tag-entry button { flex: 0 0 auto; }
+.author-validation { margin: 12px 0 0; color: var(--author-error); font-size: 13px; }
+.author-name-cell { display: grid; min-width: 0; gap: 4px; }
+.author-fetch-label { color: var(--author-muted); font-size: 11px; }
+.author-fetch-label[data-state="error"], .author-fetch-label[data-state="cancelled"] { color: var(--author-error); }
+.author-fetch-label[data-state="success"] { color: var(--primary); }
+.author-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; min-width: 0; }
+.author-tag { max-width: 100%; padding: 2px 6px; color: var(--primary); font-size: 11px; line-height: 1.6; overflow-wrap: anywhere; background: var(--author-chip); border: 1px solid var(--primary-border); }
+.author-task-tray { position: fixed; right: 20px; bottom: 20px; z-index: 35; display: grid; gap: 10px; width: min(390px, calc(100vw - 32px)); max-height: 48dvh; overflow-y: auto; overscroll-behavior: contain; }
+.author-task-tray:empty { display: none; }
+.author-task { padding: 16px; color: var(--text); background: var(--author-panel); border: 1px solid var(--primary-border); box-shadow: 0 8px 28px rgb(0 0 0 / .16); }
+.author-task-head { display: flex; align-items: flex-start; gap: 12px; justify-content: space-between; }
+.author-task-head h3 { margin: 0; font-size: 14px; font-weight: 600; overflow-wrap: anywhere; }
+.author-task-head .icon-button { flex-shrink: 0; margin: -6px -6px 0 0; }
+.author-task-message { margin: 8px 0; color: var(--author-muted); font-size: 12px; overflow-wrap: anywhere; }
+.author-task[data-state="error"] .author-task-message, .author-task[data-state="cancelled"] .author-task-message { color: var(--author-error); }
+.author-progress { display: block; width: 100%; height: 4px; overflow: hidden; appearance: none; border: 0; background: var(--author-line); accent-color: var(--primary); }
+.author-progress::-webkit-progress-bar { background: var(--author-line); }
+.author-progress::-webkit-progress-value { background: var(--primary); }
+.author-progress::-moz-progress-bar { background: var(--primary); }
+.author-progress:indeterminate { background: linear-gradient(90deg, transparent, var(--primary), transparent), var(--author-line); background-size: 40% 100%, 100% 100%; background-repeat: no-repeat; animation: author-progress-scan 1.4s ease-in-out infinite; }
+.author-progress:indeterminate::-webkit-progress-bar { background: transparent; }
+.author-task-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+.author-task-actions[hidden], .author-progress[hidden], .author-validation[hidden], .author-task [hidden] { display: none; }
+.author-task-result { margin: 10px 0 0; color: var(--primary); font-size: 12px; line-height: 1.6; overflow-wrap: anywhere; }
+.research-tag:focus-visible, .author-dialog button:focus-visible, .author-task button:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+@keyframes author-progress-scan { from { background-position: -65% 0, 0 0; } to { background-position: 165% 0, 0 0; } }
+@media (max-width: 620px) { .author-editor { padding: 18px 16px; } .author-task-tray { right: 16px; bottom: 16px; max-height: 36dvh; } }
+@media (prefers-reduced-motion: reduce) { .author-progress:indeterminate { animation: none; background-position: 50% 0; } .research-tag { transition: none; } }
+
+.author-row { align-items: start; }
+.author-row-main { align-items: start; }
+.author-url { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.author-tags { white-space: normal; }
+@media (max-width: 620px) { .author-editor .field-grid { grid-template-columns: 1fr; } }

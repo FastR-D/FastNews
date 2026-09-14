@@ -1,5 +1,5 @@
 import argparse
-from datetime import datetime, UTC
+from datetime import datetime, UTC, timedelta, timezone
 import json
 import os
 from pathlib import Path
@@ -187,6 +187,182 @@ def collect_news_days(root=Path("secnews/data/articles")):
     return days
 
 
+
+SHANGHAI = timezone(timedelta(hours=8))
+
+
+def format_date_zh(value):
+    parsed = datetime.strptime(value, "%Y-%m-%d")
+    return f"{parsed.year}年{parsed.month}月{parsed.day}日"
+
+
+def classify_news_channel(source):
+    lowered = str(source or "").lower()
+    if "bleepingcomputer" in lowered:
+        return "bleepingcomputer"
+    if "arxiv" in lowered:
+        return "arxiv"
+    return "other"
+
+
+def news_source_label(source):
+    channel = classify_news_channel(source)
+    if channel == "bleepingcomputer":
+        return "BleepingComputer"
+    if channel == "arxiv":
+        return "arXiv"
+    return "其他来源"
+
+
+SCORE_KEYWORDS = (
+    ("zero-day", 2.4),
+    ("0-day", 2.4),
+    ("rce", 1.8),
+    ("remote code", 1.8),
+    ("ransomware", 1.6),
+    ("actively exploited", 2.0),
+    ("critical", 1.1),
+    ("supply chain", 1.5),
+    ("backdoor", 1.3),
+    ("nation-state", 1.4),
+    ("apt ", 1.0),
+    ("breach", 0.8),
+    ("malware", 0.6),
+    ("vulnerability", 0.5),
+    ("exploit", 0.9),
+    ("privacy", 0.4),
+)
+
+
+def heuristic_news_score(article):
+    categories = article.get("categories") or []
+    blob = " ".join([
+        str(article.get("title") or ""),
+        str(article.get("title_zh") or ""),
+        str(article.get("summary_zh") or article.get("description") or ""),
+        " ".join(str(item) for item in categories),
+    ]).lower()
+    score = 4.2
+    if classify_news_channel(article.get("source")) == "bleepingcomputer":
+        score += 0.4
+    for keyword, bump in SCORE_KEYWORDS:
+        if keyword in blob:
+            score += bump
+    joined_categories = " ".join(str(item).lower() for item in categories)
+    if "cs.cr" in joined_categories:
+        score += 0.6
+    return round(min(10.0, max(0.0, score)), 1)
+
+
+def article_news_score(article):
+    raw = article.get("score")
+    if isinstance(raw, (int, float)) and not isinstance(raw, bool):
+        return max(0.0, min(10.0, float(raw)))
+    return heuristic_news_score(article)
+
+
+def collect_news_preview(date, limit=6):
+    """Load a short homepage teaser from the highest-value news and papers."""
+    if not date:
+        return []
+
+    summaries = {}
+    summary_path = Path("secnews/data/daily_summaries") / f"{date}.json"
+    if summary_path.exists():
+        try:
+            payload = json.loads(summary_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            payload = {}
+        raw = payload.get("articles") if isinstance(payload, dict) else None
+        if isinstance(raw, list):
+            for item in raw:
+                if not isinstance(item, dict):
+                    continue
+                key = item.get("_id") or item.get("link")
+                if key:
+                    summaries[key] = item
+
+    articles = []
+    article_path = Path("secnews/data/articles") / f"{date}.jsonl"
+    if article_path.exists():
+        with article_path.open(encoding="utf-8") as handle:
+            for line in handle:
+                if not line.strip():
+                    continue
+                try:
+                    item = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                if not isinstance(item, dict):
+                    continue
+                key = item.get("_id") or item.get("link")
+                summarized = summaries.get(key, {})
+                merged = dict(item)
+                for field in ("title_zh", "summary_zh", "title", "link", "source", "categories", "score", "score_reason"):
+                    value = summarized.get(field)
+                    if value:
+                        merged[field] = value
+                articles.append(merged)
+    elif summaries:
+        articles = list(summaries.values())
+
+    def to_preview(article):
+        title = article.get("title_zh") or article.get("title")
+        if not title:
+            return None
+        categories = article.get("categories") or []
+        tag = str(categories[0]) if isinstance(categories, list) and categories else ""
+        return {
+            "title": str(title),
+            "link": str(article.get("link") or ""),
+            "source": news_source_label(article.get("source")),
+            "tag": tag,
+            "_score": article_news_score(article),
+            "_channel": classify_news_channel(article.get("source")),
+        }
+
+    ranked = [item for item in (to_preview(article) for article in articles) if item]
+    ranked.sort(key=lambda item: item["_score"], reverse=True)
+    news_items = [item for item in ranked if item["_channel"] != "arxiv"]
+    paper_items = [item for item in ranked if item["_channel"] == "arxiv"]
+    news_quota = min(len(news_items), max(4, (limit + 1) // 2 + 1))
+    preview = news_items[:news_quota]
+    preview.extend(paper_items[: max(0, limit - len(preview))])
+    if len(preview) < limit:
+        preview.extend(news_items[news_quota: news_quota + (limit - len(preview))])
+    cleaned = []
+    for item in preview[:limit]:
+        cleaned.append({
+            "title": item["title"],
+            "link": item["link"],
+            "source": item["source"],
+            "tag": item["tag"],
+        })
+    return cleaned
+
+
+
+def latest_home_news(news_days):
+    today = datetime.now(SHANGHAI).strftime("%Y-%m-%d")
+    today_entry = next((item for item in news_days if item["date"] == today), None)
+    latest = today_entry or (news_days[-1] if news_days else None)
+    if not latest:
+        return {
+            "date": "",
+            "date_label": "暂无资讯",
+            "count": 0,
+            "is_today": False,
+            "preview": [],
+        }
+    return {
+        "date": latest["date"],
+        "date_label": format_date_zh(latest["date"]),
+        "count": latest["count"],
+        "is_today": latest["date"] == today,
+        "preview": collect_news_preview(latest["date"]),
+    }
+
+
 def render_page(page_mode, output):
     page_config = {
         "home": {
@@ -204,13 +380,14 @@ def render_page(page_mode, output):
         "secnews": {
             "kind": "Security Digest",
             "title": "安全资讯周报",
-            "description": "浏览由 BleepingComputer 和 arXiv 生成的安全资讯周报。",
+            "description": "每日优先推荐 10 条高价值资讯，并按 BleepingComputer 与 arXiv 分渠道浏览全部条目。",
             "label": "Security Digest",
         },
     }[page_mode]
 
     reports = collect_reports(page_config["kind"], output.parent)
-    news_days = collect_news_days() if page_mode == "secnews" else []
+    news_days = collect_news_days() if page_mode in {"home", "secnews"} else []
+    home_news = latest_home_news(news_days) if page_mode == "home" else None
     conference_papers = collect_conference_papers() if page_mode == "top-conf" else []
     env = Environment(
         loader=FileSystemLoader(str(Path(__file__).resolve().parent / "prompt")),
@@ -226,6 +403,8 @@ def render_page(page_mode, output):
         home_path="index.html" if page_mode == "home" else "../index.html",
         top_conf_path="top-conf/index.html" if page_mode == "home" else "../top-conf/index.html",
         secnews_path="secnews/index.html" if page_mode == "home" else "../secnews/index.html",
+        root_prefix="" if page_mode == "home" else "../",
+        asset_prefix="assets/" if page_mode == "home" else "../assets/",
         reports=reports,
         top_conf_count=sum(1 for item in collect_reports("Top Conference", output.parent)),
         secnews_count=sum(1 for item in collect_reports("Security Digest", output.parent)),
@@ -233,8 +412,13 @@ def render_page(page_mode, output):
         news_days_json=json.dumps(news_days, ensure_ascii=False),
         news_total=sum(item["count"] for item in news_days),
         news_latest=news_days[-1]["date"] if news_days else "暂无",
-        news_article_base="data/articles/" if page_mode == "secnews" else "",
-        news_summary_base="data/daily_summaries/" if page_mode == "secnews" else "",
+        news_article_base="data/articles/" if page_mode == "secnews" else "secnews/data/articles/" if page_mode == "home" else "",
+        news_summary_base="data/daily_summaries/" if page_mode == "secnews" else "secnews/data/daily_summaries/" if page_mode == "home" else "",
+        home_news_date="" if not home_news else home_news["date"],
+        home_news_date_label="" if not home_news else home_news["date_label"],
+        home_news_count=0 if not home_news else home_news["count"],
+        home_news_is_today=False if not home_news else home_news["is_today"],
+        home_news_preview=[] if not home_news else home_news["preview"],
         conference_papers=conference_papers,
         conference_papers_json=json_for_script(conference_papers),
         conference_years=sorted({paper["year"] for paper in conference_papers}, reverse=True),

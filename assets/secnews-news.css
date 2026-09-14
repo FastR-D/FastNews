@@ -1,0 +1,90 @@
+.news-list-copy { min-width: 0; }
+.news-date-sub { margin: 4px 0 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
+.news-list-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.news-board { border-bottom: 1px solid var(--border); }
+.news-board:last-child { border-bottom: 0; }
+.news-board-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; padding: 14px 16px 8px; }
+.news-board-kicker { display: block; color: var(--accent-text); font-size: 11px; font-weight: 700; letter-spacing: .08em; }
+.news-board-title { margin: 2px 0 0; font-size: 15px; font-weight: 700; }
+.news-board-count { color: var(--subtle); font-size: 12px; white-space: nowrap; }
+.news-board-meta { display: inline-flex; align-items: center; gap: 10px; flex: 0 0 auto; }
+.news-board.is-collapsible > summary.news-board-head {
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+  align-items: center;
+  padding: 12px 16px;
+  background: color-mix(in srgb, var(--soft) 92%, transparent);
+  border-bottom: 1px solid var(--border);
+}
+.news-board.is-collapsible > summary.news-board-head::-webkit-details-marker { display: none; }
+.news-board.is-collapsible > summary.news-board-head::marker { content: ""; }
+.news-board.is-collapsible > summary.news-board-head:hover {
+  background: color-mix(in srgb, var(--primary-soft) 70%, var(--soft));
+}
+.news-board.is-collapsible > summary.news-board-head:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+.news-board-chevron {
+  width: 8px;
+  height: 8px;
+  margin-top: -2px;
+  border-right: 2px solid var(--subtle);
+  border-bottom: 2px solid var(--subtle);
+  transform: rotate(45deg);
+  transition: transform .2s ease, border-color .2s ease;
+}
+.news-board[open] > summary .news-board-chevron {
+  margin-top: 2px;
+  transform: rotate(-135deg);
+}
+.news-board.is-collapsible > summary.news-board-head:hover .news-board-chevron { border-color: var(--primary); }
+.news-row.is-arxiv::before { background: var(--primary); }
+.news-row.is-bc::before { background: var(--accent); }
+.news-row.is-pick { background: color-mix(in srgb, var(--accent-soft) 62%, transparent); }
+.news-title-row { display: flex; align-items: flex-start; gap: 8px; }
+.news-title-row .news-title { flex: 1; min-width: 0; }
+.news-rank { flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; margin-top: 1px; color: #fff; background: var(--accent); border-radius: 999px; font-size: 11px; font-weight: 700; }
+.news-score { flex: 0 0 auto; margin-left: auto; padding: 1px 7px; color: var(--primary-deep); background: var(--primary-soft); border: 1px solid var(--primary-border); border-radius: 999px; font-family: "JetBrains Mono", monospace; font-size: 11px; white-space: nowrap; }
+.news-score.is-high { color: var(--accent-text); background: var(--accent-soft); border-color: var(--accent-border); }
+.news-channel-empty { padding: 28px 16px 32px; color: var(--subtle); font-size: 13px; }
+#newsDetailToggle[aria-pressed="true"] {
+  color: var(--primary-deep);
+  background: var(--primary-soft);
+  border-color: var(--primary-border);
+}
+html.dark #newsDetailToggle[aria-pressed="true"] {
+  color: #041013;
+  background: #65ead9;
+  border-color: #65ead9;
+}
+html:not(.dark) .news-list-head {
+  background: rgba(244, 248, 247, .86) !important;
+  border-color: rgba(42, 103, 104, .16) !important;
+  color: #14282c;
+}
+html:not(.dark) #newsDetailToggle {
+  color: #14282c !important;
+  background: rgba(255, 255, 255, .92) !important;
+  border-color: rgba(42, 103, 104, .22) !important;
+}
+html:not(.dark) #newsDetailToggle:hover {
+  color: #075f5a !important;
+  background: rgba(8, 127, 120, .1) !important;
+  border-color: rgba(8, 127, 120, .32) !important;
+}
+html:not(.dark) #newsDetailToggle[aria-pressed="true"] {
+  color: #075f5a !important;
+  background: rgba(8, 127, 120, .1) !important;
+  border-color: rgba(8, 127, 120, .32) !important;
+}
+html:not(.dark) #newsDetailToggle[aria-pressed="true"]:hover {
+  color: #075f5a !important;
+  background: rgba(8, 127, 120, .16) !important;
+  border-color: rgba(8, 127, 120, .45) !important;
+}
+@media (max-width: 920px) {
+  .news-list-head { align-items: flex-start; flex-direction: column; gap: 10px; }
+  .news-list-actions { width: 100%; justify-content: space-between; }
+}

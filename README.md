@@ -7,7 +7,7 @@
 - **🗞️ 安全资讯周报（secnews）**：每日从 BleepingComputer 与 arXiv 抓取资讯/论文，由 LLM 筛选、导读并翻译，每周自动生成排版精美的 HTML/PDF 周报。
 - **📝 每日 AI 导读**：为 `articles` 中每个日期生成中文标题与摘要，保存到 `secnews/data/daily_summaries/`，支持增量续跑。
 - **🎓 顶会论文分析（top-conf）**：针对 USENIX Security、IEEE S&P、NDSS、ACM CCS 四大安全顶会做结构化抓取，LLM 自动分类（Web / 系统 / 密码学 / 隐私 / ML 安全等 10 类）并生成深度中文摘要，输出 Web/PDF 报告。
-- **🧭 统一报告主页**：总览页集中展示所有报告，支持维护"感兴趣作者"列表（保存在浏览器本地）。
+- **🧭 统一报告主页**：总览页集中展示所有报告，支持维护关注作者列表。必须从 FastResearch 用个人 Key 进入；`serve.py` 服务端兑换 SSO 票据后写入 HttpOnly Cookie，作者按 Key 保存在服务端。直开 `:4173` 会回到 Panel。
 - **🤖 全自动流水线**：GitHub Actions 定时抓取、总结、发布，全程无需人工干预。
 
 ## 🧭 主页
@@ -21,7 +21,7 @@
 uv run python generate_homepage.py
 ```
 
-主页提供"感兴趣作者"列表：可添加作者姓名、简介和主页链接，数据保存在浏览器 localStorage 中。
+主页提供关注作者列表：可添加作者姓名、研究方向和主页链接。必须从 FastResearch 用个人 Key 进入；本地用 `python serve.py` 提供 `http://127.0.0.1:4173`，不要用 `python -m http.server`。服务端兑换 `?sso=` 后地址栏不再包含票据。
 
 ## 🚀 快速开始
 
@@ -43,6 +43,14 @@ uv run python generate_homepage.py
    ```bash
    uv run python generate_homepage.py
    ```
+
+5. **本地访问必须经 FastResearch**：先启动 FastResearch Panel，再在 FastNews 目录运行：
+
+   ```bash
+   python serve.py
+   ```
+
+   服务监听 `127.0.0.1:4173`。浏览器直开会 302 到 Panel；从 Panel 点击 FastNews 后才会兑换票据并展示报告。不要使用 `python -m http.server`。
 
 > PDF 生成依赖 WeasyPrint，需要系统图形库：Ubuntu 安装 `libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf-2.0-0 libffi-dev libcairo2 fonts-noto-cjk`，macOS 安装 `brew install pango`。缺少时脚本会自动跳过 PDF、仅输出 HTML。
 
@@ -168,6 +176,9 @@ uv run python top-conf/generate_conf_report.py ieee-sp 2026
 | `OPENAI_API_KEY` | ✅ | - | LLM API 密钥 |
 | `OPENAI_BASE_URL` | 否 | `https://api.openai.com/v1` | OpenAI 兼容接口地址 |
 | `LLM_MODEL` | 否 | `gemini-3-flash-preview` | 使用的模型名 |
+| `FASTRESEARCH_API_URL` | 否 | `http://127.0.0.1:8787` | FastNews `serve.py` 兑换票据与反代 `/api` 的地址 |
+| `FASTRESEARCH_PANEL_URL` | 否 | `http://127.0.0.1:5173` | 无会话直开时 302 的 Panel 地址 |
+| `FASTNEWS_HOST` / `FASTNEWS_PORT` | 否 | `127.0.0.1` / `4173` | 本地门禁服务监听地址 |
 
 ## 🛠️ GitHub Actions 流水线
 
@@ -202,5 +213,5 @@ A：脚本会自动探测 WeasyPrint，缺少系统图形库（pango 等）时�
 **Q：`generate_conf_summary.py` 中途失败/超时怎么办？**
 A：直接重跑即可。脚本按 `_id` 记录已处理论文，会从断点继续；批处理失败时自动降级为逐篇调用 LLM。
 
-**Q：主页的"感兴趣作者"列表存在哪里？**
-A：保存在浏览器 localStorage 中，清空浏览器数据会丢失，不随仓库同步。
+**Q：主页的关注作者列表存在哪里？**
+A：按 FastResearch 个人 Key 保存在服务端，并显示“已登录 {成员} 的关注作者”。直开 FastNews 端口不会进入产品。首次从 Panel 进入时，如果服务端还没有作者，会把当前浏览器里的本地作者迁移过去一次。

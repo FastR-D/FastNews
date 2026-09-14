@@ -4,13 +4,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>安全研究报告工作台 - FastNews</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <script>
   (() => {
-    const saved = window.localStorage.getItem("fastnews.theme");
-    const dark = saved === "dark" || (saved !== "light" && window.matchMedia("(prefers-color-scheme: dark)").matches);
-    document.documentElement.classList.toggle("dark", dark);
+    const applyTheme = () => {
+      const saved = window.localStorage.getItem("fastresearch-theme") ?? window.localStorage.getItem("fastnews.theme");
+      document.documentElement.classList.toggle("dark", saved !== "light");
+    };
+    applyTheme();
+    window.addEventListener("pageshow", applyTheme);
   })();
 </script>
+<style>html:not(.fastnews-ready) .app-shell{visibility:hidden!important}</style>
+<script src="assets/gate.js"></script>
 <style>
   :root {
     --app-bg: #f6f7f5; --muted-bg: #eef2ef; --surface: #fff; --soft: #f8faf8;
@@ -250,7 +259,158 @@
     .news-list-head { align-items: flex-start; flex-direction: column; gap: 3px; padding: 12px 14px; }
     .news-row { padding: 14px 14px 14px 18px; }
   }
+  /* FastResearch console layer */
+  :root { --app-bg:#f4f8f7; --muted-bg:#e8f1ef; --surface:#fff; --soft:#f4f8f7; --border:rgba(42,103,104,.2); --input-border:#b8cfcc; --primary:#087f78; --primary-deep:#075f5a; --primary-soft:rgba(8,127,120,.08); --primary-border:rgba(8,127,120,.3); --accent:#c2410c; --accent-soft:#fff7ed; --accent-border:#fed7aa; --accent-text:#c2410c; --text:#14282c; --muted:#5c7779; --subtle:#648083; --focus:rgba(8,127,120,.16); }
+  html.dark { --app-bg:#0b1a14; --muted-bg:#12261d; --surface:#12261d; --soft:#173028; --border:rgba(141,198,200,.18); --input-border:#2d4b50; --primary:#65ead9; --primary-deep:#9cfff2; --primary-soft:rgba(101,234,217,.08); --primary-border:rgba(101,234,217,.35); --accent:#ffc36d; --accent-soft:rgba(255,195,109,.1); --accent-border:rgba(255,195,109,.35); --accent-text:#ffc36d; --text:#e7f1f0; --muted:#89a1a3; --subtle:#587478; }
+  html:not(.dark) { --app-bg:#f4f8f7; --muted-bg:#e8f1ef; --surface:#fff; --soft:#f4f8f7; --border:rgba(42,103,104,.2); --input-border:#b8cfcc; --primary:#087f78; --primary-deep:#075f5a; --primary-soft:rgba(8,127,120,.08); --primary-border:rgba(8,127,120,.3); --accent:#c2410c; --accent-soft:#fff7ed; --accent-border:#fed7aa; --accent-text:#c2410c; --text:#14282c; --muted:#5c7779; --subtle:#648083; --focus:rgba(8,127,120,.16); }
+  body { font-family:'Space Grotesk','Noto Sans SC',Inter,sans-serif; background:var(--app-bg); color:var(--text); }
+  html.dark body { background:radial-gradient(circle at 80% -10%,rgba(28,77,56,.65),transparent 35%),var(--app-bg); }
+  .app-shell { background:transparent; } html.dark .sidebar { background:rgba(18,38,29,.88); border-color:var(--border); } html.dark .topbar { background:rgba(11,26,20,.78); border-color:var(--border); backdrop-filter:blur(14px); }
+  .page { max-width:1240px; padding:30px 24px 42px; } .brand-name { letter-spacing:.08em; text-transform:uppercase; }
+  h1 { font-family:'Space Grotesk','Noto Sans SC',sans-serif; font-size:clamp(28px,4vw,48px); font-weight:500; letter-spacing:-.04em; } .description { line-height:1.8; }
+  html.dark .surface { background:rgba(18,38,29,.88); border-color:var(--border); box-shadow:0 8px 28px rgba(0,0,0,.16); } html.dark .section-head, html.dark .news-list-head { background:rgba(23,48,40,.86); }
+  .stat-value { color:var(--primary); font-family:'JetBrains Mono',monospace; } .report-title a,.conference-title a,.article-title a,.news-title a { color:var(--primary); }
+  .report-row:hover,.conference-row:hover,.article:hover,.news-row:hover,.gateway-row:hover,.author-row:hover { background:rgba(101,234,217,.06); } .conference-row::before,.news-row::before { background:var(--accent); }
+  .badge,.conference-tag,.news-tag { font-family:'JetBrains Mono',monospace; }
+  @media (max-width:920px) { .page { padding:22px 16px 32px; } h1 { font-size:32px; } }
+  /* Match FastResearch shell exactly */
+  html.dark body, html.dark .app-shell { background:#0b1a14 !important; color:#e7f1f0 !important; }
+  html.dark .sidebar { background:#12261d !important; border-color:rgba(141,244,231,.14) !important; }
+  html.dark .topbar { height:72px !important; padding:0 clamp(18px,5vw,76px) !important; background:rgba(11,26,20,.72) !important; border-color:rgba(141,244,231,.14) !important; }
+  html.dark .brand-mark { color:#e7f1f0 !important; } html.dark .brand-mark:first-child { background:transparent !important; border:0 !important; }
+  html.dark .brand-mark .icon { color:#05150d !important; background:#65ead9 !important; }
+  html.dark .page { max-width:1240px; padding:30px 24px 42px; }
+  html.dark h1 { color:#eaf3f2 !important; font-size:clamp(32px,5vw,56px) !important; font-weight:500 !important; letter-spacing:-.05em !important; }
+  html.dark .surface { background:rgba(18,38,29,.72) !important; border-color:rgba(141,198,200,.18) !important; box-shadow:none !important; }
+  html.dark .section-head, html.dark .news-list-head { background:rgba(23,48,40,.72) !important; }
+  html.dark .gateway-title, html.dark .report-title, html.dark .conference-title, html.dark .news-title { color:#e7f1f0 !important; }
+  html.dark .gateway-description, html.dark .report-row .meta, html.dark .conference-summary, html.dark .news-description { color:#87a0a3 !important; }
+  html.dark .gateway-row:hover, html.dark .report-row:hover, html.dark .conference-row:hover, html.dark .news-row:hover, html.dark .author-row:hover { background:rgba(24,52,40,.92) !important; }
+  html.dark .button-primary { color:#04140c !important; background:#65ead9 !important; border-color:#65ead9 !important; }
+  html.dark .button-primary:hover { background:#9cfff2 !important; border-color:#9cfff2 !important; }
+  html.dark .button, html.dark .icon-button { background:transparent; color:#9cb4b5; border-color:rgba(143,198,200,.2); }
+  html.dark .icon-button:hover, html.dark .button:hover { color:#65ead9; border-color:#65ead9; background:rgba(101,234,217,.07); }
+  html.dark .field { color:#d8e9e8; background:#0d1f18; border-color:#2d4b50; }
+  html:not(.dark) .topbar { height:72px; }
+  html:not(.dark) .page { max-width:1240px; }
+  /* FastResearch series shell: shared with the control center */
+  html.dark body { background:#0b1a14 !important; }
+  html.dark body::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.16; background-image:linear-gradient(rgba(86,168,126,.16) 1px,transparent 1px),linear-gradient(90deg,rgba(86,168,126,.16) 1px,transparent 1px); background-size:54px 54px; mask-image:linear-gradient(to bottom,#000,transparent 86%); z-index:0; }
+  html.dark .app-shell { display:block; min-height:100vh; background:radial-gradient(circle at 80% -10%,#1c4d38 0,transparent 35%),#0b1a14 !important; }
+  html.dark .sidebar { display:none; }
+  html.dark .main { position:relative; z-index:1; }
+  html.dark .topbar { height:72px !important; padding:0 clamp(18px,5vw,76px) !important; background:rgba(11,26,20,.72) !important; border-color:rgba(141,244,231,.14) !important; }
+  html.dark .breadcrumb { display:flex; align-items:center; gap:10px; color:#69878a !important; font:700 14px 'Space Grotesk',sans-serif; letter-spacing:.14em; text-transform:uppercase; }
+  html.dark .breadcrumb strong { color:#e7f1f0 !important; font-weight:700; }
+  html.dark .breadcrumb strong::first-letter { color:#65ead9; }
+  html.dark .breadcrumb::after { content:'SYSTEM ONLINE'; margin-left:18px; color:#69878a; font:10px 'JetBrains Mono',monospace; letter-spacing:.12em; }
+  html.dark .page { max-width:1240px; padding:58px 24px 42px !important; }
+  html.dark .page-header { margin-bottom:34px; }
+  html.dark .header-copy { gap:0; }
+  html.dark .header-icon { display:none; }
+  html.dark h1 { max-width:760px; margin:0 !important; color:#eaf3f2 !important; font-size:clamp(42px,6vw,72px) !important; line-height:.98 !important; font-weight:500 !important; letter-spacing:-.05em !important; }
+  html.dark h1::first-line { color:#eaf3f2; }
+  html.dark .description { max-width:520px; margin-top:20px !important; color:#8ca7a9 !important; font-size:15px !important; line-height:1.8 !important; }
+  html.dark .badge { align-self:flex-end; margin-top:8px; color:#65ead9; background:rgba(101,234,217,.08); border-color:rgba(101,234,217,.35); font:10px 'JetBrains Mono',monospace; letter-spacing:.12em; }
+  html.dark .surface { border-radius:0 !important; background:rgba(18,38,29,.72) !important; border-color:rgba(141,198,200,.18) !important; box-shadow:none !important; }
+  html.dark .stats { margin-bottom:14px; }
+  html.dark .stat { padding:18px 20px; border-color:rgba(141,198,200,.14); }
+  html.dark .stat-value { color:#65ead9 !important; font-size:22px; }
+  html.dark .stat-label, html.dark .section-count, html.dark .generated { color:#587478 !important; font:10px 'JetBrains Mono',monospace; letter-spacing:.08em; }
+  html.dark .section-head, html.dark .news-list-head { min-height:64px; background:rgba(23,48,40,.86) !important; border-color:rgba(141,198,200,.14); }
+  html.dark h2 { color:#d5e9e7 !important; font-size:15px; font-weight:500; letter-spacing:.02em; }
+  html.dark .section-description { color:#69878a !important; }
+  html.dark .gateway-row, html.dark .author-row, html.dark .report-row, html.dark .conference-row, html.dark .news-row { border-color:rgba(141,198,200,.13); }
+  html.dark .gateway-row:hover, html.dark .author-row:hover, html.dark .report-row:hover, html.dark .conference-row:hover, html.dark .news-row:hover { background:rgba(24,52,40,.92) !important; }
+  html.dark .gateway-title, html.dark .report-title, html.dark .conference-title, html.dark .news-title { color:#e7f1f0 !important; font-weight:500; }
+  html.dark .gateway-description, html.dark .conference-summary, html.dark .news-description, html.dark .meta { color:#87a0a3 !important; }
+  html.dark .gateway-meta { color:#65ead9 !important; }
+  html.dark .gateway-icon, html.dark .stat-icon { border-radius:0; background:rgba(101,234,217,.08); border-color:rgba(101,234,217,.35); color:#65ead9; }
+  html.dark .gateway-icon.orange { color:#ffc36d; background:rgba(255,195,109,.08); border-color:rgba(255,195,109,.35); }
+  html.dark .button, html.dark .icon-button { border-radius:0; }
+  html.dark .field { border-radius:0; }
+  html.dark .author-form { border-radius:0; background:#12261d; border-color:rgba(101,234,217,.38); }
+  @media (max-width:920px) { html.dark .page { padding:42px 16px 32px !important; } html.dark h1 { font-size:43px !important; } html.dark .breadcrumb::after { display:none; } }
+  html:not(.dark) body { background:#f4f8f7 !important; color:#14282c !important; }
+  html:not(.dark) .app-shell { display:block; min-height:100vh; background:radial-gradient(circle at 80% -10%,#d9f5f0 0,transparent 36%),#f4f8f7 !important; }
+  html:not(.dark) .sidebar { display:none; }
+  html:not(.dark) .main { position:relative; z-index:1; }
+  html:not(.dark) .topbar { height:72px !important; padding:0 clamp(18px,5vw,76px) !important; background:rgba(244,248,247,.82) !important; border-color:rgba(31,99,100,.18) !important; }
+  html:not(.dark) .breadcrumb { display:flex; align-items:center; gap:10px; color:#648083 !important; font:700 14px 'Space Grotesk',sans-serif; letter-spacing:.14em; text-transform:uppercase; }
+  html:not(.dark) .breadcrumb strong { color:#14282c !important; }
+  html:not(.dark) .breadcrumb::after { content:'SYSTEM ONLINE'; margin-left:18px; color:#648083; font:10px 'JetBrains Mono',monospace; letter-spacing:.12em; }
+  html:not(.dark) .page { max-width:1240px; padding:58px 24px 42px !important; }
+  html:not(.dark) .page-header { margin-bottom:34px; }
+  html:not(.dark) .header-copy { gap:0; } html:not(.dark) .header-icon { display:none; }
+  html:not(.dark) h1 { max-width:760px; margin:0 !important; color:#14282c !important; font-size:clamp(42px,6vw,72px) !important; line-height:.98 !important; font-weight:500 !important; letter-spacing:-.05em !important; }
+  html:not(.dark) .description { max-width:520px; margin-top:20px !important; color:#5c7779 !important; font-size:15px !important; line-height:1.8 !important; }
+  html:not(.dark) .badge { align-self:flex-end; margin-top:8px; color:#087f78; background:rgba(8,127,120,.08); border-color:rgba(8,127,120,.3); font:10px 'JetBrains Mono',monospace; letter-spacing:.12em; }
+  html:not(.dark) .surface { border-radius:0 !important; background:rgba(255,255,255,.72) !important; border-color:rgba(42,103,104,.22) !important; box-shadow:none !important; }
+  html:not(.dark) .section-head, html:not(.dark) .news-list-head { background:rgba(244,248,247,.86) !important; border-color:rgba(42,103,104,.16); }
+  html:not(.dark) .stat { border-color:rgba(42,103,104,.14); } html:not(.dark) .stat-value { color:#087f78 !important; font-family:'JetBrains Mono',monospace; }
+  html:not(.dark) .stat-label, html:not(.dark) .section-count, html:not(.dark) .generated { color:#648083 !important; font:10px 'JetBrains Mono',monospace; letter-spacing:.08em; }
+  html:not(.dark) .gateway-row, html:not(.dark) .author-row, html:not(.dark) .report-row, html:not(.dark) .conference-row, html:not(.dark) .news-row { border-color:rgba(42,103,104,.14); }
+  html:not(.dark) .gateway-row:hover, html:not(.dark) .author-row:hover, html:not(.dark) .report-row:hover, html:not(.dark) .conference-row:hover, html:not(.dark) .news-row:hover { background:rgba(255,255,255,.96) !important; }
+  html:not(.dark) .gateway-title, html:not(.dark) .report-title, html:not(.dark) .conference-title, html:not(.dark) .news-title { color:#14282c !important; font-weight:500; }
+  html:not(.dark) .gateway-description, html:not(.dark) .conference-summary, html:not(.dark) .news-description, html:not(.dark) .meta { color:#5c7779 !important; }
+  html:not(.dark) .gateway-meta { color:#087f78 !important; } html:not(.dark) .gateway-icon, html:not(.dark) .stat-icon { border-radius:0; }
+  html:not(.dark) .button, html:not(.dark) .icon-button, html:not(.dark) .field { border-radius:0; }
+  @media (max-width:920px) { html:not(.dark) .page { padding:42px 16px 32px !important; } html:not(.dark) h1 { font-size:43px !important; } html:not(.dark) .breadcrumb::after { display:none; } }
+  /* Ambient motion shared with FastResearch */
+  :root { --pointer-x:50vw; --pointer-y:40vh; }
+  body::after { content:""; position:fixed; inset:0; z-index:0; pointer-events:none; background:radial-gradient(360px circle at var(--pointer-x) var(--pointer-y), rgba(101,234,217,.12), transparent 72%); transition:background .15s ease; }
+  html:not(.dark) body::after { background:radial-gradient(360px circle at var(--pointer-x) var(--pointer-y), rgba(8,127,120,.11), transparent 72%); }
+  html:not(.dark) body::before { content:""; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.24; background-image:linear-gradient(rgba(39,107,108,.13) 1px,transparent 1px),linear-gradient(90deg,rgba(39,107,108,.13) 1px,transparent 1px); background-size:54px 54px; mask-image:linear-gradient(to bottom,#000,transparent 86%); }
+  html.dark body::before, html:not(.dark) body::before { animation:fr-grid 22s linear infinite; }
+  .main { position:relative; z-index:1; }
+  .topbar { position:sticky; z-index:5; }
+  .page-header, .stats, .workspace > *, .conference-explorer { animation: fr-rise .55s ease both; }
+  .stats { animation-delay:.06s; } .workspace > *:nth-child(2) { animation-delay:.12s; }
+  .gateway-row, .report-row, .conference-row, .news-row, .author-row { will-change:transform; transition:transform .25s ease, background .25s ease, border-color .25s ease; }
+  .gateway-row:hover, .report-row:hover, .conference-row:hover, .news-row:hover, .author-row:hover { transform:translateY(-3px); }
+  .button, .icon-button, .calendar-day button { transition:transform .2s ease, background .2s ease, color .2s ease, border-color .2s ease; }
+  .button:active, .icon-button:active, .calendar-day button:active, .gateway-row:active { transform:scale(.97); }
+  .is-pressed { transform:scale(.97) !important; }
+  @keyframes fr-rise { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+  @keyframes fr-grid { from { background-position:0 0,0 0; } to { background-position:54px 54px,54px 54px; } }
+  @media (max-width:620px) { .gateway-row:hover, .report-row:hover, .conference-row:hover, .news-row:hover, .author-row:hover { transform:none; } body::after { background:radial-gradient(220px circle at var(--pointer-x) var(--pointer-y),rgba(101,234,217,.08),transparent 72%); } }
+  @media (prefers-reduced-motion:reduce) { body::after { display:none; } .page-header, .stats, .workspace > *, .conference-explorer { animation:none; } .gateway-row, .report-row, .conference-row, .news-row, .author-row { transition:none; } }
+  .pagination { display:flex; align-items:center; justify-content:flex-end; gap:8px; padding:12px 16px; border-top:1px solid var(--border); background:var(--soft); }
+  .pagination button { min-width:32px; height:30px; padding:0 9px; color:var(--muted); background:transparent; border:1px solid var(--border); border-radius:0; cursor:pointer; font:11px 'JetBrains Mono',monospace; }
+  .pagination button:hover:not(:disabled), .pagination button.is-current { color:var(--primary); border-color:var(--primary); background:var(--primary-soft); }
+  .pagination button:disabled { cursor:default; opacity:.45; }
+  .pagination .pagination-info { margin-right:auto; color:var(--subtle); font:10px 'JetBrains Mono',monospace; letter-spacing:.05em; }
+  @media (max-width:620px) { .pagination { justify-content:center; padding:10px 12px; } .pagination .pagination-info { display:none; } }
+  html:not(.dark) { color-scheme: light; }
+  html:not(.dark) .news-list-head,
+  html:not(.dark) .pagination {
+    background: rgba(244,248,247,.86) !important;
+    border-color: rgba(42,103,104,.16) !important;
+    color: #14282c;
+  }
+  html:not(.dark) .news-date-title { color:#14282c !important; }
+  html:not(.dark) .news-date-sub,
+  html:not(.dark) .news-list-head .section-count { color:#5c7779 !important; }
+  html:not(.dark) #newsDetailToggle {
+    color: #14282c !important;
+    background: rgba(255,255,255,.92) !important;
+    border-color: rgba(42,103,104,.22) !important;
+  }
+  html:not(.dark) #newsDetailToggle:hover {
+    color: #075f5a !important;
+    background: rgba(8,127,120,.10) !important;
+    border-color: rgba(8,127,120,.32) !important;
+  }
+  html:not(.dark) #newsDetailToggle[aria-pressed="true"],
+  html:not(.dark) #newsDetailToggle[aria-pressed="true"]:hover {
+    color: #075f5a !important;
+    background: rgba(8,127,120,.10) !important;
+    border-color: rgba(8,127,120,.32) !important;
+  }
 </style>
+<link rel="stylesheet" href="assets/authors.css"><link rel="stylesheet" href="assets/today-news.css">
+
+
 </head>
 <body>
 <svg class="icon-sprite" aria-hidden="true" focusable="false">
@@ -289,7 +449,7 @@
   <main class="main">
     <header class="topbar">
       <div class="breadcrumb"><strong>FastNews</strong><span> / Local Index</span></div>
-      <div class="topbar-actions"><span class="generated">更新于 2026-09-04 10:51 UTC</span><button class="icon-button" id="themeToggle" type="button" aria-label="切换深色模式" title="切换深色模式"><svg class="icon theme-sun"><use href="#icon-sun"></use></svg><svg class="icon theme-moon"><use href="#icon-moon"></use></svg></button></div>
+      <div class="topbar-actions"><span class="generated">更新于 2026-09-08 02:41 UTC</span><button class="icon-button" id="themeToggle" type="button" aria-label="切换深色模式" title="切换深色模式"><svg class="icon theme-sun"><use href="#icon-sun"></use></svg><svg class="icon theme-moon"><use href="#icon-moon"></use></svg></button></div>
     </header>
     <nav class="mobile-nav" aria-label="移动端导航">
       <a class="active" href="index.html"><span><svg class="icon"><use href="#icon-dashboard"></use></svg>总览</span></a>
@@ -297,9 +457,72 @@
       <a class="" href="secnews/index.html"><span><svg class="icon"><use href="#icon-newspaper"></use></svg>安全资讯</span></a><a href="#authors"><span><svg class="icon"><use href="#icon-users"></use></svg>关注作者</span></a>
     </nav>
     <div class="page">
-      <section class="page-header">
+      <section class="page-header has-today-card">
         <div class="header-copy"><span class="header-icon"><svg class="icon"><use href="#icon-dashboard"></use></svg></span><div><h1>安全研究报告工作台</h1><p class="description">集中访问会议报告和安全周报，并维护感兴趣作者列表。</p></div></div>
-        <span class="badge">Local Index</span>
+        <details class="today-news-card" id="todayNewsCard">
+          <summary class="today-news-face">
+            <span class="today-news-tape" aria-hidden="true"></span>
+            <span class="today-news-stamp">NEW</span>
+            <span class="today-news-kicker">最新快讯</span>
+            <strong class="today-news-date">2026年9月4日</strong>
+            <span class="today-news-count">186 条新鲜出炉</span>
+            <span class="today-news-hint">点我展开看看</span>
+          </summary>
+          
+          <div class="today-news-panel" id="todayNewsPanel">
+            <p class="today-news-panel-title">当天头条</p>
+            <ul class="today-news-list" id="todayNewsList">
+              
+              <li>
+                
+                <a href="https://www.bleepingcomputer.com/news/security/hpe-patches-critical-arubaos-cx-remote-code-execution-flaw/" target="_blank" rel="noopener noreferrer">HPE patches critical ArubaOS-CX remote code execution flaw</a>
+                
+                <span class="today-news-item-meta">BleepingComputer · Security</span>
+              </li>
+              
+              <li>
+                
+                <a href="https://www.bleepingcomputer.com/news/security/critical-elementor-pro-flaw-exploited-to-take-over-wordpress-sites/" target="_blank" rel="noopener noreferrer">Critical Elementor Pro flaw exploited to take over WordPress sites</a>
+                
+                <span class="today-news-item-meta">BleepingComputer · Security</span>
+              </li>
+              
+              <li>
+                
+                <a href="https://www.bleepingcomputer.com/news/security/french-hospital-fined-500-000-after-breach-exposes-data-of-727-000/" target="_blank" rel="noopener noreferrer">French hospital fined €500,000 after breach exposes data of 727,000</a>
+                
+                <span class="today-news-item-meta">BleepingComputer · Security</span>
+              </li>
+              
+              <li>
+                
+                <a href="https://www.bleepingcomputer.com/news/security/coders-registry-infrastructure-compromised-to-push-malicious-modules/" target="_blank" rel="noopener noreferrer">Coder&#39;s registry infrastructure compromised to push malicious modules</a>
+                
+                <span class="today-news-item-meta">BleepingComputer · Security</span>
+              </li>
+              
+              <li>
+                
+                <a href="https://arxiv.org/abs/2609.03884" target="_blank" rel="noopener noreferrer">A Blind Trust, the Bloody Thrust: When Attacker-Controlled Hook Updates Steer AI Agent Harnesses towards Malicious Behaviors</a>
+                
+                <span class="today-news-item-meta">arXiv · cs.CR</span>
+              </li>
+              
+              <li>
+                
+                <a href="https://arxiv.org/abs/2609.03781" target="_blank" rel="noopener noreferrer">IndicSafeEval: Safety Robustness of Large Language Models under Multilingual Persuasive Jailbreak Attacks</a>
+                
+                <span class="today-news-item-meta">arXiv · cs.CL</span>
+              </li>
+              
+            </ul>
+            
+            <p class="today-news-more">还有 180 条</p>
+            
+            <a class="today-news-jump" href="secnews/index.html?date=2026-09-04">前往当天资讯界面</a>
+          </div>
+          
+        </details>
       </section>
       <section class="surface stats" aria-label="概览统计">
         <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-file"></use></svg></span><span class="stat-copy"><span class="stat-value">7</span><span class="stat-label">已生成报告</span></span></div>
@@ -316,18 +539,23 @@
           </div>
         </section>
         <section class="surface" id="authors">
-          <div class="section-head"><div><h2>关注作者</h2><p class="section-description">点击作者行可编辑资料</p></div><span class="section-count" id="authorSectionCount">0 位作者</span><button class="button button-secondary button-sm" id="toggleAuthorForm" type="button" aria-controls="authorModal" aria-expanded="false"><svg class="icon"><use href="#icon-plus"></use></svg>添加作者</button></div>
+          <div class="section-head"><div><h2>关注作者</h2><p class="section-description" id="authorSectionHint">点击作者行可编辑资料</p></div><span class="section-count" id="authorSectionCount">0 位作者</span><button class="button button-secondary button-sm" id="toggleAuthorForm" type="button" aria-controls="authorModal" aria-expanded="false"><svg class="icon"><use href="#icon-plus"></use></svg>添加作者</button></div>
           <div class="author-list-head"><span>名称</span><span>研究方向</span><span>主页</span><span></span></div>
           <div id="authorList"></div>
         </section>
-        <div class="author-modal" id="authorModal" hidden>
-          <div class="author-modal-backdrop" data-close-author-modal></div>
-          <form class="author-form" id="authorForm" role="dialog" aria-modal="true" aria-labelledby="authorFormTitle" aria-describedby="authorFormHint">
-            <div class="editor-head"><div><span class="section-label" id="authorFormTitle">新增作者</span><p class="editor-hint" id="authorFormHint">填写姓名、研究方向和主页链接</p></div><button class="icon-button" id="closeAuthorForm" type="button" aria-label="关闭编辑" title="关闭编辑"><svg class="icon"><use href="#icon-x"></use></svg></button></div>
-            <div class="field-grid"><div class="field-group"><label class="label" for="authorName">姓名</label><input class="field" id="authorName" name="name" autocomplete="name" required></div><div class="field-group"><label class="label" for="authorHome">主页链接</label><input class="field" id="authorHome" name="homepage" type="url" placeholder="https://example.com" required></div><div class="field-group full"><label class="label" for="authorBio">研究方向</label><textarea class="field" id="authorBio" name="bio" required></textarea></div></div>
-            <div class="editor-actions"><button class="button button-primary" id="submitAuthor" type="submit"><svg class="icon"><use href="#icon-plus"></use></svg><span id="submitAuthorLabel">保存作者</span></button><button class="button" id="cancelAuthor" type="button">取消</button></div>
+        <dialog class="author-dialog" id="authorModal" aria-labelledby="authorFormTitle" aria-describedby="authorFormHint" closedby="none">
+          <form class="author-editor" id="authorForm">
+            <div class="editor-head"><div><h2 class="editor-title" id="authorFormTitle">新增作者</h2><p class="editor-hint" id="authorFormHint">填写作者资料，保存后获取并解析主页。</p></div><button class="icon-button" id="closeAuthorForm" type="button" aria-label="关闭编辑" title="关闭编辑"><svg class="icon"><use href="#icon-x"></use></svg></button></div>
+            <div class="field-grid">
+              <div class="field-group"><label class="label" for="authorName">姓名</label><input class="field" id="authorName" name="name" autocomplete="name" maxlength="100" required autofocus></div>
+              <div class="field-group"><label class="label" for="authorHome">主页链接</label><input class="field" id="authorHome" name="homepage" type="url" placeholder="https://example.com" required></div>
+              <fieldset class="research-fields"><legend class="label">研究方向</legend><p class="research-hint" id="researchHint">可多选；至少选择一个标签，也可以添加自定义方向。</p><div class="research-options" id="researchOptions" role="group" aria-label="研究方向标签" aria-describedby="researchHint"></div><label class="custom-tag-label" for="customResearchTag">自定义标签</label><div class="custom-tag-entry"><input class="field" id="customResearchTag" maxlength="40" placeholder="输入方向后按 Enter 添加" autocomplete="off"><button class="button button-secondary" id="addResearchTag" type="button">添加标签</button></div></fieldset>
+            </div>
+            <p class="author-validation" id="authorValidation" role="alert" hidden></p>
+            <div class="editor-actions"><button class="button" id="cancelAuthor" type="button">取消</button><button class="button button-primary" id="submitAuthor" type="submit"><svg class="icon"><use href="#icon-plus"></use></svg><span id="submitAuthorLabel">保存并获取</span></button></div>
           </form>
-        </div>
+        </dialog>
+        <div class="author-task-tray" id="authorTaskTray" aria-live="polite"></div>
       </div>
     </div>
   </main>
@@ -347,124 +575,46 @@
   themeToggle.addEventListener("click", () => {
     const dark = !root.classList.contains("dark");
     root.classList.toggle("dark", dark);
+    window.localStorage.setItem("fastresearch-theme", dark ? "dark" : "light");
     window.localStorage.setItem("fastnews.theme", dark ? "dark" : "light");
     updateThemeButton();
   });
   updateThemeButton();
+  function renderPagination(container, current, total, onChange) {
+    if (!container || total <= 1) { if (container) container.innerHTML = ''; return; }
+    const buttons = [];
+    buttons.push(`<button type="button" data-page="${current - 1}" ${current === 1 ? 'disabled' : ''} aria-label="上一页">‹</button>`);
+    const first = Math.max(1, Math.min(current - 2, total - 4));
+    const last = Math.min(total, first + 4);
+    for (let page = first; page <= last; page += 1) buttons.push(`<button type="button" data-page="${page}" class="${page === current ? 'is-current' : ''}" aria-label="第 ${page} 页">${page}</button>`);
+    buttons.push(`<button type="button" data-page="${current + 1}" ${current === total ? 'disabled' : ''} aria-label="下一页">›</button>`);
+    container.innerHTML = `<span class="pagination-info">PAGE ${current} / ${total}</span>${buttons.join('')}`;
+    container.querySelectorAll('button[data-page]').forEach((button) => button.addEventListener('click', () => { if (!button.disabled) onChange(Number(button.dataset.page)); }));
+  }
 </script>
 
+
+<script src="assets/authors.js"></script>
+<script src="assets/today-news.js"></script>
 
 <script>
-  const STORAGE_KEY = "fastnews.favoriteAuthors";
-  const modal = document.getElementById("authorModal");
-  const form = document.getElementById("authorForm");
-  const list = document.getElementById("authorList");
-  const sectionCount = document.getElementById("authorSectionCount");
-  const statCount = document.getElementById("authorStatCount");
-  const navCount = document.getElementById("authorNavCount");
-  const gatewayCount = document.getElementById("authorGatewayCount");
-  const toggleForm = document.getElementById("toggleAuthorForm");
-  const closeForm = document.getElementById("closeAuthorForm");
-  const cancelForm = document.getElementById("cancelAuthor");
-  const formTitle = document.getElementById("authorFormTitle");
-  const submitLabel = document.getElementById("submitAuthorLabel");
-  let editingIndex = -1;
-  let modalTrigger = null;
-  function loadAuthors() {
-    try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
-      const authors = raw ? JSON.parse(raw) : [];
-      return Array.isArray(authors) ? authors : [];
-    } catch { return []; }
-  }
-  function saveAuthors(authors) { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(authors)); }
-  function normalizeHomepage(value) {
-    try { const url = new URL(value); return ["http:", "https:"].includes(url.protocol) ? url.href : ""; }
-    catch { return ""; }
-  }
-  function escapeHtml(value) {
-    return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
-  }
-  function updateCounts(count) {
-    sectionCount.textContent = count + " 位作者"; statCount.textContent = count; gatewayCount.textContent = count;
-    if (navCount) navCount.textContent = count;
-  }
-  function openAuthorForm(index = -1, trigger = document.activeElement) {
-    editingIndex = index;
-    const author = loadAuthors()[index];
-    modalTrigger = trigger instanceof HTMLElement ? trigger : toggleForm;
-    modal.hidden = false;
-    document.body.classList.add("modal-open");
-    toggleForm.setAttribute("aria-expanded", "true");
-    formTitle.textContent = author ? "编辑作者" : "新增作者";
-    submitLabel.textContent = author ? "保存修改" : "保存作者";
-    form.querySelector("[name=name]").value = author?.name || "";
-    form.querySelector("[name=bio]").value = author?.bio || "";
-    form.querySelector("[name=homepage]").value = author?.homepage || "";
-    form.querySelector("[name=name]").focus();
-  }
-  function closeAuthorEditor(restoreFocus = true) {
-    if (modal.hidden) return;
-    editingIndex = -1;
-    form.reset();
-    modal.hidden = true;
-    document.body.classList.remove("modal-open");
-    toggleForm.setAttribute("aria-expanded", "false");
-    const trigger = modalTrigger;
-    modalTrigger = null;
-    if (restoreFocus && trigger?.isConnected) trigger.focus();
-  }
-  function modalFocusableElements() {
-    return Array.from(form.querySelectorAll('button:not([disabled]), input:not([disabled]), textarea:not([disabled]), a[href]'));
-  }
-  function renderAuthors() {
-    const authors = loadAuthors(); updateCounts(authors.length);
-    if (!authors.length) { list.innerHTML = '<div class="empty">还没有添加关注作者。</div>'; return; }
-    list.innerHTML = authors.map((author, index) => `
-      <article class="author-row">
-        <button class="author-row-main" type="button" data-edit-index="${index}" title="编辑 ${escapeHtml(author.name)}"><span class="author-name">${escapeHtml(author.name)}</span><span class="author-bio">${escapeHtml(author.bio)}</span><span class="author-url">${escapeHtml(author.homepage)}</span></button>
-        <div class="author-actions"><a class="icon-button" href="${escapeHtml(author.homepage)}" target="_blank" rel="noopener noreferrer" aria-label="访问 ${escapeHtml(author.name)} 的主页" title="访问主页"><svg class="icon"><use href="#icon-external"></use></svg></a><button class="icon-button button-danger" type="button" data-delete-index="${index}" aria-label="删除 ${escapeHtml(author.name)}" title="删除作者"><svg class="icon"><use href="#icon-trash"></use></svg></button></div>
-      </article>
-    `).join("");
-  }
-  toggleForm.addEventListener("click", (event) => openAuthorForm(-1, event.currentTarget));
-  closeForm.addEventListener("click", closeAuthorEditor);
-  cancelForm.addEventListener("click", closeAuthorEditor);
-  modal.addEventListener("click", (event) => {
-    if (event.target.closest("[data-close-author-modal]")) closeAuthorEditor();
-  });
-  modal.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") { event.preventDefault(); closeAuthorEditor(); return; }
-    if (event.key !== "Tab") return;
-    const focusable = modalFocusableElements();
-    if (!focusable.length) return;
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
-    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
-  });
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const data = new FormData(form);
-    const author = { name: String(data.get("name") || "").trim(), bio: String(data.get("bio") || "").trim(), homepage: normalizeHomepage(String(data.get("homepage") || "").trim()) };
-    if (!author.name || !author.bio || !author.homepage) return;
-    const authors = loadAuthors();
-    const wasEditing = editingIndex >= 0 && Boolean(authors[editingIndex]);
-    const savedIndex = wasEditing ? editingIndex : 0;
-    if (wasEditing) authors[editingIndex] = author; else authors.unshift(author);
-    saveAuthors(authors); closeAuthorEditor(false); renderAuthors();
-    const savedRow = list.querySelector(`[data-edit-index="${savedIndex}"]`);
-    (wasEditing ? savedRow : toggleForm)?.focus();
-  });
-  list.addEventListener("click", (event) => {
-    const edit = event.target.closest("[data-edit-index]");
-    if (edit) { openAuthorForm(Number(edit.dataset.editIndex), edit); return; }
-    const remove = event.target.closest("[data-delete-index]");
-    if (!remove) return;
-    const authors = loadAuthors(); authors.splice(Number(remove.dataset.deleteIndex), 1); saveAuthors(authors); renderAuthors();
-  });
-  renderAuthors();
+  (() => {
+    let frame = 0;
+    document.addEventListener('pointermove', (event) => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        document.documentElement.style.setProperty('--pointer-x', `${event.clientX}px`);
+        document.documentElement.style.setProperty('--pointer-y', `${event.clientY}px`);
+        frame = 0;
+      });
+    }, { passive: true });
+    document.addEventListener('pointerdown', (event) => {
+      const target = event.target.closest('button, a, .gateway-row, .report-row, .conference-row, .news-row, .author-row');
+      if (!target) return;
+      target.classList.add('is-pressed');
+      window.setTimeout(() => target.classList.remove('is-pressed'), 180);
+    });
+  })();
 </script>
-
 </body>
 </html>

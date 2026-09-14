@@ -4,13 +4,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{{ page_title }} - FastNews</title>
+<link rel="icon" type="image/svg+xml" href="{{ asset_prefix }}favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="{{ asset_prefix }}favicon-32.png">
+<link rel="icon" href="{{ root_prefix }}favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="{{ asset_prefix }}apple-touch-icon.png">
 <script>
   (() => {
-    const saved = window.localStorage.getItem("fastnews.theme");
-    const dark = saved === "dark" || (saved !== "light" && window.matchMedia("(prefers-color-scheme: dark)").matches);
-    document.documentElement.classList.toggle("dark", dark);
+    const applyTheme = () => {
+      const saved = window.localStorage.getItem("fastresearch-theme") ?? window.localStorage.getItem("fastnews.theme");
+      document.documentElement.classList.toggle("dark", saved !== "light");
+    };
+    applyTheme();
+    window.addEventListener("pageshow", applyTheme);
   })();
 </script>
+<style>html:not(.fastnews-ready) .app-shell{visibility:hidden!important}</style>
+<script src="{{ asset_prefix }}gate.js"></script>
 <style>
   :root {
     --app-bg: #f6f7f5; --muted-bg: #eef2ef; --surface: #fff; --soft: #f8faf8;
@@ -250,7 +259,158 @@
     .news-list-head { align-items: flex-start; flex-direction: column; gap: 3px; padding: 12px 14px; }
     .news-row { padding: 14px 14px 14px 18px; }
   }
+  /* FastResearch console layer */
+  :root { --app-bg:#f4f8f7; --muted-bg:#e8f1ef; --surface:#fff; --soft:#f4f8f7; --border:rgba(42,103,104,.2); --input-border:#b8cfcc; --primary:#087f78; --primary-deep:#075f5a; --primary-soft:rgba(8,127,120,.08); --primary-border:rgba(8,127,120,.3); --accent:#c2410c; --accent-soft:#fff7ed; --accent-border:#fed7aa; --accent-text:#c2410c; --text:#14282c; --muted:#5c7779; --subtle:#648083; --focus:rgba(8,127,120,.16); }
+  html.dark { --app-bg:#0b1a14; --muted-bg:#12261d; --surface:#12261d; --soft:#173028; --border:rgba(141,198,200,.18); --input-border:#2d4b50; --primary:#65ead9; --primary-deep:#9cfff2; --primary-soft:rgba(101,234,217,.08); --primary-border:rgba(101,234,217,.35); --accent:#ffc36d; --accent-soft:rgba(255,195,109,.1); --accent-border:rgba(255,195,109,.35); --accent-text:#ffc36d; --text:#e7f1f0; --muted:#89a1a3; --subtle:#587478; }
+  html:not(.dark) { --app-bg:#f4f8f7; --muted-bg:#e8f1ef; --surface:#fff; --soft:#f4f8f7; --border:rgba(42,103,104,.2); --input-border:#b8cfcc; --primary:#087f78; --primary-deep:#075f5a; --primary-soft:rgba(8,127,120,.08); --primary-border:rgba(8,127,120,.3); --accent:#c2410c; --accent-soft:#fff7ed; --accent-border:#fed7aa; --accent-text:#c2410c; --text:#14282c; --muted:#5c7779; --subtle:#648083; --focus:rgba(8,127,120,.16); }
+  body { font-family:'Space Grotesk','Noto Sans SC',Inter,sans-serif; background:var(--app-bg); color:var(--text); }
+  html.dark body { background:radial-gradient(circle at 80% -10%,rgba(28,77,56,.65),transparent 35%),var(--app-bg); }
+  .app-shell { background:transparent; } html.dark .sidebar { background:rgba(18,38,29,.88); border-color:var(--border); } html.dark .topbar { background:rgba(11,26,20,.78); border-color:var(--border); backdrop-filter:blur(14px); }
+  .page { max-width:1240px; padding:30px 24px 42px; } .brand-name { letter-spacing:.08em; text-transform:uppercase; }
+  h1 { font-family:'Space Grotesk','Noto Sans SC',sans-serif; font-size:clamp(28px,4vw,48px); font-weight:500; letter-spacing:-.04em; } .description { line-height:1.8; }
+  html.dark .surface { background:rgba(18,38,29,.88); border-color:var(--border); box-shadow:0 8px 28px rgba(0,0,0,.16); } html.dark .section-head, html.dark .news-list-head { background:rgba(23,48,40,.86); }
+  .stat-value { color:var(--primary); font-family:'JetBrains Mono',monospace; } .report-title a,.conference-title a,.article-title a,.news-title a { color:var(--primary); }
+  .report-row:hover,.conference-row:hover,.article:hover,.news-row:hover,.gateway-row:hover,.author-row:hover { background:rgba(101,234,217,.06); } .conference-row::before,.news-row::before { background:var(--accent); }
+  .badge,.conference-tag,.news-tag { font-family:'JetBrains Mono',monospace; }
+  @media (max-width:920px) { .page { padding:22px 16px 32px; } h1 { font-size:32px; } }
+  /* Match FastResearch shell exactly */
+  html.dark body, html.dark .app-shell { background:#0b1a14 !important; color:#e7f1f0 !important; }
+  html.dark .sidebar { background:#12261d !important; border-color:rgba(141,244,231,.14) !important; }
+  html.dark .topbar { height:72px !important; padding:0 clamp(18px,5vw,76px) !important; background:rgba(11,26,20,.72) !important; border-color:rgba(141,244,231,.14) !important; }
+  html.dark .brand-mark { color:#e7f1f0 !important; } html.dark .brand-mark:first-child { background:transparent !important; border:0 !important; }
+  html.dark .brand-mark .icon { color:#05150d !important; background:#65ead9 !important; }
+  html.dark .page { max-width:1240px; padding:30px 24px 42px; }
+  html.dark h1 { color:#eaf3f2 !important; font-size:clamp(32px,5vw,56px) !important; font-weight:500 !important; letter-spacing:-.05em !important; }
+  html.dark .surface { background:rgba(18,38,29,.72) !important; border-color:rgba(141,198,200,.18) !important; box-shadow:none !important; }
+  html.dark .section-head, html.dark .news-list-head { background:rgba(23,48,40,.72) !important; }
+  html.dark .gateway-title, html.dark .report-title, html.dark .conference-title, html.dark .news-title { color:#e7f1f0 !important; }
+  html.dark .gateway-description, html.dark .report-row .meta, html.dark .conference-summary, html.dark .news-description { color:#87a0a3 !important; }
+  html.dark .gateway-row:hover, html.dark .report-row:hover, html.dark .conference-row:hover, html.dark .news-row:hover, html.dark .author-row:hover { background:rgba(24,52,40,.92) !important; }
+  html.dark .button-primary { color:#04140c !important; background:#65ead9 !important; border-color:#65ead9 !important; }
+  html.dark .button-primary:hover { background:#9cfff2 !important; border-color:#9cfff2 !important; }
+  html.dark .button, html.dark .icon-button { background:transparent; color:#9cb4b5; border-color:rgba(143,198,200,.2); }
+  html.dark .icon-button:hover, html.dark .button:hover { color:#65ead9; border-color:#65ead9; background:rgba(101,234,217,.07); }
+  html.dark .field { color:#d8e9e8; background:#0d1f18; border-color:#2d4b50; }
+  html:not(.dark) .topbar { height:72px; }
+  html:not(.dark) .page { max-width:1240px; }
+  /* FastResearch series shell: shared with the control center */
+  html.dark body { background:#0b1a14 !important; }
+  html.dark body::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.16; background-image:linear-gradient(rgba(86,168,126,.16) 1px,transparent 1px),linear-gradient(90deg,rgba(86,168,126,.16) 1px,transparent 1px); background-size:54px 54px; mask-image:linear-gradient(to bottom,#000,transparent 86%); z-index:0; }
+  html.dark .app-shell { display:block; min-height:100vh; background:radial-gradient(circle at 80% -10%,#1c4d38 0,transparent 35%),#0b1a14 !important; }
+  html.dark .sidebar { display:none; }
+  html.dark .main { position:relative; z-index:1; }
+  html.dark .topbar { height:72px !important; padding:0 clamp(18px,5vw,76px) !important; background:rgba(11,26,20,.72) !important; border-color:rgba(141,244,231,.14) !important; }
+  html.dark .breadcrumb { display:flex; align-items:center; gap:10px; color:#69878a !important; font:700 14px 'Space Grotesk',sans-serif; letter-spacing:.14em; text-transform:uppercase; }
+  html.dark .breadcrumb strong { color:#e7f1f0 !important; font-weight:700; }
+  html.dark .breadcrumb strong::first-letter { color:#65ead9; }
+  html.dark .breadcrumb::after { content:'SYSTEM ONLINE'; margin-left:18px; color:#69878a; font:10px 'JetBrains Mono',monospace; letter-spacing:.12em; }
+  html.dark .page { max-width:1240px; padding:58px 24px 42px !important; }
+  html.dark .page-header { margin-bottom:34px; }
+  html.dark .header-copy { gap:0; }
+  html.dark .header-icon { display:none; }
+  html.dark h1 { max-width:760px; margin:0 !important; color:#eaf3f2 !important; font-size:clamp(42px,6vw,72px) !important; line-height:.98 !important; font-weight:500 !important; letter-spacing:-.05em !important; }
+  html.dark h1::first-line { color:#eaf3f2; }
+  html.dark .description { max-width:520px; margin-top:20px !important; color:#8ca7a9 !important; font-size:15px !important; line-height:1.8 !important; }
+  html.dark .badge { align-self:flex-end; margin-top:8px; color:#65ead9; background:rgba(101,234,217,.08); border-color:rgba(101,234,217,.35); font:10px 'JetBrains Mono',monospace; letter-spacing:.12em; }
+  html.dark .surface { border-radius:0 !important; background:rgba(18,38,29,.72) !important; border-color:rgba(141,198,200,.18) !important; box-shadow:none !important; }
+  html.dark .stats { margin-bottom:14px; }
+  html.dark .stat { padding:18px 20px; border-color:rgba(141,198,200,.14); }
+  html.dark .stat-value { color:#65ead9 !important; font-size:22px; }
+  html.dark .stat-label, html.dark .section-count, html.dark .generated { color:#587478 !important; font:10px 'JetBrains Mono',monospace; letter-spacing:.08em; }
+  html.dark .section-head, html.dark .news-list-head { min-height:64px; background:rgba(23,48,40,.86) !important; border-color:rgba(141,198,200,.14); }
+  html.dark h2 { color:#d5e9e7 !important; font-size:15px; font-weight:500; letter-spacing:.02em; }
+  html.dark .section-description { color:#69878a !important; }
+  html.dark .gateway-row, html.dark .author-row, html.dark .report-row, html.dark .conference-row, html.dark .news-row { border-color:rgba(141,198,200,.13); }
+  html.dark .gateway-row:hover, html.dark .author-row:hover, html.dark .report-row:hover, html.dark .conference-row:hover, html.dark .news-row:hover { background:rgba(24,52,40,.92) !important; }
+  html.dark .gateway-title, html.dark .report-title, html.dark .conference-title, html.dark .news-title { color:#e7f1f0 !important; font-weight:500; }
+  html.dark .gateway-description, html.dark .conference-summary, html.dark .news-description, html.dark .meta { color:#87a0a3 !important; }
+  html.dark .gateway-meta { color:#65ead9 !important; }
+  html.dark .gateway-icon, html.dark .stat-icon { border-radius:0; background:rgba(101,234,217,.08); border-color:rgba(101,234,217,.35); color:#65ead9; }
+  html.dark .gateway-icon.orange { color:#ffc36d; background:rgba(255,195,109,.08); border-color:rgba(255,195,109,.35); }
+  html.dark .button, html.dark .icon-button { border-radius:0; }
+  html.dark .field { border-radius:0; }
+  html.dark .author-form { border-radius:0; background:#12261d; border-color:rgba(101,234,217,.38); }
+  @media (max-width:920px) { html.dark .page { padding:42px 16px 32px !important; } html.dark h1 { font-size:43px !important; } html.dark .breadcrumb::after { display:none; } }
+  html:not(.dark) body { background:#f4f8f7 !important; color:#14282c !important; }
+  html:not(.dark) .app-shell { display:block; min-height:100vh; background:radial-gradient(circle at 80% -10%,#d9f5f0 0,transparent 36%),#f4f8f7 !important; }
+  html:not(.dark) .sidebar { display:none; }
+  html:not(.dark) .main { position:relative; z-index:1; }
+  html:not(.dark) .topbar { height:72px !important; padding:0 clamp(18px,5vw,76px) !important; background:rgba(244,248,247,.82) !important; border-color:rgba(31,99,100,.18) !important; }
+  html:not(.dark) .breadcrumb { display:flex; align-items:center; gap:10px; color:#648083 !important; font:700 14px 'Space Grotesk',sans-serif; letter-spacing:.14em; text-transform:uppercase; }
+  html:not(.dark) .breadcrumb strong { color:#14282c !important; }
+  html:not(.dark) .breadcrumb::after { content:'SYSTEM ONLINE'; margin-left:18px; color:#648083; font:10px 'JetBrains Mono',monospace; letter-spacing:.12em; }
+  html:not(.dark) .page { max-width:1240px; padding:58px 24px 42px !important; }
+  html:not(.dark) .page-header { margin-bottom:34px; }
+  html:not(.dark) .header-copy { gap:0; } html:not(.dark) .header-icon { display:none; }
+  html:not(.dark) h1 { max-width:760px; margin:0 !important; color:#14282c !important; font-size:clamp(42px,6vw,72px) !important; line-height:.98 !important; font-weight:500 !important; letter-spacing:-.05em !important; }
+  html:not(.dark) .description { max-width:520px; margin-top:20px !important; color:#5c7779 !important; font-size:15px !important; line-height:1.8 !important; }
+  html:not(.dark) .badge { align-self:flex-end; margin-top:8px; color:#087f78; background:rgba(8,127,120,.08); border-color:rgba(8,127,120,.3); font:10px 'JetBrains Mono',monospace; letter-spacing:.12em; }
+  html:not(.dark) .surface { border-radius:0 !important; background:rgba(255,255,255,.72) !important; border-color:rgba(42,103,104,.22) !important; box-shadow:none !important; }
+  html:not(.dark) .section-head, html:not(.dark) .news-list-head { background:rgba(244,248,247,.86) !important; border-color:rgba(42,103,104,.16); }
+  html:not(.dark) .stat { border-color:rgba(42,103,104,.14); } html:not(.dark) .stat-value { color:#087f78 !important; font-family:'JetBrains Mono',monospace; }
+  html:not(.dark) .stat-label, html:not(.dark) .section-count, html:not(.dark) .generated { color:#648083 !important; font:10px 'JetBrains Mono',monospace; letter-spacing:.08em; }
+  html:not(.dark) .gateway-row, html:not(.dark) .author-row, html:not(.dark) .report-row, html:not(.dark) .conference-row, html:not(.dark) .news-row { border-color:rgba(42,103,104,.14); }
+  html:not(.dark) .gateway-row:hover, html:not(.dark) .author-row:hover, html:not(.dark) .report-row:hover, html:not(.dark) .conference-row:hover, html:not(.dark) .news-row:hover { background:rgba(255,255,255,.96) !important; }
+  html:not(.dark) .gateway-title, html:not(.dark) .report-title, html:not(.dark) .conference-title, html:not(.dark) .news-title { color:#14282c !important; font-weight:500; }
+  html:not(.dark) .gateway-description, html:not(.dark) .conference-summary, html:not(.dark) .news-description, html:not(.dark) .meta { color:#5c7779 !important; }
+  html:not(.dark) .gateway-meta { color:#087f78 !important; } html:not(.dark) .gateway-icon, html:not(.dark) .stat-icon { border-radius:0; }
+  html:not(.dark) .button, html:not(.dark) .icon-button, html:not(.dark) .field { border-radius:0; }
+  @media (max-width:920px) { html:not(.dark) .page { padding:42px 16px 32px !important; } html:not(.dark) h1 { font-size:43px !important; } html:not(.dark) .breadcrumb::after { display:none; } }
+  /* Ambient motion shared with FastResearch */
+  :root { --pointer-x:50vw; --pointer-y:40vh; }
+  body::after { content:""; position:fixed; inset:0; z-index:0; pointer-events:none; background:radial-gradient(360px circle at var(--pointer-x) var(--pointer-y), rgba(101,234,217,.12), transparent 72%); transition:background .15s ease; }
+  html:not(.dark) body::after { background:radial-gradient(360px circle at var(--pointer-x) var(--pointer-y), rgba(8,127,120,.11), transparent 72%); }
+  html:not(.dark) body::before { content:""; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.24; background-image:linear-gradient(rgba(39,107,108,.13) 1px,transparent 1px),linear-gradient(90deg,rgba(39,107,108,.13) 1px,transparent 1px); background-size:54px 54px; mask-image:linear-gradient(to bottom,#000,transparent 86%); }
+  html.dark body::before, html:not(.dark) body::before { animation:fr-grid 22s linear infinite; }
+  .main { position:relative; z-index:1; }
+  .topbar { position:sticky; z-index:5; }
+  .page-header, .stats, .workspace > *, .conference-explorer { animation: fr-rise .55s ease both; }
+  .stats { animation-delay:.06s; } .workspace > *:nth-child(2) { animation-delay:.12s; }
+  .gateway-row, .report-row, .conference-row, .news-row, .author-row { will-change:transform; transition:transform .25s ease, background .25s ease, border-color .25s ease; }
+  .gateway-row:hover, .report-row:hover, .conference-row:hover, .news-row:hover, .author-row:hover { transform:translateY(-3px); }
+  .button, .icon-button, .calendar-day button { transition:transform .2s ease, background .2s ease, color .2s ease, border-color .2s ease; }
+  .button:active, .icon-button:active, .calendar-day button:active, .gateway-row:active { transform:scale(.97); }
+  .is-pressed { transform:scale(.97) !important; }
+  @keyframes fr-rise { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+  @keyframes fr-grid { from { background-position:0 0,0 0; } to { background-position:54px 54px,54px 54px; } }
+  @media (max-width:620px) { .gateway-row:hover, .report-row:hover, .conference-row:hover, .news-row:hover, .author-row:hover { transform:none; } body::after { background:radial-gradient(220px circle at var(--pointer-x) var(--pointer-y),rgba(101,234,217,.08),transparent 72%); } }
+  @media (prefers-reduced-motion:reduce) { body::after { display:none; } .page-header, .stats, .workspace > *, .conference-explorer { animation:none; } .gateway-row, .report-row, .conference-row, .news-row, .author-row { transition:none; } }
+  .pagination { display:flex; align-items:center; justify-content:flex-end; gap:8px; padding:12px 16px; border-top:1px solid var(--border); background:var(--soft); }
+  .pagination button { min-width:32px; height:30px; padding:0 9px; color:var(--muted); background:transparent; border:1px solid var(--border); border-radius:0; cursor:pointer; font:11px 'JetBrains Mono',monospace; }
+  .pagination button:hover:not(:disabled), .pagination button.is-current { color:var(--primary); border-color:var(--primary); background:var(--primary-soft); }
+  .pagination button:disabled { cursor:default; opacity:.45; }
+  .pagination .pagination-info { margin-right:auto; color:var(--subtle); font:10px 'JetBrains Mono',monospace; letter-spacing:.05em; }
+  @media (max-width:620px) { .pagination { justify-content:center; padding:10px 12px; } .pagination .pagination-info { display:none; } }
+  html:not(.dark) { color-scheme: light; }
+  html:not(.dark) .news-list-head,
+  html:not(.dark) .pagination {
+    background: rgba(244,248,247,.86) !important;
+    border-color: rgba(42,103,104,.16) !important;
+    color: #14282c;
+  }
+  html:not(.dark) .news-date-title { color:#14282c !important; }
+  html:not(.dark) .news-date-sub,
+  html:not(.dark) .news-list-head .section-count { color:#5c7779 !important; }
+  html:not(.dark) #newsDetailToggle {
+    color: #14282c !important;
+    background: rgba(255,255,255,.92) !important;
+    border-color: rgba(42,103,104,.22) !important;
+  }
+  html:not(.dark) #newsDetailToggle:hover {
+    color: #075f5a !important;
+    background: rgba(8,127,120,.10) !important;
+    border-color: rgba(8,127,120,.32) !important;
+  }
+  html:not(.dark) #newsDetailToggle[aria-pressed="true"],
+  html:not(.dark) #newsDetailToggle[aria-pressed="true"]:hover {
+    color: #075f5a !important;
+    background: rgba(8,127,120,.10) !important;
+    border-color: rgba(8,127,120,.32) !important;
+  }
 </style>
+{% if page_mode == 'home' %}<link rel="stylesheet" href="assets/authors.css"><link rel="stylesheet" href="assets/today-news.css">{% endif %}
+{% if page_mode == 'top-conf' %}<link rel="stylesheet" href="../assets/related-work.css">{% endif %}
+{% if page_mode == 'secnews' %}<link rel="stylesheet" href="../assets/secnews-news.css">{% endif %}
 </head>
 <body>
 <svg class="icon-sprite" aria-hidden="true" focusable="false">
@@ -298,9 +458,45 @@
       {%- if page_mode == 'home' %}<a href="#authors"><span><svg class="icon"><use href="#icon-users"></use></svg>关注作者</span></a>{% endif %}
     </nav>
     <div class="page">
-      <section class="page-header">
+      <section class="page-header{% if page_mode == 'home' %} has-today-card{% endif %}">
         <div class="header-copy"><span class="header-icon">{% if page_mode == 'home' %}<svg class="icon"><use href="#icon-dashboard"></use></svg>{% elif page_mode == 'top-conf' %}<svg class="icon"><use href="#icon-graduation"></use></svg>{% else %}<svg class="icon"><use href="#icon-newspaper"></use></svg>{% endif %}</span><div><h1>{{ page_title }}</h1><p class="description">{{ page_description }}</p></div></div>
+        {%- if page_mode == 'home' %}
+        <details class="today-news-card{% if not home_news_date %} is-empty{% endif %}" id="todayNewsCard">
+          <summary class="today-news-face">
+            <span class="today-news-tape" aria-hidden="true"></span>
+            <span class="today-news-stamp">{% if home_news_is_today %}TODAY{% else %}NEW{% endif %}</span>
+            <span class="today-news-kicker">{% if home_news_is_today %}今日快讯{% elif home_news_date %}最新快讯{% else %}安全资讯{% endif %}</span>
+            <strong class="today-news-date">{% if home_news_date %}{{ home_news_date_label }}{% else %}暂无资讯{% endif %}</strong>
+            <span class="today-news-count">{% if home_news_date %}{{ home_news_count }} 条新鲜出炉{% else %}还没有抓取到新闻{% endif %}</span>
+            {% if home_news_date %}<span class="today-news-hint">点我展开看看</span>{% endif %}
+          </summary>
+          {% if home_news_date %}
+          <div class="today-news-panel" id="todayNewsPanel">
+            <p class="today-news-panel-title">当天头条</p>
+            <ul class="today-news-list" id="todayNewsList">
+              {% for item in home_news_preview %}
+              <li>
+                {% if item.link %}
+                <a href="{{ item.link }}" target="_blank" rel="noopener noreferrer">{{ item.title }}</a>
+                {% else %}
+                <span>{{ item.title }}</span>
+                {% endif %}
+                <span class="today-news-item-meta">{{ item.source }}{% if item.tag %} · {{ item.tag }}{% endif %}</span>
+              </li>
+              {% else %}
+              <li><span>暂无头条预览</span></li>
+              {% endfor %}
+            </ul>
+            {% if home_news_count > home_news_preview|length %}
+            <p class="today-news-more">还有 {{ home_news_count - (home_news_preview|length) }} 条</p>
+            {% endif %}
+            <a class="today-news-jump" href="{{ secnews_path }}?date={{ home_news_date }}">前往当天资讯界面</a>
+          </div>
+          {% endif %}
+        </details>
+        {%- else %}
         <span class="badge">Local Index</span>
+        {%- endif %}
       </section>
       <section class="surface stats" aria-label="概览统计">
         {%- if page_mode == 'home' %}
@@ -332,38 +528,72 @@
           </div>
         </section>
         <section class="surface" id="authors">
-          <div class="section-head"><div><h2>关注作者</h2><p class="section-description">点击作者行可编辑资料</p></div><span class="section-count" id="authorSectionCount">0 位作者</span><button class="button button-secondary button-sm" id="toggleAuthorForm" type="button" aria-controls="authorModal" aria-expanded="false"><svg class="icon"><use href="#icon-plus"></use></svg>添加作者</button></div>
+          <div class="section-head"><div><h2>关注作者</h2><p class="section-description" id="authorSectionHint">点击作者行可编辑资料</p></div><span class="section-count" id="authorSectionCount">0 位作者</span><button class="button button-secondary button-sm" id="toggleAuthorForm" type="button" aria-controls="authorModal" aria-expanded="false"><svg class="icon"><use href="#icon-plus"></use></svg>添加作者</button></div>
           <div class="author-list-head"><span>名称</span><span>研究方向</span><span>主页</span><span></span></div>
           <div id="authorList"></div>
         </section>
-        <div class="author-modal" id="authorModal" hidden>
-          <div class="author-modal-backdrop" data-close-author-modal></div>
-          <form class="author-form" id="authorForm" role="dialog" aria-modal="true" aria-labelledby="authorFormTitle" aria-describedby="authorFormHint">
-            <div class="editor-head"><div><span class="section-label" id="authorFormTitle">新增作者</span><p class="editor-hint" id="authorFormHint">填写姓名、研究方向和主页链接</p></div><button class="icon-button" id="closeAuthorForm" type="button" aria-label="关闭编辑" title="关闭编辑"><svg class="icon"><use href="#icon-x"></use></svg></button></div>
-            <div class="field-grid"><div class="field-group"><label class="label" for="authorName">姓名</label><input class="field" id="authorName" name="name" autocomplete="name" required></div><div class="field-group"><label class="label" for="authorHome">主页链接</label><input class="field" id="authorHome" name="homepage" type="url" placeholder="https://example.com" required></div><div class="field-group full"><label class="label" for="authorBio">研究方向</label><textarea class="field" id="authorBio" name="bio" required></textarea></div></div>
-            <div class="editor-actions"><button class="button button-primary" id="submitAuthor" type="submit"><svg class="icon"><use href="#icon-plus"></use></svg><span id="submitAuthorLabel">保存作者</span></button><button class="button" id="cancelAuthor" type="button">取消</button></div>
+        <dialog class="author-dialog" id="authorModal" aria-labelledby="authorFormTitle" aria-describedby="authorFormHint" closedby="none">
+          <form class="author-editor" id="authorForm">
+            <div class="editor-head"><div><h2 class="editor-title" id="authorFormTitle">新增作者</h2><p class="editor-hint" id="authorFormHint">填写作者资料，保存后获取并解析主页。</p></div><button class="icon-button" id="closeAuthorForm" type="button" aria-label="关闭编辑" title="关闭编辑"><svg class="icon"><use href="#icon-x"></use></svg></button></div>
+            <div class="field-grid">
+              <div class="field-group"><label class="label" for="authorName">姓名</label><input class="field" id="authorName" name="name" autocomplete="name" maxlength="100" required autofocus></div>
+              <div class="field-group"><label class="label" for="authorHome">主页链接</label><input class="field" id="authorHome" name="homepage" type="url" placeholder="https://example.com" required></div>
+              <fieldset class="research-fields"><legend class="label">研究方向</legend><p class="research-hint" id="researchHint">可多选；至少选择一个标签，也可以添加自定义方向。</p><div class="research-options" id="researchOptions" role="group" aria-label="研究方向标签" aria-describedby="researchHint"></div><label class="custom-tag-label" for="customResearchTag">自定义标签</label><div class="custom-tag-entry"><input class="field" id="customResearchTag" maxlength="40" placeholder="输入方向后按 Enter 添加" autocomplete="off"><button class="button button-secondary" id="addResearchTag" type="button">添加标签</button></div></fieldset>
+            </div>
+            <p class="author-validation" id="authorValidation" role="alert" hidden></p>
+            <div class="editor-actions"><button class="button" id="cancelAuthor" type="button">取消</button><button class="button button-primary" id="submitAuthor" type="submit"><svg class="icon"><use href="#icon-plus"></use></svg><span id="submitAuthorLabel">保存并获取</span></button></div>
           </form>
-        </div>
+        </dialog>
+        <div class="author-task-tray" id="authorTaskTray" aria-live="polite"></div>
         {%- elif page_mode == 'secnews' %}
         <section class="surface" id="newsWorkspace">
-          <div class="section-head"><div><h2>按日期阅读</h2><p class="section-description">选择日期查看当天抓取的安全新闻与论文</p></div><span class="section-count">{{ news_days|length }} 个日期</span></div>
+          <div class="section-head"><div><h2>按日期阅读</h2><p class="section-description">每天优先推荐 10 条高价值资讯，展开后可按 BleepingComputer 与 arXiv 查看全部</p></div><span class="section-count">{{ news_days|length }} 个日期</span></div>
           <div class="news-calendar" aria-label="新闻日期日历">
             <div class="calendar-toolbar"><h3 class="calendar-month" id="calendarMonth">新闻日期</h3><div class="calendar-controls"><button class="icon-button" id="previousMonth" type="button" aria-label="上个月" title="上个月"><svg class="icon"><use href="#icon-chevron-left"></use></svg></button><button class="icon-button" id="nextMonth" type="button" aria-label="下个月" title="下个月"><svg class="icon"><use href="#icon-chevron-right"></use></svg></button></div></div>
             <div class="calendar-grid" id="calendarGrid"></div>
           </div>
-          <div class="news-list-head"><h3 class="news-date-title" id="newsDateTitle">加载中</h3><span class="section-count" id="newsDateCount">加载中</span></div>
+          <div class="news-list-head">
+            <div class="news-list-copy">
+              <h3 class="news-date-title" id="newsDateTitle">加载中</h3>
+              <p class="news-date-sub" id="newsDateSub">优先推荐当天最有价值的资讯</p>
+            </div>
+            <div class="news-list-actions">
+              <span class="section-count" id="newsDateCount">加载中</span>
+              <button class="button button-sm" id="newsDetailToggle" type="button" aria-pressed="false">详细资讯</button>
+            </div>
+          </div>
           <div class="news-list" id="newsList"><div class="news-status">正在加载新闻…</div></div>
+          <div class="pagination" id="newsPagination" aria-label="新闻分页"></div>
         </section>
         {%- elif page_mode == 'top-conf' %}
         <section class="surface conference-explorer" id="conferencePapers">
-          <div class="section-head"><div><h2>论文筛选</h2><p class="section-description">按年份、会议和研究类别浏览已完成的论文总结</p></div><span class="section-count" id="visibleConferenceCount">{{ conference_papers|length }} 条结果</span></div>
+          <div class="section-head"><div><h2>论文筛选</h2><p class="section-description">按年份、会议和类别筛选，再用模糊搜索或相关工作推荐定位论文</p></div><span class="section-count" id="visibleConferenceCount">{{ conference_papers|length }} 条结果</span></div>
           <div class="filter-grid" aria-label="顶会论文筛选条件">
             <div class="filter-group"><label class="label" for="conferenceYear">年份</label><select class="field" id="conferenceYear"><option value="">全部年份</option>{% for year in conference_years %}<option value="{{ year }}">{{ year }}</option>{% endfor %}</select></div>
             <div class="filter-group"><label class="label" for="conferenceName">会议</label><select class="field" id="conferenceName"><option value="">全部会议</option></select></div>
             <div class="filter-group"><label class="label" for="conferenceCategory">类别</label><select class="field" id="conferenceCategory"><option value="">全部类别</option></select></div>
           </div>
+          <div class="paper-search" id="paperSearchPanel">
+            <div class="paper-search-modes" role="tablist" aria-label="论文搜索方式">
+              <button class="paper-search-mode is-active" type="button" role="tab" id="paperSearchModeFuzzy" aria-selected="true" data-mode="fuzzy">模糊搜索</button>
+              <button class="paper-search-mode" type="button" role="tab" id="paperSearchModeRelated" aria-selected="false" data-mode="related">相关工作</button>
+            </div>
+            <div class="paper-search-pane" id="paperFuzzyPane">
+              <label class="search-field paper-fuzzy-field" for="paperSearch"><svg class="icon"><use href="#icon-search"></use></svg><input class="field" id="paperSearch" type="search" placeholder="搜索标题、摘要、作者或类别" aria-label="模糊搜索论文"></label>
+            </div>
+            <form class="paper-search-pane is-hidden" id="paperRelatedPane" autocomplete="off">
+              <div class="related-work-grid">
+                <div class="filter-group"><label class="label" for="relatedTopic">研究方向</label><input class="field" id="relatedTopic" type="text" placeholder="例如：ML 安全、侧信道、隐私计算" maxlength="120"></div>
+                <div class="filter-group"><label class="label" for="relatedKeywords">关键词</label><input class="field" id="relatedKeywords" type="text" placeholder="LLM jailbreak, membership inference" maxlength="200"></div>
+                <div class="related-work-submit"><button class="button button-primary" id="relatedWorkSubmit" type="submit"><svg class="icon"><use href="#icon-zap"></use></svg>推荐相关工作</button></div>
+              </div>
+              <p class="related-work-hint">先用上方筛选收窄范围，再根据研究方向与关键词从已总结论文中推荐 related work。</p>
+            </form>
+            <p class="related-work-status" id="relatedWorkStatus" hidden></p>
+          </div>
           <div class="conference-list" id="conferenceList"></div>
           <div class="empty" id="conferenceEmpty" hidden>没有符合筛选条件的论文。</div>
+          <div class="pagination" id="conferencePagination" aria-label="论文分页"></div>
         </section>
         <section class="surface" id="reports">
           <div class="section-head"><div><h2>报告列表</h2><p class="section-description">选择报告打开 HTML 版本</p></div><span class="section-count">{{ reports|length }} files</span></div>
@@ -397,267 +627,36 @@
   themeToggle.addEventListener("click", () => {
     const dark = !root.classList.contains("dark");
     root.classList.toggle("dark", dark);
+    window.localStorage.setItem("fastresearch-theme", dark ? "dark" : "light");
     window.localStorage.setItem("fastnews.theme", dark ? "dark" : "light");
     updateThemeButton();
   });
   updateThemeButton();
+  function renderPagination(container, current, total, onChange) {
+    if (!container || total <= 1) { if (container) container.innerHTML = ''; return; }
+    const buttons = [];
+    buttons.push(`<button type="button" data-page="${current - 1}" ${current === 1 ? 'disabled' : ''} aria-label="上一页">‹</button>`);
+    const first = Math.max(1, Math.min(current - 2, total - 4));
+    const last = Math.min(total, first + 4);
+    for (let page = first; page <= last; page += 1) buttons.push(`<button type="button" data-page="${page}" class="${page === current ? 'is-current' : ''}" aria-label="第 ${page} 页">${page}</button>`);
+    buttons.push(`<button type="button" data-page="${current + 1}" ${current === total ? 'disabled' : ''} aria-label="下一页">›</button>`);
+    container.innerHTML = `<span class="pagination-info">PAGE ${current} / ${total}</span>${buttons.join('')}`;
+    container.querySelectorAll('button[data-page]').forEach((button) => button.addEventListener('click', () => { if (!button.disabled) onChange(Number(button.dataset.page)); }));
+  }
 </script>
 
 {% if page_mode == 'home' %}
-<script>
-  const STORAGE_KEY = "fastnews.favoriteAuthors";
-  const modal = document.getElementById("authorModal");
-  const form = document.getElementById("authorForm");
-  const list = document.getElementById("authorList");
-  const sectionCount = document.getElementById("authorSectionCount");
-  const statCount = document.getElementById("authorStatCount");
-  const navCount = document.getElementById("authorNavCount");
-  const gatewayCount = document.getElementById("authorGatewayCount");
-  const toggleForm = document.getElementById("toggleAuthorForm");
-  const closeForm = document.getElementById("closeAuthorForm");
-  const cancelForm = document.getElementById("cancelAuthor");
-  const formTitle = document.getElementById("authorFormTitle");
-  const submitLabel = document.getElementById("submitAuthorLabel");
-  let editingIndex = -1;
-  let modalTrigger = null;
-  function loadAuthors() {
-    try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
-      const authors = raw ? JSON.parse(raw) : [];
-      return Array.isArray(authors) ? authors : [];
-    } catch { return []; }
-  }
-  function saveAuthors(authors) { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(authors)); }
-  function normalizeHomepage(value) {
-    try { const url = new URL(value); return ["http:", "https:"].includes(url.protocol) ? url.href : ""; }
-    catch { return ""; }
-  }
-  function escapeHtml(value) {
-    return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
-  }
-  function updateCounts(count) {
-    sectionCount.textContent = count + " 位作者"; statCount.textContent = count; gatewayCount.textContent = count;
-    if (navCount) navCount.textContent = count;
-  }
-  function openAuthorForm(index = -1, trigger = document.activeElement) {
-    editingIndex = index;
-    const author = loadAuthors()[index];
-    modalTrigger = trigger instanceof HTMLElement ? trigger : toggleForm;
-    modal.hidden = false;
-    document.body.classList.add("modal-open");
-    toggleForm.setAttribute("aria-expanded", "true");
-    formTitle.textContent = author ? "编辑作者" : "新增作者";
-    submitLabel.textContent = author ? "保存修改" : "保存作者";
-    form.querySelector("[name=name]").value = author?.name || "";
-    form.querySelector("[name=bio]").value = author?.bio || "";
-    form.querySelector("[name=homepage]").value = author?.homepage || "";
-    form.querySelector("[name=name]").focus();
-  }
-  function closeAuthorEditor(restoreFocus = true) {
-    if (modal.hidden) return;
-    editingIndex = -1;
-    form.reset();
-    modal.hidden = true;
-    document.body.classList.remove("modal-open");
-    toggleForm.setAttribute("aria-expanded", "false");
-    const trigger = modalTrigger;
-    modalTrigger = null;
-    if (restoreFocus && trigger?.isConnected) trigger.focus();
-  }
-  function modalFocusableElements() {
-    return Array.from(form.querySelectorAll('button:not([disabled]), input:not([disabled]), textarea:not([disabled]), a[href]'));
-  }
-  function renderAuthors() {
-    const authors = loadAuthors(); updateCounts(authors.length);
-    if (!authors.length) { list.innerHTML = '<div class="empty">还没有添加关注作者。</div>'; return; }
-    list.innerHTML = authors.map((author, index) => `
-      <article class="author-row">
-        <button class="author-row-main" type="button" data-edit-index="${index}" title="编辑 ${escapeHtml(author.name)}"><span class="author-name">${escapeHtml(author.name)}</span><span class="author-bio">${escapeHtml(author.bio)}</span><span class="author-url">${escapeHtml(author.homepage)}</span></button>
-        <div class="author-actions"><a class="icon-button" href="${escapeHtml(author.homepage)}" target="_blank" rel="noopener noreferrer" aria-label="访问 ${escapeHtml(author.name)} 的主页" title="访问主页"><svg class="icon"><use href="#icon-external"></use></svg></a><button class="icon-button button-danger" type="button" data-delete-index="${index}" aria-label="删除 ${escapeHtml(author.name)}" title="删除作者"><svg class="icon"><use href="#icon-trash"></use></svg></button></div>
-      </article>
-    `).join("");
-  }
-  toggleForm.addEventListener("click", (event) => openAuthorForm(-1, event.currentTarget));
-  closeForm.addEventListener("click", closeAuthorEditor);
-  cancelForm.addEventListener("click", closeAuthorEditor);
-  modal.addEventListener("click", (event) => {
-    if (event.target.closest("[data-close-author-modal]")) closeAuthorEditor();
-  });
-  modal.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") { event.preventDefault(); closeAuthorEditor(); return; }
-    if (event.key !== "Tab") return;
-    const focusable = modalFocusableElements();
-    if (!focusable.length) return;
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
-    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
-  });
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const data = new FormData(form);
-    const author = { name: String(data.get("name") || "").trim(), bio: String(data.get("bio") || "").trim(), homepage: normalizeHomepage(String(data.get("homepage") || "").trim()) };
-    if (!author.name || !author.bio || !author.homepage) return;
-    const authors = loadAuthors();
-    const wasEditing = editingIndex >= 0 && Boolean(authors[editingIndex]);
-    const savedIndex = wasEditing ? editingIndex : 0;
-    if (wasEditing) authors[editingIndex] = author; else authors.unshift(author);
-    saveAuthors(authors); closeAuthorEditor(false); renderAuthors();
-    const savedRow = list.querySelector(`[data-edit-index="${savedIndex}"]`);
-    (wasEditing ? savedRow : toggleForm)?.focus();
-  });
-  list.addEventListener("click", (event) => {
-    const edit = event.target.closest("[data-edit-index]");
-    if (edit) { openAuthorForm(Number(edit.dataset.editIndex), edit); return; }
-    const remove = event.target.closest("[data-delete-index]");
-    if (!remove) return;
-    const authors = loadAuthors(); authors.splice(Number(remove.dataset.deleteIndex), 1); saveAuthors(authors); renderAuthors();
-  });
-  renderAuthors();
-</script>
+<script src="assets/authors.js"></script>
+<script src="assets/today-news.js"></script>
 {% elif page_mode == 'secnews' %}
 <script>
-  const newsDays = {{ news_days_json|safe }};
-  const newsDayMap = new Map(newsDays.map((item) => [item.date, item]));
-  const articleBase = "{{ news_article_base }}";
-  const summaryBase = "{{ news_summary_base }}";
-  const calendarMonth = document.getElementById("calendarMonth");
-  const calendarGrid = document.getElementById("calendarGrid");
-  const previousMonth = document.getElementById("previousMonth");
-  const nextMonth = document.getElementById("nextMonth");
-  const newsDateTitle = document.getElementById("newsDateTitle");
-  const newsDateCount = document.getElementById("newsDateCount");
-  const newsList = document.getElementById("newsList");
-  const weekdays = ["一", "二", "三", "四", "五", "六", "日"];
-  let selectedDate = newsDays.length ? newsDays[newsDays.length - 1].date : "";
-  let visibleMonth = selectedDate ? new Date(selectedDate + "T00:00:00") : new Date();
-  let requestToken = 0;
-
-  function pad(value) { return String(value).padStart(2, "0"); }
-  function dateKey(date) { return date.getFullYear() + "-" + pad(date.getMonth() + 1) + "-" + pad(date.getDate()); }
-  function escapeHtml(value) {
-    return String(value ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
-  }
-  function formatPublishedDate(value) {
-    if (!value) return "";
-    const parsed = new Date(value);
-    if (Number.isNaN(parsed.getTime())) return String(value);
-    return new Intl.DateTimeFormat("zh-CN", {
-      year: "numeric", month: "2-digit", day: "2-digit",
-      hour: "2-digit", minute: "2-digit", hour12: false,
-    }).format(parsed).replaceAll("/", "-");
-  }
-  function formatDate(date) {
-    const parts = date.split("-");
-    return parts[0] + "年" + Number(parts[1]) + "月" + Number(parts[2]) + "日";
-  }
-  function sourceLabel(source) {
-    if (source.includes("bleepingcomputer")) return "BleepingComputer";
-    if (source.includes("arxiv")) return "arXiv";
-    return "其他来源";
-  }
-  function monthKey(date) { return date.getFullYear() * 12 + date.getMonth(); }
-  const availableMonths = newsDays.map((item) => monthKey(new Date(item.date + "T00:00:00")));
-  const firstMonth = availableMonths.length ? Math.min(...availableMonths) : monthKey(new Date());
-  const lastMonth = availableMonths.length ? Math.max(...availableMonths) : firstMonth;
-  function updateMonthControls() {
-    const current = monthKey(visibleMonth);
-    previousMonth.disabled = current <= firstMonth;
-    nextMonth.disabled = current >= lastMonth;
-  }
-  function renderCalendar() {
-    const year = visibleMonth.getFullYear();
-    const month = visibleMonth.getMonth();
-    calendarMonth.textContent = year + "年" + (month + 1) + "月";
-    updateMonthControls();
-    const firstDay = (new Date(year, month, 1).getDay() + 6) % 7;
-    const dayCount = new Date(year, month + 1, 0).getDate();
-    const cells = weekdays.map((day) => `<span class="calendar-weekday">${day}</span>`);
-    for (let i = 0; i < firstDay; i += 1) cells.push('<span class="calendar-day"></span>');
-    for (let day = 1; day <= dayCount; day += 1) {
-      const key = year + "-" + pad(month + 1) + "-" + pad(day);
-      const info = newsDayMap.get(key);
-      const classes = ["calendar-day"];
-      const buttonClasses = [];
-      if (info) buttonClasses.push("has-news");
-      if (key === selectedDate) buttonClasses.push("selected");
-      const label = info ? `${key}，${info.count} 条新闻` : `${key}，无新闻`;
-      cells.push(`<span class="${classes.join(" ")}"><button class="${buttonClasses.join(" ")}" type="button" data-news-date="${key}" aria-label="${label}" ${info ? "" : "disabled"}>${day}</button></span>`);
-    }
-    calendarGrid.innerHTML = cells.join("");
-  }
-  function renderNews(articles) {
-    if (!articles.length) {
-      newsList.innerHTML = '<div class="news-status">这一天没有可展示的新闻。</div>';
-      return;
-    }
-    newsList.innerHTML = articles.map((article) => {
-      const categories = Array.isArray(article.categories) ? article.categories.slice(0, 2) : [];
-      const tags = categories.map((category) => `<span class="news-tag">${escapeHtml(category)}</span>`).join("");
-      const published = formatPublishedDate(article.published);
-      const meta = [sourceLabel(String(article.source || "")), article.author || "", published ? "发布于 " + published : ""].filter(Boolean).map(escapeHtml).join(" · ");
-      const title = article.title_zh || article.title || "无标题";
-      const description = article.summary_zh || article.intro || article.description || "暂无摘要";
-      return `<article class="news-row"><h4 class="news-title"><a href="${escapeHtml(article.link)}" target="_blank" rel="noopener noreferrer">${escapeHtml(title)}</a></h4><p class="news-description">${escapeHtml(description)}</p><div class="news-meta"><span>${meta}</span>${tags}</div></article>`;
-    }).join("");
-  }
-  async function selectDate(date) {
-    const info = newsDayMap.get(date);
-    if (!info) return;
-    selectedDate = date;
-    visibleMonth = new Date(date + "T00:00:00");
-    const url = new URL(window.location.href);
-    if (url.searchParams.get("date") !== date) {
-      url.searchParams.set("date", date);
-      window.history.replaceState(null, "", url);
-    }
-    renderCalendar();
-    newsDateTitle.textContent = formatDate(date);
-    newsDateCount.textContent = info.count + " 条新闻";
-    newsList.innerHTML = '<div class="news-status">正在加载新闻…</div>';
-    const token = ++requestToken;
-    try {
-      let articles;
-      const summaryResponse = await fetch(summaryBase + date + ".json");
-      if (summaryResponse.ok) {
-        const summaryPayload = await summaryResponse.json();
-        if (summaryPayload.complete && Array.isArray(summaryPayload.articles)) articles = summaryPayload.articles;
-      }
-      if (!articles) {
-        const response = await fetch(articleBase + date + ".jsonl");
-        if (!response.ok) throw new Error("request failed");
-        articles = [];
-        for (const line of (await response.text()).split(/\r?\n/)) {
-          if (!line.trim()) continue;
-          try {
-            const article = JSON.parse(line);
-            if (article && typeof article === "object") articles.push(article);
-          } catch {
-            // Keep displaying valid entries when a JSONL line is malformed.
-          }
-        }
-      }
-      if (token === requestToken) renderNews(articles);
-    } catch {
-      if (token === requestToken) newsList.innerHTML = '<div class="news-status">新闻加载失败，请稍后重试。</div>';
-    }
-  }
-  calendarGrid.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-news-date]");
-    if (button) selectDate(button.dataset.newsDate);
-  });
-  previousMonth.addEventListener("click", () => { if (previousMonth.disabled) return; visibleMonth = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() - 1, 1); renderCalendar(); });
-  nextMonth.addEventListener("click", () => { if (nextMonth.disabled) return; visibleMonth = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + 1, 1); renderCalendar(); });
-  window.addEventListener("popstate", () => {
-    const date = new URL(window.location.href).searchParams.get("date");
-    if (newsDayMap.has(date)) selectDate(date);
-  });
-  renderCalendar();
-  const requestedDate = new URL(window.location.href).searchParams.get("date");
-  if (newsDayMap.has(requestedDate)) selectedDate = requestedDate;
-  if (selectedDate) selectDate(selectedDate);
-  else { newsDateTitle.textContent = "暂无新闻"; newsDateCount.textContent = "0 条新闻"; newsList.innerHTML = '<div class="news-status">还没有抓取到新闻。</div>'; }
+  window.FASTNEWS_SECNEWS = {
+    newsDays: {{ news_days_json|safe }},
+    articleBase: "{{ news_article_base }}",
+    summaryBase: "{{ news_summary_base }}"
+  };
 </script>
+<script src="../assets/secnews-news.js"></script>
 {% elif page_mode == 'top-conf' %}
 <script>
   const conferencePapers = {{ conference_papers_json|safe }};
@@ -666,11 +665,25 @@
   const conferenceCategory = document.getElementById("conferenceCategory");
   const conferenceList = document.getElementById("conferenceList");
   const conferenceEmpty = document.getElementById("conferenceEmpty");
+  const conferencePagination = document.getElementById("conferencePagination");
   const visibleConferenceCount = document.getElementById("visibleConferenceCount");
+  const paperSearch = document.getElementById("paperSearch");
+  const paperFuzzyPane = document.getElementById("paperFuzzyPane");
+  const paperRelatedPane = document.getElementById("paperRelatedPane");
+  const relatedTopic = document.getElementById("relatedTopic");
+  const relatedKeywords = document.getElementById("relatedKeywords");
+  const relatedWorkSubmit = document.getElementById("relatedWorkSubmit");
+  const relatedWorkStatus = document.getElementById("relatedWorkStatus");
   const reportSearch = document.getElementById("reportSearch");
   const reportRows = Array.from(document.querySelectorAll(".report-row"));
   const visibleReportCount = document.getElementById("visibleReportCount");
   const reportEmpty = document.getElementById("reportEmpty");
+  let conferencePage = 1;
+  let searchMode = "fuzzy";
+  let relatedResults = null;
+  const PAGE_SIZE = 20;
+  const RELATED_CANDIDATE_LIMIT = 40;
+  const RELATED_RESULT_LIMIT = 12;
 
   function escapeHtml(value) {
     return String(value ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
@@ -687,11 +700,41 @@
     select.replaceChildren(...options);
     select.value = values.some((item) => item.value === selectedValue) ? selectedValue : "";
   }
+  function tokenize(value) {
+    return String(value || "").toLowerCase().split(/[^a-z0-9\u4e00-\u9fff]+/i).map((part) => part.trim()).filter((part) => part.length >= 2);
+  }
+  function paperBlob(paper) {
+    return [paper.title, paper.summary, paper.author, paper.category, paper.conference_label, paper.year].join(" ").toLowerCase();
+  }
+  function matchesFuzzy(paper, query) {
+    const terms = String(query || "").trim().toLowerCase().split(/\s+/).filter(Boolean);
+    if (!terms.length) return true;
+    const hay = paperBlob(paper);
+    return terms.every((term) => hay.includes(term));
+  }
+  function lexicalScore(paper, terms) {
+    if (!terms.length) return 0;
+    const title = String(paper.title || "").toLowerCase();
+    const summary = String(paper.summary || "").toLowerCase();
+    const category = String(paper.category || "").toLowerCase();
+    const author = String(paper.author || "").toLowerCase();
+    let score = 0;
+    terms.forEach((term) => {
+      if (title.includes(term)) score += 4;
+      if (category.includes(term)) score += 3;
+      if (summary.includes(term)) score += 2;
+      if (author.includes(term)) score += 1;
+    });
+    return score;
+  }
   function availablePapers({ includeConference = true, includeCategory = true } = {}) {
+    const includeSearch = includeConference && includeCategory && searchMode === "fuzzy";
+    const query = includeSearch ? paperSearch.value : "";
     return conferencePapers.filter((paper) => {
       if (conferenceYear.value && String(paper.year) !== conferenceYear.value) return false;
       if (includeConference && conferenceName.value && paper.conference !== conferenceName.value) return false;
       if (includeCategory && conferenceCategory.value && paper.category !== conferenceCategory.value) return false;
+      if (includeSearch && !matchesFuzzy(paper, query)) return false;
       return true;
     });
   }
@@ -701,7 +744,7 @@
     replaceOptions(
       conferenceName,
       Array.from(conferences, ([value, label]) => ({ value, label })).sort((a, b) => a.label.localeCompare(b.label, "zh-CN")),
-      "全部会议"
+      "\u5168\u90e8\u4f1a\u8bae"
     );
   }
   function updateCategoryOptions() {
@@ -709,31 +752,184 @@
     replaceOptions(
       conferenceCategory,
       Array.from(categories).sort((a, b) => a.localeCompare(b, "zh-CN")).map((value) => ({ value, label: value })),
-      "全部类别"
+      "\u5168\u90e8\u7c7b\u522b"
     );
   }
-  function renderConferencePapers() {
-    const papers = availablePapers();
-    visibleConferenceCount.textContent = papers.length + " 条结果";
-    conferenceEmpty.hidden = papers.length !== 0;
-    conferenceList.hidden = papers.length === 0;
-    conferenceList.innerHTML = papers.map((paper) => {
-      const url = safeHttpUrl(paper.link);
-      const title = escapeHtml(paper.title);
-      const titleMarkup = url ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${title}</a>` : title;
-      const author = paper.author ? `<span>${escapeHtml(paper.author)}</span>` : "";
-      return `<article class="conference-row"><h3 class="conference-title">${titleMarkup}</h3><p class="conference-summary">${escapeHtml(paper.summary || "暂无中文总结")}</p><div class="conference-meta"><span>${escapeHtml(paper.year + " · " + paper.conference_label)}</span><span class="conference-tag">${escapeHtml(paper.category)}</span>${author}</div></article>`;
-    }).join("");
+  function localReason(paper, terms) {
+    const title = String(paper.title || "").toLowerCase();
+    const category = String(paper.category || "").toLowerCase();
+    const summary = String(paper.summary || "").toLowerCase();
+    const hits = terms.filter((term) => title.includes(term) || category.includes(term) || summary.includes(term));
+    if (hits.length && paper.category) return `\u4e0e\u300c${paper.category}\u300d\u65b9\u5411\u91cd\u53e0\uff0c\u5e76\u547d\u4e2d ${hits.slice(0, 3).join("\u3001")}`;
+    if (hits.length) return `\u6807\u9898\u6216\u6458\u8981\u547d\u4e2d ${hits.slice(0, 3).join("\u3001")}`;
+    return `\u4e0e ${paper.year} ${paper.conference_label} \u7684 ${paper.category} \u7814\u7a76\u76f8\u8fd1`;
   }
-  conferenceYear.addEventListener("change", () => { updateConferenceOptions(); updateCategoryOptions(); renderConferencePapers(); });
-  conferenceName.addEventListener("change", () => { updateCategoryOptions(); renderConferencePapers(); });
-  conferenceCategory.addEventListener("change", renderConferencePapers);
+  function pickCandidates(papers, topic, keywords) {
+    const terms = tokenize(`${topic} ${keywords}`);
+    const scored = papers.map((paper) => ({ paper, score: lexicalScore(paper, terms) }));
+    scored.sort((a, b) => b.score - a.score || b.paper.year - a.paper.year);
+    const picked = [];
+    const used = new Set();
+    scored.forEach((item) => {
+      if (item.score > 0 && picked.length < RELATED_CANDIDATE_LIMIT) {
+        picked.push(item.paper);
+        used.add(item.paper.id);
+      }
+    });
+    scored.forEach((item) => {
+      if (picked.length >= RELATED_CANDIDATE_LIMIT || used.has(item.paper.id)) return;
+      picked.push(item.paper);
+      used.add(item.paper.id);
+    });
+    return picked;
+  }
+  function localRelated(papers, topic, keywords) {
+    const terms = tokenize(`${topic} ${keywords}`);
+    const ranked = papers
+      .map((paper) => ({ paper, score: lexicalScore(paper, terms), reason: localReason(paper, terms) }))
+      .filter((item) => item.score > 0)
+      .sort((a, b) => b.score - a.score);
+    const max = ranked[0] ? ranked[0].score : 1;
+    return ranked.slice(0, RELATED_RESULT_LIMIT).map((item) => ({
+      paper: item.paper,
+      score: item.score / max,
+      reason: item.reason,
+    }));
+  }
+  function serializeCandidate(paper) {
+    return {
+      id: paper.id,
+      title: paper.title,
+      category: paper.category,
+      conference: paper.conference_label,
+      year: paper.year,
+      summary: String(paper.summary || "").slice(0, 240),
+    };
+  }
+  function setRelatedStatus(message, kind = "") {
+    if (!relatedWorkStatus) return;
+    relatedWorkStatus.hidden = !message;
+    relatedWorkStatus.textContent = message;
+    relatedWorkStatus.dataset.kind = kind;
+  }
+  function paperArticle(entry) {
+    const paper = entry.paper || entry;
+    const url = safeHttpUrl(paper.link);
+    const title = escapeHtml(paper.title);
+    const titleMarkup = url ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${title}</a>` : title;
+    const author = paper.author ? `<span>${escapeHtml(paper.author)}</span>` : "";
+    const reason = entry.reason ? `<p class="conference-reason">${escapeHtml(entry.reason)}</p>` : "";
+    const score = Number.isFinite(Number(entry.score)) ? `<span class="conference-score">${Math.round(Number(entry.score) * 100)}</span>` : "";
+    return `<article class="conference-row${entry.reason ? " has-reason" : ""}"><h3 class="conference-title">${titleMarkup}</h3><p class="conference-summary">${escapeHtml(paper.summary || "\u6682\u65e0\u4e2d\u6587\u603b\u7ed3")}</p>${reason}<div class="conference-meta"><span>${escapeHtml(paper.year + " \u00b7 " + paper.conference_label)}</span><span class="conference-tag">${escapeHtml(paper.category)}</span>${author}${score}</div></article>`;
+  }
+  function visibleEntries() {
+    if (searchMode === "related" && relatedResults) return relatedResults;
+    return availablePapers().map((paper) => ({ paper }));
+  }
+  function renderConferencePapers() {
+    const entries = visibleEntries();
+    visibleConferenceCount.textContent = entries.length + " \u6761\u7ed3\u679c";
+    conferenceEmpty.textContent = searchMode === "related" && relatedResults ? "\u6ca1\u6709\u5339\u914d\u7684\u76f8\u5173\u5de5\u4f5c\u3002" : "\u6ca1\u6709\u7b26\u5408\u7b5b\u9009\u6761\u4ef6\u7684\u8bba\u6587\u3002";
+    conferenceEmpty.hidden = entries.length !== 0;
+    conferenceList.hidden = entries.length === 0;
+    const totalPages = Math.max(1, Math.ceil(entries.length / PAGE_SIZE));
+    conferencePage = Math.min(Math.max(conferencePage, 1), totalPages);
+    const start = (conferencePage - 1) * PAGE_SIZE;
+    conferenceList.innerHTML = entries.slice(start, start + PAGE_SIZE).map(paperArticle).join("");
+    renderPagination(conferencePagination, conferencePage, entries.length ? totalPages : 0, (page) => { conferencePage = page; renderConferencePapers(); conferenceList.scrollIntoView({ behavior: "smooth", block: "start" }); });
+  }
+  function setSearchMode(mode) {
+    searchMode = mode;
+    paperFuzzyPane.classList.toggle("is-hidden", mode !== "fuzzy");
+    paperRelatedPane.classList.toggle("is-hidden", mode !== "related");
+    document.querySelectorAll(".paper-search-mode").forEach((button) => {
+      const active = button.dataset.mode === mode;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-selected", active ? "true" : "false");
+    });
+    if (mode === "fuzzy") {
+      relatedResults = null;
+      setRelatedStatus("");
+    }
+    conferencePage = 1;
+    renderConferencePapers();
+  }
+  function onFilterChange(level) {
+    relatedResults = null;
+    if (searchMode === "related") setRelatedStatus("\u7b5b\u9009\u5df2\u66f4\u65b0\uff0c\u8bf7\u91cd\u65b0\u63a8\u8350\u76f8\u5173\u5de5\u4f5c\u3002");
+    conferencePage = 1;
+    if (level === "year") { updateConferenceOptions(); updateCategoryOptions(); }
+    else if (level === "name") updateCategoryOptions();
+    renderConferencePapers();
+  }
+  async function requestRelatedWork(topic, keywords, candidates) {
+    const response = await fetch("/api/related-work", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ topic, keywords, candidates: candidates.map(serializeCandidate) }),
+    });
+    if (!response.ok) throw new Error("related-work http " + response.status);
+    const payload = await response.json();
+    const items = Array.isArray(payload.items) ? payload.items : [];
+    const byId = new Map(candidates.map((paper) => [String(paper.id), paper]));
+    const mapped = [];
+    const used = new Set();
+    items.forEach((item) => {
+      const paper = byId.get(String(item.id));
+      if (!paper || used.has(paper.id)) return;
+      used.add(paper.id);
+      mapped.push({ paper, score: Number(item.score), reason: String(item.reason || "").trim() });
+    });
+    if (!mapped.length) throw new Error("empty llm ranking");
+    return mapped.slice(0, RELATED_RESULT_LIMIT);
+  }
+  async function runRelatedWork(event) {
+    event.preventDefault();
+    const topic = relatedTopic.value.trim();
+    const keywords = relatedKeywords.value.trim();
+    if (!topic && !keywords) {
+      setRelatedStatus("\u8bf7\u586b\u5199\u7814\u7a76\u65b9\u5411\u6216\u5173\u952e\u8bcd\u3002", "error");
+      relatedTopic.focus();
+      return;
+    }
+    const pool = availablePapers();
+    if (!pool.length) {
+      relatedResults = [];
+      setRelatedStatus("\u5f53\u524d\u7b5b\u9009\u8303\u56f4\u5185\u6ca1\u6709\u8bba\u6587\u3002", "error");
+      renderConferencePapers();
+      return;
+    }
+    const candidates = pickCandidates(pool, topic, keywords);
+    relatedWorkSubmit.disabled = true;
+    setRelatedStatus("\u6b63\u5728\u6839\u636e\u7814\u7a76\u65b9\u5411\u68c0\u7d22 related work\u2026", "pending");
+    try {
+      relatedResults = await requestRelatedWork(topic, keywords, candidates);
+      setRelatedStatus(`\u5df2\u6839\u636e\u300c${topic || keywords}\u300d\u63a8\u8350 ${relatedResults.length} \u7bc7\u76f8\u5173\u5de5\u4f5c\u3002`, "ok");
+    } catch {
+      relatedResults = localRelated(candidates, topic, keywords);
+      if (!relatedResults.length) setRelatedStatus("\u6ca1\u6709\u627e\u5230\u8db3\u591f\u76f8\u5173\u7684\u8bba\u6587\uff0c\u8bd5\u8bd5\u653e\u5bbd\u7b5b\u9009\u6216\u66f4\u6362\u5173\u952e\u8bcd\u3002", "error");
+      else setRelatedStatus(`\u63a8\u8350\u670d\u52a1\u6682\u4e0d\u53ef\u7528\uff0c\u5df2\u7528\u672c\u5730\u76f8\u5173\u5ea6\u6392\u5e8f ${relatedResults.length} \u7bc7\u3002`, "fallback");
+    } finally {
+      relatedWorkSubmit.disabled = false;
+      conferencePage = 1;
+      renderConferencePapers();
+    }
+  }
+
+  document.querySelectorAll(".paper-search-mode").forEach((button) => {
+    button.addEventListener("click", () => setSearchMode(button.dataset.mode));
+  });
+  paperSearch.addEventListener("input", () => { conferencePage = 1; renderConferencePapers(); });
+  paperRelatedPane.addEventListener("submit", runRelatedWork);
+  conferenceYear.addEventListener("change", () => onFilterChange("year"));
+  conferenceName.addEventListener("change", () => onFilterChange("name"));
+  conferenceCategory.addEventListener("change", () => onFilterChange("category"));
 
   reportSearch.addEventListener("input", () => {
     const query = reportSearch.value.trim().toLowerCase();
     let visible = 0;
     reportRows.forEach((row) => { const match = !query || row.dataset.search.includes(query); row.classList.toggle("is-hidden", !match); if (match) visible += 1; });
-    visibleReportCount.textContent = visible + " 条结果"; reportEmpty.hidden = visible !== 0;
+    visibleReportCount.textContent = visible + " \u6761\u7ed3\u679c"; reportEmpty.hidden = visible !== 0;
   });
   updateConferenceOptions();
   updateCategoryOptions();
@@ -753,5 +949,24 @@
   });
 </script>
 {% endif %}
+<script>
+  (() => {
+    let frame = 0;
+    document.addEventListener('pointermove', (event) => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        document.documentElement.style.setProperty('--pointer-x', `${event.clientX}px`);
+        document.documentElement.style.setProperty('--pointer-y', `${event.clientY}px`);
+        frame = 0;
+      });
+    }, { passive: true });
+    document.addEventListener('pointerdown', (event) => {
+      const target = event.target.closest('button, a, .gateway-row, .report-row, .conference-row, .news-row, .author-row');
+      if (!target) return;
+      target.classList.add('is-pressed');
+      window.setTimeout(() => target.classList.remove('is-pressed'), 180);
+    });
+  })();
+</script>
 </body>
 </html>
