@@ -1,0 +1,42 @@
+.impression-form, .inbox-board { display: grid; gap: 14px; padding: 16px; }
+.impression-form textarea {
+  width: 100%; min-height: 280px; padding: 14px 16px; resize: vertical;
+  color: var(--text); background: var(--soft); border: 1px solid var(--input-border); border-radius: 8px;
+}
+.impression-form textarea:focus { border-color: var(--primary-border); box-shadow: 0 0 0 3px var(--focus); }
+.impression-meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; color: var(--subtle); font-size: 12px; }
+.impression-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.impression-hint, .inbox-hint, .inbox-status { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.65; }
+.inbox-status[data-kind="error"] { color: #b42318; }
+.inbox-status[data-kind="ok"] { color: var(--primary); }
+.inbox-status[data-kind="pending"] { color: var(--primary-deep); }
+.inbox-today, .inbox-history { display: grid; gap: 10px; }
+.inbox-kicker { margin: 0; color: var(--accent-text); font-size: 12px; font-weight: 700; letter-spacing: .04em; }
+.inbox-card {
+  position: relative; padding: 16px 16px 16px 18px; background: var(--soft);
+  border: 1px solid var(--border); border-radius: 8px;
+}
+.inbox-card.is-today { background: var(--primary-soft); border-color: var(--primary-border); }
+.inbox-card::before {
+  position: absolute; top: 0; bottom: 0; left: 0; width: 4px; content: "";
+  background: var(--accent); border-radius: 8px 0 0 8px;
+}
+.inbox-card.is-today::before { background: var(--primary); }
+.inbox-card h3 { margin: 0; font-size: 15px; line-height: 1.45; }
+.inbox-card h3 a { color: var(--primary-deep); }
+.inbox-card h3 a:hover { text-decoration: underline; }
+.inbox-summary, .inbox-reason { margin: 8px 0 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
+.inbox-reason { color: var(--primary-deep); background: var(--surface); border-left: 3px solid var(--primary); padding: 8px 10px; }
+.inbox-reason::before { content: "为何推送 · "; font-weight: 700; }
+.inbox-meta { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 8px; color: var(--subtle); font-size: 12px; }
+.inbox-tag { padding: 1px 6px; color: var(--accent-text); background: var(--accent-soft); border: 1px solid var(--accent-border); border-radius: 4px; }
+.nav-count.is-unread { color: #fff; background: var(--primary); border-radius: 999px; padding: 0 6px; min-width: 18px; text-align: center; }
+html.sidebar-collapsed .app-shell { grid-template-columns: minmax(0, 1fr); }
+html.sidebar-collapsed .sidebar { display: none; }
+.topbar-start { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.sidebar-show { display: none; }
+html.sidebar-collapsed .sidebar-hide { display: none; }
+html.sidebar-collapsed .sidebar-show { display: block; }
+@media (max-width: 920px) {
+  html.sidebar-collapsed .app-shell { display: block; }
+}

@@ -12,21 +12,26 @@
   (() => {
     const applyTheme = () => {
       const saved = window.localStorage.getItem("fastresearch-theme") ?? window.localStorage.getItem("fastnews.theme");
-      document.documentElement.classList.toggle("dark", saved !== "light");
+      document.documentElement.classList.toggle("dark", saved === "dark");
+    };
+    const applySidebar = () => {
+      const collapsed = window.localStorage.getItem("fastnews.sidebarCollapsed") === "1";
+      document.documentElement.classList.toggle("sidebar-collapsed", collapsed);
     };
     applyTheme();
-    window.addEventListener("pageshow", applyTheme);
+    applySidebar();
+    window.addEventListener("pageshow", () => { applyTheme(); applySidebar(); });
   })();
 </script>
 <style>html:not(.fastnews-ready) .app-shell{visibility:hidden!important}</style>
 <script src="assets/gate.js"></script>
 <style>
   :root {
-    --app-bg: #f6f7f5; --muted-bg: #eef2ef; --surface: #fff; --soft: #f8faf8;
-    --border: #dce4df; --input-border: #cbd7d0; --primary: #0f766e; --primary-deep: #115e59;
-    --primary-soft: #f0fdfa; --primary-border: #d4e7df; --accent: #ea580c; --accent-soft: #fff7ed;
-    --accent-border: #fed7aa; --accent-text: #c2410c; --text: #17211e; --muted: #66736d;
-    --subtle: #8a9690; --danger: #dc2626; --danger-soft: #fef2f2; --focus: rgb(20 184 166 / .16);
+    --app-bg: #f0f5f2; --muted-bg: #eaf1ec; --surface: #ffffff; --soft: #f8faf8;
+    --border: #d6e3db; --input-border: #cbd7d0; --primary: #155e45; --primary-deep: #104936;
+    --primary-soft: #e8f3ed; --primary-border: #8fb9a0; --accent: #b45309; --accent-soft: #fffbeb;
+    --accent-border: #fde68a; --accent-text: #92400e; --text: #172720; --muted: #567265;
+    --subtle: #7f998d; --danger: #dc2626; --danger-soft: #fef2f2; --focus: rgba(21, 94, 69, 0.16);
   }
   html.dark {
     --app-bg: #151a19; --muted-bg: #18201d; --surface: #1b2220; --soft: #202925;
@@ -46,10 +51,18 @@
   button, input, textarea { font: inherit; }
   button { border: 0; }
   button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible { outline: 0; box-shadow: 0 0 0 3px var(--focus); }
+  .visually-hidden { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
   .icon { width: 16px; height: 16px; flex: 0 0 auto; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
   .icon-lg { width: 20px; height: 20px; }
   .icon-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
   .app-shell { display: grid; grid-template-columns: 224px minmax(0, 1fr); min-height: 100vh; }
+  html.sidebar-collapsed .app-shell { grid-template-columns: minmax(0, 1fr); }
+  html.sidebar-collapsed .sidebar { display: none; }
+  .topbar-start { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .sidebar-show { display: none; }
+  html.sidebar-collapsed .sidebar-hide { display: none; }
+  html.sidebar-collapsed .sidebar-show { display: block; }
+  .nav-count.is-unread { color: #fff; background: var(--primary); border-radius: 999px; padding: 0 6px; min-width: 18px; text-align: center; }
   .sidebar {
     display: flex; position: sticky; top: 0; flex-direction: column; height: 100vh;
     padding: 16px 14px; background: var(--muted-bg); border-right: 1px solid var(--border);
@@ -259,156 +272,226 @@
     .news-list-head { align-items: flex-start; flex-direction: column; gap: 3px; padding: 12px 14px; }
     .news-row { padding: 14px 14px 14px 18px; }
   }
-  /* FastResearch console layer */
-  :root { --app-bg:#f4f8f7; --muted-bg:#e8f1ef; --surface:#fff; --soft:#f4f8f7; --border:rgba(42,103,104,.2); --input-border:#b8cfcc; --primary:#087f78; --primary-deep:#075f5a; --primary-soft:rgba(8,127,120,.08); --primary-border:rgba(8,127,120,.3); --accent:#c2410c; --accent-soft:#fff7ed; --accent-border:#fed7aa; --accent-text:#c2410c; --text:#14282c; --muted:#5c7779; --subtle:#648083; --focus:rgba(8,127,120,.16); }
-  html.dark { --app-bg:#0b1a14; --muted-bg:#12261d; --surface:#12261d; --soft:#173028; --border:rgba(141,198,200,.18); --input-border:#2d4b50; --primary:#65ead9; --primary-deep:#9cfff2; --primary-soft:rgba(101,234,217,.08); --primary-border:rgba(101,234,217,.35); --accent:#ffc36d; --accent-soft:rgba(255,195,109,.1); --accent-border:rgba(255,195,109,.35); --accent-text:#ffc36d; --text:#e7f1f0; --muted:#89a1a3; --subtle:#587478; }
-  html:not(.dark) { --app-bg:#f4f8f7; --muted-bg:#e8f1ef; --surface:#fff; --soft:#f4f8f7; --border:rgba(42,103,104,.2); --input-border:#b8cfcc; --primary:#087f78; --primary-deep:#075f5a; --primary-soft:rgba(8,127,120,.08); --primary-border:rgba(8,127,120,.3); --accent:#c2410c; --accent-soft:#fff7ed; --accent-border:#fed7aa; --accent-text:#c2410c; --text:#14282c; --muted:#5c7779; --subtle:#648083; --focus:rgba(8,127,120,.16); }
-  body { font-family:'Space Grotesk','Noto Sans SC',Inter,sans-serif; background:var(--app-bg); color:var(--text); }
-  html.dark body { background:radial-gradient(circle at 80% -10%,rgba(28,77,56,.65),transparent 35%),var(--app-bg); }
-  .app-shell { background:transparent; } html.dark .sidebar { background:rgba(18,38,29,.88); border-color:var(--border); } html.dark .topbar { background:rgba(11,26,20,.78); border-color:var(--border); backdrop-filter:blur(14px); }
-  .page { max-width:1240px; padding:30px 24px 42px; } .brand-name { letter-spacing:.08em; text-transform:uppercase; }
-  h1 { font-family:'Space Grotesk','Noto Sans SC',sans-serif; font-size:clamp(28px,4vw,48px); font-weight:500; letter-spacing:-.04em; } .description { line-height:1.8; }
-  html.dark .surface { background:rgba(18,38,29,.88); border-color:var(--border); box-shadow:0 8px 28px rgba(0,0,0,.16); } html.dark .section-head, html.dark .news-list-head { background:rgba(23,48,40,.86); }
-  .stat-value { color:var(--primary); font-family:'JetBrains Mono',monospace; } .report-title a,.conference-title a,.article-title a,.news-title a { color:var(--primary); }
-  .report-row:hover,.conference-row:hover,.article:hover,.news-row:hover,.gateway-row:hover,.author-row:hover { background:rgba(101,234,217,.06); } .conference-row::before,.news-row::before { background:var(--accent); }
-  .badge,.conference-tag,.news-tag { font-family:'JetBrains Mono',monospace; }
-  @media (max-width:920px) { .page { padding:22px 16px 32px; } h1 { font-size:32px; } }
-  /* Match FastResearch shell exactly */
-  html.dark body, html.dark .app-shell { background:#0b1a14 !important; color:#e7f1f0 !important; }
-  html.dark .sidebar { background:#12261d !important; border-color:rgba(141,244,231,.14) !important; }
-  html.dark .topbar { height:72px !important; padding:0 clamp(18px,5vw,76px) !important; background:rgba(11,26,20,.72) !important; border-color:rgba(141,244,231,.14) !important; }
-  html.dark .brand-mark { color:#e7f1f0 !important; } html.dark .brand-mark:first-child { background:transparent !important; border:0 !important; }
-  html.dark .brand-mark .icon { color:#05150d !important; background:#65ead9 !important; }
-  html.dark .page { max-width:1240px; padding:30px 24px 42px; }
-  html.dark h1 { color:#eaf3f2 !important; font-size:clamp(32px,5vw,56px) !important; font-weight:500 !important; letter-spacing:-.05em !important; }
-  html.dark .surface { background:rgba(18,38,29,.72) !important; border-color:rgba(141,198,200,.18) !important; box-shadow:none !important; }
-  html.dark .section-head, html.dark .news-list-head { background:rgba(23,48,40,.72) !important; }
-  html.dark .gateway-title, html.dark .report-title, html.dark .conference-title, html.dark .news-title { color:#e7f1f0 !important; }
-  html.dark .gateway-description, html.dark .report-row .meta, html.dark .conference-summary, html.dark .news-description { color:#87a0a3 !important; }
-  html.dark .gateway-row:hover, html.dark .report-row:hover, html.dark .conference-row:hover, html.dark .news-row:hover, html.dark .author-row:hover { background:rgba(24,52,40,.92) !important; }
-  html.dark .button-primary { color:#04140c !important; background:#65ead9 !important; border-color:#65ead9 !important; }
-  html.dark .button-primary:hover { background:#9cfff2 !important; border-color:#9cfff2 !important; }
-  html.dark .button, html.dark .icon-button { background:transparent; color:#9cb4b5; border-color:rgba(143,198,200,.2); }
-  html.dark .icon-button:hover, html.dark .button:hover { color:#65ead9; border-color:#65ead9; background:rgba(101,234,217,.07); }
-  html.dark .field { color:#d8e9e8; background:#0d1f18; border-color:#2d4b50; }
-  html:not(.dark) .topbar { height:72px; }
-  html:not(.dark) .page { max-width:1240px; }
-  /* FastResearch series shell: shared with the control center */
-  html.dark body { background:#0b1a14 !important; }
-  html.dark body::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.16; background-image:linear-gradient(rgba(86,168,126,.16) 1px,transparent 1px),linear-gradient(90deg,rgba(86,168,126,.16) 1px,transparent 1px); background-size:54px 54px; mask-image:linear-gradient(to bottom,#000,transparent 86%); z-index:0; }
-  html.dark .app-shell { display:block; min-height:100vh; background:radial-gradient(circle at 80% -10%,#1c4d38 0,transparent 35%),#0b1a14 !important; }
-  html.dark .sidebar { display:none; }
-  html.dark .main { position:relative; z-index:1; }
-  html.dark .topbar { height:72px !important; padding:0 clamp(18px,5vw,76px) !important; background:rgba(11,26,20,.72) !important; border-color:rgba(141,244,231,.14) !important; }
-  html.dark .breadcrumb { display:flex; align-items:center; gap:10px; color:#69878a !important; font:700 14px 'Space Grotesk',sans-serif; letter-spacing:.14em; text-transform:uppercase; }
-  html.dark .breadcrumb strong { color:#e7f1f0 !important; font-weight:700; }
-  html.dark .breadcrumb strong::first-letter { color:#65ead9; }
-  html.dark .breadcrumb::after { content:'SYSTEM ONLINE'; margin-left:18px; color:#69878a; font:10px 'JetBrains Mono',monospace; letter-spacing:.12em; }
-  html.dark .page { max-width:1240px; padding:58px 24px 42px !important; }
-  html.dark .page-header { margin-bottom:34px; }
-  html.dark .header-copy { gap:0; }
-  html.dark .header-icon { display:none; }
-  html.dark h1 { max-width:760px; margin:0 !important; color:#eaf3f2 !important; font-size:clamp(42px,6vw,72px) !important; line-height:.98 !important; font-weight:500 !important; letter-spacing:-.05em !important; }
-  html.dark h1::first-line { color:#eaf3f2; }
-  html.dark .description { max-width:520px; margin-top:20px !important; color:#8ca7a9 !important; font-size:15px !important; line-height:1.8 !important; }
-  html.dark .badge { align-self:flex-end; margin-top:8px; color:#65ead9; background:rgba(101,234,217,.08); border-color:rgba(101,234,217,.35); font:10px 'JetBrains Mono',monospace; letter-spacing:.12em; }
-  html.dark .surface { border-radius:0 !important; background:rgba(18,38,29,.72) !important; border-color:rgba(141,198,200,.18) !important; box-shadow:none !important; }
-  html.dark .stats { margin-bottom:14px; }
-  html.dark .stat { padding:18px 20px; border-color:rgba(141,198,200,.14); }
-  html.dark .stat-value { color:#65ead9 !important; font-size:22px; }
-  html.dark .stat-label, html.dark .section-count, html.dark .generated { color:#587478 !important; font:10px 'JetBrains Mono',monospace; letter-spacing:.08em; }
-  html.dark .section-head, html.dark .news-list-head { min-height:64px; background:rgba(23,48,40,.86) !important; border-color:rgba(141,198,200,.14); }
-  html.dark h2 { color:#d5e9e7 !important; font-size:15px; font-weight:500; letter-spacing:.02em; }
-  html.dark .section-description { color:#69878a !important; }
-  html.dark .gateway-row, html.dark .author-row, html.dark .report-row, html.dark .conference-row, html.dark .news-row { border-color:rgba(141,198,200,.13); }
-  html.dark .gateway-row:hover, html.dark .author-row:hover, html.dark .report-row:hover, html.dark .conference-row:hover, html.dark .news-row:hover { background:rgba(24,52,40,.92) !important; }
-  html.dark .gateway-title, html.dark .report-title, html.dark .conference-title, html.dark .news-title { color:#e7f1f0 !important; font-weight:500; }
-  html.dark .gateway-description, html.dark .conference-summary, html.dark .news-description, html.dark .meta { color:#87a0a3 !important; }
-  html.dark .gateway-meta { color:#65ead9 !important; }
-  html.dark .gateway-icon, html.dark .stat-icon { border-radius:0; background:rgba(101,234,217,.08); border-color:rgba(101,234,217,.35); color:#65ead9; }
-  html.dark .gateway-icon.orange { color:#ffc36d; background:rgba(255,195,109,.08); border-color:rgba(255,195,109,.35); }
-  html.dark .button, html.dark .icon-button { border-radius:0; }
-  html.dark .field { border-radius:0; }
-  html.dark .author-form { border-radius:0; background:#12261d; border-color:rgba(101,234,217,.38); }
-  @media (max-width:920px) { html.dark .page { padding:42px 16px 32px !important; } html.dark h1 { font-size:43px !important; } html.dark .breadcrumb::after { display:none; } }
-  html:not(.dark) body { background:#f4f8f7 !important; color:#14282c !important; }
-  html:not(.dark) .app-shell { display:block; min-height:100vh; background:radial-gradient(circle at 80% -10%,#d9f5f0 0,transparent 36%),#f4f8f7 !important; }
-  html:not(.dark) .sidebar { display:none; }
-  html:not(.dark) .main { position:relative; z-index:1; }
-  html:not(.dark) .topbar { height:72px !important; padding:0 clamp(18px,5vw,76px) !important; background:rgba(244,248,247,.82) !important; border-color:rgba(31,99,100,.18) !important; }
-  html:not(.dark) .breadcrumb { display:flex; align-items:center; gap:10px; color:#648083 !important; font:700 14px 'Space Grotesk',sans-serif; letter-spacing:.14em; text-transform:uppercase; }
-  html:not(.dark) .breadcrumb strong { color:#14282c !important; }
-  html:not(.dark) .breadcrumb::after { content:'SYSTEM ONLINE'; margin-left:18px; color:#648083; font:10px 'JetBrains Mono',monospace; letter-spacing:.12em; }
-  html:not(.dark) .page { max-width:1240px; padding:58px 24px 42px !important; }
-  html:not(.dark) .page-header { margin-bottom:34px; }
-  html:not(.dark) .header-copy { gap:0; } html:not(.dark) .header-icon { display:none; }
-  html:not(.dark) h1 { max-width:760px; margin:0 !important; color:#14282c !important; font-size:clamp(42px,6vw,72px) !important; line-height:.98 !important; font-weight:500 !important; letter-spacing:-.05em !important; }
-  html:not(.dark) .description { max-width:520px; margin-top:20px !important; color:#5c7779 !important; font-size:15px !important; line-height:1.8 !important; }
-  html:not(.dark) .badge { align-self:flex-end; margin-top:8px; color:#087f78; background:rgba(8,127,120,.08); border-color:rgba(8,127,120,.3); font:10px 'JetBrains Mono',monospace; letter-spacing:.12em; }
-  html:not(.dark) .surface { border-radius:0 !important; background:rgba(255,255,255,.72) !important; border-color:rgba(42,103,104,.22) !important; box-shadow:none !important; }
-  html:not(.dark) .section-head, html:not(.dark) .news-list-head { background:rgba(244,248,247,.86) !important; border-color:rgba(42,103,104,.16); }
-  html:not(.dark) .stat { border-color:rgba(42,103,104,.14); } html:not(.dark) .stat-value { color:#087f78 !important; font-family:'JetBrains Mono',monospace; }
-  html:not(.dark) .stat-label, html:not(.dark) .section-count, html:not(.dark) .generated { color:#648083 !important; font:10px 'JetBrains Mono',monospace; letter-spacing:.08em; }
-  html:not(.dark) .gateway-row, html:not(.dark) .author-row, html:not(.dark) .report-row, html:not(.dark) .conference-row, html:not(.dark) .news-row { border-color:rgba(42,103,104,.14); }
-  html:not(.dark) .gateway-row:hover, html:not(.dark) .author-row:hover, html:not(.dark) .report-row:hover, html:not(.dark) .conference-row:hover, html:not(.dark) .news-row:hover { background:rgba(255,255,255,.96) !important; }
-  html:not(.dark) .gateway-title, html:not(.dark) .report-title, html:not(.dark) .conference-title, html:not(.dark) .news-title { color:#14282c !important; font-weight:500; }
-  html:not(.dark) .gateway-description, html:not(.dark) .conference-summary, html:not(.dark) .news-description, html:not(.dark) .meta { color:#5c7779 !important; }
-  html:not(.dark) .gateway-meta { color:#087f78 !important; } html:not(.dark) .gateway-icon, html:not(.dark) .stat-icon { border-radius:0; }
-  html:not(.dark) .button, html:not(.dark) .icon-button, html:not(.dark) .field { border-radius:0; }
-  @media (max-width:920px) { html:not(.dark) .page { padding:42px 16px 32px !important; } html:not(.dark) h1 { font-size:43px !important; } html:not(.dark) .breadcrumb::after { display:none; } }
-  /* Ambient motion shared with FastResearch */
-  :root { --pointer-x:50vw; --pointer-y:40vh; }
-  body::after { content:""; position:fixed; inset:0; z-index:0; pointer-events:none; background:radial-gradient(360px circle at var(--pointer-x) var(--pointer-y), rgba(101,234,217,.12), transparent 72%); transition:background .15s ease; }
-  html:not(.dark) body::after { background:radial-gradient(360px circle at var(--pointer-x) var(--pointer-y), rgba(8,127,120,.11), transparent 72%); }
-  html:not(.dark) body::before { content:""; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.24; background-image:linear-gradient(rgba(39,107,108,.13) 1px,transparent 1px),linear-gradient(90deg,rgba(39,107,108,.13) 1px,transparent 1px); background-size:54px 54px; mask-image:linear-gradient(to bottom,#000,transparent 86%); }
-  html.dark body::before, html:not(.dark) body::before { animation:fr-grid 22s linear infinite; }
-  .main { position:relative; z-index:1; }
-  .topbar { position:sticky; z-index:5; }
-  .page-header, .stats, .workspace > *, .conference-explorer { animation: fr-rise .55s ease both; }
-  .stats { animation-delay:.06s; } .workspace > *:nth-child(2) { animation-delay:.12s; }
-  .gateway-row, .report-row, .conference-row, .news-row, .author-row { will-change:transform; transition:transform .25s ease, background .25s ease, border-color .25s ease; }
-  .gateway-row:hover, .report-row:hover, .conference-row:hover, .news-row:hover, .author-row:hover { transform:translateY(-3px); }
-  .button, .icon-button, .calendar-day button { transition:transform .2s ease, background .2s ease, color .2s ease, border-color .2s ease; }
-  .button:active, .icon-button:active, .calendar-day button:active, .gateway-row:active { transform:scale(.97); }
-  .is-pressed { transform:scale(.97) !important; }
-  @keyframes fr-rise { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
-  @keyframes fr-grid { from { background-position:0 0,0 0; } to { background-position:54px 54px,54px 54px; } }
-  @media (max-width:620px) { .gateway-row:hover, .report-row:hover, .conference-row:hover, .news-row:hover, .author-row:hover { transform:none; } body::after { background:radial-gradient(220px circle at var(--pointer-x) var(--pointer-y),rgba(101,234,217,.08),transparent 72%); } }
-  @media (prefers-reduced-motion:reduce) { body::after { display:none; } .page-header, .stats, .workspace > *, .conference-explorer { animation:none; } .gateway-row, .report-row, .conference-row, .news-row, .author-row { transition:none; } }
-  .pagination { display:flex; align-items:center; justify-content:flex-end; gap:8px; padding:12px 16px; border-top:1px solid var(--border); background:var(--soft); }
-  .pagination button { min-width:32px; height:30px; padding:0 9px; color:var(--muted); background:transparent; border:1px solid var(--border); border-radius:0; cursor:pointer; font:11px 'JetBrains Mono',monospace; }
-  .pagination button:hover:not(:disabled), .pagination button.is-current { color:var(--primary); border-color:var(--primary); background:var(--primary-soft); }
-  .pagination button:disabled { cursor:default; opacity:.45; }
-  .pagination .pagination-info { margin-right:auto; color:var(--subtle); font:10px 'JetBrains Mono',monospace; letter-spacing:.05em; }
-  @media (max-width:620px) { .pagination { justify-content:center; padding:10px 12px; } .pagination .pagination-info { display:none; } }
-  html:not(.dark) { color-scheme: light; }
-  html:not(.dark) .news-list-head,
-  html:not(.dark) .pagination {
-    background: rgba(244,248,247,.86) !important;
-    border-color: rgba(42,103,104,.16) !important;
-    color: #14282c;
+  /* FastResearch Scientific Console Styling (统一浅绿科研质感) */
+  :root {
+    --app-bg: #f0f5f2;
+    --muted-bg: #eaf1ec;
+    --surface: #ffffff;
+    --soft: #f8faf8;
+    --border: #d6e3db;
+    --input-border: #cbd7d0;
+    --primary: #155e45;
+    --primary-deep: #104936;
+    --primary-soft: #e8f3ed;
+    --primary-border: #8fb9a0;
+    --accent: #b45309;
+    --accent-soft: #fffbeb;
+    --accent-border: #fde68a;
+    --accent-text: #92400e;
+    --text: #172720;
+    --muted: #567265;
+    --subtle: #7f998d;
+    --focus: rgba(21, 94, 69, 0.16);
   }
-  html:not(.dark) .news-date-title { color:#14282c !important; }
-  html:not(.dark) .news-date-sub,
-  html:not(.dark) .news-list-head .section-count { color:#5c7779 !important; }
-  html:not(.dark) #newsDetailToggle {
-    color: #14282c !important;
-    background: rgba(255,255,255,.92) !important;
-    border-color: rgba(42,103,104,.22) !important;
+  html.dark {
+    --app-bg: #0d1713;
+    --muted-bg: #14221c;
+    --surface: #192b23;
+    --soft: #111d17;
+    --border: #233b30;
+    --input-border: #2d4b3e;
+    --primary: #34d399;
+    --primary-deep: #10b981;
+    --primary-soft: rgba(52, 211, 153, 0.12);
+    --primary-border: #3b6b55;
+    --accent: #fbbf24;
+    --accent-soft: #451a03;
+    --accent-border: #78350f;
+    --accent-text: #fde68a;
+    --text: #e2ede7;
+    --muted: #8faea0;
+    --subtle: #648275;
+    --focus: rgba(52, 211, 153, 0.18);
   }
-  html:not(.dark) #newsDetailToggle:hover {
-    color: #075f5a !important;
-    background: rgba(8,127,120,.10) !important;
-    border-color: rgba(8,127,120,.32) !important;
+  body {
+    min-height: 100vh;
+    margin: 0;
+    background-color: var(--app-bg);
+    background-image:
+      linear-gradient(to right, rgba(21, 94, 69, 0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(21, 94, 69, 0.035) 1px, transparent 1px);
+    background-size: 32px 32px;
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
   }
-  html:not(.dark) #newsDetailToggle[aria-pressed="true"],
-  html:not(.dark) #newsDetailToggle[aria-pressed="true"]:hover {
-    color: #075f5a !important;
-    background: rgba(8,127,120,.10) !important;
-    border-color: rgba(8,127,120,.32) !important;
+  html.dark body {
+    background-color: #0d1713;
+    background-image:
+      linear-gradient(to right, rgba(52, 211, 153, 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(52, 211, 153, 0.06) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+  .app-shell { min-height: 100vh; }
+  .sidebar {
+    background: var(--muted-bg);
+    border-right: 1px solid var(--border);
+  }
+  .topbar {
+    height: 64px;
+    padding: 0 28px;
+    background: rgba(246, 250, 247, 0.88);
+    backdrop-filter: blur(12px) saturate(150%);
+    border-bottom: 1px solid var(--border);
+  }
+  html.dark .topbar {
+    background: rgba(13, 23, 19, 0.88);
+    border-bottom: 1px solid var(--border);
+  }
+  .brand-mark {
+    background: var(--primary);
+    color: #ffffff;
+    border-radius: 7px;
+    box-shadow: 0 2px 6px rgba(21, 94, 69, 0.2);
+  }
+  .brand-name {
+    color: var(--text);
+    font-weight: 700;
+  }
+  .brand-name b {
+    color: var(--primary);
+  }
+  .page {
+    max-width: 1240px;
+    padding: 32px 28px 48px;
+  }
+  .page-header {
+    margin-bottom: 26px;
+  }
+  h1 {
+    font-size: clamp(26px, 3.5vw, 36px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+  .description {
+    line-height: 1.7;
+    color: var(--muted);
+  }
+  .surface {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(21, 94, 69, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  }
+  .section-head, .news-list-head {
+    background: var(--soft);
+    border-bottom: 1px solid var(--border);
+  }
+  .stat-value {
+    color: var(--primary);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .report-title a, .conference-title a, .article-title a, .news-title a {
+    color: var(--text);
+    transition: color 0.15s ease;
+  }
+  .report-title a:hover, .conference-title a:hover, .article-title a:hover, .news-title a:hover {
+    color: var(--primary);
+  }
+  .report-row:hover, .conference-row:hover, .article:hover, .news-row:hover, .gateway-row:hover, .author-row:hover {
+    background: var(--primary-soft);
+  }
+  .conference-row::before, .news-row::before {
+    background: var(--accent);
+  }
+  .badge, .conference-tag, .news-tag {
+    font-family: 'JetBrains Mono', monospace;
+    border-radius: 4px;
+  }
+  .badge {
+    background: var(--accent-soft);
+    color: var(--accent-text);
+    border: 1px solid var(--accent-border);
+  }
+  .button-primary {
+    background: var(--primary);
+    color: #ffffff;
+    border: 1px solid var(--primary-deep);
+    border-radius: 6px;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(21, 94, 69, 0.15);
+  }
+  .button-primary:hover {
+    background: var(--primary-deep);
+  }
+  .button, .icon-button {
+    background: var(--surface);
+    color: var(--primary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+  .button:hover, .icon-button:hover {
+    background: var(--primary-soft);
+    border-color: var(--primary);
+  }
+  .field {
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+  }
+  .field:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--focus);
+  }
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 18px;
+    border-top: 1px solid var(--border);
+    background: var(--soft);
+  }
+  .pagination button {
+    min-width: 32px;
+    height: 30px;
+    padding: 0 9px;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    cursor: pointer;
+    font: 11px 'JetBrains Mono', monospace;
+  }
+  .pagination button:hover:not(:disabled), .pagination button.is-current {
+    color: var(--primary);
+    border-color: var(--primary);
+    background: var(--primary-soft);
+  }
+  .pagination button:disabled {
+    cursor: default;
+    opacity: 0.45;
+  }
+  .pagination .pagination-info {
+    margin-right: auto;
+    color: var(--subtle);
+    font: 11px 'JetBrains Mono', monospace;
+  }
+  @media (max-width: 920px) {
+    .page { padding: 22px 16px 32px; }
+    h1 { font-size: 28px; }
+  }
+  @media (max-width: 620px) {
+    .topbar { height: 56px; padding: 0 16px; }
+    .pagination { justify-content: center; padding: 10px 12px; }
+    .pagination .pagination-info { display: none; }
   }
 </style>
 <link rel="stylesheet" href="assets/authors.css"><link rel="stylesheet" href="assets/today-news.css">
+
+
+
 
 
 </head>
@@ -418,7 +501,12 @@
   <symbol id="icon-dashboard" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></symbol>
   <symbol id="icon-graduation" viewBox="0 0 24 24"><path d="m2 10 10-5 10 5-10 5-10-5Z"/><path d="M6 12.5V16c2 1.5 4 2.25 6 2.25S16 17.5 18 16v-3.5"/><path d="M22 10v6"/></symbol>
   <symbol id="icon-newspaper" viewBox="0 0 24 24"><path d="M4 4h15a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/><path d="M7 8h9M7 12h9M7 16h5"/></symbol>
+  <symbol id="icon-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/><path d="M8 7h8M8 11h6"/></symbol>
   <symbol id="icon-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="icon-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
+  <symbol id="icon-profile" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0 1 16 0"/></symbol>
+  <symbol id="icon-panel-close" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M13 10l-2 2 2 2"/></symbol>
+  <symbol id="icon-panel-open" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M13 14l2-2-2-2"/></symbol>
   <symbol id="icon-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 13h8M8 17h6"/></symbol>
   <symbol id="icon-tag" viewBox="0 0 24 24"><path d="M20 13 13 20a2 2 0 0 1-3 0l-6-6a2 2 0 0 1 0-3V4h7a2 2 0 0 1 1 1l8 8Z"/><circle cx="8.5" cy="8.5" r="1"/></symbol>
   <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
@@ -440,7 +528,10 @@
     <div class="nav-title">Workspace</div>
     <nav aria-label="主导航"><ul class="nav-list">
       <li><a class="active" href="index.html"><span><svg class="icon"><use href="#icon-dashboard"></use></svg>总览</span></a></li>
-      <li><a class="" href="top-conf/index.html"><span><svg class="icon"><use href="#icon-graduation"></use></svg>顶会报告</span><span class="nav-count">4</span></a></li>
+      <li><a class="" href="inbox/index.html"><span><svg class="icon"><use href="#icon-mail"></use></svg>私信</span><span class="nav-count" id="inboxNavCount">0</span></a></li>
+      <li><a class="" href="impression/index.html"><span><svg class="icon"><use href="#icon-profile"></use></svg>研究印象</span></a></li>
+      <li><a class="" href="top-conf/index.html"><span><svg class="icon"><use href="#icon-graduation"></use></svg>顶会报告</span><span class="nav-count">16</span></a></li>
+      <li><a class="" href="field-briefing/index.html"><span><svg class="icon"><use href="#icon-book"></use></svg>领域导读</span><span class="nav-count">4595</span></a></li>
       <li><a class="" href="secnews/index.html"><span><svg class="icon"><use href="#icon-newspaper"></use></svg>安全资讯</span><span class="nav-count">3</span></a></li>
       <li><a href="#authors"><span><svg class="icon"><use href="#icon-users"></use></svg>关注作者</span><span class="nav-count" id="authorNavCount">0</span></a></li>
     </ul></nav>
@@ -448,13 +539,23 @@
   </aside>
   <main class="main">
     <header class="topbar">
-      <div class="breadcrumb"><strong>FastNews</strong><span> / Local Index</span></div>
-      <div class="topbar-actions"><span class="generated">更新于 2026-09-08 02:41 UTC</span><button class="icon-button" id="themeToggle" type="button" aria-label="切换深色模式" title="切换深色模式"><svg class="icon theme-sun"><use href="#icon-sun"></use></svg><svg class="icon theme-moon"><use href="#icon-moon"></use></svg></button></div>
+      <div class="topbar-start">
+        <button class="icon-button" id="sidebarToggle" type="button" aria-label="隐藏总览栏" title="隐藏总览栏" aria-pressed="false">
+          <svg class="icon sidebar-hide"><use href="#icon-panel-close"></use></svg>
+          <svg class="icon sidebar-show"><use href="#icon-panel-open"></use></svg>
+        </button>
+        <div class="breadcrumb"><strong>FastNews</strong><span> / Local Index</span></div>
+      </div>
+      <div class="topbar-actions"><span class="generated">更新于 2026-09-19 14:28 UTC</span><button class="icon-button" id="themeToggle" type="button" aria-label="切换深色模式" title="切换深色模式"><svg class="icon theme-sun"><use href="#icon-sun"></use></svg><svg class="icon theme-moon"><use href="#icon-moon"></use></svg></button></div>
     </header>
     <nav class="mobile-nav" aria-label="移动端导航">
       <a class="active" href="index.html"><span><svg class="icon"><use href="#icon-dashboard"></use></svg>总览</span></a>
+      <a class="" href="inbox/index.html"><span><svg class="icon"><use href="#icon-mail"></use></svg>私信</span></a>
+      <a class="" href="impression/index.html"><span><svg class="icon"><use href="#icon-profile"></use></svg>研究印象</span></a>
       <a class="" href="top-conf/index.html"><span><svg class="icon"><use href="#icon-graduation"></use></svg>顶会报告</span></a>
-      <a class="" href="secnews/index.html"><span><svg class="icon"><use href="#icon-newspaper"></use></svg>安全资讯</span></a><a href="#authors"><span><svg class="icon"><use href="#icon-users"></use></svg>关注作者</span></a>
+      <a class="" href="field-briefing/index.html"><span><svg class="icon"><use href="#icon-book"></use></svg>领域导读</span></a>
+      <a class="" href="secnews/index.html"><span><svg class="icon"><use href="#icon-newspaper"></use></svg>安全资讯</span></a>
+      <a href="#authors"><span><svg class="icon"><use href="#icon-users"></use></svg>关注作者</span></a>
     </nav>
     <div class="page">
       <section class="page-header has-today-card">
@@ -464,8 +565,8 @@
             <span class="today-news-tape" aria-hidden="true"></span>
             <span class="today-news-stamp">NEW</span>
             <span class="today-news-kicker">最新快讯</span>
-            <strong class="today-news-date">2026年9月4日</strong>
-            <span class="today-news-count">186 条新鲜出炉</span>
+            <strong class="today-news-date">2026年9月13日</strong>
+            <span class="today-news-count">1 条新鲜出炉</span>
             <span class="today-news-hint">点我展开看看</span>
           </summary>
           
@@ -475,66 +576,32 @@
               
               <li>
                 
-                <a href="https://www.bleepingcomputer.com/news/security/hpe-patches-critical-arubaos-cx-remote-code-execution-flaw/" target="_blank" rel="noopener noreferrer">HPE patches critical ArubaOS-CX remote code execution flaw</a>
+                <a href="https://www.bleepingcomputer.com/news/security/dutch-ncsc-critical-check-point-vpn-flaws-exploitation-is-imminent/" target="_blank" rel="noopener noreferrer">Dutch NCSC: Critical Check Point VPN flaws exploitation is imminent</a>
                 
                 <span class="today-news-item-meta">BleepingComputer · Security</span>
-              </li>
-              
-              <li>
-                
-                <a href="https://www.bleepingcomputer.com/news/security/critical-elementor-pro-flaw-exploited-to-take-over-wordpress-sites/" target="_blank" rel="noopener noreferrer">Critical Elementor Pro flaw exploited to take over WordPress sites</a>
-                
-                <span class="today-news-item-meta">BleepingComputer · Security</span>
-              </li>
-              
-              <li>
-                
-                <a href="https://www.bleepingcomputer.com/news/security/french-hospital-fined-500-000-after-breach-exposes-data-of-727-000/" target="_blank" rel="noopener noreferrer">French hospital fined €500,000 after breach exposes data of 727,000</a>
-                
-                <span class="today-news-item-meta">BleepingComputer · Security</span>
-              </li>
-              
-              <li>
-                
-                <a href="https://www.bleepingcomputer.com/news/security/coders-registry-infrastructure-compromised-to-push-malicious-modules/" target="_blank" rel="noopener noreferrer">Coder&#39;s registry infrastructure compromised to push malicious modules</a>
-                
-                <span class="today-news-item-meta">BleepingComputer · Security</span>
-              </li>
-              
-              <li>
-                
-                <a href="https://arxiv.org/abs/2609.03884" target="_blank" rel="noopener noreferrer">A Blind Trust, the Bloody Thrust: When Attacker-Controlled Hook Updates Steer AI Agent Harnesses towards Malicious Behaviors</a>
-                
-                <span class="today-news-item-meta">arXiv · cs.CR</span>
-              </li>
-              
-              <li>
-                
-                <a href="https://arxiv.org/abs/2609.03781" target="_blank" rel="noopener noreferrer">IndicSafeEval: Safety Robustness of Large Language Models under Multilingual Persuasive Jailbreak Attacks</a>
-                
-                <span class="today-news-item-meta">arXiv · cs.CL</span>
               </li>
               
             </ul>
             
-            <p class="today-news-more">还有 180 条</p>
-            
-            <a class="today-news-jump" href="secnews/index.html?date=2026-09-04">前往当天资讯界面</a>
+            <a class="today-news-jump" href="secnews/index.html?date=2026-09-13">前往当天资讯界面</a>
           </div>
           
         </details>
       </section>
       <section class="surface stats" aria-label="概览统计">
-        <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-file"></use></svg></span><span class="stat-copy"><span class="stat-value">7</span><span class="stat-label">已生成报告</span></span></div>
-        <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-graduation"></use></svg></span><span class="stat-copy"><span class="stat-value">4</span><span class="stat-label">顶会报告</span></span></div>
+        <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-file"></use></svg></span><span class="stat-copy"><span class="stat-value">19</span><span class="stat-label">已生成报告</span></span></div>
+        <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-graduation"></use></svg></span><span class="stat-copy"><span class="stat-value">16</span><span class="stat-label">顶会报告</span></span></div>
         <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-users"></use></svg></span><span class="stat-copy"><span class="stat-value" id="authorStatCount">0</span><span class="stat-label">关注作者</span></span></div>
       </section>
       <div class="workspace ">
         <section class="surface" id="reports">
-          <div class="section-head"><div><h2>阅读入口</h2><p class="section-description">按主题进入报告索引</p></div><span class="section-count">7 reports</span></div>
+          <div class="section-head"><div><h2>阅读入口</h2><p class="section-description">按主题进入报告索引</p></div><span class="section-count">19 reports</span></div>
           <div class="gateway-list">
             <a class="gateway-row" href="secnews/index.html"><span class="gateway-icon orange"><svg class="icon-lg"><use href="#icon-newspaper"></use></svg></span><span><h3 class="gateway-title">安全资讯周报</h3><p class="gateway-description">查看安全新闻与 arXiv 论文的周期性导读。</p><span class="gateway-meta">3 份报告</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
-            <a class="gateway-row" href="top-conf/index.html"><span class="gateway-icon"><svg class="icon-lg"><use href="#icon-graduation"></use></svg></span><span><h3 class="gateway-title">顶会论文总结</h3><p class="gateway-description">按会议和研究方向浏览安全顶会论文分析。</p><span class="gateway-meta">4 份报告</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
+            <a class="gateway-row" href="top-conf/index.html"><span class="gateway-icon"><svg class="icon-lg"><use href="#icon-graduation"></use></svg></span><span><h3 class="gateway-title">顶会论文总结</h3><p class="gateway-description">按会议和研究方向浏览安全顶会论文分析。</p><span class="gateway-meta">16 份报告</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
+            <a class="gateway-row" href="field-briefing/index.html"><span class="gateway-icon"><svg class="icon-lg"><use href="#icon-book"></use></svg></span><span><h3 class="gateway-title">领域导读</h3><p class="gateway-description">输入研究方向，基于顶会中文摘要与近期 arXiv 分类综述近五年研究现状并推荐高相关论文。</p><span class="gateway-meta">4595 篇顶会摘要</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
+            <a class="gateway-row" href="inbox/index.html"><span class="gateway-icon orange"><svg class="icon-lg"><use href="#icon-mail"></use></svg></span><span><h3 class="gateway-title">私信</h3><p class="gateway-description">每天推送一篇匹配你关注领域的论文。</p><span class="gateway-meta">结合研究印象</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
+            <a class="gateway-row" href="impression/index.html"><span class="gateway-icon"><svg class="icon-lg"><use href="#icon-profile"></use></svg></span><span><h3 class="gateway-title">研究印象</h3><p class="gateway-description">编写自己的研究方向，供导读、找论文和每日推送使用。</p><span class="gateway-meta">每人一份专属文件</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
             <a class="gateway-row" href="#authors"><span class="gateway-icon gray"><svg class="icon-lg"><use href="#icon-users"></use></svg></span><span><h3 class="gateway-title">关注作者</h3><p class="gateway-description">维护作者主页和研究方向，方便持续跟踪。</p><span class="gateway-meta"><span id="authorGatewayCount">0</span> 位作者</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
           </div>
         </section>
@@ -592,6 +659,8 @@
     container.querySelectorAll('button[data-page]').forEach((button) => button.addEventListener('click', () => { if (!button.disabled) onChange(Number(button.dataset.page)); }));
   }
 </script>
+<script src="assets/fastread.js"></script>
+<script src="assets/authors-nav.js"></script>
 
 
 <script src="assets/authors.js"></script>

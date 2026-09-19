@@ -7,11 +7,21 @@ import re
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
+import field_briefing
+
 
 REPORT_DIRS = (
     ("top-conf/data/report", "Top Conference"),
     ("secnews/data/report", "Security Digest"),
 )
+FIELD_BRIEFING_EXAMPLES = [
+    "LLM jailbreak",
+    "侧信道",
+    "TEE",
+    "提示注入",
+    "模糊测试",
+    "差分隐私",
+]
 CONFERENCE_LABELS = {
     "usenix": "USENIX Security",
     "ieee-sp": "IEEE S&P",
@@ -363,7 +373,7 @@ def latest_home_news(news_days):
     }
 
 
-def render_page(page_mode, output):
+def render_page(page_mode, output, field_stats):
     page_config = {
         "home": {
             "kind": None,
@@ -382,6 +392,24 @@ def render_page(page_mode, output):
             "title": "安全资讯周报",
             "description": "每日优先推荐 10 条高价值资讯，并按 BleepingComputer 与 arXiv 分渠道浏览全部条目。",
             "label": "Security Digest",
+        },
+        "field-briefing": {
+            "kind": "Field Briefing",
+            "title": "领域导读",
+            "description": "输入一个研究方向，结合你的研究印象，基于顶会中文摘要与近期 arXiv 分类综述近五年研究现状并推荐高相关论文。",
+            "label": "Field Briefing",
+        },
+        "inbox": {
+            "kind": None,
+            "title": "私信",
+            "description": "每天推送一篇与你关注领域匹配的论文，推送会结合研究印象与关注作者。",
+            "label": "Inbox",
+        },
+        "impression": {
+            "kind": None,
+            "title": "研究印象",
+            "description": "写下自己的研究方向。领域导读、找论文和每日推送都会结合这份专属印象。",
+            "label": "Research Profile",
         },
     }[page_mode]
 
@@ -403,6 +431,9 @@ def render_page(page_mode, output):
         home_path="index.html" if page_mode == "home" else "../index.html",
         top_conf_path="top-conf/index.html" if page_mode == "home" else "../top-conf/index.html",
         secnews_path="secnews/index.html" if page_mode == "home" else "../secnews/index.html",
+        field_briefing_path="field-briefing/index.html" if page_mode == "home" else "../field-briefing/index.html",
+        inbox_path="inbox/index.html" if page_mode == "home" else ("index.html" if page_mode == "inbox" else "../inbox/index.html"),
+        impression_path="impression/index.html" if page_mode == "home" else ("index.html" if page_mode == "impression" else "../impression/index.html"),
         root_prefix="" if page_mode == "home" else "../",
         asset_prefix="assets/" if page_mode == "home" else "../assets/",
         reports=reports,
@@ -424,15 +455,30 @@ def render_page(page_mode, output):
         conference_years=sorted({paper["year"] for paper in conference_papers}, reverse=True),
         conference_count=len({paper["conference"] for paper in conference_papers}),
         conference_category_count=len({paper["category"] for paper in conference_papers}),
+        field_briefing_top_conf_count=field_stats["top_conf"],
+        field_briefing_arxiv_count=field_stats["arxiv"],
+        field_briefing_category_count=field_stats["category_count"],
+        field_briefing_categories=field_briefing.CATEGORIES,
+        field_briefing_examples=FIELD_BRIEFING_EXAMPLES,
+        field_briefing_categories_json=json_for_script(field_briefing.CATEGORIES),
+        field_briefing_examples_json=json_for_script(FIELD_BRIEFING_EXAMPLES),
+        field_briefing_coverage=field_stats.get("coverage") or field_briefing.coverage_note({"arxiv_days": 90}, Path(".")),
     )
     output.write_text(content, encoding="utf-8")
     print(f"Page generated: {output}")
 
 
 def render_homepage(output):
-    render_page("home", output)
-    render_page("top-conf", Path("top-conf/index.html"))
-    render_page("secnews", Path("secnews/index.html"))
+    field_stats = field_briefing.corpus_stats(Path("."))
+    Path("field-briefing").mkdir(exist_ok=True)
+    Path("inbox").mkdir(exist_ok=True)
+    Path("impression").mkdir(exist_ok=True)
+    render_page("home", output, field_stats)
+    render_page("top-conf", Path("top-conf/index.html"), field_stats)
+    render_page("secnews", Path("secnews/index.html"), field_stats)
+    render_page("field-briefing", Path("field-briefing/index.html"), field_stats)
+    render_page("inbox", Path("inbox/index.html"), field_stats)
+    render_page("impression", Path("impression/index.html"), field_stats)
 
 
 def main():

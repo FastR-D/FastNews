@@ -61,12 +61,16 @@ module.exports = async function handler(req, res) {
   }
 
   const body = readBody(req);
-  const topic = clip(body.topic, 120);
+  const impression = clip(body.impression, 4000);
+  let topic = clip(body.topic, 120);
   const keywords = clip(body.keywords, 200);
   const incoming = Array.isArray(body.candidates) ? body.candidates : [];
   if (!topic && !keywords) {
-    res.status(400).json({ error: "topic or keywords required" });
-    return;
+    if (impression) topic = clip(impression, 120);
+    else {
+      res.status(400).json({ error: "topic or keywords required" });
+      return;
+    }
   }
 
   const candidates = [];
@@ -116,6 +120,7 @@ module.exports = async function handler(req, res) {
   const userPrompt = [
     `\u7814\u7a76\u65b9\u5411: ${topic || "(none)"}`,
     `\u5173\u952e\u8bcd: ${keywords || "(none)"}`,
+    `\u7814\u7a76\u8005\u5370\u8c61: ${clip(impression, 800) || "(none)"}`,
     "",
     "\u5019\u9009\u8bba\u6587:",
     listed,

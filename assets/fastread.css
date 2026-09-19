@@ -1,0 +1,31 @@
+.paper-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+.fastread-open {
+  min-height: 32px;
+  padding: 6px 10px;
+  color: var(--primary-deep, #104936);
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--surface, #fff);
+  border: 1px solid var(--border, #d6e3db);
+  border-radius: 8px;
+  cursor: pointer;
+}
+.fastread-open:hover {
+  background: var(--muted-bg, #eaf1ec);
+}
+.fastread-open:disabled {
+  cursor: wait;
+  opacity: .65;
+}
+@media print {
+  .fastread-open,
+  .paper-actions {
+    display: none !important;
+  }
+}

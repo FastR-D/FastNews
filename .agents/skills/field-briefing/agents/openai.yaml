@@ -1,0 +1,5 @@
+interface:
+  display_name: "Field Briefing"
+  short_description: "Review a research field and recommend papers"
+  default_prompt: "Use $field-briefing to write a literature review of LLM jailbreak research and recommend the most related FastNews papers."
+  brand_color: "#ea580c"

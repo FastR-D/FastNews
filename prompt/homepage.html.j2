@@ -12,21 +12,26 @@
   (() => {
     const applyTheme = () => {
       const saved = window.localStorage.getItem("fastresearch-theme") ?? window.localStorage.getItem("fastnews.theme");
-      document.documentElement.classList.toggle("dark", saved !== "light");
+      document.documentElement.classList.toggle("dark", saved === "dark");
+    };
+    const applySidebar = () => {
+      const collapsed = window.localStorage.getItem("fastnews.sidebarCollapsed") === "1";
+      document.documentElement.classList.toggle("sidebar-collapsed", collapsed);
     };
     applyTheme();
-    window.addEventListener("pageshow", applyTheme);
+    applySidebar();
+    window.addEventListener("pageshow", () => { applyTheme(); applySidebar(); });
   })();
 </script>
 <style>html:not(.fastnews-ready) .app-shell{visibility:hidden!important}</style>
 <script src="{{ asset_prefix }}gate.js"></script>
 <style>
   :root {
-    --app-bg: #f6f7f5; --muted-bg: #eef2ef; --surface: #fff; --soft: #f8faf8;
-    --border: #dce4df; --input-border: #cbd7d0; --primary: #0f766e; --primary-deep: #115e59;
-    --primary-soft: #f0fdfa; --primary-border: #d4e7df; --accent: #ea580c; --accent-soft: #fff7ed;
-    --accent-border: #fed7aa; --accent-text: #c2410c; --text: #17211e; --muted: #66736d;
-    --subtle: #8a9690; --danger: #dc2626; --danger-soft: #fef2f2; --focus: rgb(20 184 166 / .16);
+    --app-bg: #f0f5f2; --muted-bg: #eaf1ec; --surface: #ffffff; --soft: #f8faf8;
+    --border: #d6e3db; --input-border: #cbd7d0; --primary: #155e45; --primary-deep: #104936;
+    --primary-soft: #e8f3ed; --primary-border: #8fb9a0; --accent: #b45309; --accent-soft: #fffbeb;
+    --accent-border: #fde68a; --accent-text: #92400e; --text: #172720; --muted: #567265;
+    --subtle: #7f998d; --danger: #dc2626; --danger-soft: #fef2f2; --focus: rgba(21, 94, 69, 0.16);
   }
   html.dark {
     --app-bg: #151a19; --muted-bg: #18201d; --surface: #1b2220; --soft: #202925;
@@ -46,10 +51,18 @@
   button, input, textarea { font: inherit; }
   button { border: 0; }
   button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible { outline: 0; box-shadow: 0 0 0 3px var(--focus); }
+  .visually-hidden { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
   .icon { width: 16px; height: 16px; flex: 0 0 auto; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
   .icon-lg { width: 20px; height: 20px; }
   .icon-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
   .app-shell { display: grid; grid-template-columns: 224px minmax(0, 1fr); min-height: 100vh; }
+  html.sidebar-collapsed .app-shell { grid-template-columns: minmax(0, 1fr); }
+  html.sidebar-collapsed .sidebar { display: none; }
+  .topbar-start { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .sidebar-show { display: none; }
+  html.sidebar-collapsed .sidebar-hide { display: none; }
+  html.sidebar-collapsed .sidebar-show { display: block; }
+  .nav-count.is-unread { color: #fff; background: var(--primary); border-radius: 999px; padding: 0 6px; min-width: 18px; text-align: center; }
   .sidebar {
     display: flex; position: sticky; top: 0; flex-direction: column; height: 100vh;
     padding: 16px 14px; background: var(--muted-bg); border-right: 1px solid var(--border);
@@ -259,158 +272,228 @@
     .news-list-head { align-items: flex-start; flex-direction: column; gap: 3px; padding: 12px 14px; }
     .news-row { padding: 14px 14px 14px 18px; }
   }
-  /* FastResearch console layer */
-  :root { --app-bg:#f4f8f7; --muted-bg:#e8f1ef; --surface:#fff; --soft:#f4f8f7; --border:rgba(42,103,104,.2); --input-border:#b8cfcc; --primary:#087f78; --primary-deep:#075f5a; --primary-soft:rgba(8,127,120,.08); --primary-border:rgba(8,127,120,.3); --accent:#c2410c; --accent-soft:#fff7ed; --accent-border:#fed7aa; --accent-text:#c2410c; --text:#14282c; --muted:#5c7779; --subtle:#648083; --focus:rgba(8,127,120,.16); }
-  html.dark { --app-bg:#0b1a14; --muted-bg:#12261d; --surface:#12261d; --soft:#173028; --border:rgba(141,198,200,.18); --input-border:#2d4b50; --primary:#65ead9; --primary-deep:#9cfff2; --primary-soft:rgba(101,234,217,.08); --primary-border:rgba(101,234,217,.35); --accent:#ffc36d; --accent-soft:rgba(255,195,109,.1); --accent-border:rgba(255,195,109,.35); --accent-text:#ffc36d; --text:#e7f1f0; --muted:#89a1a3; --subtle:#587478; }
-  html:not(.dark) { --app-bg:#f4f8f7; --muted-bg:#e8f1ef; --surface:#fff; --soft:#f4f8f7; --border:rgba(42,103,104,.2); --input-border:#b8cfcc; --primary:#087f78; --primary-deep:#075f5a; --primary-soft:rgba(8,127,120,.08); --primary-border:rgba(8,127,120,.3); --accent:#c2410c; --accent-soft:#fff7ed; --accent-border:#fed7aa; --accent-text:#c2410c; --text:#14282c; --muted:#5c7779; --subtle:#648083; --focus:rgba(8,127,120,.16); }
-  body { font-family:'Space Grotesk','Noto Sans SC',Inter,sans-serif; background:var(--app-bg); color:var(--text); }
-  html.dark body { background:radial-gradient(circle at 80% -10%,rgba(28,77,56,.65),transparent 35%),var(--app-bg); }
-  .app-shell { background:transparent; } html.dark .sidebar { background:rgba(18,38,29,.88); border-color:var(--border); } html.dark .topbar { background:rgba(11,26,20,.78); border-color:var(--border); backdrop-filter:blur(14px); }
-  .page { max-width:1240px; padding:30px 24px 42px; } .brand-name { letter-spacing:.08em; text-transform:uppercase; }
-  h1 { font-family:'Space Grotesk','Noto Sans SC',sans-serif; font-size:clamp(28px,4vw,48px); font-weight:500; letter-spacing:-.04em; } .description { line-height:1.8; }
-  html.dark .surface { background:rgba(18,38,29,.88); border-color:var(--border); box-shadow:0 8px 28px rgba(0,0,0,.16); } html.dark .section-head, html.dark .news-list-head { background:rgba(23,48,40,.86); }
-  .stat-value { color:var(--primary); font-family:'JetBrains Mono',monospace; } .report-title a,.conference-title a,.article-title a,.news-title a { color:var(--primary); }
-  .report-row:hover,.conference-row:hover,.article:hover,.news-row:hover,.gateway-row:hover,.author-row:hover { background:rgba(101,234,217,.06); } .conference-row::before,.news-row::before { background:var(--accent); }
-  .badge,.conference-tag,.news-tag { font-family:'JetBrains Mono',monospace; }
-  @media (max-width:920px) { .page { padding:22px 16px 32px; } h1 { font-size:32px; } }
-  /* Match FastResearch shell exactly */
-  html.dark body, html.dark .app-shell { background:#0b1a14 !important; color:#e7f1f0 !important; }
-  html.dark .sidebar { background:#12261d !important; border-color:rgba(141,244,231,.14) !important; }
-  html.dark .topbar { height:72px !important; padding:0 clamp(18px,5vw,76px) !important; background:rgba(11,26,20,.72) !important; border-color:rgba(141,244,231,.14) !important; }
-  html.dark .brand-mark { color:#e7f1f0 !important; } html.dark .brand-mark:first-child { background:transparent !important; border:0 !important; }
-  html.dark .brand-mark .icon { color:#05150d !important; background:#65ead9 !important; }
-  html.dark .page { max-width:1240px; padding:30px 24px 42px; }
-  html.dark h1 { color:#eaf3f2 !important; font-size:clamp(32px,5vw,56px) !important; font-weight:500 !important; letter-spacing:-.05em !important; }
-  html.dark .surface { background:rgba(18,38,29,.72) !important; border-color:rgba(141,198,200,.18) !important; box-shadow:none !important; }
-  html.dark .section-head, html.dark .news-list-head { background:rgba(23,48,40,.72) !important; }
-  html.dark .gateway-title, html.dark .report-title, html.dark .conference-title, html.dark .news-title { color:#e7f1f0 !important; }
-  html.dark .gateway-description, html.dark .report-row .meta, html.dark .conference-summary, html.dark .news-description { color:#87a0a3 !important; }
-  html.dark .gateway-row:hover, html.dark .report-row:hover, html.dark .conference-row:hover, html.dark .news-row:hover, html.dark .author-row:hover { background:rgba(24,52,40,.92) !important; }
-  html.dark .button-primary { color:#04140c !important; background:#65ead9 !important; border-color:#65ead9 !important; }
-  html.dark .button-primary:hover { background:#9cfff2 !important; border-color:#9cfff2 !important; }
-  html.dark .button, html.dark .icon-button { background:transparent; color:#9cb4b5; border-color:rgba(143,198,200,.2); }
-  html.dark .icon-button:hover, html.dark .button:hover { color:#65ead9; border-color:#65ead9; background:rgba(101,234,217,.07); }
-  html.dark .field { color:#d8e9e8; background:#0d1f18; border-color:#2d4b50; }
-  html:not(.dark) .topbar { height:72px; }
-  html:not(.dark) .page { max-width:1240px; }
-  /* FastResearch series shell: shared with the control center */
-  html.dark body { background:#0b1a14 !important; }
-  html.dark body::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.16; background-image:linear-gradient(rgba(86,168,126,.16) 1px,transparent 1px),linear-gradient(90deg,rgba(86,168,126,.16) 1px,transparent 1px); background-size:54px 54px; mask-image:linear-gradient(to bottom,#000,transparent 86%); z-index:0; }
-  html.dark .app-shell { display:block; min-height:100vh; background:radial-gradient(circle at 80% -10%,#1c4d38 0,transparent 35%),#0b1a14 !important; }
-  html.dark .sidebar { display:none; }
-  html.dark .main { position:relative; z-index:1; }
-  html.dark .topbar { height:72px !important; padding:0 clamp(18px,5vw,76px) !important; background:rgba(11,26,20,.72) !important; border-color:rgba(141,244,231,.14) !important; }
-  html.dark .breadcrumb { display:flex; align-items:center; gap:10px; color:#69878a !important; font:700 14px 'Space Grotesk',sans-serif; letter-spacing:.14em; text-transform:uppercase; }
-  html.dark .breadcrumb strong { color:#e7f1f0 !important; font-weight:700; }
-  html.dark .breadcrumb strong::first-letter { color:#65ead9; }
-  html.dark .breadcrumb::after { content:'SYSTEM ONLINE'; margin-left:18px; color:#69878a; font:10px 'JetBrains Mono',monospace; letter-spacing:.12em; }
-  html.dark .page { max-width:1240px; padding:58px 24px 42px !important; }
-  html.dark .page-header { margin-bottom:34px; }
-  html.dark .header-copy { gap:0; }
-  html.dark .header-icon { display:none; }
-  html.dark h1 { max-width:760px; margin:0 !important; color:#eaf3f2 !important; font-size:clamp(42px,6vw,72px) !important; line-height:.98 !important; font-weight:500 !important; letter-spacing:-.05em !important; }
-  html.dark h1::first-line { color:#eaf3f2; }
-  html.dark .description { max-width:520px; margin-top:20px !important; color:#8ca7a9 !important; font-size:15px !important; line-height:1.8 !important; }
-  html.dark .badge { align-self:flex-end; margin-top:8px; color:#65ead9; background:rgba(101,234,217,.08); border-color:rgba(101,234,217,.35); font:10px 'JetBrains Mono',monospace; letter-spacing:.12em; }
-  html.dark .surface { border-radius:0 !important; background:rgba(18,38,29,.72) !important; border-color:rgba(141,198,200,.18) !important; box-shadow:none !important; }
-  html.dark .stats { margin-bottom:14px; }
-  html.dark .stat { padding:18px 20px; border-color:rgba(141,198,200,.14); }
-  html.dark .stat-value { color:#65ead9 !important; font-size:22px; }
-  html.dark .stat-label, html.dark .section-count, html.dark .generated { color:#587478 !important; font:10px 'JetBrains Mono',monospace; letter-spacing:.08em; }
-  html.dark .section-head, html.dark .news-list-head { min-height:64px; background:rgba(23,48,40,.86) !important; border-color:rgba(141,198,200,.14); }
-  html.dark h2 { color:#d5e9e7 !important; font-size:15px; font-weight:500; letter-spacing:.02em; }
-  html.dark .section-description { color:#69878a !important; }
-  html.dark .gateway-row, html.dark .author-row, html.dark .report-row, html.dark .conference-row, html.dark .news-row { border-color:rgba(141,198,200,.13); }
-  html.dark .gateway-row:hover, html.dark .author-row:hover, html.dark .report-row:hover, html.dark .conference-row:hover, html.dark .news-row:hover { background:rgba(24,52,40,.92) !important; }
-  html.dark .gateway-title, html.dark .report-title, html.dark .conference-title, html.dark .news-title { color:#e7f1f0 !important; font-weight:500; }
-  html.dark .gateway-description, html.dark .conference-summary, html.dark .news-description, html.dark .meta { color:#87a0a3 !important; }
-  html.dark .gateway-meta { color:#65ead9 !important; }
-  html.dark .gateway-icon, html.dark .stat-icon { border-radius:0; background:rgba(101,234,217,.08); border-color:rgba(101,234,217,.35); color:#65ead9; }
-  html.dark .gateway-icon.orange { color:#ffc36d; background:rgba(255,195,109,.08); border-color:rgba(255,195,109,.35); }
-  html.dark .button, html.dark .icon-button { border-radius:0; }
-  html.dark .field { border-radius:0; }
-  html.dark .author-form { border-radius:0; background:#12261d; border-color:rgba(101,234,217,.38); }
-  @media (max-width:920px) { html.dark .page { padding:42px 16px 32px !important; } html.dark h1 { font-size:43px !important; } html.dark .breadcrumb::after { display:none; } }
-  html:not(.dark) body { background:#f4f8f7 !important; color:#14282c !important; }
-  html:not(.dark) .app-shell { display:block; min-height:100vh; background:radial-gradient(circle at 80% -10%,#d9f5f0 0,transparent 36%),#f4f8f7 !important; }
-  html:not(.dark) .sidebar { display:none; }
-  html:not(.dark) .main { position:relative; z-index:1; }
-  html:not(.dark) .topbar { height:72px !important; padding:0 clamp(18px,5vw,76px) !important; background:rgba(244,248,247,.82) !important; border-color:rgba(31,99,100,.18) !important; }
-  html:not(.dark) .breadcrumb { display:flex; align-items:center; gap:10px; color:#648083 !important; font:700 14px 'Space Grotesk',sans-serif; letter-spacing:.14em; text-transform:uppercase; }
-  html:not(.dark) .breadcrumb strong { color:#14282c !important; }
-  html:not(.dark) .breadcrumb::after { content:'SYSTEM ONLINE'; margin-left:18px; color:#648083; font:10px 'JetBrains Mono',monospace; letter-spacing:.12em; }
-  html:not(.dark) .page { max-width:1240px; padding:58px 24px 42px !important; }
-  html:not(.dark) .page-header { margin-bottom:34px; }
-  html:not(.dark) .header-copy { gap:0; } html:not(.dark) .header-icon { display:none; }
-  html:not(.dark) h1 { max-width:760px; margin:0 !important; color:#14282c !important; font-size:clamp(42px,6vw,72px) !important; line-height:.98 !important; font-weight:500 !important; letter-spacing:-.05em !important; }
-  html:not(.dark) .description { max-width:520px; margin-top:20px !important; color:#5c7779 !important; font-size:15px !important; line-height:1.8 !important; }
-  html:not(.dark) .badge { align-self:flex-end; margin-top:8px; color:#087f78; background:rgba(8,127,120,.08); border-color:rgba(8,127,120,.3); font:10px 'JetBrains Mono',monospace; letter-spacing:.12em; }
-  html:not(.dark) .surface { border-radius:0 !important; background:rgba(255,255,255,.72) !important; border-color:rgba(42,103,104,.22) !important; box-shadow:none !important; }
-  html:not(.dark) .section-head, html:not(.dark) .news-list-head { background:rgba(244,248,247,.86) !important; border-color:rgba(42,103,104,.16); }
-  html:not(.dark) .stat { border-color:rgba(42,103,104,.14); } html:not(.dark) .stat-value { color:#087f78 !important; font-family:'JetBrains Mono',monospace; }
-  html:not(.dark) .stat-label, html:not(.dark) .section-count, html:not(.dark) .generated { color:#648083 !important; font:10px 'JetBrains Mono',monospace; letter-spacing:.08em; }
-  html:not(.dark) .gateway-row, html:not(.dark) .author-row, html:not(.dark) .report-row, html:not(.dark) .conference-row, html:not(.dark) .news-row { border-color:rgba(42,103,104,.14); }
-  html:not(.dark) .gateway-row:hover, html:not(.dark) .author-row:hover, html:not(.dark) .report-row:hover, html:not(.dark) .conference-row:hover, html:not(.dark) .news-row:hover { background:rgba(255,255,255,.96) !important; }
-  html:not(.dark) .gateway-title, html:not(.dark) .report-title, html:not(.dark) .conference-title, html:not(.dark) .news-title { color:#14282c !important; font-weight:500; }
-  html:not(.dark) .gateway-description, html:not(.dark) .conference-summary, html:not(.dark) .news-description, html:not(.dark) .meta { color:#5c7779 !important; }
-  html:not(.dark) .gateway-meta { color:#087f78 !important; } html:not(.dark) .gateway-icon, html:not(.dark) .stat-icon { border-radius:0; }
-  html:not(.dark) .button, html:not(.dark) .icon-button, html:not(.dark) .field { border-radius:0; }
-  @media (max-width:920px) { html:not(.dark) .page { padding:42px 16px 32px !important; } html:not(.dark) h1 { font-size:43px !important; } html:not(.dark) .breadcrumb::after { display:none; } }
-  /* Ambient motion shared with FastResearch */
-  :root { --pointer-x:50vw; --pointer-y:40vh; }
-  body::after { content:""; position:fixed; inset:0; z-index:0; pointer-events:none; background:radial-gradient(360px circle at var(--pointer-x) var(--pointer-y), rgba(101,234,217,.12), transparent 72%); transition:background .15s ease; }
-  html:not(.dark) body::after { background:radial-gradient(360px circle at var(--pointer-x) var(--pointer-y), rgba(8,127,120,.11), transparent 72%); }
-  html:not(.dark) body::before { content:""; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.24; background-image:linear-gradient(rgba(39,107,108,.13) 1px,transparent 1px),linear-gradient(90deg,rgba(39,107,108,.13) 1px,transparent 1px); background-size:54px 54px; mask-image:linear-gradient(to bottom,#000,transparent 86%); }
-  html.dark body::before, html:not(.dark) body::before { animation:fr-grid 22s linear infinite; }
-  .main { position:relative; z-index:1; }
-  .topbar { position:sticky; z-index:5; }
-  .page-header, .stats, .workspace > *, .conference-explorer { animation: fr-rise .55s ease both; }
-  .stats { animation-delay:.06s; } .workspace > *:nth-child(2) { animation-delay:.12s; }
-  .gateway-row, .report-row, .conference-row, .news-row, .author-row { will-change:transform; transition:transform .25s ease, background .25s ease, border-color .25s ease; }
-  .gateway-row:hover, .report-row:hover, .conference-row:hover, .news-row:hover, .author-row:hover { transform:translateY(-3px); }
-  .button, .icon-button, .calendar-day button { transition:transform .2s ease, background .2s ease, color .2s ease, border-color .2s ease; }
-  .button:active, .icon-button:active, .calendar-day button:active, .gateway-row:active { transform:scale(.97); }
-  .is-pressed { transform:scale(.97) !important; }
-  @keyframes fr-rise { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
-  @keyframes fr-grid { from { background-position:0 0,0 0; } to { background-position:54px 54px,54px 54px; } }
-  @media (max-width:620px) { .gateway-row:hover, .report-row:hover, .conference-row:hover, .news-row:hover, .author-row:hover { transform:none; } body::after { background:radial-gradient(220px circle at var(--pointer-x) var(--pointer-y),rgba(101,234,217,.08),transparent 72%); } }
-  @media (prefers-reduced-motion:reduce) { body::after { display:none; } .page-header, .stats, .workspace > *, .conference-explorer { animation:none; } .gateway-row, .report-row, .conference-row, .news-row, .author-row { transition:none; } }
-  .pagination { display:flex; align-items:center; justify-content:flex-end; gap:8px; padding:12px 16px; border-top:1px solid var(--border); background:var(--soft); }
-  .pagination button { min-width:32px; height:30px; padding:0 9px; color:var(--muted); background:transparent; border:1px solid var(--border); border-radius:0; cursor:pointer; font:11px 'JetBrains Mono',monospace; }
-  .pagination button:hover:not(:disabled), .pagination button.is-current { color:var(--primary); border-color:var(--primary); background:var(--primary-soft); }
-  .pagination button:disabled { cursor:default; opacity:.45; }
-  .pagination .pagination-info { margin-right:auto; color:var(--subtle); font:10px 'JetBrains Mono',monospace; letter-spacing:.05em; }
-  @media (max-width:620px) { .pagination { justify-content:center; padding:10px 12px; } .pagination .pagination-info { display:none; } }
-  html:not(.dark) { color-scheme: light; }
-  html:not(.dark) .news-list-head,
-  html:not(.dark) .pagination {
-    background: rgba(244,248,247,.86) !important;
-    border-color: rgba(42,103,104,.16) !important;
-    color: #14282c;
+  /* FastResearch Scientific Console Styling (统一浅绿科研质感) */
+  :root {
+    --app-bg: #f0f5f2;
+    --muted-bg: #eaf1ec;
+    --surface: #ffffff;
+    --soft: #f8faf8;
+    --border: #d6e3db;
+    --input-border: #cbd7d0;
+    --primary: #155e45;
+    --primary-deep: #104936;
+    --primary-soft: #e8f3ed;
+    --primary-border: #8fb9a0;
+    --accent: #b45309;
+    --accent-soft: #fffbeb;
+    --accent-border: #fde68a;
+    --accent-text: #92400e;
+    --text: #172720;
+    --muted: #567265;
+    --subtle: #7f998d;
+    --focus: rgba(21, 94, 69, 0.16);
   }
-  html:not(.dark) .news-date-title { color:#14282c !important; }
-  html:not(.dark) .news-date-sub,
-  html:not(.dark) .news-list-head .section-count { color:#5c7779 !important; }
-  html:not(.dark) #newsDetailToggle {
-    color: #14282c !important;
-    background: rgba(255,255,255,.92) !important;
-    border-color: rgba(42,103,104,.22) !important;
+  html.dark {
+    --app-bg: #0d1713;
+    --muted-bg: #14221c;
+    --surface: #192b23;
+    --soft: #111d17;
+    --border: #233b30;
+    --input-border: #2d4b3e;
+    --primary: #34d399;
+    --primary-deep: #10b981;
+    --primary-soft: rgba(52, 211, 153, 0.12);
+    --primary-border: #3b6b55;
+    --accent: #fbbf24;
+    --accent-soft: #451a03;
+    --accent-border: #78350f;
+    --accent-text: #fde68a;
+    --text: #e2ede7;
+    --muted: #8faea0;
+    --subtle: #648275;
+    --focus: rgba(52, 211, 153, 0.18);
   }
-  html:not(.dark) #newsDetailToggle:hover {
-    color: #075f5a !important;
-    background: rgba(8,127,120,.10) !important;
-    border-color: rgba(8,127,120,.32) !important;
+  body {
+    min-height: 100vh;
+    margin: 0;
+    background-color: var(--app-bg);
+    background-image:
+      linear-gradient(to right, rgba(21, 94, 69, 0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(21, 94, 69, 0.035) 1px, transparent 1px);
+    background-size: 32px 32px;
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
   }
-  html:not(.dark) #newsDetailToggle[aria-pressed="true"],
-  html:not(.dark) #newsDetailToggle[aria-pressed="true"]:hover {
-    color: #075f5a !important;
-    background: rgba(8,127,120,.10) !important;
-    border-color: rgba(8,127,120,.32) !important;
+  html.dark body {
+    background-color: #0d1713;
+    background-image:
+      linear-gradient(to right, rgba(52, 211, 153, 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(52, 211, 153, 0.06) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+  .app-shell { min-height: 100vh; }
+  .sidebar {
+    background: var(--muted-bg);
+    border-right: 1px solid var(--border);
+  }
+  .topbar {
+    height: 64px;
+    padding: 0 28px;
+    background: rgba(246, 250, 247, 0.88);
+    backdrop-filter: blur(12px) saturate(150%);
+    border-bottom: 1px solid var(--border);
+  }
+  html.dark .topbar {
+    background: rgba(13, 23, 19, 0.88);
+    border-bottom: 1px solid var(--border);
+  }
+  .brand-mark {
+    background: var(--primary);
+    color: #ffffff;
+    border-radius: 7px;
+    box-shadow: 0 2px 6px rgba(21, 94, 69, 0.2);
+  }
+  .brand-name {
+    color: var(--text);
+    font-weight: 700;
+  }
+  .brand-name b {
+    color: var(--primary);
+  }
+  .page {
+    max-width: 1240px;
+    padding: 32px 28px 48px;
+  }
+  .page-header {
+    margin-bottom: 26px;
+  }
+  h1 {
+    font-size: clamp(26px, 3.5vw, 36px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+  .description {
+    line-height: 1.7;
+    color: var(--muted);
+  }
+  .surface {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(21, 94, 69, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  }
+  .section-head, .news-list-head {
+    background: var(--soft);
+    border-bottom: 1px solid var(--border);
+  }
+  .stat-value {
+    color: var(--primary);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .report-title a, .conference-title a, .article-title a, .news-title a {
+    color: var(--text);
+    transition: color 0.15s ease;
+  }
+  .report-title a:hover, .conference-title a:hover, .article-title a:hover, .news-title a:hover {
+    color: var(--primary);
+  }
+  .report-row:hover, .conference-row:hover, .article:hover, .news-row:hover, .gateway-row:hover, .author-row:hover {
+    background: var(--primary-soft);
+  }
+  .conference-row::before, .news-row::before {
+    background: var(--accent);
+  }
+  .badge, .conference-tag, .news-tag {
+    font-family: 'JetBrains Mono', monospace;
+    border-radius: 4px;
+  }
+  .badge {
+    background: var(--accent-soft);
+    color: var(--accent-text);
+    border: 1px solid var(--accent-border);
+  }
+  .button-primary {
+    background: var(--primary);
+    color: #ffffff;
+    border: 1px solid var(--primary-deep);
+    border-radius: 6px;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(21, 94, 69, 0.15);
+  }
+  .button-primary:hover {
+    background: var(--primary-deep);
+  }
+  .button, .icon-button {
+    background: var(--surface);
+    color: var(--primary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+  .button:hover, .icon-button:hover {
+    background: var(--primary-soft);
+    border-color: var(--primary);
+  }
+  .field {
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+  }
+  .field:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--focus);
+  }
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 18px;
+    border-top: 1px solid var(--border);
+    background: var(--soft);
+  }
+  .pagination button {
+    min-width: 32px;
+    height: 30px;
+    padding: 0 9px;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    cursor: pointer;
+    font: 11px 'JetBrains Mono', monospace;
+  }
+  .pagination button:hover:not(:disabled), .pagination button.is-current {
+    color: var(--primary);
+    border-color: var(--primary);
+    background: var(--primary-soft);
+  }
+  .pagination button:disabled {
+    cursor: default;
+    opacity: 0.45;
+  }
+  .pagination .pagination-info {
+    margin-right: auto;
+    color: var(--subtle);
+    font: 11px 'JetBrains Mono', monospace;
+  }
+  @media (max-width: 920px) {
+    .page { padding: 22px 16px 32px; }
+    h1 { font-size: 28px; }
+  }
+  @media (max-width: 620px) {
+    .topbar { height: 56px; padding: 0 16px; }
+    .pagination { justify-content: center; padding: 10px 12px; }
+    .pagination .pagination-info { display: none; }
   }
 </style>
 {% if page_mode == 'home' %}<link rel="stylesheet" href="assets/authors.css"><link rel="stylesheet" href="assets/today-news.css">{% endif %}
 {% if page_mode == 'top-conf' %}<link rel="stylesheet" href="../assets/related-work.css">{% endif %}
+{% if page_mode == 'field-briefing' %}<link rel="stylesheet" href="../assets/field-briefing.css">{% endif %}
 {% if page_mode == 'secnews' %}<link rel="stylesheet" href="../assets/secnews-news.css">{% endif %}
+{% if page_mode in ['inbox', 'impression'] %}<link rel="stylesheet" href="../assets/profile.css">{% endif %}
+{% if page_mode in ['top-conf', 'field-briefing', 'inbox'] %}<link rel="stylesheet" href="{{ asset_prefix }}fastread.css">{% endif %}
 </head>
 <body>
 <svg class="icon-sprite" aria-hidden="true" focusable="false">
@@ -418,7 +501,12 @@
   <symbol id="icon-dashboard" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></symbol>
   <symbol id="icon-graduation" viewBox="0 0 24 24"><path d="m2 10 10-5 10 5-10 5-10-5Z"/><path d="M6 12.5V16c2 1.5 4 2.25 6 2.25S16 17.5 18 16v-3.5"/><path d="M22 10v6"/></symbol>
   <symbol id="icon-newspaper" viewBox="0 0 24 24"><path d="M4 4h15a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/><path d="M7 8h9M7 12h9M7 16h5"/></symbol>
+  <symbol id="icon-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/><path d="M8 7h8M8 11h6"/></symbol>
   <symbol id="icon-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="icon-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
+  <symbol id="icon-profile" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0 1 16 0"/></symbol>
+  <symbol id="icon-panel-close" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M13 10l-2 2 2 2"/></symbol>
+  <symbol id="icon-panel-open" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M13 14l2-2-2-2"/></symbol>
   <symbol id="icon-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 13h8M8 17h6"/></symbol>
   <symbol id="icon-tag" viewBox="0 0 24 24"><path d="M20 13 13 20a2 2 0 0 1-3 0l-6-6a2 2 0 0 1 0-3V4h7a2 2 0 0 1 1 1l8 8Z"/><circle cx="8.5" cy="8.5" r="1"/></symbol>
   <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
@@ -440,26 +528,38 @@
     <div class="nav-title">Workspace</div>
     <nav aria-label="主导航"><ul class="nav-list">
       <li><a class="{% if page_mode == 'home' %}active{% endif %}" href="{{ home_path }}"><span><svg class="icon"><use href="#icon-dashboard"></use></svg>总览</span></a></li>
+      <li><a class="{% if page_mode == 'inbox' %}active{% endif %}" href="{{ inbox_path }}"><span><svg class="icon"><use href="#icon-mail"></use></svg>私信</span><span class="nav-count" id="inboxNavCount">0</span></a></li>
+      <li><a class="{% if page_mode == 'impression' %}active{% endif %}" href="{{ impression_path }}"><span><svg class="icon"><use href="#icon-profile"></use></svg>研究印象</span></a></li>
       <li><a class="{% if page_mode == 'top-conf' %}active{% endif %}" href="{{ top_conf_path }}"><span><svg class="icon"><use href="#icon-graduation"></use></svg>顶会报告</span><span class="nav-count">{{ top_conf_count }}</span></a></li>
+      <li><a class="{% if page_mode == 'field-briefing' %}active{% endif %}" href="{{ field_briefing_path }}"><span><svg class="icon"><use href="#icon-book"></use></svg>领域导读</span><span class="nav-count">{{ field_briefing_top_conf_count }}</span></a></li>
       <li><a class="{% if page_mode == 'secnews' %}active{% endif %}" href="{{ secnews_path }}"><span><svg class="icon"><use href="#icon-newspaper"></use></svg>安全资讯</span><span class="nav-count">{{ secnews_count }}</span></a></li>
-      {% if page_mode == 'home' %}<li><a href="#authors"><span><svg class="icon"><use href="#icon-users"></use></svg>关注作者</span><span class="nav-count" id="authorNavCount">0</span></a></li>{% endif %}
+      <li><a href="{% if page_mode == 'home' %}#authors{% else %}{{ home_path }}#authors{% endif %}"><span><svg class="icon"><use href="#icon-users"></use></svg>关注作者</span><span class="nav-count" id="authorNavCount">0</span></a></li>
     </ul></nav>
     <div class="sidebar-footer">本地报告索引 · FastRead</div>
   </aside>
   <main class="main">
     <header class="topbar">
-      <div class="breadcrumb"><strong>FastNews</strong><span> / {{ page_label }}</span></div>
+      <div class="topbar-start">
+        <button class="icon-button" id="sidebarToggle" type="button" aria-label="隐藏总览栏" title="隐藏总览栏" aria-pressed="false">
+          <svg class="icon sidebar-hide"><use href="#icon-panel-close"></use></svg>
+          <svg class="icon sidebar-show"><use href="#icon-panel-open"></use></svg>
+        </button>
+        <div class="breadcrumb"><strong>FastNews</strong><span> / {{ page_label }}</span></div>
+      </div>
       <div class="topbar-actions"><span class="generated">更新于 {{ generated_at }}</span><button class="icon-button" id="themeToggle" type="button" aria-label="切换深色模式" title="切换深色模式"><svg class="icon theme-sun"><use href="#icon-sun"></use></svg><svg class="icon theme-moon"><use href="#icon-moon"></use></svg></button></div>
     </header>
     <nav class="mobile-nav" aria-label="移动端导航">
       <a class="{% if page_mode == 'home' %}active{% endif %}" href="{{ home_path }}"><span><svg class="icon"><use href="#icon-dashboard"></use></svg>总览</span></a>
+      <a class="{% if page_mode == 'inbox' %}active{% endif %}" href="{{ inbox_path }}"><span><svg class="icon"><use href="#icon-mail"></use></svg>私信</span></a>
+      <a class="{% if page_mode == 'impression' %}active{% endif %}" href="{{ impression_path }}"><span><svg class="icon"><use href="#icon-profile"></use></svg>研究印象</span></a>
       <a class="{% if page_mode == 'top-conf' %}active{% endif %}" href="{{ top_conf_path }}"><span><svg class="icon"><use href="#icon-graduation"></use></svg>顶会报告</span></a>
+      <a class="{% if page_mode == 'field-briefing' %}active{% endif %}" href="{{ field_briefing_path }}"><span><svg class="icon"><use href="#icon-book"></use></svg>领域导读</span></a>
       <a class="{% if page_mode == 'secnews' %}active{% endif %}" href="{{ secnews_path }}"><span><svg class="icon"><use href="#icon-newspaper"></use></svg>安全资讯</span></a>
-      {%- if page_mode == 'home' %}<a href="#authors"><span><svg class="icon"><use href="#icon-users"></use></svg>关注作者</span></a>{% endif %}
+      <a href="{% if page_mode == 'home' %}#authors{% else %}{{ home_path }}#authors{% endif %}"><span><svg class="icon"><use href="#icon-users"></use></svg>关注作者</span></a>
     </nav>
     <div class="page">
       <section class="page-header{% if page_mode == 'home' %} has-today-card{% endif %}">
-        <div class="header-copy"><span class="header-icon">{% if page_mode == 'home' %}<svg class="icon"><use href="#icon-dashboard"></use></svg>{% elif page_mode == 'top-conf' %}<svg class="icon"><use href="#icon-graduation"></use></svg>{% else %}<svg class="icon"><use href="#icon-newspaper"></use></svg>{% endif %}</span><div><h1>{{ page_title }}</h1><p class="description">{{ page_description }}</p></div></div>
+        <div class="header-copy"><span class="header-icon">{% if page_mode == 'home' %}<svg class="icon"><use href="#icon-dashboard"></use></svg>{% elif page_mode == 'top-conf' %}<svg class="icon"><use href="#icon-graduation"></use></svg>{% elif page_mode == 'field-briefing' %}<svg class="icon"><use href="#icon-book"></use></svg>{% elif page_mode == 'inbox' %}<svg class="icon"><use href="#icon-mail"></use></svg>{% elif page_mode == 'impression' %}<svg class="icon"><use href="#icon-profile"></use></svg>{% else %}<svg class="icon"><use href="#icon-newspaper"></use></svg>{% endif %}</span><div><h1>{{ page_title }}</h1><p class="description">{{ page_description }}</p></div></div>
         {%- if page_mode == 'home' %}
         <details class="today-news-card{% if not home_news_date %} is-empty{% endif %}" id="todayNewsCard">
           <summary class="today-news-face">
@@ -511,6 +611,18 @@
         <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-file"></use></svg></span><span class="stat-copy"><span class="stat-value">{{ conference_papers|length }}</span><span class="stat-label">已总结论文</span></span></div>
         <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-graduation"></use></svg></span><span class="stat-copy"><span class="stat-value">{{ conference_count }}</span><span class="stat-label">会议</span></span></div>
         <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-tag"></use></svg></span><span class="stat-copy"><span class="stat-value">{{ conference_category_count }}</span><span class="stat-label">研究类别</span></span></div>
+        {%- elif page_mode == 'field-briefing' %}
+        <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-graduation"></use></svg></span><span class="stat-copy"><span class="stat-value">{{ field_briefing_top_conf_count }}</span><span class="stat-label">顶会摘要</span></span></div>
+        <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-newspaper"></use></svg></span><span class="stat-copy"><span class="stat-value">{{ field_briefing_arxiv_count }}</span><span class="stat-label">近期 arXiv</span></span></div>
+        <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-tag"></use></svg></span><span class="stat-copy"><span class="stat-value">{{ field_briefing_category_count }}</span><span class="stat-label">研究类别</span></span></div>
+        {%- elif page_mode == 'inbox' %}
+        <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-mail"></use></svg></span><span class="stat-copy"><span class="stat-value" id="inboxStatUnread">0</span><span class="stat-label">未读</span></span></div>
+        <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-file"></use></svg></span><span class="stat-copy"><span class="stat-value" id="inboxStatTotal">0</span><span class="stat-label">历史推送</span></span></div>
+        <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-profile"></use></svg></span><span class="stat-copy"><span class="stat-value type-value">每日一篇</span><span class="stat-label">按研究印象</span></span></div>
+        {%- elif page_mode == 'impression' %}
+        <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-profile"></use></svg></span><span class="stat-copy"><span class="stat-value">4000</span><span class="stat-label">字上限</span></span></div>
+        <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-book"></use></svg></span><span class="stat-copy"><span class="stat-value type-value">导读 / 找论文</span><span class="stat-label">会结合印象</span></span></div>
+        <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-mail"></use></svg></span><span class="stat-copy"><span class="stat-value type-value">每日推送</span><span class="stat-label">按印象匹配</span></span></div>
         {%- else %}
         <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-file"></use></svg></span><span class="stat-copy"><span class="stat-value">{{ reports|length }}</span><span class="stat-label">已生成报告</span></span></div>
         <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-file"></use></svg></span><span class="stat-copy"><span class="stat-value">{{ reports|length }}</span><span class="stat-label">HTML 文件</span></span></div>
@@ -524,6 +636,9 @@
           <div class="gateway-list">
             <a class="gateway-row" href="{{ secnews_path }}"><span class="gateway-icon orange"><svg class="icon-lg"><use href="#icon-newspaper"></use></svg></span><span><h3 class="gateway-title">安全资讯周报</h3><p class="gateway-description">查看安全新闻与 arXiv 论文的周期性导读。</p><span class="gateway-meta">{{ secnews_count }} 份报告</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
             <a class="gateway-row" href="{{ top_conf_path }}"><span class="gateway-icon"><svg class="icon-lg"><use href="#icon-graduation"></use></svg></span><span><h3 class="gateway-title">顶会论文总结</h3><p class="gateway-description">按会议和研究方向浏览安全顶会论文分析。</p><span class="gateway-meta">{{ top_conf_count }} 份报告</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
+            <a class="gateway-row" href="{{ field_briefing_path }}"><span class="gateway-icon"><svg class="icon-lg"><use href="#icon-book"></use></svg></span><span><h3 class="gateway-title">领域导读</h3><p class="gateway-description">输入研究方向，基于顶会中文摘要与近期 arXiv 分类综述近五年研究现状并推荐高相关论文。</p><span class="gateway-meta">{{ field_briefing_top_conf_count }} 篇顶会摘要</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
+            <a class="gateway-row" href="{{ inbox_path }}"><span class="gateway-icon orange"><svg class="icon-lg"><use href="#icon-mail"></use></svg></span><span><h3 class="gateway-title">私信</h3><p class="gateway-description">每天推送一篇匹配你关注领域的论文。</p><span class="gateway-meta">结合研究印象</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
+            <a class="gateway-row" href="{{ impression_path }}"><span class="gateway-icon"><svg class="icon-lg"><use href="#icon-profile"></use></svg></span><span><h3 class="gateway-title">研究印象</h3><p class="gateway-description">编写自己的研究方向，供导读、找论文和每日推送使用。</p><span class="gateway-meta">每人一份专属文件</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
             <a class="gateway-row" href="#authors"><span class="gateway-icon gray"><svg class="icon-lg"><use href="#icon-users"></use></svg></span><span><h3 class="gateway-title">关注作者</h3><p class="gateway-description">维护作者主页和研究方向，方便持续跟踪。</p><span class="gateway-meta"><span id="authorGatewayCount">0</span> 位作者</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
           </div>
         </section>
@@ -583,11 +698,11 @@
             </div>
             <form class="paper-search-pane is-hidden" id="paperRelatedPane" autocomplete="off">
               <div class="related-work-grid">
-                <div class="filter-group"><label class="label" for="relatedTopic">研究方向</label><input class="field" id="relatedTopic" type="text" placeholder="例如：ML 安全、侧信道、隐私计算" maxlength="120"></div>
+                <div class="filter-group"><label class="label" for="relatedTopic">研究方向</label><input class="field" id="relatedTopic" type="text" placeholder="可留空，将使用研究印象" maxlength="120"></div>
                 <div class="filter-group"><label class="label" for="relatedKeywords">关键词</label><input class="field" id="relatedKeywords" type="text" placeholder="LLM jailbreak, membership inference" maxlength="200"></div>
                 <div class="related-work-submit"><button class="button button-primary" id="relatedWorkSubmit" type="submit"><svg class="icon"><use href="#icon-zap"></use></svg>推荐相关工作</button></div>
               </div>
-              <p class="related-work-hint">先用上方筛选收窄范围，再根据研究方向与关键词从已总结论文中推荐 related work。</p>
+              <p class="related-work-hint">先用上方筛选收窄范围。推荐时会结合研究印象；研究方向可留空。</p>
             </form>
             <p class="related-work-status" id="relatedWorkStatus" hidden></p>
           </div>
@@ -606,6 +721,48 @@
           {% else %}<div class="empty">还没有生成报告。</div>{% endif %}
           </div>
           <div class="empty" id="reportEmpty" hidden>没有匹配的报告。</div>
+        </section>
+        {%- elif page_mode == 'inbox' %}
+        <section class="surface" id="inboxWorkspace">
+          <div class="inbox-board">
+            <p class="inbox-hint">每天根据研究印象或关注作者方向推送一篇论文。打开本页会将今日推送标为已读。</p>
+            <p class="inbox-status" id="inboxStatus" hidden></p>
+            <div id="inboxToday"></div>
+            <div>
+              <div class="section-head"><div><h2>历史私信</h2><p class="section-description">此前每日推送会保留在这里</p></div></div>
+              <div id="inboxHistory"></div>
+            </div>
+          </div>
+        </section>
+        {%- elif page_mode == 'impression' %}
+        <section class="surface" id="impressionWorkspace">
+          <form class="impression-form" id="impressionForm">
+            <label class="label" for="impressionText">研究方向与关注点</label>
+            <textarea id="impressionText" maxlength="4000" placeholder="写下你的研究方向、关注问题、常用方法，以及希望跟踪的论文类型。例如：我做大模型安全，关注越狱、提示注入与智能体工具调用风险，也看侧信道与 TEE。"></textarea>
+            <div class="impression-meta"><span id="impressionCount">0 / 4000</span><span id="impressionUpdated">尚未保存</span></div>
+            <p class="impression-hint">保存后，领域导读、顶会 related work 和每日私信推送都会结合这份印象。</p>
+            <p class="inbox-status" id="impressionStatus" hidden></p>
+            <div class="impression-actions"><button class="button button-primary" id="impressionSubmit" type="submit"><svg class="icon"><use href="#icon-profile"></use></svg>保存印象</button></div>
+          </form>
+        </section>
+        {%- elif page_mode == 'field-briefing' %}
+        <section class="surface" id="fieldBriefingWorkspace">
+          <form class="field-briefing-form" id="fieldBriefingForm" autocomplete="off">
+            <div class="field-briefing-query">
+              <svg class="icon"><use href="#icon-search"></use></svg>
+              <label class="visually-hidden" for="fieldQuery">研究方向</label>
+              <input class="field" id="fieldQuery" name="query" type="search" placeholder="输入研究方向，例如 LLM jailbreak、侧信道、TEE" maxlength="120" required>
+            </div>
+            <div class="field-briefing-controls">
+              <div class="filter-group"><label class="label" for="fieldCategory">类别</label><select class="field" id="fieldCategory"><option value="">全部类别</option>{% for category in field_briefing_categories %}<option value="{{ category }}">{{ category }}</option>{% endfor %}</select></div>
+              <div class="filter-group"><label class="label" for="fieldSource">语料</label><select class="field" id="fieldSource"><option value="all">顶会 + arXiv</option><option value="top-conf">仅顶会</option><option value="arxiv">仅 arXiv</option></select></div>
+              <div class="field-briefing-submit"><button class="button button-primary" id="fieldBriefingSubmit" type="submit"><svg class="icon"><use href="#icon-book"></use></svg>生成导读</button></div>
+            </div>
+            <div class="field-briefing-examples" id="fieldBriefingExamples"></div>
+            <p class="field-briefing-hint">会结合你的研究印象，按近五年文献分类综述国内外研究现状并指出不足。{{ field_briefing_coverage }}</p>
+          </form>
+          <p class="field-briefing-status" id="fieldBriefingStatus" hidden></p>
+          <div class="field-briefing-result" id="fieldBriefingResult" hidden></div>
         </section>
         {%- endif %}
       </div>
@@ -644,6 +801,8 @@
     container.querySelectorAll('button[data-page]').forEach((button) => button.addEventListener('click', () => { if (!button.disabled) onChange(Number(button.dataset.page)); }));
   }
 </script>
+<script src="{{ asset_prefix }}fastread.js"></script>
+<script src="{{ asset_prefix }}authors-nav.js"></script>
 
 {% if page_mode == 'home' %}
 <script src="assets/authors.js"></script>
@@ -657,6 +816,19 @@
   };
 </script>
 <script src="../assets/secnews-news.js"></script>
+{% elif page_mode == 'inbox' %}
+<script src="../assets/inbox.js"></script>
+{% elif page_mode == 'impression' %}
+<script src="../assets/impression.js"></script>
+{% elif page_mode == 'field-briefing' %}
+<script>
+  window.FASTNEWS_FIELD_BRIEFING = {
+    categories: {{ field_briefing_categories_json|safe }},
+    examples: {{ field_briefing_examples_json|safe }},
+    arxivDays: 90
+  };
+</script>
+<script src="../assets/field-briefing.js"></script>
 {% elif page_mode == 'top-conf' %}
 <script>
   const conferencePapers = {{ conference_papers_json|safe }};
@@ -820,7 +992,8 @@
     const author = paper.author ? `<span>${escapeHtml(paper.author)}</span>` : "";
     const reason = entry.reason ? `<p class="conference-reason">${escapeHtml(entry.reason)}</p>` : "";
     const score = Number.isFinite(Number(entry.score)) ? `<span class="conference-score">${Math.round(Number(entry.score) * 100)}</span>` : "";
-    return `<article class="conference-row${entry.reason ? " has-reason" : ""}"><h3 class="conference-title">${titleMarkup}</h3><p class="conference-summary">${escapeHtml(paper.summary || "\u6682\u65e0\u4e2d\u6587\u603b\u7ed3")}</p>${reason}<div class="conference-meta"><span>${escapeHtml(paper.year + " \u00b7 " + paper.conference_label)}</span><span class="conference-tag">${escapeHtml(paper.category)}</span>${author}${score}</div></article>`;
+    const actions = window.fastNewsFastReadButton ? `<div class="paper-actions">${window.fastNewsFastReadButton(paper)}</div>` : "";
+    return `<article class="conference-row${entry.reason ? " has-reason" : ""}"><h3 class="conference-title">${titleMarkup}</h3><p class="conference-summary">${escapeHtml(paper.summary || "\u6682\u65e0\u4e2d\u6587\u603b\u7ed3")}</p>${reason}<div class="conference-meta"><span>${escapeHtml(paper.year + " \u00b7 " + paper.conference_label)}</span><span class="conference-tag">${escapeHtml(paper.category)}</span>${author}${score}</div>${actions}</article>`;
   }
   function visibleEntries() {
     if (searchMode === "related" && relatedResults) return relatedResults;
@@ -862,11 +1035,11 @@
     else if (level === "name") updateCategoryOptions();
     renderConferencePapers();
   }
-  async function requestRelatedWork(topic, keywords, candidates) {
+  async function requestRelatedWork(topic, keywords, candidates, impression) {
     const response = await fetch("/api/related-work", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ topic, keywords, candidates: candidates.map(serializeCandidate) }),
+      body: JSON.stringify({ topic, keywords, impression, candidates: candidates.map(serializeCandidate) }),
     });
     if (!response.ok) throw new Error("related-work http " + response.status);
     const payload = await response.json();
@@ -885,10 +1058,11 @@
   }
   async function runRelatedWork(event) {
     event.preventDefault();
+    const impression = String(window.FASTNEWS_IMPRESSION || "").trim();
     const topic = relatedTopic.value.trim();
     const keywords = relatedKeywords.value.trim();
-    if (!topic && !keywords) {
-      setRelatedStatus("\u8bf7\u586b\u5199\u7814\u7a76\u65b9\u5411\u6216\u5173\u952e\u8bcd\u3002", "error");
+    if (!topic && !keywords && !impression) {
+      setRelatedStatus("请填写研究方向或关键词，或先在研究印象中写下你的方向。", "error");
       relatedTopic.focus();
       return;
     }
@@ -899,14 +1073,15 @@
       renderConferencePapers();
       return;
     }
-    const candidates = pickCandidates(pool, topic, keywords);
+    const searchTopic = topic || impression.slice(0, 120);
+    const candidates = pickCandidates(pool, searchTopic, keywords);
     relatedWorkSubmit.disabled = true;
     setRelatedStatus("\u6b63\u5728\u6839\u636e\u7814\u7a76\u65b9\u5411\u68c0\u7d22 related work\u2026", "pending");
     try {
-      relatedResults = await requestRelatedWork(topic, keywords, candidates);
-      setRelatedStatus(`\u5df2\u6839\u636e\u300c${topic || keywords}\u300d\u63a8\u8350 ${relatedResults.length} \u7bc7\u76f8\u5173\u5de5\u4f5c\u3002`, "ok");
+      relatedResults = await requestRelatedWork(topic, keywords, candidates, impression);
+      setRelatedStatus(`\u5df2\u6839\u636e\u300c${topic || keywords || "\u7814\u7a76\u5370\u8c61"}\u300d\u63a8\u8350 ${relatedResults.length} \u7bc7\u76f8\u5173\u5de5\u4f5c\u3002`, "ok");
     } catch {
-      relatedResults = localRelated(candidates, topic, keywords);
+      relatedResults = localRelated(candidates, searchTopic, keywords);
       if (!relatedResults.length) setRelatedStatus("\u6ca1\u6709\u627e\u5230\u8db3\u591f\u76f8\u5173\u7684\u8bba\u6587\uff0c\u8bd5\u8bd5\u653e\u5bbd\u7b5b\u9009\u6216\u66f4\u6362\u5173\u952e\u8bcd\u3002", "error");
       else setRelatedStatus(`\u63a8\u8350\u670d\u52a1\u6682\u4e0d\u53ef\u7528\uff0c\u5df2\u7528\u672c\u5730\u76f8\u5173\u5ea6\u6392\u5e8f ${relatedResults.length} \u7bc7\u3002`, "fallback");
     } finally {

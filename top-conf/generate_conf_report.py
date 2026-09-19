@@ -82,7 +82,8 @@ def render_conf_report(conference, year):
         year=year,
         generated_date=datetime.now(UTC).strftime('%Y-%m-%d %H:%M:%S UTC'),
         total_papers=total_papers,
-        categorized_papers=categorized_papers
+        categorized_papers=categorized_papers,
+        asset_prefix="../../../assets/",
     )
     html_content = '\n'.join(line.rstrip() for line in html_content.splitlines()) + '\n'
     

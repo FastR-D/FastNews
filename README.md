@@ -9,11 +9,36 @@
 - **🎓 顶会论文分析（top-conf）**：针对 USENIX Security、IEEE S&P、NDSS、ACM CCS 四大安全顶会做结构化抓取，LLM 自动分类（Web / 系统 / 密码学 / 隐私 / ML 安全等 10 类）并生成深度中文摘要，输出 Web/PDF 报告。
 - **🧭 统一报告主页**：总览页集中展示所有报告，支持维护关注作者列表。必须从 FastResearch 用个人 Key 进入；`serve.py` 服务端兑换 SSO 票据后写入 HttpOnly Cookie，作者按 Key 保存在服务端。直开 `:4173` 会回到 Panel。
 - **🤖 全自动流水线**：GitHub Actions 定时抓取、总结、发布，全程无需人工干预。
+- **📚 领域导读**：在总览或侧栏进入「领域导读」，输入研究方向后基于顶会中文摘要与近期 arXiv 分类综述近五年研究现状并推荐高相关论文；会结合个人研究印象。
+- **✉️ 私信**：每天按研究印象或关注作者方向推送一篇论文，按上海日历日一篇，已推过的论文会跳过。
+- **🧑‍🔬 研究印象**：每位成员一份专属研究方向说明，保存在 FastResearch；领域导读、找论文和每日推送都会使用它。
+- **📐 可折叠总览栏**：侧栏可隐藏/打开，状态记在浏览器本地。
+- **📖 跳转 FastRead**：顶会报告、顶会列表、领域导读和私信的论文卡片可一键发布标题、摘要、作者并打开 FastRead。
+
+## 📚 领域导读
+
+侧栏或总览页进入 [领域导读](field-briefing/index.html)。输入研究方向（例如 `LLM jailbreak`、侧信道、TEE），页面会检索本地顶会中文摘要和近 90 天 arXiv，再按研究方法或主题分类综述近五年国内外研究现状：每类先概括共识并引用具体工作，再比较方法、侧重点或结论，最后指出研究不足，并推荐高相关论文。查询可留空，此时使用研究印象。
+
+## ✉️ 私信与研究印象
+
+- 研究印象：[impression/index.html](impression/index.html)。写下自己的研究方向、关注问题和方法，最长 4000 字，按个人 Key 存在 FastResearch。
+- 私信：[inbox/index.html](inbox/index.html)。每天打开 FastNews 时，若当天还没有推送，会按印象 → 关注作者标签 → 通用安全方向选一篇论文。打开私信页会把今日推送标为已读。
+
+查询优先级：印象文本 → 关注作者 / 自定义标签 → `computer security 系统安全 网络安全`。
+
+当前语料覆盖 USENIX Security、IEEE S&P、NDSS、ACM CCS 2023–2026 的中文摘要。CCS 2026 目前仅有录用标题、尚无官方摘要；IEEE S&P 2026 部分论文摘要仍缺失。也可在仓库根目录用命令行检索：
+
+```bash
+python field_briefing.py -q "LLM jailbreak" --limit 5 --format text
+```
 
 ## 🧭 主页
 
 - 总览页：[index.html](index.html)
 - 顶会论文总结：[top-conf/index.html](top-conf/index.html)
+- 领域导读：[field-briefing/index.html](field-briefing/index.html)
+- 私信：[inbox/index.html](inbox/index.html)
+- 研究印象：[impression/index.html](impression/index.html)
 - 安全资讯周报：[secnews/index.html](secnews/index.html)
 
 ```bash
@@ -21,7 +46,7 @@
 uv run python generate_homepage.py
 ```
 
-主页提供关注作者列表：可添加作者姓名、研究方向和主页链接。必须从 FastResearch 用个人 Key 进入；本地用 `python serve.py` 提供 `http://127.0.0.1:4173`，不要用 `python -m http.server`。服务端兑换 `?sso=` 后地址栏不再包含票据。
+主页提供关注作者列表：可添加作者姓名、研究方向和主页链接。必须从 FastResearch 用个人 Key 进入；本地用 `python serve.py` 提供 `http://127.0.0.1:4173`，不要用 `python -m http.server`。服务端兑换 `?sso=` 后地址栏不再包含票据。左上角按钮可隐藏/打开总览栏。
 
 ## 🚀 快速开始
 
@@ -52,13 +77,28 @@ uv run python generate_homepage.py
 
    服务监听 `127.0.0.1:4173`。浏览器直开会 302 到 Panel；从 Panel 点击 FastNews 后才会兑换票据并展示报告。不要使用 `python -m http.server`。
 
+   HTTP 接口：页面门禁、`POST /api/related-work`、`POST /api/field-briefing`、`POST /api/fastread` 与 `GET /api/content/inbox`（补今日推送）由 `serve.py` 本地处理，其余 `/api/*` 反代到 FastResearch。完整清单见 `../FastResearch/docs/api.md`。
+
 > PDF 生成依赖 WeasyPrint，需要系统图形库：Ubuntu 安装 `libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf-2.0-0 libffi-dev libcairo2 fonts-noto-cjk`，macOS 安装 `brew install pango`。缺少时脚本会自动跳过 PDF、仅输出 HTML。
 
 ## 📂 项目结构
 
 ```text
 .
-├── generate_homepage.py        # 生成统一主页（index.html / top-conf/index.html / secnews/index.html）
+├── generate_homepage.py        # 生成统一主页（index.html / top-conf / secnews / field-briefing / inbox / impression）
+├── field_briefing.py           # 领域导读检索与导读生成
+├── inbox_push.py               # 每日私信选文
+├── field-briefing/             # 领域导读页面
+│   └── index.html
+├── inbox/                      # 私信
+│   └── index.html
+├── impression/                 # 研究印象
+│   └── index.html
+├── api/
+│   ├── related-work.js         # 顶会 related work
+│   ├── field-briefing.js       # 领域导读
+│   ├── fastread.js             # 跳转 FastRead
+│   └── _lib/field-search.js    # 领域导读检索
 ├── prompt/
 │   └── homepage.html.j2        # 主页模板
 ├── secnews/                    # 安全资讯周报模块
@@ -138,6 +178,9 @@ uv run python -m secnews.generate_pdf 3
 ### 使用方法（以 USENIX 2026 为例）
 
 ```bash
+# 0. 批量抓取并总结 2023-2026 四大顶会（按 _id 断点续传）
+uv run python top-conf/update_range.py --since 2023 --until 2026 --batch-size 12
+
 # 1. 抓取论文列表
 uv run python top-conf/fetch_big4.py usenix 2026
 
@@ -154,10 +197,26 @@ uv run python top-conf/generate_conf_report.py usenix 2026
 
 ### 报告展示
 
-- **USENIX Security 2026 论文总结**：[[HTML]](top-conf/data/report/USENIX_2026_Report.html)
-- **USENIX Security 2025 论文总结**：[[HTML]](top-conf/data/report/USENIX_2025_Report.html) [[PDF]](top-conf/data/report/USENIX_2025_Report.pdf)
+HTML 报告保存在 `top-conf/data/report/`，总览见 [顶会论文总结](top-conf/index.html)。当前覆盖四大顶会 2023–2026：
 
-其他会议把 `usenix 2026` 换成对应标识与年份即可，例如：
+- **USENIX Security 2023** [[HTML]](top-conf/data/report/USENIX_2023_Report.html)
+- **USENIX Security 2024** [[HTML]](top-conf/data/report/USENIX_2024_Report.html)
+- **USENIX Security 2025** [[HTML]](top-conf/data/report/USENIX_2025_Report.html) [[PDF]](top-conf/data/report/USENIX_2025_Report.pdf)
+- **USENIX Security 2026** [[HTML]](top-conf/data/report/USENIX_2026_Report.html)
+- **IEEE S&P 2023** [[HTML]](top-conf/data/report/IEEE-SP_2023_Report.html)
+- **IEEE S&P 2024** [[HTML]](top-conf/data/report/IEEE-SP_2024_Report.html)
+- **IEEE S&P 2025** [[HTML]](top-conf/data/report/IEEE-SP_2025_Report.html)
+- **IEEE S&P 2026** [[HTML]](top-conf/data/report/IEEE-SP_2026_Report.html)
+- **NDSS 2023** [[HTML]](top-conf/data/report/NDSS_2023_Report.html)
+- **NDSS 2024** [[HTML]](top-conf/data/report/NDSS_2024_Report.html)
+- **NDSS 2025** [[HTML]](top-conf/data/report/NDSS_2025_Report.html)
+- **NDSS 2026** [[HTML]](top-conf/data/report/NDSS_2026_Report.html)
+- **ACM CCS 2023** [[HTML]](top-conf/data/report/CCS_2023_Report.html)
+- **ACM CCS 2024** [[HTML]](top-conf/data/report/CCS_2024_Report.html)
+- **ACM CCS 2025** [[HTML]](top-conf/data/report/CCS_2025_Report.html)
+- **ACM CCS 2026** [[HTML]](top-conf/data/report/CCS_2026_Report.html)
+
+CCS 2026 目前仅有录用标题、尚无官方摘要；IEEE S&P 2026 约 188/262 篇带官方摘要。其他会议把 `usenix 2026` 换成对应标识与年份即可，例如：
 
 ```bash
 uv run python top-conf/fetch_big4.py ieee-sp 2026
@@ -179,6 +238,7 @@ uv run python top-conf/generate_conf_report.py ieee-sp 2026
 | `FASTRESEARCH_API_URL` | 否 | `http://127.0.0.1:8787` | FastNews `serve.py` 兑换票据与反代 `/api` 的地址 |
 | `FASTRESEARCH_PANEL_URL` | 否 | `http://127.0.0.1:5173` | 无会话直开时 302 的 Panel 地址 |
 | `FASTNEWS_HOST` / `FASTNEWS_PORT` | 否 | `127.0.0.1` / `4173` | 本地门禁服务监听地址 |
+| `FASTREAD_URL` | 否 | `http://127.0.0.1:3015` | `POST /api/fastread` 跳转 FastRead 的地址 |
 
 ## 🛠️ GitHub Actions 流水线
 
@@ -215,3 +275,6 @@ A：直接重跑即可。脚本按 `_id` 记录已处理论文，会从断点继
 
 **Q：主页的关注作者列表存在哪里？**
 A：按 FastResearch 个人 Key 保存在服务端，并显示“已登录 {成员} 的关注作者”。直开 FastNews 端口不会进入产品。首次从 Panel 进入时，如果服务端还没有作者，会把当前浏览器里的本地作者迁移过去一次。
+
+**Q：研究印象和私信存在哪里？**
+A：同样按个人 Key 存在 FastResearch（`data/access.json` 的 `researchImpression` / `inbox`），不走 localStorage。每天第一次打开 FastNews 任意页面时，`GET /api/content/inbox` 会补一篇当日论文。

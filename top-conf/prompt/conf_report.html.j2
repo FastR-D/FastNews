@@ -17,19 +17,19 @@
         }
 
         :root {
-            --app-bg: #f6f7f5;
-            --muted-bg: #eef2ef;
+            --app-bg: #f0f5f2;
+            --muted-bg: #eaf1ec;
             --surface: #ffffff;
             --surface-muted: #f8faf8;
-            --border: #dce4df;
+            --border: #d6e3db;
             --input-border: #cbd7d0;
-            --primary: #0f766e;
-            --primary-deep: #115e59;
-            --primary-soft: #f0fdfa;
+            --primary: #155e45;
+            --primary-deep: #104936;
+            --primary-soft: #e8f3ed;
             --accent: #f97316;
-            --text: #111827;
-            --muted: #66736d;
-            --subtle: #8a9690;
+            --text: #172720;
+            --muted: #567265;
+            --subtle: #7f998d;
         }
 
         * {
@@ -181,9 +181,9 @@
             display: inline-flex;
             align-items: center;
             border-radius: 4px;
-            border: 1px solid #fed7aa;
-            background: #fff7ed;
-            color: #c2410c;
+            border: 1px solid #fde68a;
+            background: #fffbeb;
+            color: #92400e;
             padding: 4px 7px;
             font-size: 12px;
             font-weight: 600;
@@ -337,6 +337,33 @@
             text-align: justify;
         }
 
+        .paper-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 32px;
+            padding: 6px 10px;
+            color: var(--primary-deep);
+            font-size: 12px;
+            font-weight: 600;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background: var(--muted-bg);
+        }
+
         @media (max-width: 900px) {
             .app-shell {
                 display: block;
@@ -416,21 +443,21 @@
             .badge {
                 background: #431407;
                 border-color: #7c2d12;
-                color: #fed7aa;
+                color: #fde68a;
             }
         }
 
         @media print {
             :root {
                 --app-bg: #ffffff;
-                --muted-bg: #eef2ef;
+                --muted-bg: #eaf1ec;
                 --surface: #ffffff;
-                --border: #dce4df;
-                --primary: #0f766e;
-                --primary-deep: #115e59;
-                --text: #111827;
-                --muted: #66736d;
-                --subtle: #8a9690;
+                --border: #d6e3db;
+                --primary: #155e45;
+                --primary-deep: #104936;
+                --text: #172720;
+                --muted: #567265;
+                --subtle: #7f998d;
             }
 
             body {
@@ -460,11 +487,17 @@
             .category {
                 margin-top: 8mm;
             }
+
+            .paper-actions,
+            .fastread-open {
+                display: none !important;
+            }
         }
         /* FastResearch console layer */
         :root { --app-bg:#0b1a14; --muted-bg:#12261d; --surface:#12261d; --border:rgba(141,198,200,.18); --primary:#65ead9; --primary-deep:#9cfff2; --primary-soft:rgba(101,234,217,.08); --accent:#ffc36d; --accent-soft:rgba(255,195,109,.1); --accent-border:rgba(255,195,109,.35); --accent-text:#ffc36d; --text:#e7f1f0; --muted:#89a1a3; --subtle:#587478; }
         body { font-family:'Space Grotesk','Noto Sans SC',Inter,sans-serif; background:radial-gradient(circle at 80% -10%,rgba(28,77,56,.65),transparent 35%),var(--app-bg); color:var(--text); } .sidebar { background:rgba(18,38,29,.88); border-color:var(--border); } .topbar { background:rgba(11,26,20,.78); border-color:var(--border); } .surface { background:rgba(18,38,29,.88); border-color:var(--border); box-shadow:0 8px 28px rgba(0,0,0,.16); } h1 { font-family:'Space Grotesk','Noto Sans SC',sans-serif; font-size:clamp(28px,4vw,48px); font-weight:500; letter-spacing:-.04em; } .paper-title a { color:var(--primary); }
     </style>
+    <link rel="stylesheet" href="{{ asset_prefix|default('../../../assets/') }}fastread.css">
 </head>
 <body>
 <div class="app-shell">
@@ -541,13 +574,23 @@
                 </div>
                 <div class="paper-list">
                     {% for paper in papers %}
-                    <article class="paper">
+                    <article class="paper"
+                             data-fastread-title="{{ paper.title | e }}"
+                             data-fastread-authors="{{ (paper.author or '') | e }}"
+                             data-fastread-abstract="{{ ((paper.summary_zh or paper.description or '')[:800]) | e }}"
+                             data-fastread-url="{{ (paper.link or '') | e }}"
+                             data-fastread-venue="{{ conference | e }}"
+                             data-fastread-year="{{ year }}"
+                             data-fastread-id="{{ (paper.get('_id') or paper.link or '') | e }}">
                         <h3 class="paper-title">
                             <a href="{{ paper.link }}">{{ paper.title }}</a>
                         </h3>
                         <p class="paper-authors">{{ paper.author }}</p>
                         <p class="summary-label">核心总结</p>
                         <p class="paper-summary">{{ paper.summary_zh or paper.description }}</p>
+                        <div class="paper-actions">
+                            <button type="button" class="button button-secondary button-sm fastread-open" data-fastread>跳转 FastRead</button>
+                        </div>
                     </article>
                     {% endfor %}
                 </div>
@@ -556,5 +599,6 @@
         </div>
     </main>
 </div>
+<script src="{{ asset_prefix|default('../../../assets/') }}fastread.js"></script>
 </body>
 </html>

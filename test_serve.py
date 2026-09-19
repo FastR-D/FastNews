@@ -6,10 +6,12 @@ import tempfile
 import threading
 import unittest
 import urllib.error
+import urllib.parse
 import urllib.request
 from http.server import ThreadingHTTPServer
 from pathlib import Path
 
+import field_briefing
 import serve
 
 
@@ -50,6 +52,10 @@ class FastNewsServeTests(unittest.TestCase):
         self.consume = {}
         self.me = {}
         self.proxied = []
+        self.inbox_items = []
+        self.saved_inbox = None
+        self.impression = {"text": "", "updatedAt": ""}
+        self.authors_payload = {"authors": [], "customTags": []}
 
         def fake_json(method, url, payload=None, token="", timeout=5):
             if url.endswith("/api/sso/consume"):
@@ -63,6 +69,23 @@ class FastNewsServeTests(unittest.TestCase):
                 if not identity:
                     raise serve.AuthError(401, {"error": "成员登录已失效"})
                 return identity, 200
+            if url.endswith("/api/content/inbox"):
+                if token and token not in self.me:
+                    raise serve.AuthError(401, {"error": "成员登录已失效"})
+                if method == "PUT":
+                    self.saved_inbox = payload
+                    items = (payload or {}).get("items") or []
+                    unread = sum(1 for item in items if isinstance(item, dict) and not item.get("read"))
+                    return {"items": items, "unread": unread}, 200
+                return {"items": list(self.inbox_items), "unread": sum(1 for item in self.inbox_items if not item.get("read"))}, 200
+            if url.endswith("/api/content/impression"):
+                if token and token not in self.me:
+                    raise serve.AuthError(401, {"error": "成员登录已失效"})
+                return {"impression": dict(self.impression)}, 200
+            if url.endswith("/api/content/authors"):
+                if token and token not in self.me:
+                    raise serve.AuthError(401, {"error": "成员登录已失效"})
+                return dict(self.authors_payload), 200
             raise serve.AuthError(404, {"error": "接口不存在"})
 
         def fake_urlopen(request, timeout=10):
@@ -85,6 +108,22 @@ class FastNewsServeTests(unittest.TestCase):
         self._urlopen = serve.urllib.request.urlopen
         serve.json_request = fake_json
         serve.urllib.request.urlopen = fake_urlopen
+        self._env = {key: os.environ.get(key) for key in ("OPENAI_API_KEY", "OPENAI_BASE_URL", "LLM_MODEL", "FASTREAD_URL")}
+        os.environ["OPENAI_API_KEY"] = "test-key"
+        os.environ["OPENAI_BASE_URL"] = "https://llm.test/v1"
+        os.environ["FASTREAD_URL"] = "http://127.0.0.1:3015"
+        os.environ["LLM_MODEL"] = "test-model"
+        self._complete = serve.complete_related_work
+        self._field_complete = serve.complete_field_briefing
+
+        def blocked_llm(*_args, **_kwargs):
+            raise AssertionError("related-work LLM should be mocked")
+
+        def blocked_field_llm(*_args, **_kwargs):
+            raise AssertionError("field-briefing LLM should be mocked")
+
+        serve.complete_related_work = blocked_llm
+        serve.complete_field_briefing = blocked_field_llm
         self.server = ThreadingHTTPServer(("127.0.0.1", 0), serve.FastNewsHandler)
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
         self.thread.start()
@@ -95,16 +134,28 @@ class FastNewsServeTests(unittest.TestCase):
         self.server.server_close()
         serve.json_request = self._json
         serve.urllib.request.urlopen = self._urlopen
+        serve.complete_related_work = self._complete
+        serve.complete_field_briefing = self._field_complete
+        for key, value in self._env.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
         self.tmp.cleanup()
 
-    def request(self, path, headers=None, method="GET"):
+    def request(self, path, headers=None, method="GET", data=None):
         class NoRedirect(urllib.request.HTTPRedirectHandler):
             def http_error_302(self, req, fp, code, msg, headers):
                 raise urllib.error.HTTPError(req.full_url, code, msg, headers, fp)
             http_error_301 = http_error_303 = http_error_307 = http_error_308 = http_error_302
 
         opener = urllib.request.build_opener(NoRedirect)
-        req = urllib.request.Request(self.base + path, method=method, headers=headers or {})
+        body = None
+        hdrs = dict(headers or {})
+        if data is not None:
+            body = json.dumps(data).encode("utf-8")
+            hdrs.setdefault("Content-Type", "application/json")
+        req = urllib.request.Request(self.base + path, data=body, method=method, headers=hdrs)
         try:
             with opener.open(req, timeout=5) as response:
                 return response.status, dict(response.headers), response.read()
@@ -179,6 +230,421 @@ class FastNewsServeTests(unittest.TestCase):
         )
         self.assertNotIn("ticket-1", serve.redact_request_line('"GET /?sso=ticket-1 HTTP/1.1" 302 -'))
 
+
+    def related_payload(self, **overrides):
+        payload = {
+            "topic": "ML security",
+            "keywords": "jailbreak",
+            "candidates": [
+                {"id": "p1", "title": "Jailbreak Defense", "year": "2026", "conference": "NDSS", "category": "ML", "summary": "Detect jailbreaks."},
+                {"id": "p2", "title": "Side Channel", "year": "2025", "conference": "S&P", "category": "Hardware", "summary": "Cache attacks."},
+            ],
+        }
+        payload.update(overrides)
+        return payload
+
+    def test_fastread_options_ok(self):
+        status, headers, body = self.request("/api/fastread", method="OPTIONS")
+        self.assertEqual(status, 204)
+        self.assertEqual(headers.get("Access-Control-Allow-Methods"), "POST, OPTIONS")
+        self.assertFalse(body)
+        self.assertFalse(self.proxied)
+
+    def test_fastread_get_is_not_proxied(self):
+        status, _headers, body = self.request("/api/fastread")
+        self.assertEqual(status, 405)
+        self.assertIn(b"Method not allowed", body)
+        self.assertFalse(self.proxied)
+
+    def test_fastread_requires_title(self):
+        status, _headers, body = self.request("/api/fastread", method="POST", data={"abstract": "\u6458\u8981"})
+        self.assertEqual(status, 400)
+        self.assertIn(b"title required", body)
+        self.assertFalse(self.proxied)
+
+    def test_fastread_builds_redirect(self):
+        status, _headers, body = self.request("/api/fastread", method="POST", data={
+            "title": "TwinBreak",
+            "author": "Ada Lovelace",
+            "summary": "\u4e2d\u6587\u6458\u8981\u7528\u4e8e\u9605\u8bfb\u3002",
+            "link": "https://doi.org/10.1145/example",
+            "venue": "ACM CCS",
+            "year": 2024,
+            "id": "p-twinbreak",
+        })
+        self.assertEqual(status, 200)
+        payload = json.loads(body.decode("utf-8"))
+        self.assertTrue(payload["ok"])
+        self.assertEqual(payload["paper"]["title"], "TwinBreak")
+        self.assertEqual(payload["paper"]["authors"], "Ada Lovelace")
+        self.assertEqual(payload["paper"]["abstract"], "\u4e2d\u6587\u6458\u8981\u7528\u4e8e\u9605\u8bfb\u3002")
+        self.assertEqual(payload["paper"]["url"], "https://doi.org/10.1145/example")
+        self.assertTrue(payload["redirect"].startswith("http://127.0.0.1:3015/#fastnews="))
+        encoded = payload["redirect"].split("#fastnews=", 1)[1]
+        handed = json.loads(urllib.parse.unquote(encoded))
+        self.assertEqual(handed["title"], "TwinBreak")
+        self.assertEqual(handed["authors"], "Ada Lovelace")
+        self.assertFalse(self.proxied)
+
+    def test_fastread_rejects_credentialed_url(self):
+        status, _headers, body = self.request("/api/fastread", method="POST", data={
+            "title": "TwinBreak",
+            "url": "https://user:pass@example.com/paper.pdf",
+        })
+        self.assertEqual(status, 200)
+        payload = json.loads(body.decode("utf-8"))
+        self.assertNotIn("url", payload["paper"])
+        self.assertFalse(self.proxied)
+
+    def test_fastread_clips_long_abstract(self):
+        status, payload = serve.build_fastread_handoff({
+            "title": "TwinBreak",
+            "abstract": "\u6458\u8981" * 4000,
+        })
+        self.assertEqual(status, 200)
+        self.assertLessEqual(len(payload["redirect"]), serve.FASTREAD_REDIRECT_MAX)
+        self.assertLessEqual(len(payload["paper"].get("abstract", "")), 240)
+
+    def test_fastread_rejects_unsafe_base_url(self):
+        os.environ["FASTREAD_URL"] = "javascript:alert(1)"
+        status, payload = serve.build_fastread_handoff({"title": "TwinBreak"})
+        self.assertEqual(status, 200)
+        self.assertTrue(payload["redirect"].startswith("http://127.0.0.1:3015/#fastnews="))
+
+    def test_related_work_options_ok(self):
+        status, headers, body = self.request("/api/related-work", method="OPTIONS")
+        self.assertEqual(status, 204)
+        self.assertEqual(headers.get("Access-Control-Allow-Methods"), "POST, OPTIONS")
+        self.assertFalse(body)
+        self.assertFalse(self.proxied)
+
+    def test_related_work_get_is_not_proxied(self):
+        status, _headers, body = self.request("/api/related-work")
+        self.assertEqual(status, 405)
+        self.assertIn(b"Method not allowed", body)
+        self.assertFalse(self.proxied)
+
+    def test_related_work_requires_topic_or_keywords(self):
+        status, _headers, body = self.request("/api/related-work", method="POST", data=self.related_payload(topic="", keywords=""))
+        self.assertEqual(status, 400)
+        self.assertIn(b"topic or keywords required", body)
+        self.assertFalse(self.proxied)
+
+    def test_related_work_accepts_impression_without_topic(self):
+        def fake_llm(_system, user_prompt):
+            self.assertIn("jailbreak defense", user_prompt)
+            self.assertIn("研究者印象", user_prompt)
+            return json.dumps([
+                {"id": "p1", "score": 0.9, "reason": "匹配研究印象。"},
+            ])
+
+        serve.complete_related_work = fake_llm
+        status, _headers, body = self.request(
+            "/api/related-work",
+            method="POST",
+            data=self.related_payload(topic="", keywords="", impression="jailbreak defense"),
+        )
+        self.assertEqual(status, 200)
+        payload = json.loads(body.decode("utf-8"))
+        self.assertEqual([item["id"] for item in payload["items"]], ["p1"])
+        self.assertFalse(self.proxied)
+
+    def test_related_work_requires_candidates(self):
+        status, _headers, body = self.request("/api/related-work", method="POST", data={"topic": "privacy", "candidates": []})
+        self.assertEqual(status, 400)
+        self.assertIn(b"candidates required", body)
+
+    def test_related_work_requires_api_key(self):
+        os.environ.pop("OPENAI_API_KEY", None)
+        status, _headers, body = self.request("/api/related-work", method="POST", data=self.related_payload())
+        self.assertEqual(status, 503)
+        self.assertIn(b"OPENAI_API_KEY is not configured", body)
+
+    def test_related_work_ranks_with_local_llm(self):
+        def fake_llm(system_prompt, user_prompt):
+            self.assertIn("Jailbreak Defense", user_prompt)
+            return json.dumps([
+                {"id": "p1", "score": 0.91, "reason": "同为越狱防御。"},
+                {"id": "unknown", "score": 0.8, "reason": "应被过滤"},
+                {"id": "p2", "score": 0.2, "reason": "相关度较低。"},
+            ])
+
+        serve.complete_related_work = fake_llm
+        status, _headers, body = self.request("/api/related-work", method="POST", data=self.related_payload())
+        self.assertEqual(status, 200)
+        payload = json.loads(body.decode("utf-8"))
+        self.assertEqual(payload["source"], "llm")
+        self.assertEqual([item["id"] for item in payload["items"]], ["p1", "p2"])
+        self.assertEqual(payload["items"][0]["reason"], "同为越狱防御。")
+        self.assertFalse(self.proxied)
+
+    def test_related_work_empty_ranking_is_502(self):
+        serve.complete_related_work = lambda *_args, **_kwargs: json.dumps([{"id": "missing", "score": 1, "reason": "x"}])
+        status, _headers, body = self.request("/api/related-work", method="POST", data=self.related_payload())
+        self.assertEqual(status, 502)
+        self.assertIn(b"empty ranking", body)
+
+    def test_related_work_llm_error_is_502(self):
+        def boom(*_args, **_kwargs):
+            raise serve.RelatedWorkError(502, {"error": "related-work failed"})
+
+        serve.complete_related_work = boom
+        status, _headers, body = self.request("/api/related-work", method="POST", data=self.related_payload())
+        self.assertEqual(status, 502)
+        self.assertIn(b"related-work failed", body)
+        self.assertFalse(self.proxied)
+
+    def seed_field_corpus(self):
+        conference = self.root / "top-conf" / "data" / "conferences"
+        summary = self.root / "top-conf" / "data" / "summary"
+        conference.mkdir(parents=True)
+        summary.mkdir(parents=True)
+        (conference / "ndss_2026.jsonl").write_text(
+            "\n".join([
+                json.dumps({
+                    "_id": "p-jailbreak",
+                    "title": "TwinBreak: Jailbreak Attack and Defense",
+                    "link": "https://example.com/jailbreak",
+                    "author": "Alice",
+                    "description": "A causal analysis of LLM jailbreak prompts.",
+                }, ensure_ascii=False),
+                json.dumps({
+                    "_id": "p-sok",
+                    "title": "SoK: Jailbreak Attacks and Defenses",
+                    "link": "https://example.com/sok-jailbreak",
+                    "author": "Carol",
+                    "description": "A systematization of knowledge on LLM jailbreaks.",
+                }, ensure_ascii=False),
+                json.dumps({
+                    "_id": "p-cache",
+                    "title": "Cache Side Channel Attacks",
+                    "link": "https://example.com/cache",
+                    "author": "Bob",
+                    "description": "Microarchitectural cache attacks against TEEs.",
+                }, ensure_ascii=False),
+            ]) + "\n",
+            encoding="utf-8",
+        )
+        (summary / "ndss_2026_summary.jsonl").write_text(
+            "\n".join([
+                json.dumps({
+                    "category": "ML/AI Security",
+                    "paper": {
+                        "_id": "p-jailbreak",
+                        "title": "TwinBreak: Jailbreak Attack and Defense",
+                        "link": "https://example.com/jailbreak",
+                        "author": "Alice",
+                        "summary_zh": "从因果视角分析大模型越狱提示，并用于攻击增强与防御。",
+                    },
+                }, ensure_ascii=False),
+                json.dumps({
+                    "category": "ML/AI Security",
+                    "paper": {
+                        "_id": "p-sok",
+                        "title": "SoK: Jailbreak Attacks and Defenses",
+                        "link": "https://example.com/sok-jailbreak",
+                        "author": "Carol",
+                        "summary_zh": "系统整理大模型越狱攻防文献。",
+                    },
+                }, ensure_ascii=False),
+                json.dumps({
+                    "category": "Hardware Security",
+                    "paper": {
+                        "_id": "p-cache",
+                        "title": "Cache Side Channel Attacks",
+                        "link": "https://example.com/cache",
+                        "author": "Bob",
+                        "summary_zh": "针对 TEE 的缓存侧信道攻击。",
+                    },
+                }, ensure_ascii=False),
+            ]) + "\n",
+            encoding="utf-8",
+        )
+        field_briefing.clear_corpus_cache()
+
+    def test_field_briefing_options_ok(self):
+        status, headers, body = self.request("/api/field-briefing", method="OPTIONS")
+        self.assertEqual(status, 204)
+        self.assertEqual(headers.get("Access-Control-Allow-Methods"), "POST, OPTIONS")
+        self.assertFalse(body)
+        self.assertFalse(self.proxied)
+
+    def test_field_briefing_get_is_not_proxied(self):
+        status, _headers, body = self.request("/api/field-briefing")
+        self.assertEqual(status, 405)
+        self.assertIn(b"Method not allowed", body)
+        self.assertFalse(self.proxied)
+
+    def test_field_briefing_requires_query(self):
+        status, _headers, body = self.request("/api/field-briefing", method="POST", data={})
+        self.assertEqual(status, 400)
+        self.assertIn(b"query required", body)
+        self.assertFalse(self.proxied)
+
+    def test_field_briefing_without_api_key_is_lexical(self):
+        self.seed_field_corpus()
+        os.environ.pop("OPENAI_API_KEY", None)
+        status, _headers, body = self.request("/api/field-briefing", method="POST", data={"query": "LLM jailbreak"})
+        self.assertEqual(status, 200)
+        payload = json.loads(body.decode("utf-8"))
+        self.assertEqual(payload["source"], "lexical")
+        self.assertIsNone(payload["briefing"])
+        self.assertGreaterEqual(len(payload["papers"]), 1)
+        self.assertEqual(payload["papers"][0]["id"], "p-jailbreak")
+        self.assertEqual(payload["surveys"][0]["id"], "p-sok")
+        self.assertNotIn("p-sok", [item["id"] for item in payload["papers"]])
+        self.assertFalse(self.proxied)
+
+    def test_field_briefing_ranks_with_local_llm(self):
+        self.seed_field_corpus()
+
+        def fake_llm(system_prompt, user_prompt):
+            self.assertIn("TwinBreak", user_prompt)
+            return json.dumps({
+                "field_zh": "大模型越狱",
+                "field_en": "LLM Jailbreak",
+                "coverage": "本地命中以近年顶会为主。",
+                "problem": "绕过大模型安全对齐。",
+                "threat_model": "黑盒提示攻击者。",
+                "methods": "模板攻击、因果分析和防御。",
+                "subareas": [{"name": "越狱攻击", "summary": "构造提示绕过对齐。"}],
+                "evaluation": "攻击成功率与防御效果。",
+                "open_problems": "自适应越狱仍难防。",
+                "surveys": [{
+                    "title": "Jailbreak Survey",
+                    "venue": "IEEE",
+                    "year": "2024",
+                    "link": "https://example.com/survey",
+                    "reason": "该方向综述。",
+                }],
+                "papers": [
+                    {"id": "p-jailbreak", "reason": "直接研究越狱攻防。"},
+                    {"id": "unknown", "reason": "应被过滤"},
+                ],
+            }, ensure_ascii=False)
+
+        serve.complete_field_briefing = fake_llm
+        status, _headers, body = self.request("/api/field-briefing", method="POST", data={"q": "LLM jailbreak"})
+        self.assertEqual(status, 200)
+        payload = json.loads(body.decode("utf-8"))
+        self.assertEqual(payload["source"], "llm")
+        self.assertEqual(payload["briefing"]["field_zh"], "大模型越狱")
+        self.assertEqual([item["id"] for item in payload["papers"] if item["id"] == "p-jailbreak"], ["p-jailbreak"])
+        self.assertNotIn("unknown", [item["id"] for item in payload["papers"]])
+        self.assertEqual(payload["papers"][0]["reason"], "直接研究越狱攻防。")
+        self.assertEqual(payload["surveys"][0]["link"], "https://example.com/survey")
+        self.assertFalse(self.proxied)
+
+    def test_field_briefing_llm_error_falls_back(self):
+        self.seed_field_corpus()
+
+        def boom(*_args, **_kwargs):
+            raise RuntimeError("field-briefing failed")
+
+        serve.complete_field_briefing = boom
+        status, _headers, body = self.request("/api/field-briefing", method="POST", data={"topic": "LLM jailbreak"})
+        self.assertEqual(status, 200)
+        payload = json.loads(body.decode("utf-8"))
+        self.assertEqual(payload["source"], "lexical")
+        self.assertGreaterEqual(len(payload["papers"]), 1)
+        self.assertFalse(self.proxied)
+
+    def test_inbox_requires_session(self):
+        status, _headers, body = self.request("/api/content/inbox")
+        self.assertEqual(status, 401)
+        self.assertIn("成员登录已失效".encode("utf-8"), body)
+        self.assertFalse(self.proxied)
+
+    def test_inbox_returns_existing_today_item(self):
+        self.me["good-session"] = {"keyId": "aabbcc", "person": "张三"}
+        today = serve.inbox_push.shanghai_today()
+        existing = {
+            "id": f"daily-{today}-p-jailbreak",
+            "date": today,
+            "kind": "daily-paper",
+            "paperId": "p-jailbreak",
+            "title": "TwinBreak",
+            "read": False,
+        }
+        self.inbox_items = [existing]
+        status, _headers, body = self.request("/api/content/inbox", headers={"Cookie": "fr_session=good-session"})
+        self.assertEqual(status, 200)
+        payload = json.loads(body.decode("utf-8"))
+        self.assertEqual(payload["generatedToday"], False)
+        self.assertEqual(payload["items"][0]["id"], existing["id"])
+        self.assertIsNone(self.saved_inbox)
+        self.assertFalse(self.proxied)
+
+    def test_inbox_generates_daily_paper_from_impression(self):
+        self.me["good-session"] = {"keyId": "aabbcc", "person": "张三"}
+        self.impression = {"text": "LLM jailbreak", "updatedAt": "2026-09-18T00:00:00Z"}
+        self.seed_field_corpus()
+        status, _headers, body = self.request("/api/content/inbox", headers={"Cookie": "fr_session=good-session"})
+        self.assertEqual(status, 200)
+        payload = json.loads(body.decode("utf-8"))
+        self.assertTrue(payload["generatedToday"])
+        self.assertEqual(payload["items"][0]["kind"], "daily-paper")
+        self.assertEqual(payload["items"][0]["paperId"], "p-jailbreak")
+        self.assertIsNotNone(self.saved_inbox)
+        self.assertEqual(self.saved_inbox["items"][0]["paperId"], "p-jailbreak")
+        self.assertFalse(self.proxied)
+
+
+
+
+class FieldBriefingLlmPayloadTests(unittest.TestCase):
+    def setUp(self):
+        self._env = {key: os.environ.get(key) for key in ("OPENAI_API_KEY", "OPENAI_BASE_URL", "LLM_MODEL")}
+        self._urlopen = serve.urllib.request.urlopen
+        os.environ["OPENAI_API_KEY"] = "test-key"
+        os.environ["LLM_MODEL"] = "deepseek-v4-flash"
+
+    def tearDown(self):
+        serve.urllib.request.urlopen = self._urlopen
+        for key, value in self._env.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
+
+    def test_deepseek_payload_disables_thinking(self):
+        os.environ["OPENAI_BASE_URL"] = "https://api.deepseek.com"
+        payload = serve.field_briefing_request_payload("sys", "user")
+        self.assertEqual(payload["max_tokens"], 10000)
+        self.assertEqual(payload["thinking"], {"type": "disabled"})
+        self.assertEqual(payload["reasoning_effort"], "none")
+        self.assertEqual(payload["response_format"], {"type": "json_object"})
+        self.assertEqual(payload["messages"][0]["content"], "sys")
+
+    def test_openai_payload_omits_deepseek_fields(self):
+        os.environ["OPENAI_BASE_URL"] = "https://api.openai.com/v1"
+        os.environ["LLM_MODEL"] = "gpt-4.1-mini"
+        payload = serve.field_briefing_request_payload("sys", "user")
+        self.assertEqual(payload["max_tokens"], 10000)
+        self.assertNotIn("thinking", payload)
+        self.assertNotIn("reasoning_effort", payload)
+        self.assertNotIn("response_format", payload)
+
+    def test_complete_field_briefing_uses_reasoning_content(self):
+        os.environ["OPENAI_BASE_URL"] = "https://api.deepseek.com"
+        captured = {}
+
+        def fake_urlopen(request, timeout=0):
+            captured["timeout"] = timeout
+            captured["body"] = json.loads(request.data.decode("utf-8"))
+            return DummyResponse(200, {
+                "choices": [{
+                    "finish_reason": "stop",
+                    "message": {"content": "", "reasoning_content": "{\"ok\": true}"},
+                }]
+            })
+
+        serve.urllib.request.urlopen = fake_urlopen
+        content = serve.complete_field_briefing("sys", "user")
+        self.assertEqual(content, "{\"ok\": true}")
+        self.assertEqual(captured["timeout"], 90)
+        self.assertEqual(captured["body"]["thinking"], {"type": "disabled"})
+        self.assertEqual(captured["body"]["max_tokens"], 10000)
 
 if __name__ == "__main__":
     unittest.main()
