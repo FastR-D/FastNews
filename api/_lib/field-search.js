@@ -395,6 +395,9 @@ function searchPapers(root, query, options) {
 
 module.exports = {
   CATEGORIES: CATEGORIES,
+  CONFERENCE_LABELS: CONFERENCE_LABELS,
   clip: clip,
   searchPapers: searchPapers,
+  getCorpus: getCorpus,
+  publicItem: publicItem,
 };

@@ -61,7 +61,7 @@
     if (unreadNode) unreadNode.textContent = String(unread);
     if (totalNode) totalNode.textContent = String(items.length);
     if (!todayItems.length) {
-      todayNode.innerHTML = `<div class="empty">今天还没有推送。可先完善研究印象，稍后刷新。</div>`;
+      todayNode.innerHTML = `<div class="empty">今天还没有推送。可先关注作者或完善研究印象，稍后刷新。</div>`;
     } else {
       todayNode.innerHTML = todayItems.map((item) => renderCard(item, true)).join("");
     }
@@ -95,14 +95,14 @@
 
   if (window.FASTNEWS_INBOX) {
     render(window.FASTNEWS_INBOX);
-    setStatus(window.FASTNEWS_INBOX.generatedToday ? "已根据你的研究印象生成今日论文。" : "", window.FASTNEWS_INBOX.generatedToday ? "ok" : "");
+    setStatus(window.FASTNEWS_INBOX.generatedToday ? "已根据关注作者与研究印象生成今日论文。" : "", window.FASTNEWS_INBOX.generatedToday ? "ok" : "");
   } else {
-    setStatus("正在根据研究印象挑选今日论文…", "pending");
+    setStatus("正在优先按关注作者挑选今日论文…", "pending");
   }
   document.addEventListener("fastnews-inbox", (event) => {
     const payload = event.detail || { items: [] };
     render(payload);
-    if (payload.generatedToday) setStatus("已根据你的研究印象生成今日论文。", "ok");
+    if (payload.generatedToday) setStatus("已根据关注作者与研究印象生成今日论文。", "ok");
     else if ((payload.items || []).length) setStatus("");
     else setStatus("暂时没有可推送的论文，先写研究印象或关注作者后再刷新。", "error");
   });

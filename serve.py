@@ -22,6 +22,7 @@ from dotenv import load_dotenv
 
 import field_briefing
 import inbox_push
+import summary_brief
 
 AUDIENCE = "fast-news"
 COOKIE_NAME = os.environ.get("FASTRESEARCH_COOKIE_NAME", "fr_session")
@@ -61,6 +62,7 @@ _INBOX_LOCKS: dict[str, threading.Lock] = {}
 _INBOX_LOCKS_GUARD = threading.Lock()
 RELATED_WORK_PATH = "/api/related-work"
 FIELD_BRIEFING_PATH = "/api/field-briefing"
+SUMMARY_BRIEF_PATH = "/api/summary-brief"
 INBOX_PATH = "/api/content/inbox"
 FASTREAD_PATH = "/api/fastread"
 FASTREAD_REDIRECT_MAX = 7000
@@ -477,6 +479,19 @@ def rank_field_briefing(body: dict) -> tuple[int, dict]:
     )
 
 
+def complete_summary_brief(system_prompt: str, user_prompt: str) -> str:
+    return complete_field_briefing(system_prompt, user_prompt)
+
+
+def rank_summary_brief(body: dict) -> tuple[int, dict]:
+    return summary_brief.run_summary_brief(
+        body,
+        public_root(),
+        complete_summary_brief,
+        has_api_key=bool(openai_api_key()),
+    )
+
+
 def public_root() -> Path:
     return Path(os.environ.get("FASTNEWS_ROOT", Path(__file__).resolve().parent)).resolve()
 
@@ -649,6 +664,9 @@ class FastNewsHandler(BaseHTTPRequestHandler):
         if parsed.path == FIELD_BRIEFING_PATH:
             self._field_briefing()
             return
+        if parsed.path == SUMMARY_BRIEF_PATH:
+            self._summary_brief()
+            return
         if parsed.path == INBOX_PATH:
             self._inbox()
             return
@@ -669,7 +687,7 @@ class FastNewsHandler(BaseHTTPRequestHandler):
         if not token or not session_valid(token):
             self._bounce()
             return
-        self._file(parsed.path or "/")
+        self._file(parsed.path or "/", parsed.query)
 
     def _bounce(self):
         self._redirect(panel_url())
@@ -695,13 +713,15 @@ class FastNewsHandler(BaseHTTPRequestHandler):
         self.send_header("Content-Length", "0")
         self.end_headers()
 
-    def _file(self, url_path: str):
+    def _file(self, url_path: str, query: str = ""):
         target = resolve_public_file(url_path)
         if target is None:
             self.send_error(404, "Not Found")
             return
         data = target.read_bytes()
         content_type = mimetypes.guess_type(target.name)[0] or "application/octet-stream"
+        params = urllib.parse.parse_qs(query, keep_blank_values=True)
+        as_download = (params.get("download") or [""])[0].strip().lower() in {"1", "true", "yes"}
         self.send_response(200)
         self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(len(data)))
@@ -709,6 +729,13 @@ class FastNewsHandler(BaseHTTPRequestHandler):
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("X-Frame-Options", "SAMEORIGIN")
         self.send_header("Referrer-Policy", "same-origin")
+        if as_download:
+            filename = target.name.replace("\\", "").replace('"', "")
+            encoded = urllib.parse.quote(filename)
+            self.send_header(
+                "Content-Disposition",
+                f'attachment; filename="{filename}"; filename*=UTF-8\'\'{encoded}',
+            )
         self.end_headers()
         if self.command != "HEAD":
             self.wfile.write(data)
@@ -851,6 +878,24 @@ class FastNewsHandler(BaseHTTPRequestHandler):
                 payload = {"items": []}
             result = self._ensure_today_inbox(token, payload)
         self._write_json(200, result)
+
+    def _summary_brief(self):
+        if self.command == "OPTIONS":
+            self._write_json(204, None)
+            return
+        if self.command != "POST":
+            self._write_json(405, {"error": "Method not allowed"})
+            return
+        length = int(self.headers.get("Content-Length") or 0)
+        raw = self.rfile.read(length) if length > 0 else b""
+        try:
+            body = json.loads(raw.decode("utf-8") or "{}")
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            body = {}
+        if not isinstance(body, dict):
+            body = {}
+        status, payload = rank_summary_brief(body)
+        self._write_json(status, payload)
 
     def _field_briefing(self):
         if self.command == "OPTIONS":

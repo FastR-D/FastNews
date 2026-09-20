@@ -7,24 +7,34 @@
 - **🗞️ 安全资讯周报（secnews）**：每日从 BleepingComputer 与 arXiv 抓取资讯/论文，由 LLM 筛选、导读并翻译，每周自动生成排版精美的 HTML/PDF 周报。
 - **📝 每日 AI 导读**：为 `articles` 中每个日期生成中文标题与摘要，保存到 `secnews/data/daily_summaries/`，支持增量续跑。
 - **🎓 顶会论文分析（top-conf）**：针对 USENIX Security、IEEE S&P、NDSS、ACM CCS 四大安全顶会做结构化抓取，LLM 自动分类（Web / 系统 / 密码学 / 隐私 / ML 安全等 10 类）并生成深度中文摘要，输出 Web/PDF 报告。
-- **🧭 统一报告主页**：总览页集中展示所有报告，支持维护关注作者列表。必须从 FastResearch 用个人 Key 进入；`serve.py` 服务端兑换 SSO 票据后写入 HttpOnly Cookie，作者按 Key 保存在服务端。直开 `:4173` 会回到 Panel。
+- **🧭 统一报告主页**：总览页右侧单独列出顶会报告，可打开或下载 HTML/PDF；也支持维护关注作者列表。必须从 FastResearch 用个人 Key 进入；`serve.py` 服务端兑换 SSO 票据后写入 HttpOnly Cookie，作者按 Key 保存在服务端。直开 `:4173` 会回到 Panel。
 - **🤖 全自动流水线**：GitHub Actions 定时抓取、总结、发布，全程无需人工干预。
 - **📚 领域导读**：在总览或侧栏进入「领域导读」，输入研究方向后基于顶会中文摘要与近期 arXiv 分类综述近五年研究现状并推荐高相关论文；会结合个人研究印象。
+- **📊 总结汇报**：用本地顶会中文摘要生成数据实证简报。可做四大顶会全景，或按方向对照会场、年份与类别；数字只来自本地统计，没有引文窗口或杰出论文标签。
 - **✉️ 私信**：每天按研究印象或关注作者方向推送一篇论文，按上海日历日一篇，已推过的论文会跳过。
-- **🧑‍🔬 研究印象**：每位成员一份专属研究方向说明，保存在 FastResearch；领域导读、找论文和每日推送都会使用它。
+- **🧑‍🔬 研究印象**：每位成员一份专属研究方向说明，保存在 FastResearch；领域导读、总结汇报、找论文和每日推送都会使用它。
 - **📐 可折叠总览栏**：侧栏可隐藏/打开，状态记在浏览器本地。
-- **📖 跳转 FastRead**：顶会报告、顶会列表、领域导读和私信的论文卡片可一键发布标题、摘要、作者并打开 FastRead。
+- **📖 跳转 FastRead**：顶会报告、顶会列表、领域导读、总结汇报和私信的论文卡片可一键发布标题、摘要、作者并打开 FastRead。
 
 ## 📚 领域导读
 
 侧栏或总览页进入 [领域导读](field-briefing/index.html)。输入研究方向（例如 `LLM jailbreak`、侧信道、TEE），页面会检索本地顶会中文摘要和近 90 天 arXiv，再按研究方法或主题分类综述近五年国内外研究现状：每类先概括共识并引用具体工作，再比较方法、侧重点或结论，最后指出研究不足，并推荐高相关论文。查询可留空，此时使用研究印象。
 
+## 📊 总结汇报
+
+侧栏或总览页进入 [总结汇报](summary-brief/index.html)。留空生成四大顶会全景；输入方向（例如 `LLM jailbreak`、侧信道）则按该主题做会场、年份与类别对照。简报结构为封面结论、三条发现、数据口径、表格/条形图、对照问答、相关论文、局限与讨论。统计只使用 FastNews 已总结的顶会中文摘要（及可选 arXiv），不会编造引用次数或杰出论文标签。查询可留空：无研究印象时走全景，有印象时按印象做方向简报。
+
+```bash
+python summary_brief.py -q "四大顶会全景" --format text
+python summary_brief.py -q "LLM jailbreak" --format text
+```
+
 ## ✉️ 私信与研究印象
 
-- 研究印象：[impression/index.html](impression/index.html)。写下自己的研究方向、关注问题和方法，最长 4000 字，按个人 Key 存在 FastResearch。
-- 私信：[inbox/index.html](inbox/index.html)。每天打开 FastNews 时，若当天还没有推送，会按印象 → 关注作者标签 → 通用安全方向选一篇论文。打开私信页会把今日推送标为已读。
+- 研究印象：[impression/index.html](impression/index.html)。写下自己的研究方向、关注问题和方法，最长 4000 字，按个人 Key 存在 FastResearch。领域导读、总结汇报、找论文和每日推送都会使用它。
+- 私信：[inbox/index.html](inbox/index.html)。每天打开 FastNews 时，若当天还没有推送，会优先推送关注作者本人的论文；若暂无新作，再按印象 → 关注作者标签 → 通用安全方向选一篇。打开私信页会把今日推送标为已读。
 
-查询优先级：印象文本 → 关注作者 / 自定义标签 → `computer security 系统安全 网络安全`。
+推送优先级：关注作者姓名命中的论文 → 印象文本 → 关注作者 / 自定义标签 → `computer security 系统安全 网络安全`。
 
 当前语料覆盖 USENIX Security、IEEE S&P、NDSS、ACM CCS 2023–2026 的中文摘要。CCS 2026 目前仅有录用标题、尚无官方摘要；IEEE S&P 2026 部分论文摘要仍缺失。也可在仓库根目录用命令行检索：
 
@@ -37,6 +47,7 @@ python field_briefing.py -q "LLM jailbreak" --limit 5 --format text
 - 总览页：[index.html](index.html)
 - 顶会论文总结：[top-conf/index.html](top-conf/index.html)
 - 领域导读：[field-briefing/index.html](field-briefing/index.html)
+- 总结汇报：[summary-brief/index.html](summary-brief/index.html)
 - 私信：[inbox/index.html](inbox/index.html)
 - 研究印象：[impression/index.html](impression/index.html)
 - 安全资讯周报：[secnews/index.html](secnews/index.html)
@@ -77,7 +88,7 @@ uv run python generate_homepage.py
 
    服务监听 `127.0.0.1:4173`。浏览器直开会 302 到 Panel；从 Panel 点击 FastNews 后才会兑换票据并展示报告。不要使用 `python -m http.server`。
 
-   HTTP 接口：页面门禁、`POST /api/related-work`、`POST /api/field-briefing`、`POST /api/fastread` 与 `GET /api/content/inbox`（补今日推送）由 `serve.py` 本地处理，其余 `/api/*` 反代到 FastResearch。完整清单见 `../FastResearch/docs/api.md`。
+   HTTP 接口：页面门禁、`POST /api/related-work`、`POST /api/field-briefing`、`POST /api/summary-brief`、`POST /api/fastread` 与 `GET /api/content/inbox`（补今日推送）由 `serve.py` 本地处理，其余 `/api/*` 反代到 FastResearch。完整清单见 `../FastResearch/docs/api.md`。
 
 > PDF 生成依赖 WeasyPrint，需要系统图形库：Ubuntu 安装 `libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf-2.0-0 libffi-dev libcairo2 fonts-noto-cjk`，macOS 安装 `brew install pango`。缺少时脚本会自动跳过 PDF、仅输出 HTML。
 
@@ -85,10 +96,13 @@ uv run python generate_homepage.py
 
 ```text
 .
-├── generate_homepage.py        # 生成统一主页（index.html / top-conf / secnews / field-briefing / inbox / impression）
+├── generate_homepage.py        # 生成统一主页（index.html / top-conf / secnews / field-briefing / summary-brief / inbox / impression）
 ├── field_briefing.py           # 领域导读检索与导读生成
+├── summary_brief.py            # 总结汇报统计与简报生成
 ├── inbox_push.py               # 每日私信选文
 ├── field-briefing/             # 领域导读页面
+│   └── index.html
+├── summary-brief/              # 总结汇报页面
 │   └── index.html
 ├── inbox/                      # 私信
 │   └── index.html
@@ -97,8 +111,14 @@ uv run python generate_homepage.py
 ├── api/
 │   ├── related-work.js         # 顶会 related work
 │   ├── field-briefing.js       # 领域导读
+│   ├── summary-brief.js        # 总结汇报
 │   ├── fastread.js             # 跳转 FastRead
-│   └── _lib/field-search.js    # 领域导读检索
+│   └── _lib/field-search.js    # 领域导读 / 总结汇报检索
+├── assets/                     # 页面静态资源
+│   ├── field-briefing.css
+│   ├── field-briefing.js
+│   ├── summary-brief.css       # 总结汇报
+│   └── summary-brief.js
 ├── prompt/
 │   └── homepage.html.j2        # 主页模板
 ├── secnews/                    # 安全资讯周报模块
@@ -197,7 +217,7 @@ uv run python top-conf/generate_conf_report.py usenix 2026
 
 ### 报告展示
 
-HTML 报告保存在 `top-conf/data/report/`，总览见 [顶会论文总结](top-conf/index.html)。当前覆盖四大顶会 2023–2026：
+HTML 报告保存在 `top-conf/data/report/`。总览页与 [顶会论文总结](top-conf/index.html) 右侧都单列顶会报告，可打开或下载 HTML/PDF。当前覆盖四大顶会 2023–2026：
 
 - **USENIX Security 2023** [[HTML]](top-conf/data/report/USENIX_2023_Report.html)
 - **USENIX Security 2024** [[HTML]](top-conf/data/report/USENIX_2024_Report.html)

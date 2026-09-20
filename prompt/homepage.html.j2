@@ -1,4 +1,18 @@
 <!DOCTYPE html>
+{% macro conference_report_panel(items) -%}
+        <section class="surface report-column" id="confReports">
+          <div class="section-head"><div><h2>顶会报告</h2><p class="section-description">打开或下载已生成的会议报告</p></div><span class="section-count">{{ items|length }} 份</span></div>
+          <div class="report-toolbar"><label class="search-field" for="reportSearch"><svg class="icon"><use href="#icon-search"></use></svg><input class="field" id="reportSearch" type="search" placeholder="搜索会议或年份" aria-label="搜索顶会报告"></label><span class="section-count" id="visibleReportCount">{{ items|length }} 条结果</span></div>
+          <div class="report-list-scroll" id="reportList">
+          {%- if items %}
+          {%- for report in items %}
+          <article class="report-row" data-search="{{ (report.title ~ ' ' ~ report.kind ~ ' ' ~ report.updated_at ~ ' ' ~ report.download_name)|lower }}"><h3 class="report-title"><a href="{{ report.html_path }}">{{ report.title }}</a></h3><p class="meta">{% if report.pdf_path %}HTML {{ report.size_label }} · PDF {{ report.pdf_size_label }}{% else %}{{ report.size_label }}{% endif %} · {{ report.updated_at }}</p><div class="row-actions"><a class="button button-primary button-sm" href="{{ report.html_path }}"><svg class="icon"><use href="#icon-file"></use></svg>打开</a><a class="button button-secondary button-sm" href="{{ report.html_path }}?download=1" download="{{ report.download_name }}"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a>{% if report.pdf_path %}<a class="button button-secondary button-sm" href="{{ report.pdf_path }}?download=1" download="{{ report.pdf_download_name }}"><svg class="icon"><use href="#icon-download"></use></svg>PDF</a>{% endif %}</div></article>
+          {%- endfor %}
+          {% else %}<div class="empty">还没有生成顶会报告。</div>{% endif %}
+          </div>
+          <div class="empty" id="reportEmpty" hidden>没有匹配的报告。</div>
+        </section>
+{%- endmacro %}
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -119,6 +133,12 @@
   .stat-label { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
   .workspace { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(360px, .95fr); gap: 18px; align-items: start; }
   .workspace.single-column { grid-template-columns: minmax(0, 1fr); }
+  .workspace-wide { grid-column: 1 / -1; }
+  .report-column { position: sticky; top: 72px; }
+  .report-list-scroll { max-height: min(720px, calc(100vh - 220px)); overflow-y: auto; }
+  .report-column .report-row { padding: 12px 16px 12px 20px; }
+  .report-column .report-title { font-size: 13px; }
+  .report-column .row-actions { margin-top: 8px; }
   .section-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; min-height: 58px; padding: 12px 16px; background: var(--soft); border-bottom: 1px solid var(--border); }
   h2 { margin-bottom: 0; font-size: 15px; line-height: 1.4; font-weight: 650; }
   .section-description { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
@@ -245,6 +265,8 @@
     .page-header { display: block; margin-bottom: 18px; }
     .badge { margin-top: 12px; }
     .workspace, .workspace.single-column { grid-template-columns: 1fr; }
+    .report-column { position: static; }
+    .report-list-scroll { max-height: none; }
   }
   @media (max-width: 620px) {
     .generated { display: none; }
@@ -491,9 +513,10 @@
 {% if page_mode == 'home' %}<link rel="stylesheet" href="assets/authors.css"><link rel="stylesheet" href="assets/today-news.css">{% endif %}
 {% if page_mode == 'top-conf' %}<link rel="stylesheet" href="../assets/related-work.css">{% endif %}
 {% if page_mode == 'field-briefing' %}<link rel="stylesheet" href="../assets/field-briefing.css">{% endif %}
+{% if page_mode == 'summary-brief' %}<link rel="stylesheet" href="../assets/summary-brief.css">{% endif %}
 {% if page_mode == 'secnews' %}<link rel="stylesheet" href="../assets/secnews-news.css">{% endif %}
 {% if page_mode in ['inbox', 'impression'] %}<link rel="stylesheet" href="../assets/profile.css">{% endif %}
-{% if page_mode in ['top-conf', 'field-briefing', 'inbox'] %}<link rel="stylesheet" href="{{ asset_prefix }}fastread.css">{% endif %}
+{% if page_mode in ['top-conf', 'field-briefing', 'summary-brief', 'inbox'] %}<link rel="stylesheet" href="{{ asset_prefix }}fastread.css">{% endif %}
 </head>
 <body>
 <svg class="icon-sprite" aria-hidden="true" focusable="false">
@@ -502,11 +525,13 @@
   <symbol id="icon-graduation" viewBox="0 0 24 24"><path d="m2 10 10-5 10 5-10 5-10-5Z"/><path d="M6 12.5V16c2 1.5 4 2.25 6 2.25S16 17.5 18 16v-3.5"/><path d="M22 10v6"/></symbol>
   <symbol id="icon-newspaper" viewBox="0 0 24 24"><path d="M4 4h15a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/><path d="M7 8h9M7 12h9M7 16h5"/></symbol>
   <symbol id="icon-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/><path d="M8 7h8M8 11h6"/></symbol>
+  <symbol id="icon-chart" viewBox="0 0 24 24"><path d="M4 19V5M4 19h16"/><path d="M8 16v-5M12 16V8M16 16v-7"/></symbol>
   <symbol id="icon-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
   <symbol id="icon-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
   <symbol id="icon-profile" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0 1 16 0"/></symbol>
   <symbol id="icon-panel-close" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M13 10l-2 2 2 2"/></symbol>
   <symbol id="icon-panel-open" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M13 14l2-2-2-2"/></symbol>
+  <symbol id="icon-download" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M5 21h14"/></symbol>
   <symbol id="icon-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 13h8M8 17h6"/></symbol>
   <symbol id="icon-tag" viewBox="0 0 24 24"><path d="M20 13 13 20a2 2 0 0 1-3 0l-6-6a2 2 0 0 1 0-3V4h7a2 2 0 0 1 1 1l8 8Z"/><circle cx="8.5" cy="8.5" r="1"/></symbol>
   <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
@@ -532,6 +557,7 @@
       <li><a class="{% if page_mode == 'impression' %}active{% endif %}" href="{{ impression_path }}"><span><svg class="icon"><use href="#icon-profile"></use></svg>研究印象</span></a></li>
       <li><a class="{% if page_mode == 'top-conf' %}active{% endif %}" href="{{ top_conf_path }}"><span><svg class="icon"><use href="#icon-graduation"></use></svg>顶会报告</span><span class="nav-count">{{ top_conf_count }}</span></a></li>
       <li><a class="{% if page_mode == 'field-briefing' %}active{% endif %}" href="{{ field_briefing_path }}"><span><svg class="icon"><use href="#icon-book"></use></svg>领域导读</span><span class="nav-count">{{ field_briefing_top_conf_count }}</span></a></li>
+      <li><a class="{% if page_mode == 'summary-brief' %}active{% endif %}" href="{{ summary_brief_path }}"><span><svg class="icon"><use href="#icon-chart"></use></svg>总结汇报</span><span class="nav-count">{{ field_briefing_top_conf_count }}</span></a></li>
       <li><a class="{% if page_mode == 'secnews' %}active{% endif %}" href="{{ secnews_path }}"><span><svg class="icon"><use href="#icon-newspaper"></use></svg>安全资讯</span><span class="nav-count">{{ secnews_count }}</span></a></li>
       <li><a href="{% if page_mode == 'home' %}#authors{% else %}{{ home_path }}#authors{% endif %}"><span><svg class="icon"><use href="#icon-users"></use></svg>关注作者</span><span class="nav-count" id="authorNavCount">0</span></a></li>
     </ul></nav>
@@ -554,12 +580,13 @@
       <a class="{% if page_mode == 'impression' %}active{% endif %}" href="{{ impression_path }}"><span><svg class="icon"><use href="#icon-profile"></use></svg>研究印象</span></a>
       <a class="{% if page_mode == 'top-conf' %}active{% endif %}" href="{{ top_conf_path }}"><span><svg class="icon"><use href="#icon-graduation"></use></svg>顶会报告</span></a>
       <a class="{% if page_mode == 'field-briefing' %}active{% endif %}" href="{{ field_briefing_path }}"><span><svg class="icon"><use href="#icon-book"></use></svg>领域导读</span></a>
+      <a class="{% if page_mode == 'summary-brief' %}active{% endif %}" href="{{ summary_brief_path }}"><span><svg class="icon"><use href="#icon-chart"></use></svg>总结汇报</span></a>
       <a class="{% if page_mode == 'secnews' %}active{% endif %}" href="{{ secnews_path }}"><span><svg class="icon"><use href="#icon-newspaper"></use></svg>安全资讯</span></a>
       <a href="{% if page_mode == 'home' %}#authors{% else %}{{ home_path }}#authors{% endif %}"><span><svg class="icon"><use href="#icon-users"></use></svg>关注作者</span></a>
     </nav>
     <div class="page">
       <section class="page-header{% if page_mode == 'home' %} has-today-card{% endif %}">
-        <div class="header-copy"><span class="header-icon">{% if page_mode == 'home' %}<svg class="icon"><use href="#icon-dashboard"></use></svg>{% elif page_mode == 'top-conf' %}<svg class="icon"><use href="#icon-graduation"></use></svg>{% elif page_mode == 'field-briefing' %}<svg class="icon"><use href="#icon-book"></use></svg>{% elif page_mode == 'inbox' %}<svg class="icon"><use href="#icon-mail"></use></svg>{% elif page_mode == 'impression' %}<svg class="icon"><use href="#icon-profile"></use></svg>{% else %}<svg class="icon"><use href="#icon-newspaper"></use></svg>{% endif %}</span><div><h1>{{ page_title }}</h1><p class="description">{{ page_description }}</p></div></div>
+        <div class="header-copy"><span class="header-icon">{% if page_mode == 'home' %}<svg class="icon"><use href="#icon-dashboard"></use></svg>{% elif page_mode == 'top-conf' %}<svg class="icon"><use href="#icon-graduation"></use></svg>{% elif page_mode == 'field-briefing' %}<svg class="icon"><use href="#icon-book"></use></svg>{% elif page_mode == 'summary-brief' %}<svg class="icon"><use href="#icon-chart"></use></svg>{% elif page_mode == 'inbox' %}<svg class="icon"><use href="#icon-mail"></use></svg>{% elif page_mode == 'impression' %}<svg class="icon"><use href="#icon-profile"></use></svg>{% else %}<svg class="icon"><use href="#icon-newspaper"></use></svg>{% endif %}</span><div><h1>{{ page_title }}</h1><p class="description">{{ page_description }}</p></div></div>
         {%- if page_mode == 'home' %}
         <details class="today-news-card{% if not home_news_date %} is-empty{% endif %}" id="todayNewsCard">
           <summary class="today-news-face">
@@ -611,25 +638,25 @@
         <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-file"></use></svg></span><span class="stat-copy"><span class="stat-value">{{ conference_papers|length }}</span><span class="stat-label">已总结论文</span></span></div>
         <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-graduation"></use></svg></span><span class="stat-copy"><span class="stat-value">{{ conference_count }}</span><span class="stat-label">会议</span></span></div>
         <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-tag"></use></svg></span><span class="stat-copy"><span class="stat-value">{{ conference_category_count }}</span><span class="stat-label">研究类别</span></span></div>
-        {%- elif page_mode == 'field-briefing' %}
+        {%- elif page_mode in ['field-briefing', 'summary-brief'] %}
         <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-graduation"></use></svg></span><span class="stat-copy"><span class="stat-value">{{ field_briefing_top_conf_count }}</span><span class="stat-label">顶会摘要</span></span></div>
         <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-newspaper"></use></svg></span><span class="stat-copy"><span class="stat-value">{{ field_briefing_arxiv_count }}</span><span class="stat-label">近期 arXiv</span></span></div>
         <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-tag"></use></svg></span><span class="stat-copy"><span class="stat-value">{{ field_briefing_category_count }}</span><span class="stat-label">研究类别</span></span></div>
         {%- elif page_mode == 'inbox' %}
         <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-mail"></use></svg></span><span class="stat-copy"><span class="stat-value" id="inboxStatUnread">0</span><span class="stat-label">未读</span></span></div>
         <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-file"></use></svg></span><span class="stat-copy"><span class="stat-value" id="inboxStatTotal">0</span><span class="stat-label">历史推送</span></span></div>
-        <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-profile"></use></svg></span><span class="stat-copy"><span class="stat-value type-value">每日一篇</span><span class="stat-label">按研究印象</span></span></div>
+        <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-profile"></use></svg></span><span class="stat-copy"><span class="stat-value type-value">每日一篇</span><span class="stat-label">优先关注作者</span></span></div>
         {%- elif page_mode == 'impression' %}
         <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-profile"></use></svg></span><span class="stat-copy"><span class="stat-value">4000</span><span class="stat-label">字上限</span></span></div>
-        <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-book"></use></svg></span><span class="stat-copy"><span class="stat-value type-value">导读 / 找论文</span><span class="stat-label">会结合印象</span></span></div>
-        <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-mail"></use></svg></span><span class="stat-copy"><span class="stat-value type-value">每日推送</span><span class="stat-label">按印象匹配</span></span></div>
+        <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-book"></use></svg></span><span class="stat-copy"><span class="stat-value type-value">导读 / 汇报 / 找论文</span><span class="stat-label">会结合印象</span></span></div>
+        <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-mail"></use></svg></span><span class="stat-copy"><span class="stat-value type-value">每日推送</span><span class="stat-label">优先关注作者</span></span></div>
         {%- else %}
         <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-file"></use></svg></span><span class="stat-copy"><span class="stat-value">{{ reports|length }}</span><span class="stat-label">已生成报告</span></span></div>
         <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-file"></use></svg></span><span class="stat-copy"><span class="stat-value">{{ reports|length }}</span><span class="stat-label">HTML 文件</span></span></div>
         <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-newspaper"></use></svg></span><span class="stat-copy"><span class="stat-value type-value">{{ page_label }}</span><span class="stat-label">报告类型</span></span></div>
         {%- endif %}
       </section>
-      <div class="workspace {% if page_mode != 'home' %}single-column{% endif %}">
+      <div class="workspace {% if page_mode not in ['home', 'top-conf'] %}single-column{% endif %}">
         {%- if page_mode == 'home' %}
         <section class="surface" id="reports">
           <div class="section-head"><div><h2>阅读入口</h2><p class="section-description">按主题进入报告索引</p></div><span class="section-count">{{ reports|length }} reports</span></div>
@@ -637,12 +664,14 @@
             <a class="gateway-row" href="{{ secnews_path }}"><span class="gateway-icon orange"><svg class="icon-lg"><use href="#icon-newspaper"></use></svg></span><span><h3 class="gateway-title">安全资讯周报</h3><p class="gateway-description">查看安全新闻与 arXiv 论文的周期性导读。</p><span class="gateway-meta">{{ secnews_count }} 份报告</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
             <a class="gateway-row" href="{{ top_conf_path }}"><span class="gateway-icon"><svg class="icon-lg"><use href="#icon-graduation"></use></svg></span><span><h3 class="gateway-title">顶会论文总结</h3><p class="gateway-description">按会议和研究方向浏览安全顶会论文分析。</p><span class="gateway-meta">{{ top_conf_count }} 份报告</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
             <a class="gateway-row" href="{{ field_briefing_path }}"><span class="gateway-icon"><svg class="icon-lg"><use href="#icon-book"></use></svg></span><span><h3 class="gateway-title">领域导读</h3><p class="gateway-description">输入研究方向，基于顶会中文摘要与近期 arXiv 分类综述近五年研究现状并推荐高相关论文。</p><span class="gateway-meta">{{ field_briefing_top_conf_count }} 篇顶会摘要</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
-            <a class="gateway-row" href="{{ inbox_path }}"><span class="gateway-icon orange"><svg class="icon-lg"><use href="#icon-mail"></use></svg></span><span><h3 class="gateway-title">私信</h3><p class="gateway-description">每天推送一篇匹配你关注领域的论文。</p><span class="gateway-meta">结合研究印象</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
-            <a class="gateway-row" href="{{ impression_path }}"><span class="gateway-icon"><svg class="icon-lg"><use href="#icon-profile"></use></svg></span><span><h3 class="gateway-title">研究印象</h3><p class="gateway-description">编写自己的研究方向，供导读、找论文和每日推送使用。</p><span class="gateway-meta">每人一份专属文件</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
+            <a class="gateway-row" href="{{ summary_brief_path }}"><span class="gateway-icon"><svg class="icon-lg"><use href="#icon-chart"></use></svg></span><span><h3 class="gateway-title">总结汇报</h3><p class="gateway-description">用顶会中文摘要做数据实证简报：封面结论、三条发现、会场与类别对照，以及局限与讨论。</p><span class="gateway-meta">{{ field_briefing_top_conf_count }} 篇顶会摘要</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
+            <a class="gateway-row" href="{{ inbox_path }}"><span class="gateway-icon orange"><svg class="icon-lg"><use href="#icon-mail"></use></svg></span><span><h3 class="gateway-title">私信</h3><p class="gateway-description">每天优先推送关注作者的论文。</p><span class="gateway-meta">其次研究印象</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
+            <a class="gateway-row" href="{{ impression_path }}"><span class="gateway-icon"><svg class="icon-lg"><use href="#icon-profile"></use></svg></span><span><h3 class="gateway-title">研究印象</h3><p class="gateway-description">编写自己的研究方向，供导读、总结汇报、找论文和每日推送使用。</p><span class="gateway-meta">每人一份专属文件</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
             <a class="gateway-row" href="#authors"><span class="gateway-icon gray"><svg class="icon-lg"><use href="#icon-users"></use></svg></span><span><h3 class="gateway-title">关注作者</h3><p class="gateway-description">维护作者主页和研究方向，方便持续跟踪。</p><span class="gateway-meta"><span id="authorGatewayCount">0</span> 位作者</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
           </div>
         </section>
-        <section class="surface" id="authors">
+        {{ conference_report_panel(top_conf_reports) }}
+        <section class="surface workspace-wide" id="authors">
           <div class="section-head"><div><h2>关注作者</h2><p class="section-description" id="authorSectionHint">点击作者行可编辑资料</p></div><span class="section-count" id="authorSectionCount">0 位作者</span><button class="button button-secondary button-sm" id="toggleAuthorForm" type="button" aria-controls="authorModal" aria-expanded="false"><svg class="icon"><use href="#icon-plus"></use></svg>添加作者</button></div>
           <div class="author-list-head"><span>名称</span><span>研究方向</span><span>主页</span><span></span></div>
           <div id="authorList"></div>
@@ -710,22 +739,11 @@
           <div class="empty" id="conferenceEmpty" hidden>没有符合筛选条件的论文。</div>
           <div class="pagination" id="conferencePagination" aria-label="论文分页"></div>
         </section>
-        <section class="surface" id="reports">
-          <div class="section-head"><div><h2>报告列表</h2><p class="section-description">选择报告打开 HTML 版本</p></div><span class="section-count">{{ reports|length }} files</span></div>
-          <div class="report-toolbar"><label class="search-field" for="reportSearch"><svg class="icon"><use href="#icon-search"></use></svg><input class="field" id="reportSearch" type="search" placeholder="搜索报告标题" aria-label="搜索报告标题"></label><span class="section-count" id="visibleReportCount">{{ reports|length }} 条结果</span></div>
-          <div id="reportList">
-          {%- if reports %}
-          {%- for report in reports %}
-          <article class="report-row" data-search="{{ (report.title ~ ' ' ~ report.kind ~ ' ' ~ report.updated_at)|lower }}"><h3 class="report-title"><a href="{{ report.html_path }}">{{ report.title }}</a></h3><p class="meta">{{ report.kind }} · {{ report.updated_at }} · {{ report.size_label }}</p><div class="row-actions"><a class="button button-primary button-sm" href="{{ report.html_path }}"><svg class="icon"><use href="#icon-file"></use></svg>打开 HTML</a></div></article>
-          {%- endfor %}
-          {% else %}<div class="empty">还没有生成报告。</div>{% endif %}
-          </div>
-          <div class="empty" id="reportEmpty" hidden>没有匹配的报告。</div>
-        </section>
-        {%- elif page_mode == 'inbox' %}
+        {{ conference_report_panel(reports) }}
+                {%- elif page_mode == 'inbox' %}
         <section class="surface" id="inboxWorkspace">
           <div class="inbox-board">
-            <p class="inbox-hint">每天根据研究印象或关注作者方向推送一篇论文。打开本页会将今日推送标为已读。</p>
+            <p class="inbox-hint">每天优先推送关注作者的论文；若暂无新作，再按研究印象与标签挑选。打开本页会将今日推送标为已读。</p>
             <p class="inbox-status" id="inboxStatus" hidden></p>
             <div id="inboxToday"></div>
             <div>
@@ -740,10 +758,29 @@
             <label class="label" for="impressionText">研究方向与关注点</label>
             <textarea id="impressionText" maxlength="4000" placeholder="写下你的研究方向、关注问题、常用方法，以及希望跟踪的论文类型。例如：我做大模型安全，关注越狱、提示注入与智能体工具调用风险，也看侧信道与 TEE。"></textarea>
             <div class="impression-meta"><span id="impressionCount">0 / 4000</span><span id="impressionUpdated">尚未保存</span></div>
-            <p class="impression-hint">保存后，领域导读、顶会 related work 和每日私信推送都会结合这份印象。</p>
+            <p class="impression-hint">保存后，领域导读、总结汇报、找论文和每日私信推送都会结合这份印象。</p>
             <p class="inbox-status" id="impressionStatus" hidden></p>
             <div class="impression-actions"><button class="button button-primary" id="impressionSubmit" type="submit"><svg class="icon"><use href="#icon-profile"></use></svg>保存印象</button></div>
           </form>
+        </section>
+        {%- elif page_mode == 'summary-brief' %}
+        <section class="surface" id="summaryBriefWorkspace">
+          <form class="summary-brief-form" id="summaryBriefForm" autocomplete="off">
+            <div class="summary-brief-query">
+              <svg class="icon"><use href="#icon-search"></use></svg>
+              <label class="visually-hidden" for="summaryQuery">简报主题</label>
+              <input class="field" id="summaryQuery" name="query" type="search" placeholder="留空生成四大顶会全景，或输入方向，例如 LLM jailbreak、侧信道" maxlength="120">
+            </div>
+            <div class="summary-brief-controls">
+              <div class="filter-group"><label class="label" for="summaryCategory">类别</label><select class="field" id="summaryCategory"><option value="">全部类别</option>{% for category in field_briefing_categories %}<option value="{{ category }}">{{ category }}</option>{% endfor %}</select></div>
+              <div class="filter-group"><label class="label" for="summarySource">语料</label><select class="field" id="summarySource"><option value="all">顶会全景优先</option><option value="top-conf">仅顶会</option><option value="arxiv">仅 arXiv</option></select></div>
+              <div class="summary-brief-submit"><button class="button button-primary" id="summaryBriefSubmit" type="submit"><svg class="icon"><use href="#icon-chart"></use></svg>生成简报</button></div>
+            </div>
+            <div class="summary-brief-examples" id="summaryBriefExamples"></div>
+            <p class="summary-brief-hint">会结合你的研究印象。留空生成四大顶会全景；输入方向则做该主题的会场与类别对照。数字只来自本地 STATS，没有引文或杰出论文标签。{{ field_briefing_coverage }}</p>
+          </form>
+          <p class="summary-brief-status" id="summaryBriefStatus" hidden></p>
+          <div class="summary-brief-result" id="summaryBriefResult" hidden></div>
         </section>
         {%- elif page_mode == 'field-briefing' %}
         <section class="surface" id="fieldBriefingWorkspace">
@@ -807,6 +844,25 @@
 {% if page_mode == 'home' %}
 <script src="assets/authors.js"></script>
 <script src="assets/today-news.js"></script>
+<script>
+  const reportSearch = document.getElementById("reportSearch");
+  const reportRows = Array.from(document.querySelectorAll(".report-row"));
+  const visibleReportCount = document.getElementById("visibleReportCount");
+  const reportEmpty = document.getElementById("reportEmpty");
+  if (reportSearch) {
+    reportSearch.addEventListener("input", () => {
+      const query = reportSearch.value.trim().toLowerCase();
+      let visible = 0;
+      reportRows.forEach((row) => {
+        const match = !query || row.dataset.search.includes(query);
+        row.classList.toggle("is-hidden", !match);
+        if (match) visible += 1;
+      });
+      if (visibleReportCount) visibleReportCount.textContent = visible + " 条结果";
+      if (reportEmpty) reportEmpty.hidden = visible !== 0;
+    });
+  }
+</script>
 {% elif page_mode == 'secnews' %}
 <script>
   window.FASTNEWS_SECNEWS = {
@@ -820,6 +876,15 @@
 <script src="../assets/inbox.js"></script>
 {% elif page_mode == 'impression' %}
 <script src="../assets/impression.js"></script>
+{% elif page_mode == 'summary-brief' %}
+<script>
+  window.FASTNEWS_SUMMARY_BRIEF = {
+    categories: {{ field_briefing_categories_json|safe }},
+    examples: {{ summary_brief_examples_json|safe }},
+    arxivDays: 90
+  };
+</script>
+<script src="../assets/summary-brief.js"></script>
 {% elif page_mode == 'field-briefing' %}
 <script>
   window.FASTNEWS_FIELD_BRIEFING = {

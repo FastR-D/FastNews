@@ -22,12 +22,31 @@ FIELD_BRIEFING_EXAMPLES = [
     "模糊测试",
     "差分隐私",
 ]
+SUMMARY_BRIEF_EXAMPLES = [
+    "四大顶会全景",
+    "LLM jailbreak",
+    "侧信道",
+    "模糊测试",
+    "差分隐私",
+]
 CONFERENCE_LABELS = {
     "usenix": "USENIX Security",
     "ieee-sp": "IEEE S&P",
     "ndss": "NDSS",
     "ccs": "ACM CCS",
 }
+REPORT_STEM_RE = re.compile(
+    r"^(?P<conf>USENIX|IEEE-SP|NDSS|CCS)_(?P<year>\d{4})(?:_Report)?$",
+    re.IGNORECASE,
+)
+CONFERENCE_SORT = {
+    "usenix": 0,
+    "ieee-sp": 1,
+    "ndss": 2,
+    "ccs": 3,
+}
+
+
 def size_label(size):
     if size >= 1024 * 1024:
         return f"{size / 1024 / 1024:.1f} MB"
@@ -37,6 +56,11 @@ def size_label(size):
 
 
 def report_title(path):
+    match = REPORT_STEM_RE.match(path.stem)
+    if match:
+        label = CONFERENCE_LABELS.get(match.group("conf").lower())
+        if label:
+            return f"{label} {match.group('year')}"
     name = path.stem.replace("_", " ").replace("-", " ")
     name = " ".join(name.split())
     replacements = {
@@ -48,9 +72,21 @@ def report_title(path):
     return name
 
 
-def collect_reports(kind=None, relative_to=Path(".")):
+def _report_sort_key(item):
+    year = item.get("year") or 0
+    if year:
+        return (
+            0,
+            -int(year),
+            CONFERENCE_SORT.get(item.get("conference_key") or "", 99),
+            item["title"],
+        )
+    return (1, -item["sort_time"], 0, item["title"])
+
+
+def collect_reports(kind=None, relative_to=Path("."), dirs=REPORT_DIRS):
     reports = []
-    for directory, report_kind in REPORT_DIRS:
+    for directory, report_kind in dirs:
         if kind is not None and report_kind != kind:
             continue
         root = Path(directory)
@@ -60,18 +96,33 @@ def collect_reports(kind=None, relative_to=Path(".")):
         for html_path in sorted(root.glob("*.html")):
             stat = html_path.stat()
             html_href = os.path.relpath(html_path, relative_to).replace(os.sep, "/")
+            pdf_path = html_path.with_suffix(".pdf")
+            pdf_href = ""
+            pdf_size_label = ""
+            if pdf_path.is_file():
+                pdf_href = os.path.relpath(pdf_path, relative_to).replace(os.sep, "/")
+                pdf_size_label = size_label(pdf_path.stat().st_size)
+            match = REPORT_STEM_RE.match(html_path.stem)
+            conference_key = match.group("conf").lower() if match else ""
+            year = int(match.group("year")) if match else 0
             reports.append(
                 {
                     "title": report_title(html_path),
                     "kind": report_kind,
                     "html_path": html_href,
+                    "pdf_path": pdf_href,
+                    "download_name": html_path.name,
+                    "pdf_download_name": pdf_path.name if pdf_href else "",
                     "updated_at": datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M"),
                     "size_label": size_label(stat.st_size),
+                    "pdf_size_label": pdf_size_label,
                     "sort_time": stat.st_mtime,
+                    "conference_key": conference_key,
+                    "year": year,
                 }
             )
 
-    return sorted(reports, key=lambda item: item["sort_time"], reverse=True)
+    return sorted(reports, key=_report_sort_key)
 
 
 def json_for_script(value):
@@ -399,21 +450,37 @@ def render_page(page_mode, output, field_stats):
             "description": "输入一个研究方向，结合你的研究印象，基于顶会中文摘要与近期 arXiv 分类综述近五年研究现状并推荐高相关论文。",
             "label": "Field Briefing",
         },
+        "summary-brief": {
+            "kind": "Summary Brief",
+            "title": "总结汇报",
+            "description": "基于 FastNews 顶会中文摘要生成数据实证简报：封面结论、三条发现、会场与类别对照，以及局限与讨论。",
+            "label": "Summary Brief",
+        },
         "inbox": {
             "kind": None,
             "title": "私信",
-            "description": "每天推送一篇与你关注领域匹配的论文，推送会结合研究印象与关注作者。",
+            "description": "每天优先推送关注作者的论文；没有新作时再结合研究印象与标签挑选。",
             "label": "Inbox",
         },
         "impression": {
             "kind": None,
             "title": "研究印象",
-            "description": "写下自己的研究方向。领域导读、找论文和每日推送都会结合这份专属印象。",
+            "description": "写下自己的研究方向。领域导读、总结汇报、找论文和每日推送都会结合这份专属印象。",
             "label": "Research Profile",
         },
     }[page_mode]
 
     reports = collect_reports(page_config["kind"], output.parent)
+    top_conf_reports = (
+        reports
+        if page_config["kind"] == "Top Conference"
+        else collect_reports("Top Conference", output.parent)
+    )
+    secnews_reports = (
+        reports
+        if page_config["kind"] == "Security Digest"
+        else collect_reports("Security Digest", output.parent)
+    )
     news_days = collect_news_days() if page_mode in {"home", "secnews"} else []
     home_news = latest_home_news(news_days) if page_mode == "home" else None
     conference_papers = collect_conference_papers() if page_mode == "top-conf" else []
@@ -432,13 +499,15 @@ def render_page(page_mode, output, field_stats):
         top_conf_path="top-conf/index.html" if page_mode == "home" else "../top-conf/index.html",
         secnews_path="secnews/index.html" if page_mode == "home" else "../secnews/index.html",
         field_briefing_path="field-briefing/index.html" if page_mode == "home" else "../field-briefing/index.html",
+        summary_brief_path="summary-brief/index.html" if page_mode == "home" else "../summary-brief/index.html",
         inbox_path="inbox/index.html" if page_mode == "home" else ("index.html" if page_mode == "inbox" else "../inbox/index.html"),
         impression_path="impression/index.html" if page_mode == "home" else ("index.html" if page_mode == "impression" else "../impression/index.html"),
         root_prefix="" if page_mode == "home" else "../",
         asset_prefix="assets/" if page_mode == "home" else "../assets/",
         reports=reports,
-        top_conf_count=sum(1 for item in collect_reports("Top Conference", output.parent)),
-        secnews_count=sum(1 for item in collect_reports("Security Digest", output.parent)),
+        top_conf_reports=top_conf_reports,
+        top_conf_count=len(top_conf_reports),
+        secnews_count=len(secnews_reports),
         news_days=news_days,
         news_days_json=json.dumps(news_days, ensure_ascii=False),
         news_total=sum(item["count"] for item in news_days),
@@ -463,6 +532,8 @@ def render_page(page_mode, output, field_stats):
         field_briefing_categories_json=json_for_script(field_briefing.CATEGORIES),
         field_briefing_examples_json=json_for_script(FIELD_BRIEFING_EXAMPLES),
         field_briefing_coverage=field_stats.get("coverage") or field_briefing.coverage_note({"arxiv_days": 90}, Path(".")),
+        summary_brief_examples=SUMMARY_BRIEF_EXAMPLES,
+        summary_brief_examples_json=json_for_script(SUMMARY_BRIEF_EXAMPLES),
     )
     output.write_text(content, encoding="utf-8")
     print(f"Page generated: {output}")
@@ -471,12 +542,14 @@ def render_page(page_mode, output, field_stats):
 def render_homepage(output):
     field_stats = field_briefing.corpus_stats(Path("."))
     Path("field-briefing").mkdir(exist_ok=True)
+    Path("summary-brief").mkdir(exist_ok=True)
     Path("inbox").mkdir(exist_ok=True)
     Path("impression").mkdir(exist_ok=True)
     render_page("home", output, field_stats)
     render_page("top-conf", Path("top-conf/index.html"), field_stats)
     render_page("secnews", Path("secnews/index.html"), field_stats)
     render_page("field-briefing", Path("field-briefing/index.html"), field_stats)
+    render_page("summary-brief", Path("summary-brief/index.html"), field_stats)
     render_page("inbox", Path("inbox/index.html"), field_stats)
     render_page("impression", Path("impression/index.html"), field_stats)
 

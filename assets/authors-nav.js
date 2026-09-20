@@ -15,7 +15,7 @@
 
   function onHomePage() {
     const path = window.location.pathname.replace(/\\/g, "/");
-    return !/\/(top-conf|field-briefing|secnews|inbox|impression)(?:\/|$)/.test(path);
+    return !/\/(top-conf|field-briefing|summary-brief|secnews|inbox|impression)(?:\/|$)/.test(path);
   }
 
   function syncActive() {

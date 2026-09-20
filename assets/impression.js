@@ -66,7 +66,7 @@
       document.dispatchEvent(new CustomEvent("fastnews-profile", {
         detail: { impression, inboxUnread: window.FASTNEWS_INBOX_UNREAD || 0 },
       }));
-      setStatus("研究印象已保存。领域导读、找论文和每日私信都会使用它。", "ok");
+      setStatus("研究印象已保存。领域导读、总结汇报、找论文和每日私信都会使用它。", "ok");
     } catch {
       setStatus("保存失败，请稍后重试。", "error");
     } finally {

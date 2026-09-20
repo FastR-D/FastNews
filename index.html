@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -119,6 +120,12 @@
   .stat-label { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
   .workspace { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(360px, .95fr); gap: 18px; align-items: start; }
   .workspace.single-column { grid-template-columns: minmax(0, 1fr); }
+  .workspace-wide { grid-column: 1 / -1; }
+  .report-column { position: sticky; top: 72px; }
+  .report-list-scroll { max-height: min(720px, calc(100vh - 220px)); overflow-y: auto; }
+  .report-column .report-row { padding: 12px 16px 12px 20px; }
+  .report-column .report-title { font-size: 13px; }
+  .report-column .row-actions { margin-top: 8px; }
   .section-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; min-height: 58px; padding: 12px 16px; background: var(--soft); border-bottom: 1px solid var(--border); }
   h2 { margin-bottom: 0; font-size: 15px; line-height: 1.4; font-weight: 650; }
   .section-description { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
@@ -245,6 +252,8 @@
     .page-header { display: block; margin-bottom: 18px; }
     .badge { margin-top: 12px; }
     .workspace, .workspace.single-column { grid-template-columns: 1fr; }
+    .report-column { position: static; }
+    .report-list-scroll { max-height: none; }
   }
   @media (max-width: 620px) {
     .generated { display: none; }
@@ -494,6 +503,7 @@
 
 
 
+
 </head>
 <body>
 <svg class="icon-sprite" aria-hidden="true" focusable="false">
@@ -502,11 +512,13 @@
   <symbol id="icon-graduation" viewBox="0 0 24 24"><path d="m2 10 10-5 10 5-10 5-10-5Z"/><path d="M6 12.5V16c2 1.5 4 2.25 6 2.25S16 17.5 18 16v-3.5"/><path d="M22 10v6"/></symbol>
   <symbol id="icon-newspaper" viewBox="0 0 24 24"><path d="M4 4h15a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/><path d="M7 8h9M7 12h9M7 16h5"/></symbol>
   <symbol id="icon-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/><path d="M8 7h8M8 11h6"/></symbol>
+  <symbol id="icon-chart" viewBox="0 0 24 24"><path d="M4 19V5M4 19h16"/><path d="M8 16v-5M12 16V8M16 16v-7"/></symbol>
   <symbol id="icon-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
   <symbol id="icon-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
   <symbol id="icon-profile" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0 1 16 0"/></symbol>
   <symbol id="icon-panel-close" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M13 10l-2 2 2 2"/></symbol>
   <symbol id="icon-panel-open" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M13 14l2-2-2-2"/></symbol>
+  <symbol id="icon-download" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M5 21h14"/></symbol>
   <symbol id="icon-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 13h8M8 17h6"/></symbol>
   <symbol id="icon-tag" viewBox="0 0 24 24"><path d="M20 13 13 20a2 2 0 0 1-3 0l-6-6a2 2 0 0 1 0-3V4h7a2 2 0 0 1 1 1l8 8Z"/><circle cx="8.5" cy="8.5" r="1"/></symbol>
   <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
@@ -532,6 +544,7 @@
       <li><a class="" href="impression/index.html"><span><svg class="icon"><use href="#icon-profile"></use></svg>研究印象</span></a></li>
       <li><a class="" href="top-conf/index.html"><span><svg class="icon"><use href="#icon-graduation"></use></svg>顶会报告</span><span class="nav-count">16</span></a></li>
       <li><a class="" href="field-briefing/index.html"><span><svg class="icon"><use href="#icon-book"></use></svg>领域导读</span><span class="nav-count">4595</span></a></li>
+      <li><a class="" href="summary-brief/index.html"><span><svg class="icon"><use href="#icon-chart"></use></svg>总结汇报</span><span class="nav-count">4595</span></a></li>
       <li><a class="" href="secnews/index.html"><span><svg class="icon"><use href="#icon-newspaper"></use></svg>安全资讯</span><span class="nav-count">3</span></a></li>
       <li><a href="#authors"><span><svg class="icon"><use href="#icon-users"></use></svg>关注作者</span><span class="nav-count" id="authorNavCount">0</span></a></li>
     </ul></nav>
@@ -546,7 +559,7 @@
         </button>
         <div class="breadcrumb"><strong>FastNews</strong><span> / Local Index</span></div>
       </div>
-      <div class="topbar-actions"><span class="generated">更新于 2026-09-19 14:28 UTC</span><button class="icon-button" id="themeToggle" type="button" aria-label="切换深色模式" title="切换深色模式"><svg class="icon theme-sun"><use href="#icon-sun"></use></svg><svg class="icon theme-moon"><use href="#icon-moon"></use></svg></button></div>
+      <div class="topbar-actions"><span class="generated">更新于 2026-09-20 05:12 UTC</span><button class="icon-button" id="themeToggle" type="button" aria-label="切换深色模式" title="切换深色模式"><svg class="icon theme-sun"><use href="#icon-sun"></use></svg><svg class="icon theme-moon"><use href="#icon-moon"></use></svg></button></div>
     </header>
     <nav class="mobile-nav" aria-label="移动端导航">
       <a class="active" href="index.html"><span><svg class="icon"><use href="#icon-dashboard"></use></svg>总览</span></a>
@@ -554,6 +567,7 @@
       <a class="" href="impression/index.html"><span><svg class="icon"><use href="#icon-profile"></use></svg>研究印象</span></a>
       <a class="" href="top-conf/index.html"><span><svg class="icon"><use href="#icon-graduation"></use></svg>顶会报告</span></a>
       <a class="" href="field-briefing/index.html"><span><svg class="icon"><use href="#icon-book"></use></svg>领域导读</span></a>
+      <a class="" href="summary-brief/index.html"><span><svg class="icon"><use href="#icon-chart"></use></svg>总结汇报</span></a>
       <a class="" href="secnews/index.html"><span><svg class="icon"><use href="#icon-newspaper"></use></svg>安全资讯</span></a>
       <a href="#authors"><span><svg class="icon"><use href="#icon-users"></use></svg>关注作者</span></a>
     </nav>
@@ -600,12 +614,37 @@
             <a class="gateway-row" href="secnews/index.html"><span class="gateway-icon orange"><svg class="icon-lg"><use href="#icon-newspaper"></use></svg></span><span><h3 class="gateway-title">安全资讯周报</h3><p class="gateway-description">查看安全新闻与 arXiv 论文的周期性导读。</p><span class="gateway-meta">3 份报告</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
             <a class="gateway-row" href="top-conf/index.html"><span class="gateway-icon"><svg class="icon-lg"><use href="#icon-graduation"></use></svg></span><span><h3 class="gateway-title">顶会论文总结</h3><p class="gateway-description">按会议和研究方向浏览安全顶会论文分析。</p><span class="gateway-meta">16 份报告</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
             <a class="gateway-row" href="field-briefing/index.html"><span class="gateway-icon"><svg class="icon-lg"><use href="#icon-book"></use></svg></span><span><h3 class="gateway-title">领域导读</h3><p class="gateway-description">输入研究方向，基于顶会中文摘要与近期 arXiv 分类综述近五年研究现状并推荐高相关论文。</p><span class="gateway-meta">4595 篇顶会摘要</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
-            <a class="gateway-row" href="inbox/index.html"><span class="gateway-icon orange"><svg class="icon-lg"><use href="#icon-mail"></use></svg></span><span><h3 class="gateway-title">私信</h3><p class="gateway-description">每天推送一篇匹配你关注领域的论文。</p><span class="gateway-meta">结合研究印象</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
-            <a class="gateway-row" href="impression/index.html"><span class="gateway-icon"><svg class="icon-lg"><use href="#icon-profile"></use></svg></span><span><h3 class="gateway-title">研究印象</h3><p class="gateway-description">编写自己的研究方向，供导读、找论文和每日推送使用。</p><span class="gateway-meta">每人一份专属文件</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
+            <a class="gateway-row" href="summary-brief/index.html"><span class="gateway-icon"><svg class="icon-lg"><use href="#icon-chart"></use></svg></span><span><h3 class="gateway-title">总结汇报</h3><p class="gateway-description">用顶会中文摘要做数据实证简报：封面结论、三条发现、会场与类别对照，以及局限与讨论。</p><span class="gateway-meta">4595 篇顶会摘要</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
+            <a class="gateway-row" href="inbox/index.html"><span class="gateway-icon orange"><svg class="icon-lg"><use href="#icon-mail"></use></svg></span><span><h3 class="gateway-title">私信</h3><p class="gateway-description">每天优先推送关注作者的论文。</p><span class="gateway-meta">其次研究印象</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
+            <a class="gateway-row" href="impression/index.html"><span class="gateway-icon"><svg class="icon-lg"><use href="#icon-profile"></use></svg></span><span><h3 class="gateway-title">研究印象</h3><p class="gateway-description">编写自己的研究方向，供导读、总结汇报、找论文和每日推送使用。</p><span class="gateway-meta">每人一份专属文件</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
             <a class="gateway-row" href="#authors"><span class="gateway-icon gray"><svg class="icon-lg"><use href="#icon-users"></use></svg></span><span><h3 class="gateway-title">关注作者</h3><p class="gateway-description">维护作者主页和研究方向，方便持续跟踪。</p><span class="gateway-meta"><span id="authorGatewayCount">0</span> 位作者</span></span><span class="gateway-arrow"><svg class="icon"><use href="#icon-arrow"></use></svg></span></a>
           </div>
         </section>
-        <section class="surface" id="authors">
+        <section class="surface report-column" id="confReports">
+          <div class="section-head"><div><h2>顶会报告</h2><p class="section-description">打开或下载已生成的会议报告</p></div><span class="section-count">16 份</span></div>
+          <div class="report-toolbar"><label class="search-field" for="reportSearch"><svg class="icon"><use href="#icon-search"></use></svg><input class="field" id="reportSearch" type="search" placeholder="搜索会议或年份" aria-label="搜索顶会报告"></label><span class="section-count" id="visibleReportCount">16 条结果</span></div>
+          <div class="report-list-scroll" id="reportList">
+          <article class="report-row" data-search="usenix security 2026 top conference 2026-09-19 22:28 usenix_2026_report.html"><h3 class="report-title"><a href="top-conf/data/report/USENIX_2026_Report.html">USENIX Security 2026</a></h3><p class="meta">1.2 MB · 2026-09-19 22:28</p><div class="row-actions"><a class="button button-primary button-sm" href="top-conf/data/report/USENIX_2026_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a><a class="button button-secondary button-sm" href="top-conf/data/report/USENIX_2026_Report.html?download=1" download="USENIX_2026_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
+          <article class="report-row" data-search="ieee s&amp;p 2026 top conference 2026-09-19 22:28 ieee-sp_2026_report.html"><h3 class="report-title"><a href="top-conf/data/report/IEEE-SP_2026_Report.html">IEEE S&amp;P 2026</a></h3><p class="meta">629.0 KB · 2026-09-19 22:28</p><div class="row-actions"><a class="button button-primary button-sm" href="top-conf/data/report/IEEE-SP_2026_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a><a class="button button-secondary button-sm" href="top-conf/data/report/IEEE-SP_2026_Report.html?download=1" download="IEEE-SP_2026_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
+          <article class="report-row" data-search="ndss 2026 top conference 2026-09-19 22:28 ndss_2026_report.html"><h3 class="report-title"><a href="top-conf/data/report/NDSS_2026_Report.html">NDSS 2026</a></h3><p class="meta">938.5 KB · 2026-09-19 22:28</p><div class="row-actions"><a class="button button-primary button-sm" href="top-conf/data/report/NDSS_2026_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a><a class="button button-secondary button-sm" href="top-conf/data/report/NDSS_2026_Report.html?download=1" download="NDSS_2026_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
+          <article class="report-row" data-search="acm ccs 2026 top conference 2026-09-19 22:28 ccs_2026_report.html"><h3 class="report-title"><a href="top-conf/data/report/CCS_2026_Report.html">ACM CCS 2026</a></h3><p class="meta">560.4 KB · 2026-09-19 22:28</p><div class="row-actions"><a class="button button-primary button-sm" href="top-conf/data/report/CCS_2026_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a><a class="button button-secondary button-sm" href="top-conf/data/report/CCS_2026_Report.html?download=1" download="CCS_2026_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
+          <article class="report-row" data-search="usenix security 2025 top conference 2026-09-19 22:28 usenix_2025_report.html"><h3 class="report-title"><a href="top-conf/data/report/USENIX_2025_Report.html">USENIX Security 2025</a></h3><p class="meta">HTML 1.3 MB · PDF 508.4 KB · 2026-09-19 22:28</p><div class="row-actions"><a class="button button-primary button-sm" href="top-conf/data/report/USENIX_2025_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a><a class="button button-secondary button-sm" href="top-conf/data/report/USENIX_2025_Report.html?download=1" download="USENIX_2025_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a><a class="button button-secondary button-sm" href="top-conf/data/report/USENIX_2025_Report.pdf?download=1" download="USENIX_2025_Report.pdf"><svg class="icon"><use href="#icon-download"></use></svg>PDF</a></div></article>
+          <article class="report-row" data-search="ieee s&amp;p 2025 top conference 2026-09-19 22:28 ieee-sp_2025_report.html"><h3 class="report-title"><a href="top-conf/data/report/IEEE-SP_2025_Report.html">IEEE S&amp;P 2025</a></h3><p class="meta">767.5 KB · 2026-09-19 22:28</p><div class="row-actions"><a class="button button-primary button-sm" href="top-conf/data/report/IEEE-SP_2025_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a><a class="button button-secondary button-sm" href="top-conf/data/report/IEEE-SP_2025_Report.html?download=1" download="IEEE-SP_2025_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
+          <article class="report-row" data-search="ndss 2025 top conference 2026-09-19 22:28 ndss_2025_report.html"><h3 class="report-title"><a href="top-conf/data/report/NDSS_2025_Report.html">NDSS 2025</a></h3><p class="meta">737.0 KB · 2026-09-19 22:28</p><div class="row-actions"><a class="button button-primary button-sm" href="top-conf/data/report/NDSS_2025_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a><a class="button button-secondary button-sm" href="top-conf/data/report/NDSS_2025_Report.html?download=1" download="NDSS_2025_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
+          <article class="report-row" data-search="acm ccs 2025 top conference 2026-09-19 22:28 ccs_2025_report.html"><h3 class="report-title"><a href="top-conf/data/report/CCS_2025_Report.html">ACM CCS 2025</a></h3><p class="meta">938.1 KB · 2026-09-19 22:28</p><div class="row-actions"><a class="button button-primary button-sm" href="top-conf/data/report/CCS_2025_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a><a class="button button-secondary button-sm" href="top-conf/data/report/CCS_2025_Report.html?download=1" download="CCS_2025_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
+          <article class="report-row" data-search="usenix security 2024 top conference 2026-09-19 22:28 usenix_2024_report.html"><h3 class="report-title"><a href="top-conf/data/report/USENIX_2024_Report.html">USENIX Security 2024</a></h3><p class="meta">1.3 MB · 2026-09-19 22:28</p><div class="row-actions"><a class="button button-primary button-sm" href="top-conf/data/report/USENIX_2024_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a><a class="button button-secondary button-sm" href="top-conf/data/report/USENIX_2024_Report.html?download=1" download="USENIX_2024_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
+          <article class="report-row" data-search="ieee s&amp;p 2024 top conference 2026-09-19 22:28 ieee-sp_2024_report.html"><h3 class="report-title"><a href="top-conf/data/report/IEEE-SP_2024_Report.html">IEEE S&amp;P 2024</a></h3><p class="meta">912.2 KB · 2026-09-19 22:28</p><div class="row-actions"><a class="button button-primary button-sm" href="top-conf/data/report/IEEE-SP_2024_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a><a class="button button-secondary button-sm" href="top-conf/data/report/IEEE-SP_2024_Report.html?download=1" download="IEEE-SP_2024_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
+          <article class="report-row" data-search="ndss 2024 top conference 2026-09-19 22:28 ndss_2024_report.html"><h3 class="report-title"><a href="top-conf/data/report/NDSS_2024_Report.html">NDSS 2024</a></h3><p class="meta">495.2 KB · 2026-09-19 22:28</p><div class="row-actions"><a class="button button-primary button-sm" href="top-conf/data/report/NDSS_2024_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a><a class="button button-secondary button-sm" href="top-conf/data/report/NDSS_2024_Report.html?download=1" download="NDSS_2024_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
+          <article class="report-row" data-search="acm ccs 2024 top conference 2026-09-19 22:28 ccs_2024_report.html"><h3 class="report-title"><a href="top-conf/data/report/CCS_2024_Report.html">ACM CCS 2024</a></h3><p class="meta">1.1 MB · 2026-09-19 22:28</p><div class="row-actions"><a class="button button-primary button-sm" href="top-conf/data/report/CCS_2024_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a><a class="button button-secondary button-sm" href="top-conf/data/report/CCS_2024_Report.html?download=1" download="CCS_2024_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
+          <article class="report-row" data-search="usenix security 2023 top conference 2026-09-19 22:28 usenix_2023_report.html"><h3 class="report-title"><a href="top-conf/data/report/USENIX_2023_Report.html">USENIX Security 2023</a></h3><p class="meta">1.3 MB · 2026-09-19 22:28</p><div class="row-actions"><a class="button button-primary button-sm" href="top-conf/data/report/USENIX_2023_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a><a class="button button-secondary button-sm" href="top-conf/data/report/USENIX_2023_Report.html?download=1" download="USENIX_2023_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
+          <article class="report-row" data-search="ieee s&amp;p 2023 top conference 2026-09-19 22:28 ieee-sp_2023_report.html"><h3 class="report-title"><a href="top-conf/data/report/IEEE-SP_2023_Report.html">IEEE S&amp;P 2023</a></h3><p class="meta">681.1 KB · 2026-09-19 22:28</p><div class="row-actions"><a class="button button-primary button-sm" href="top-conf/data/report/IEEE-SP_2023_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a><a class="button button-secondary button-sm" href="top-conf/data/report/IEEE-SP_2023_Report.html?download=1" download="IEEE-SP_2023_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
+          <article class="report-row" data-search="ndss 2023 top conference 2026-09-19 22:28 ndss_2023_report.html"><h3 class="report-title"><a href="top-conf/data/report/NDSS_2023_Report.html">NDSS 2023</a></h3><p class="meta">332.7 KB · 2026-09-19 22:28</p><div class="row-actions"><a class="button button-primary button-sm" href="top-conf/data/report/NDSS_2023_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a><a class="button button-secondary button-sm" href="top-conf/data/report/NDSS_2023_Report.html?download=1" download="NDSS_2023_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
+          <article class="report-row" data-search="acm ccs 2023 top conference 2026-09-19 22:28 ccs_2023_report.html"><h3 class="report-title"><a href="top-conf/data/report/CCS_2023_Report.html">ACM CCS 2023</a></h3><p class="meta">629.3 KB · 2026-09-19 22:28</p><div class="row-actions"><a class="button button-primary button-sm" href="top-conf/data/report/CCS_2023_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a><a class="button button-secondary button-sm" href="top-conf/data/report/CCS_2023_Report.html?download=1" download="CCS_2023_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
+          
+          </div>
+          <div class="empty" id="reportEmpty" hidden>没有匹配的报告。</div>
+        </section>
+        <section class="surface workspace-wide" id="authors">
           <div class="section-head"><div><h2>关注作者</h2><p class="section-description" id="authorSectionHint">点击作者行可编辑资料</p></div><span class="section-count" id="authorSectionCount">0 位作者</span><button class="button button-secondary button-sm" id="toggleAuthorForm" type="button" aria-controls="authorModal" aria-expanded="false"><svg class="icon"><use href="#icon-plus"></use></svg>添加作者</button></div>
           <div class="author-list-head"><span>名称</span><span>研究方向</span><span>主页</span><span></span></div>
           <div id="authorList"></div>
@@ -665,6 +704,25 @@
 
 <script src="assets/authors.js"></script>
 <script src="assets/today-news.js"></script>
+<script>
+  const reportSearch = document.getElementById("reportSearch");
+  const reportRows = Array.from(document.querySelectorAll(".report-row"));
+  const visibleReportCount = document.getElementById("visibleReportCount");
+  const reportEmpty = document.getElementById("reportEmpty");
+  if (reportSearch) {
+    reportSearch.addEventListener("input", () => {
+      const query = reportSearch.value.trim().toLowerCase();
+      let visible = 0;
+      reportRows.forEach((row) => {
+        const match = !query || row.dataset.search.includes(query);
+        row.classList.toggle("is-hidden", !match);
+        if (match) visible += 1;
+      });
+      if (visibleReportCount) visibleReportCount.textContent = visible + " 条结果";
+      if (reportEmpty) reportEmpty.hidden = visible !== 0;
+    });
+  }
+</script>
 
 <script>
   (() => {

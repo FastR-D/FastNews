@@ -115,6 +115,7 @@ class FastNewsServeTests(unittest.TestCase):
         os.environ["LLM_MODEL"] = "test-model"
         self._complete = serve.complete_related_work
         self._field_complete = serve.complete_field_briefing
+        self._summary_complete = serve.complete_summary_brief
 
         def blocked_llm(*_args, **_kwargs):
             raise AssertionError("related-work LLM should be mocked")
@@ -122,8 +123,12 @@ class FastNewsServeTests(unittest.TestCase):
         def blocked_field_llm(*_args, **_kwargs):
             raise AssertionError("field-briefing LLM should be mocked")
 
+        def blocked_summary_llm(*_args, **_kwargs):
+            raise AssertionError("summary-brief LLM should be mocked")
+
         serve.complete_related_work = blocked_llm
         serve.complete_field_briefing = blocked_field_llm
+        serve.complete_summary_brief = blocked_summary_llm
         self.server = ThreadingHTTPServer(("127.0.0.1", 0), serve.FastNewsHandler)
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
         self.thread.start()
@@ -136,6 +141,7 @@ class FastNewsServeTests(unittest.TestCase):
         serve.urllib.request.urlopen = self._urlopen
         serve.complete_related_work = self._complete
         serve.complete_field_briefing = self._field_complete
+        serve.complete_summary_brief = self._summary_complete
         for key, value in self._env.items():
             if value is None:
                 os.environ.pop(key, None)
@@ -211,6 +217,26 @@ class FastNewsServeTests(unittest.TestCase):
         self.me["good-session"] = {"keyId": "aabbcc", "person": "张三"}
         status, _headers, _body = self.request("/hidden.py", headers={"Cookie": "fr_session=good-session"})
         self.assertEqual(status, 404)
+
+    def test_download_query_sets_content_disposition(self):
+        self.me["good-session"] = {"keyId": "aabbcc", "person": "张三"}
+        (self.root / "CCS_2023_Report.html").write_text("<html>ccs</html>", encoding="utf-8")
+        status, headers, body = self.request(
+            "/CCS_2023_Report.html?download=1",
+            headers={"Cookie": "fr_session=good-session"},
+        )
+        self.assertEqual(status, 200)
+        disposition = headers.get("Content-Disposition", "")
+        self.assertIn("attachment", disposition)
+        self.assertIn("CCS_2023_Report.html", disposition)
+        self.assertIn(b"<html>ccs</html>", body)
+
+    def test_html_without_download_query_is_inline(self):
+        self.me["good-session"] = {"keyId": "aabbcc", "person": "张三"}
+        status, headers, body = self.request("/", headers={"Cookie": "fr_session=good-session"})
+        self.assertEqual(status, 200)
+        self.assertNotIn("attachment", headers.get("Content-Disposition", ""))
+        self.assertIn(b"secret-report", body)
 
     def test_path_traversal_is_rejected(self):
         self.me["good-session"] = {"keyId": "aabbcc", "person": "张三"}
@@ -549,6 +575,88 @@ class FastNewsServeTests(unittest.TestCase):
         self.assertGreaterEqual(len(payload["papers"]), 1)
         self.assertFalse(self.proxied)
 
+
+    def test_summary_brief_options_ok(self):
+        status, headers, body = self.request("/api/summary-brief", method="OPTIONS")
+        self.assertEqual(status, 204)
+        self.assertEqual(headers.get("Access-Control-Allow-Methods"), "POST, OPTIONS")
+        self.assertFalse(body)
+        self.assertFalse(self.proxied)
+
+    def test_summary_brief_get_is_not_proxied(self):
+        status, _headers, body = self.request("/api/summary-brief")
+        self.assertEqual(status, 405)
+        self.assertIn(b"Method not allowed", body)
+        self.assertFalse(self.proxied)
+
+    def test_summary_brief_empty_query_is_landscape(self):
+        self.seed_field_corpus()
+        os.environ.pop("OPENAI_API_KEY", None)
+        status, _headers, body = self.request("/api/summary-brief", method="POST", data={})
+        self.assertEqual(status, 200)
+        payload = json.loads(body.decode("utf-8"))
+        self.assertEqual(payload["mode"], "landscape")
+        self.assertEqual(payload["query"], "\u56db\u5927\u9876\u4f1a\u5168\u666f")
+        self.assertEqual(payload["source"], "lexical")
+        self.assertIsNotNone(payload["brief"])
+        self.assertGreaterEqual(payload["stats"]["sample_size"], 1)
+        self.assertFalse(self.proxied)
+
+    def test_summary_brief_ranks_with_local_llm(self):
+        self.seed_field_corpus()
+
+        def fake_llm(system_prompt, user_prompt):
+            self.assertIn("\u5b9e\u8bc1\u7b80\u62a5", system_prompt)
+            self.assertIn("TwinBreak", user_prompt)
+            return json.dumps({
+                "title": "\u8d8a\u72f1\u6837\u672c\u96c6\u4e2d\u5728\u673a\u5668\u5b66\u4e60\u5b89\u5168",
+                "hook": "\u7ed3\u6784\u5148\u4e8e\u70ed\u70b9",
+                "lead": "\u672c\u671f\u7b80\u62a5\u6838\u5bf9\u6837\u672c\u7ed3\u6784\u3002",
+                "findings": [
+                    {"title": "ML \u5360\u6bd4\u6700\u9ad8", "body": "\u6837\u672c\u91cc ML/AI Security \u6709 2 \u7bc7\u3002"},
+                    {"title": "\u5e74\u4efd\u96c6\u4e2d", "body": "2026 \u5e74\u6709 3 \u7bc7\u3002"},
+                    {"title": "NDSS \u6700\u591a", "body": "NDSS \u8d21\u732e 3 \u7bc7\u3002"},
+                ],
+                "method": "\u4ec5\u4f7f\u7528\u672c\u5730\u9876\u4f1a\u4e2d\u6587\u6458\u8981\u3002",
+                "questions": [{"qid": "Q1", "question": "\u7c7b\u522b\u662f\u5426\u5747\u8861\uff1f", "answer": "\u4e0d\u5747\u8861\u3002"}],
+                "highlights": [
+                    {"id": "p-jailbreak", "blurb": "\u76f4\u63a5\u7814\u7a76\u8d8a\u72f1\u653b\u9632\u3002"},
+                    {"id": "unknown", "blurb": "\u5e94\u88ab\u8fc7\u6ee4"},
+                ],
+                "limitations": "\u8bed\u6599\u4e0d\u662f\u8fd1\u4e94\u5e74\u5168\u96c6\u3002",
+                "discussion": [
+                    {"title": "\u8bfb\u5206\u5e03", "body": "\u4e0d\u8981\u53ea\u8bfb\u5355\u7bc7\u70ed\u70b9\u3002"},
+                    {"title": "\u65f6\u95f4\u4ecd\u662f\u66f4\u597d\u7684\u88c1\u5224", "body": "\u9ad8\u9891\u7c7b\u522b\u4e0d\u7b49\u4e8e\u957f\u671f\u4ef7\u503c\u3002"},
+                ],
+            }, ensure_ascii=False)
+
+        serve.complete_summary_brief = fake_llm
+        status, _headers, body = self.request("/api/summary-brief", method="POST", data={"q": "LLM jailbreak"})
+        self.assertEqual(status, 200)
+        payload = json.loads(body.decode("utf-8"))
+        self.assertEqual(payload["source"], "llm")
+        self.assertEqual(payload["brief"]["title"], "\u8d8a\u72f1\u6837\u672c\u96c6\u4e2d\u5728\u673a\u5668\u5b66\u4e60\u5b89\u5168")
+        ids = [item["id"] for item in payload["papers"]]
+        self.assertIn("p-jailbreak", ids)
+        self.assertNotIn("unknown", ids)
+        self.assertEqual(payload["papers"][0]["reason"], "\u76f4\u63a5\u7814\u7a76\u8d8a\u72f1\u653b\u9632\u3002")
+        self.assertFalse(self.proxied)
+
+    def test_summary_brief_llm_error_falls_back(self):
+        self.seed_field_corpus()
+
+        def boom(*_args, **_kwargs):
+            raise RuntimeError("summary-brief failed")
+
+        serve.complete_summary_brief = boom
+        status, _headers, body = self.request("/api/summary-brief", method="POST", data={"topic": "LLM jailbreak"})
+        self.assertEqual(status, 200)
+        payload = json.loads(body.decode("utf-8"))
+        self.assertEqual(payload["source"], "lexical")
+        self.assertIsNotNone(payload["brief"])
+        self.assertGreaterEqual(len(payload["papers"]), 1)
+        self.assertFalse(self.proxied)
+
     def test_inbox_requires_session(self):
         status, _headers, body = self.request("/api/content/inbox")
         self.assertEqual(status, 401)
@@ -573,6 +681,21 @@ class FastNewsServeTests(unittest.TestCase):
         self.assertEqual(payload["generatedToday"], False)
         self.assertEqual(payload["items"][0]["id"], existing["id"])
         self.assertIsNone(self.saved_inbox)
+        self.assertFalse(self.proxied)
+
+    def test_inbox_prefers_followed_author_paper(self):
+        self.me["good-session"] = {"keyId": "aabbcc", "person": "Zhang"}
+        self.impression = {"text": "LLM jailbreak", "updatedAt": "2026-09-18T00:00:00Z"}
+        self.authors_payload = {"authors": [{"name": "Bob", "tags": ["TEE"]}], "customTags": []}
+        self.seed_field_corpus()
+        status, _headers, body = self.request("/api/content/inbox", headers={"Cookie": "fr_session=good-session"})
+        self.assertEqual(status, 200)
+        payload = json.loads(body.decode("utf-8"))
+        self.assertTrue(payload["generatedToday"])
+        self.assertEqual(payload["items"][0]["paperId"], "p-cache")
+        self.assertEqual(payload["items"][0]["followedAuthor"], "Bob")
+        self.assertIsNotNone(self.saved_inbox)
+        self.assertEqual(self.saved_inbox["items"][0]["paperId"], "p-cache")
         self.assertFalse(self.proxied)
 
     def test_inbox_generates_daily_paper_from_impression(self):

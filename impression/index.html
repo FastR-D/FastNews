@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -119,6 +120,12 @@
   .stat-label { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
   .workspace { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(360px, .95fr); gap: 18px; align-items: start; }
   .workspace.single-column { grid-template-columns: minmax(0, 1fr); }
+  .workspace-wide { grid-column: 1 / -1; }
+  .report-column { position: sticky; top: 72px; }
+  .report-list-scroll { max-height: min(720px, calc(100vh - 220px)); overflow-y: auto; }
+  .report-column .report-row { padding: 12px 16px 12px 20px; }
+  .report-column .report-title { font-size: 13px; }
+  .report-column .row-actions { margin-top: 8px; }
   .section-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; min-height: 58px; padding: 12px 16px; background: var(--soft); border-bottom: 1px solid var(--border); }
   h2 { margin-bottom: 0; font-size: 15px; line-height: 1.4; font-weight: 650; }
   .section-description { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
@@ -245,6 +252,8 @@
     .page-header { display: block; margin-bottom: 18px; }
     .badge { margin-top: 12px; }
     .workspace, .workspace.single-column { grid-template-columns: 1fr; }
+    .report-column { position: static; }
+    .report-list-scroll { max-height: none; }
   }
   @media (max-width: 620px) {
     .generated { display: none; }
@@ -492,6 +501,7 @@
 
 
 
+
 <link rel="stylesheet" href="../assets/profile.css">
 
 </head>
@@ -502,11 +512,13 @@
   <symbol id="icon-graduation" viewBox="0 0 24 24"><path d="m2 10 10-5 10 5-10 5-10-5Z"/><path d="M6 12.5V16c2 1.5 4 2.25 6 2.25S16 17.5 18 16v-3.5"/><path d="M22 10v6"/></symbol>
   <symbol id="icon-newspaper" viewBox="0 0 24 24"><path d="M4 4h15a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/><path d="M7 8h9M7 12h9M7 16h5"/></symbol>
   <symbol id="icon-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/><path d="M8 7h8M8 11h6"/></symbol>
+  <symbol id="icon-chart" viewBox="0 0 24 24"><path d="M4 19V5M4 19h16"/><path d="M8 16v-5M12 16V8M16 16v-7"/></symbol>
   <symbol id="icon-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
   <symbol id="icon-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
   <symbol id="icon-profile" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0 1 16 0"/></symbol>
   <symbol id="icon-panel-close" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M13 10l-2 2 2 2"/></symbol>
   <symbol id="icon-panel-open" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M13 14l2-2-2-2"/></symbol>
+  <symbol id="icon-download" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M5 21h14"/></symbol>
   <symbol id="icon-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 13h8M8 17h6"/></symbol>
   <symbol id="icon-tag" viewBox="0 0 24 24"><path d="M20 13 13 20a2 2 0 0 1-3 0l-6-6a2 2 0 0 1 0-3V4h7a2 2 0 0 1 1 1l8 8Z"/><circle cx="8.5" cy="8.5" r="1"/></symbol>
   <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
@@ -532,6 +544,7 @@
       <li><a class="active" href="index.html"><span><svg class="icon"><use href="#icon-profile"></use></svg>研究印象</span></a></li>
       <li><a class="" href="../top-conf/index.html"><span><svg class="icon"><use href="#icon-graduation"></use></svg>顶会报告</span><span class="nav-count">16</span></a></li>
       <li><a class="" href="../field-briefing/index.html"><span><svg class="icon"><use href="#icon-book"></use></svg>领域导读</span><span class="nav-count">4595</span></a></li>
+      <li><a class="" href="../summary-brief/index.html"><span><svg class="icon"><use href="#icon-chart"></use></svg>总结汇报</span><span class="nav-count">4595</span></a></li>
       <li><a class="" href="../secnews/index.html"><span><svg class="icon"><use href="#icon-newspaper"></use></svg>安全资讯</span><span class="nav-count">3</span></a></li>
       <li><a href="../index.html#authors"><span><svg class="icon"><use href="#icon-users"></use></svg>关注作者</span><span class="nav-count" id="authorNavCount">0</span></a></li>
     </ul></nav>
@@ -546,7 +559,7 @@
         </button>
         <div class="breadcrumb"><strong>FastNews</strong><span> / Research Profile</span></div>
       </div>
-      <div class="topbar-actions"><span class="generated">更新于 2026-09-19 14:28 UTC</span><button class="icon-button" id="themeToggle" type="button" aria-label="切换深色模式" title="切换深色模式"><svg class="icon theme-sun"><use href="#icon-sun"></use></svg><svg class="icon theme-moon"><use href="#icon-moon"></use></svg></button></div>
+      <div class="topbar-actions"><span class="generated">更新于 2026-09-20 05:12 UTC</span><button class="icon-button" id="themeToggle" type="button" aria-label="切换深色模式" title="切换深色模式"><svg class="icon theme-sun"><use href="#icon-sun"></use></svg><svg class="icon theme-moon"><use href="#icon-moon"></use></svg></button></div>
     </header>
     <nav class="mobile-nav" aria-label="移动端导航">
       <a class="" href="../index.html"><span><svg class="icon"><use href="#icon-dashboard"></use></svg>总览</span></a>
@@ -554,18 +567,19 @@
       <a class="active" href="index.html"><span><svg class="icon"><use href="#icon-profile"></use></svg>研究印象</span></a>
       <a class="" href="../top-conf/index.html"><span><svg class="icon"><use href="#icon-graduation"></use></svg>顶会报告</span></a>
       <a class="" href="../field-briefing/index.html"><span><svg class="icon"><use href="#icon-book"></use></svg>领域导读</span></a>
+      <a class="" href="../summary-brief/index.html"><span><svg class="icon"><use href="#icon-chart"></use></svg>总结汇报</span></a>
       <a class="" href="../secnews/index.html"><span><svg class="icon"><use href="#icon-newspaper"></use></svg>安全资讯</span></a>
       <a href="../index.html#authors"><span><svg class="icon"><use href="#icon-users"></use></svg>关注作者</span></a>
     </nav>
     <div class="page">
       <section class="page-header">
-        <div class="header-copy"><span class="header-icon"><svg class="icon"><use href="#icon-profile"></use></svg></span><div><h1>研究印象</h1><p class="description">写下自己的研究方向。领域导读、找论文和每日推送都会结合这份专属印象。</p></div></div>
+        <div class="header-copy"><span class="header-icon"><svg class="icon"><use href="#icon-profile"></use></svg></span><div><h1>研究印象</h1><p class="description">写下自己的研究方向。领域导读、总结汇报、找论文和每日推送都会结合这份专属印象。</p></div></div>
         <span class="badge">Local Index</span>
       </section>
       <section class="surface stats" aria-label="概览统计">
         <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-profile"></use></svg></span><span class="stat-copy"><span class="stat-value">4000</span><span class="stat-label">字上限</span></span></div>
-        <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-book"></use></svg></span><span class="stat-copy"><span class="stat-value type-value">导读 / 找论文</span><span class="stat-label">会结合印象</span></span></div>
-        <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-mail"></use></svg></span><span class="stat-copy"><span class="stat-value type-value">每日推送</span><span class="stat-label">按印象匹配</span></span></div>
+        <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-book"></use></svg></span><span class="stat-copy"><span class="stat-value type-value">导读 / 汇报 / 找论文</span><span class="stat-label">会结合印象</span></span></div>
+        <div class="stat"><span class="stat-icon"><svg class="icon"><use href="#icon-mail"></use></svg></span><span class="stat-copy"><span class="stat-value type-value">每日推送</span><span class="stat-label">优先关注作者</span></span></div>
       </section>
       <div class="workspace single-column">
         <section class="surface" id="impressionWorkspace">
@@ -573,7 +587,7 @@
             <label class="label" for="impressionText">研究方向与关注点</label>
             <textarea id="impressionText" maxlength="4000" placeholder="写下你的研究方向、关注问题、常用方法，以及希望跟踪的论文类型。例如：我做大模型安全，关注越狱、提示注入与智能体工具调用风险，也看侧信道与 TEE。"></textarea>
             <div class="impression-meta"><span id="impressionCount">0 / 4000</span><span id="impressionUpdated">尚未保存</span></div>
-            <p class="impression-hint">保存后，领域导读、顶会 related work 和每日私信推送都会结合这份印象。</p>
+            <p class="impression-hint">保存后，领域导读、总结汇报、找论文和每日私信推送都会结合这份印象。</p>
             <p class="inbox-status" id="impressionStatus" hidden></p>
             <div class="impression-actions"><button class="button button-primary" id="impressionSubmit" type="submit"><svg class="icon"><use href="#icon-profile"></use></svg>保存印象</button></div>
           </form>
