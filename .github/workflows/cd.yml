@@ -1,0 +1,63 @@
+name: CD FastNews
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: cd-fastnews
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Syntax check
+        run: python3 -m py_compile serve.py field_briefing.py inbox_push.py summary_brief.py generate_homepage.py
+
+  deploy:
+    needs: check
+    if: ${{ secrets.DEPLOY_SSH_KEY != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Prepare SSH
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          missing=0
+          [ -n "$DEPLOY_HOST" ] || { echo "missing secret DEPLOY_HOST"; missing=1; }
+          [ -n "$DEPLOY_USER" ] || { echo "missing secret DEPLOY_USER"; missing=1; }
+          [ -n "$DEPLOY_SSH_KEY" ] || { echo "missing secret DEPLOY_SSH_KEY"; missing=1; }
+          if [ "$missing" -ne 0 ]; then exit 1; fi
+          install -m 700 -d "$HOME/.ssh"
+          printf '%s\n' "$DEPLOY_SSH_KEY" > "$HOME/.ssh/deploy_key"
+          chmod 600 "$HOME/.ssh/deploy_key"
+          if [ -n "$DEPLOY_KNOWN_HOSTS" ]; then
+            printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          else
+            ssh-keyscan -H "$DEPLOY_HOST" >> "$HOME/.ssh/known_hosts"
+          fi
+          chmod 600 "$HOME/.ssh/known_hosts"
+          {
+            echo "Host deploy"
+            echo "  HostName $DEPLOY_HOST"
+            echo "  User $DEPLOY_USER"
+            echo "  IdentityFile $HOME/.ssh/deploy_key"
+            echo "  IdentitiesOnly yes"
+            echo "  StrictHostKeyChecking yes"
+            echo "  BatchMode yes"
+          } > "$HOME/.ssh/config"
+          chmod 600 "$HOME/.ssh/config"
+
+      - name: Deploy over SSH
+        run: ssh deploy 'bash /home/dev/FastNews/scripts/deploy-local.sh --force'

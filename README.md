@@ -298,3 +298,18 @@ A：按 FastResearch 个人 Key 保存在服务端，并显示“已登录 {成�
 
 **Q：研究印象和私信存在哪里？**
 A：同样按个人 Key 存在 FastResearch（`data/access.json` 的 `researchImpression` / `inbox`），不走 localStorage。每天第一次打开 FastNews 任意页面时，`GET /api/content/inbox` 会补一篇当日论文。
+
+## 自托管与自动部署
+
+生产环境用 `python3 serve.py`（systemd 单元 `fastnews.service`），经 nginx 挂在 `/news/`。需要在 `.env` 中设置：
+
+```env
+FASTRESEARCH_API_URL=http://127.0.0.1:8787
+FASTRESEARCH_PANEL_URL=http://47.110.133.67
+FASTNEWS_HOST=127.0.0.1
+FASTNEWS_PORT=8788
+FASTNEWS_PUBLIC_PATH=/news
+```
+
+`main` 推送后 GitHub Actions `CD FastNews` 做语法检查；配置 SSH Secrets 后会自动在服务器执行 `scripts/deploy-local.sh`。服务器本机也有定时 `git pull` 热更新。
+

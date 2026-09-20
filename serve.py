@@ -18,11 +18,32 @@ from http import cookies
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-from dotenv import load_dotenv
+try:
+    from dotenv import load_dotenv
+except ImportError:
+    def load_dotenv(dotenv_path=None, *_args, **_kwargs):
+        path = Path(dotenv_path) if dotenv_path else Path(".env")
+        try:
+            raw_text = Path(path).read_text(encoding="utf-8")
+        except OSError:
+            return False
+        for raw in raw_text.splitlines():
+            line = raw.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, value = line.split("=", 1)
+            key = key.strip()
+            value = value.strip().strip("'").strip('"')
+            if key and key not in os.environ:
+                os.environ[key] = value
+        return True
+
 
 import field_briefing
 import inbox_push
 import summary_brief
+
+load_dotenv(Path(__file__).resolve().parent / ".env")
 
 AUDIENCE = "fast-news"
 COOKIE_NAME = os.environ.get("FASTRESEARCH_COOKIE_NAME", "fr_session")
@@ -71,9 +92,6 @@ LLM_TIMEOUT = 60
 FIELD_BRIEFING_TIMEOUT = 90
 FIELD_BRIEFING_MAX_TOKENS = 10000
 DEFAULT_RELATED_REASON = "与当前研究方向重叠，适合作为 related work。"
-
-load_dotenv(Path(__file__).resolve().parent / ".env")
-
 
 
 def redact_request_line(message: str) -> str:
@@ -504,6 +522,30 @@ def panel_url() -> str:
     return os.environ.get("FASTRESEARCH_PANEL_URL", "http://127.0.0.1:5173").strip().rstrip("/") or "http://127.0.0.1:5173"
 
 
+
+def public_path() -> str:
+    raw = os.environ.get("FASTNEWS_PUBLIC_PATH", "").strip()
+    if not raw or raw == "/":
+        return ""
+    if not raw.startswith("/"):
+        raw = "/" + raw
+    return raw.rstrip("/")
+
+
+def public_location(path: str) -> str:
+    prefix = public_path()
+    location = path or "/"
+    if not prefix:
+        return location
+    if location == "/":
+        return prefix + "/"
+    if location == prefix or location.startswith(prefix + "/"):
+        return location
+    if location.startswith("/"):
+        return prefix + location
+    return prefix + "/" + location
+
+
 def listen_host() -> str:
     return os.environ.get("FASTNEWS_HOST", "127.0.0.1").strip() or "127.0.0.1"
 
@@ -698,7 +740,7 @@ class FastNewsHandler(BaseHTTPRequestHandler):
         except AuthError:
             self._bounce()
             return
-        location = path or "/"
+        location = public_location(path or "/")
         self.send_response(302)
         self.send_header("Location", location)
         self.send_header("Cache-Control", "no-store")
@@ -719,6 +761,15 @@ class FastNewsHandler(BaseHTTPRequestHandler):
             self.send_error(404, "Not Found")
             return
         data = target.read_bytes()
+        if target.suffix.lower() in {".html", ".htm"}:
+            inject = f"<script>window.FASTNEWS_PANEL_URL={json.dumps(panel_url())};</script>".encode("utf-8")
+            lowered = data.lower()
+            idx = lowered.find(b"<head>")
+            if idx >= 0:
+                insert_at = idx + len(b"<head>")
+                data = data[:insert_at] + inject + data[insert_at:]
+            else:
+                data = inject + data
         content_type = mimetypes.guess_type(target.name)[0] or "application/octet-stream"
         params = urllib.parse.parse_qs(query, keep_blank_values=True)
         as_download = (params.get("download") or [""])[0].strip().lower() in {"1", "true", "yes"}

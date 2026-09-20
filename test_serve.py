@@ -108,7 +108,8 @@ class FastNewsServeTests(unittest.TestCase):
         self._urlopen = serve.urllib.request.urlopen
         serve.json_request = fake_json
         serve.urllib.request.urlopen = fake_urlopen
-        self._env = {key: os.environ.get(key) for key in ("OPENAI_API_KEY", "OPENAI_BASE_URL", "LLM_MODEL", "FASTREAD_URL")}
+        self._env = {key: os.environ.get(key) for key in ("OPENAI_API_KEY", "OPENAI_BASE_URL", "LLM_MODEL", "FASTREAD_URL", "FASTNEWS_PUBLIC_PATH")}
+        os.environ.pop("FASTNEWS_PUBLIC_PATH", None)
         os.environ["OPENAI_API_KEY"] = "test-key"
         os.environ["OPENAI_BASE_URL"] = "https://llm.test/v1"
         os.environ["FASTREAD_URL"] = "http://127.0.0.1:3015"
@@ -188,6 +189,42 @@ class FastNewsServeTests(unittest.TestCase):
         self.assertIn("fr_session=", headers.get("Set-Cookie", ""))
         self.assertIn("HttpOnly", headers.get("Set-Cookie", ""))
         self.assertIn("good-session", headers.get("Set-Cookie", ""))
+
+    def test_public_location_prefixes_subpath(self):
+        os.environ["FASTNEWS_PUBLIC_PATH"] = "/news"
+        try:
+            self.assertEqual(serve.public_path(), "/news")
+            self.assertEqual(serve.public_location("/"), "/news/")
+            self.assertEqual(serve.public_location("/inbox/"), "/news/inbox/")
+        finally:
+            os.environ.pop("FASTNEWS_PUBLIC_PATH", None)
+
+    def test_sso_ticket_redirects_with_public_path(self):
+        os.environ["FASTNEWS_PUBLIC_PATH"] = "/news"
+        try:
+            self.consume["ticket-1"] = {
+                "session": "good-session",
+                "keyId": "aabbcc",
+                "person": "张三",
+                "expiresAt": 9_999_999_999_000,
+            }
+            status, headers, _body = self.request("/?sso=ticket-1")
+            self.assertEqual(status, 302)
+            self.assertEqual(headers.get("Location"), "/news/")
+        finally:
+            os.environ.pop("FASTNEWS_PUBLIC_PATH", None)
+
+    def test_html_injects_panel_url(self):
+        (self.root / "index.html").write_text(
+            "<html><head></head><body>secret-report</body></html>",
+            encoding="utf-8",
+        )
+        self.me["good-session"] = {"keyId": "aabbcc", "person": "张三"}
+        status, _headers, body = self.request("/", headers={"Cookie": "fr_session=good-session"})
+        self.assertEqual(status, 200)
+        self.assertIn(b"window.FASTNEWS_PANEL_URL", body)
+        self.assertIn(b"http://127.0.0.1:5173", body)
+        self.assertIn(b"secret-report", body)
 
     def test_invalid_ticket_redirects_to_panel(self):
         status, headers, _body = self.request("/?sso=expired")
