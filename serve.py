@@ -762,7 +762,12 @@ class FastNewsHandler(BaseHTTPRequestHandler):
             return
         data = target.read_bytes()
         if target.suffix.lower() in {".html", ".htm"}:
-            inject = f"<script>window.FASTNEWS_PANEL_URL={json.dumps(panel_url())};</script>".encode("utf-8")
+            inject = (
+                "<script>"
+                f"window.FASTNEWS_PANEL_URL={json.dumps(panel_url())};"
+                f"window.FASTNEWS_PUBLIC_PATH={json.dumps(public_path())};"
+                "</script>"
+            ).encode("utf-8")
             lowered = data.lower()
             idx = lowered.find(b"<head>")
             if idx >= 0:

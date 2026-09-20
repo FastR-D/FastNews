@@ -58,7 +58,7 @@
       button.textContent = PENDING;
     }
     try {
-      const response = await fetch("/api/fastread", {
+      const response = await fetch(window.fastNewsApi("/api/fastread"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(paper),

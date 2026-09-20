@@ -200,7 +200,7 @@
     submitButton.disabled = true;
     setStatus(impressionText ? UI.pendingImpression : UI.pending, "pending");
     try {
-      const response = await fetch("/api/summary-brief", {
+      const response = await fetch(window.fastNewsApi("/api/summary-brief"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

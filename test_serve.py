@@ -224,7 +224,22 @@ class FastNewsServeTests(unittest.TestCase):
         self.assertEqual(status, 200)
         self.assertIn(b"window.FASTNEWS_PANEL_URL", body)
         self.assertIn(b"http://127.0.0.1:5173", body)
+        self.assertIn(b'window.FASTNEWS_PUBLIC_PATH=""', body)
         self.assertIn(b"secret-report", body)
+
+    def test_html_injects_public_path(self):
+        os.environ["FASTNEWS_PUBLIC_PATH"] = "/news"
+        try:
+            (self.root / "index.html").write_text(
+                "<html><head></head><body>secret-report</body></html>",
+                encoding="utf-8",
+            )
+            self.me["good-session"] = {"keyId": "aabbcc", "person": "张三"}
+            status, _headers, body = self.request("/", headers={"Cookie": "fr_session=good-session"})
+            self.assertEqual(status, 200)
+            self.assertIn(b'window.FASTNEWS_PUBLIC_PATH="/news"', body)
+        finally:
+            os.environ.pop("FASTNEWS_PUBLIC_PATH", None)
 
     def test_invalid_ticket_redirects_to_panel(self):
         status, headers, _body = self.request("/?sso=expired")

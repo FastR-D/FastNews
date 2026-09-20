@@ -111,7 +111,7 @@
     submitButton.disabled = true;
     setStatus(impressionText ? "正在结合你的研究印象检索顶会摘要与近期 arXiv…" : "正在检索顶会摘要与近期 arXiv，并生成领域导读…", "pending");
     try {
-      const response = await fetch("/api/field-briefing", {
+      const response = await fetch(window.fastNewsApi("/api/field-briefing"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

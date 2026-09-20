@@ -311,5 +311,7 @@ FASTNEWS_PORT=8788
 FASTNEWS_PUBLIC_PATH=/news
 ```
 
+`serve.py` 会把 `FASTNEWS_PUBLIC_PATH` 注入页面；领域导读、总结汇报、相关工作和 FastRead 跳转会请求 `/news/api/...`，而不是根路径 `/api/...`（后者由 FastResearch 处理）。SSO / 关注作者仍走 FastResearch 的 `/api/content/*`。
+
 `main` 推送后 GitHub Actions `CD FastNews` 做语法检查；配置 SSH Secrets 后会自动在服务器执行 `scripts/deploy-local.sh`。服务器本机也有定时 `git pull` 热更新。
 

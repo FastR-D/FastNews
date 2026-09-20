@@ -1101,7 +1101,7 @@
     renderConferencePapers();
   }
   async function requestRelatedWork(topic, keywords, candidates, impression) {
-    const response = await fetch("/api/related-work", {
+    const response = await fetch(window.fastNewsApi("/api/related-work"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ topic, keywords, impression, candidates: candidates.map(serializeCandidate) }),
