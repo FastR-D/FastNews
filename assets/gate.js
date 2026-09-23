@@ -30,7 +30,10 @@
 
   const panel = () => String(window.FASTNEWS_PANEL_URL || DEFAULT_PANEL).replace(/\/$/, "");
   const ready = () => document.documentElement.classList.add("fastnews-ready");
-  const bounce = () => { window.location.replace(panel()); };
+  const bounce = () => { window.location.replace(window.fastNewsApi("/login")); };
+  const accountLink = () => { if(document.getElementById('fastnews-account-link'))return; const link=document.createElement('a');link.href=window.fastNewsApi('/login');link.textContent='FastNews 账号';link.style.cssText='position:fixed;right:16px;bottom:16px;padding:8px 12px;background:white;color:#245c45;border:1px solid #9fb7aa;border-radius:6px;z-index:1000';document.body.append(link); };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',accountLink);else accountLink();
+  if(window.FASTNEWS_PUBLIC_REPORTS !== false){ready();return;}
   const params = new URLSearchParams(window.location.search);
   if (params.get("sso") || params.get("research_api")) {
     bounce();
@@ -39,7 +42,7 @@
   fetch("/api/content/me", { credentials: "include" })
     .then((response) => (response.ok ? response.json() : Promise.reject()))
     .then((payload) => {
-      if (!payload || !payload.keyId) throw new Error("no session");
+      if (!payload || !(payload.keyId || payload.userId)) throw new Error("no session");
       ready();
     })
     .catch(bounce);

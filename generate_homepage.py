@@ -496,6 +496,7 @@ def render_page(page_mode, output, field_stats):
         page_description=page_config["description"],
         page_label=page_config["label"],
         home_path="index.html" if page_mode == "home" else "../index.html",
+        account_path="login" if page_mode == "home" else "../login",
         top_conf_path="top-conf/index.html" if page_mode == "home" else "../top-conf/index.html",
         secnews_path="secnews/index.html" if page_mode == "home" else "../secnews/index.html",
         field_briefing_path="field-briefing/index.html" if page_mode == "home" else "../field-briefing/index.html",

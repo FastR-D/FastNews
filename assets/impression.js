@@ -52,10 +52,11 @@
     submit.disabled = true;
     setStatus("正在保存…", "pending");
     try {
+      const profile = await fetch("/api/content/me", {credentials:"include"}).then(r => r.json());
       const response = await fetch("/api/content/impression", {
         method: "PUT",
         credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...(profile.csrf ? {"X-CSRF-Token":profile.csrf} : {}) },
         body: JSON.stringify({ text: input.value }),
       });
       const payload = await response.json().catch(() => ({}));

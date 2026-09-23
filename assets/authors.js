@@ -91,7 +91,7 @@
   function persistAuthors() {
     if (!researchSession) return;
     window.clearTimeout(persistTimer);
-    persistTimer = window.setTimeout(() => { void persistRemote(); }, 200);
+    persistTimer = window.setTimeout(() => { persistTimer = 0; void persistRemote(); }, 200);
   }
 
   function panelUrl() {
@@ -106,6 +106,7 @@
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
+          ...(researchSession.csrf ? {"X-CSRF-Token":researchSession.csrf} : {}),
           ...(researchSession.session ? { Authorization: `Bearer ${researchSession.session}` } : {}),
         },
         body: JSON.stringify({ authors: authorCache, customTags: customTagCache }),
@@ -137,6 +138,8 @@
       session: payload.session || bearer || "",
       person: payload.person,
       keyId: payload.keyId,
+      userId: payload.userId,
+      csrf: payload.csrf,
       expiresAt: payload.expiresAt,
     };
   }
@@ -144,7 +147,7 @@
   async function fetchCookieSession() {
     const response = await fetch("/api/content/me", { credentials: "include" });
     const payload = await response.json().catch(() => ({}));
-    if (!response.ok || !payload.keyId) return null;
+    if (!response.ok || !(payload.keyId || payload.userId)) return null;
     return sessionFromPayload("", payload);
   }
 
@@ -180,7 +183,6 @@
     stripSsoParams();
     researchSession = await fetchCookieSession();
     if (!researchSession) {
-      window.location.replace(panelUrl());
       return;
     }
     try {
@@ -189,7 +191,7 @@
       customTagCache = uniqueTags(payload.customTags || []).filter((tag) =>
         !DEFAULT_RESEARCH_TAGS.some((item) => item.toLowerCase() === tag.toLowerCase())
       );
-      await maybeMigrateLocal(researchSession.keyId);
+      if (!researchSession.userId) await maybeMigrateLocal(researchSession.keyId);
     } catch {
       authorCache = [];
       customTagCache = [];
@@ -643,7 +645,7 @@
     }
   }
 
-  toggleForm.addEventListener("click", (event) => openAuthorForm("", event.currentTarget));
+  toggleForm.addEventListener("click", (event) => { if (!researchSession) { window.location.assign(window.fastNewsApi ? window.fastNewsApi("/login") : "/login"); return; } openAuthorForm("", event.currentTarget); });
   closeForm?.addEventListener("click", () => closeAuthorEditor());
   cancelForm?.addEventListener("click", () => closeAuthorEditor());
 
@@ -674,6 +676,7 @@
 
   form.addEventListener("submit", (event) => {
     event.preventDefault();
+    if (!researchSession) { window.location.assign(window.fastNewsApi ? window.fastNewsApi("/login") : "/login"); return; }
     const data = new FormData(form);
     const name = String(data.get("name") || "").trim();
     const homepage = normalizeHomepage(String(data.get("homepage") || "").trim());
@@ -739,8 +742,9 @@
 
   void bootResearchSession();
   document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "hidden" && researchSession) {
+    if (document.visibilityState === "hidden" && researchSession && persistTimer) {
       window.clearTimeout(persistTimer);
+      persistTimer = 0;
       void persistRemote();
     }
   });

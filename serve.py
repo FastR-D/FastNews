@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Serve FastNews on loopback and require a FastResearch SSO session."""
+"""Serve FastNews with independent accounts and optional identity providers."""
 
 from __future__ import annotations
 
@@ -38,6 +38,11 @@ except ImportError:
                 os.environ[key] = value
         return True
 
+
+from fastnews_accounts import Accounts
+import fastnews_accounts_http
+import fastnews_cas_http
+from fastnews_cas import CASService
 
 import field_briefing
 import inbox_push
@@ -95,7 +100,7 @@ DEFAULT_RELATED_REASON = "与当前研究方向重叠，适合作为 related wor
 
 
 def redact_request_line(message: str) -> str:
-    return re.sub(r'([?&]sso=)[^&\s"]+', r"\1redacted", message, flags=re.I)
+    return re.sub(r'([?&](?:sso|code|state|token|access_token|id_token|refresh_token)=)[^&\s"]+', r"\1redacted", message, flags=re.I)
 
 
 class AuthError(Exception):
@@ -700,6 +705,25 @@ class FastNewsHandler(BaseHTTPRequestHandler):
 
     def _dispatch(self):
         parsed = urllib.parse.urlparse(self.path)
+        if parsed.path == '/login' and self.command in {'GET','HEAD'}:
+            page = (Path(__file__).resolve().parent / 'assets/account.html').read_text(encoding='utf-8')
+            page = page.replace('__FASTNEWS_BASE__', json.dumps(public_path().rstrip('/'))).encode('utf-8')
+            self.send_response(200)
+            self.send_header('Content-Type','text/html; charset=utf-8')
+            self.send_header('Cache-Control','no-store')
+            self.send_header('Content-Length',str(len(page)))
+            self.end_headers()
+            if self.command != 'HEAD': self.wfile.write(page)
+            return
+        if fastnews_cas_http.dispatch(self, parsed.path, public_path().rstrip('/')):
+            return
+        if fastnews_accounts_http.dispatch(self, parsed.path):
+            return
+        if fastnews_accounts_http.content_dispatch(self, parsed.path):
+            return
+        if fastnews_accounts_http.cookie_value(self, 'fastnews_session') and parsed.path == FASTREAD_PATH:
+            fastnews_accounts_http.reply(self, 409, {"error": "本地个人内容接口正在接入，未授权使用 Research 内容"})
+            return
         if parsed.path == RELATED_WORK_PATH:
             self._related_work()
             return
@@ -708,6 +732,9 @@ class FastNewsHandler(BaseHTTPRequestHandler):
             return
         if parsed.path == SUMMARY_BRIEF_PATH:
             self._summary_brief()
+            return
+        if parsed.path.startswith('/api/content/') and not bearer_or_cookie(self.headers):
+            fastnews_accounts_http.reply(self, 401, {"error": "请先登录"})
             return
         if parsed.path == INBOX_PATH:
             self._inbox()
@@ -725,6 +752,9 @@ class FastNewsHandler(BaseHTTPRequestHandler):
         if ticket:
             self._consume(ticket, parsed.path or "/")
             return
+        if os.environ.get('FASTNEWS_REQUIRE_LOGIN','false').lower() != 'true' or fastnews_accounts_http.session(self):
+            self._file(parsed.path or '/', parsed.query)
+            return
         token = cookie_token(self.headers.get("Cookie", ""))
         if not token or not session_valid(token):
             self._bounce()
@@ -732,7 +762,7 @@ class FastNewsHandler(BaseHTTPRequestHandler):
         self._file(parsed.path or "/", parsed.query)
 
     def _bounce(self):
-        self._redirect(panel_url())
+        self._redirect(public_location("/login"))
 
     def _consume(self, ticket: str, path: str):
         try:
@@ -766,6 +796,7 @@ class FastNewsHandler(BaseHTTPRequestHandler):
                 "<script>"
                 f"window.FASTNEWS_PANEL_URL={json.dumps(panel_url())};"
                 f"window.FASTNEWS_PUBLIC_PATH={json.dumps(public_path())};"
+                f"window.FASTNEWS_PUBLIC_REPORTS={json.dumps(os.environ.get('FASTNEWS_REQUIRE_LOGIN','false').lower() != 'true')};"
                 "</script>"
             ).encode("utf-8")
             lowered = data.lower()
@@ -972,14 +1003,20 @@ class FastNewsHandler(BaseHTTPRequestHandler):
         self._write_json(status, payload)
 
     def _proxy(self, parsed):
+        if fastnews_accounts_http.cookie_value(self, 'fastnews_session'):
+            fastnews_accounts_http.reply(self, 409, {"error": "此接口需要显式连接 Research；本地会话不会转发"})
+            return
         target = f"{research_api_url()}{parsed.path}"
         if parsed.query:
             target = f"{target}?{parsed.query}"
         headers = {}
-        for key in ("Authorization", "Content-Type", "Accept", "Cookie"):
+        for key in ("Authorization", "Content-Type", "Accept"):
             value = self.headers.get(key)
             if value:
                 headers[key] = value
+        legacy = cookie_token(self.headers.get("Cookie", ""))
+        if legacy:
+            headers["Cookie"] = f"{COOKIE_NAME}={urllib.parse.quote(legacy, safe='')}"
         length = int(self.headers.get("Content-Length") or 0)
         body = self.rfile.read(length) if length > 0 else None
         request = urllib.request.Request(target, data=body, method=self.command, headers=headers)
@@ -1017,13 +1054,31 @@ class FastNewsHandler(BaseHTTPRequestHandler):
 
 def main():
     server = ThreadingHTTPServer((listen_host(), listen_port()), FastNewsHandler)
-    print(f"FastNews http://{listen_host()}:{listen_port()}  (enter via FastResearch {panel_url()})", flush=True)
+    server.accounts = Accounts(os.environ.get("FASTNEWS_DATA_DIR", ".fastnews-data"))
+    server.cas = CASService(server.accounts)
+    server.daily_inbox_generator = local_daily_inbox
+    print(f"FastNews http://{listen_host()}:{listen_port()}  (account: {public_path()}/login)", flush=True)
     try:
         server.serve_forever()
     except KeyboardInterrupt:
         print("\nstopped", flush=True)
     finally:
         server.server_close()
+
+
+def local_daily_inbox(accounts, user_id, items):
+    """Use FastNews-owned profile and inbox; no Research session is involved."""
+    impression = accounts.personal(user_id, 'impression') or {}
+    authors = accounts.personal(user_id, 'authors') or {}
+    return inbox_push.generate_daily_item(
+        public_root(),
+        str(impression.get('text') or ''),
+        authors.get('authors') or [],
+        authors.get('customTags') or [],
+        items,
+        complete_field_briefing,
+        has_api_key=bool(openai_api_key()),
+    )
 
 
 if __name__ == "__main__":
