@@ -176,6 +176,11 @@ function isDeepseek() {
   return blob.toLowerCase().indexOf("deepseek") >= 0;
 }
 
+function isReasoningEndpoint() {
+  const blob = (String(process.env.OPENAI_BASE_URL || "") + " " + String(process.env.LLM_MODEL || "")).toLowerCase();
+  return ["deepseek", "qwen", "dashscope", "aliyun"].some((name) => blob.indexOf(name) >= 0);
+}
+
 function fieldBriefingRequestPayload(systemPrompt, userPrompt) {
   const payload = {
     model: process.env.LLM_MODEL || "gemini-3-flash-preview",
@@ -190,6 +195,8 @@ function fieldBriefingRequestPayload(systemPrompt, userPrompt) {
     payload.thinking = { type: "disabled" };
     payload.reasoning_effort = "none";
     payload.response_format = { type: "json_object" };
+  } else if (isReasoningEndpoint()) {
+    payload.enable_thinking = false;
   }
   return payload;
 }
@@ -288,7 +295,9 @@ module.exports = async function handler(req, res) {
     briefing: null,
     surveys: [],
     papers: [],
-    source: "lexical",
+    source: "rag",
+    retrieval: result.retrieval || "rag",
+    embedding_provider: result.embedding_provider || "hash",
     coverage: coverageNote(result),
   };
   if (!hits.length) {
@@ -303,7 +312,7 @@ module.exports = async function handler(req, res) {
   try {
     const prompts = buildPrompts(query, hits, impression);
     const parsed = parseBriefing(await completeChat(prompts.systemPrompt, prompts.userPrompt), query, hits);
-    Object.assign(payload, parsed, { source: "llm" });
+    Object.assign(payload, parsed, { source: "rag+llm" });
     if (!payload.coverage) payload.coverage = coverageNote(result);
     res.status(200).json(payload);
   } catch (error) {

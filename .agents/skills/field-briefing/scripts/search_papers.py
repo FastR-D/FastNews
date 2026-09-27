@@ -410,73 +410,27 @@ def main() -> int:
     configure_stdout()
     args = parse_args()
     root = find_root()
-    terms, categories, specific = expand_query(args.query, args.category)
-    years = {int(year) for year in args.year if str(year).isdigit()}
-    conferences = {item.lower() for item in args.conference}
+    # Delegate to FastNews' shared RAG implementation so the Codex skill and
+    # the web application cannot drift into separate retrieval behavior.
+    sys.path.insert(0, str(root))
+    import field_briefing as rag_field_briefing
 
-    corpus: list[dict] = []
-    if args.source in {"all", "top-conf"}:
-        corpus.extend(load_top_conf(root))
-    if args.source in {"all", "arxiv"}:
-        corpus.extend(load_arxiv(root, args.arxiv_days))
-
-    ranked = []
-    seen_titles: set[str] = set()
-    for paper in corpus:
-        title_key = re.sub(r"\W+", "", str(paper.get("title") or "").lower())
-        if title_key and title_key in seen_titles:
-            continue
-        if years and paper.get("year") not in years:
-            continue
-        if conferences and paper.get("conference") not in conferences:
-            continue
-        if args.category and paper.get("source") == "top-conf" and paper.get("category") not in args.category:
-            continue
-        score, matched, lexical = score_paper(paper, terms, categories)
-        if specific and not lexical:
-            continue
-        if not specific and categories and paper.get("category") not in categories and not lexical:
-            continue
-        if score < args.min_score:
-            continue
-        ranked.append((score, matched, paper))
-        if title_key:
-            seen_titles.add(title_key)
-    ranked.sort(key=lambda item: (-item[0], -(item[2].get("year") or 0), item[2]["title"]))
-    ranked = ranked[: max(args.limit, 0)]
-
-    items = []
-    for score, matched, paper in ranked:
-        items.append(
-            {
-                "id": paper["id"],
-                "source": paper["source"],
-                "title": paper["title"],
-                "title_zh": paper.get("title_zh") or "",
-                "author": paper["author"],
-                "year": paper.get("year"),
-                "venue": paper["venue"],
-                "category": paper["category"],
-                "link": paper["link"],
-                "summary": paper["summary"],
-                "score": round(score, 3),
-                "matched_terms": matched[:8],
-            }
-        )
-    payload = {
-        "query": args.query,
-        "terms": terms,
-        "categories": categories,
-        "specific": specific,
-        "source_filter": args.source,
-        "arxiv_days": args.arxiv_days,
-        "corpus_size": len(corpus),
-        "hit_count": len(items),
-        "items": items,
-    }
+    payload = rag_field_briefing.search(
+        root,
+        args.query,
+        categories=args.category,
+        conferences=args.conference,
+        years=[int(year) for year in args.year if str(year).isdigit()],
+        source=args.source,
+        arxiv_days=args.arxiv_days,
+        limit=args.limit,
+        min_score=args.min_score,
+    )
+    payload["retrieval"] = "rag"
+    items = payload.get("items") or []
     if args.format == "text":
         print(f"query: {payload['query']}")
-        print(f"categories: {', '.join(categories) or '(none)'}")
+        print(f"categories: {', '.join(payload.get('categories') or []) or '(none)'}")
         print(f"hits: {payload['hit_count']} / {payload['corpus_size']}")
         for index, item in enumerate(items, 1):
             print(f"{index}. [{item['score']}] {item['year']} {item['venue']} | {item['title']}")

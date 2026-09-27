@@ -34,7 +34,7 @@ SYSTEM_PROMPT = "\n".join([
     "- subtitle: 英文或数据副标题，点明会议/年份/样本量",
     "- lead: 2 到 4 句。可用“本期简报/样本清洗后”开场，说明为什么要看这组数字",
     "- findings: 恰好 3 条。title 短；body 必须引用 STATS 里已有的数字（篇数或百分比），禁止四舍五入改写到对不上",
-    "- method: 2 到 4 句说明数据口径、年份范围、分类来源和未覆盖的内容（无引文、无杰出论文标签、不是历史全集）",
+    "- method: 2 到 4 句说明数据口径、年份范围、分类来源、引文/杰出论文覆盖率，以及未覆盖的内容（不是历史全集）。STATS 含 citations/awards 时必须写覆盖率，禁止编造缺失的引用次数；覆盖足够时可对照杰出论文与非杰出论文。无覆盖时明确写未覆盖，不要假装有数据。",
     "- questions: 2 到 3 个。qid 用 Q1/Q2/Q3。question 是读者会问的对照问题；answer 解读 STATS 表格，3 到 5 句，点出会场/年份/类别的异同",
     "- highlights: 4 到 8 篇，只能用候选 id，blurb 一句话说它为什么能支撑本期发现",
     "- limitations: 3 到 5 句，具体，禁止空泛套话",
@@ -55,6 +55,30 @@ def _pct(count: int, total: int) -> float:
     if total <= 0:
         return 0.0
     return round(count * 100 / total, 2)
+
+
+def _mean(values: list[int]) -> float | None:
+    if not values:
+        return None
+    return round(sum(values) / len(values), 2)
+
+
+def _median(values: list[int]) -> float | None:
+    if not values:
+        return None
+    ordered = sorted(values)
+    mid = len(ordered) // 2
+    if len(ordered) % 2:
+        return float(ordered[mid])
+    return round((ordered[mid - 1] + ordered[mid]) / 2, 2)
+
+
+def _citation_group(values: list[int]) -> dict:
+    return {
+        "coverage": len(values),
+        "mean": _mean(values),
+        "median": _median(values),
+    }
 
 
 def _bucket(counter: Counter, total: int, order: list[str] | None = None) -> list[dict]:
@@ -78,6 +102,10 @@ def compute_stats(items: list[dict]) -> dict:
     cat_counts: Counter[str] = Counter()
     source_counts: Counter[str] = Counter()
     conf_years: dict[str, Counter[int]] = defaultdict(Counter)
+    award_count = 0
+    cited_values: list[int] = []
+    distinguished_cited: list[int] = []
+    regular_cited: list[int] = []
     for paper in items:
         venue = str(paper.get("venue") or paper.get("conference") or "未知")
         category = str(paper.get("category") or "Uncategorized")
@@ -89,6 +117,23 @@ def compute_stats(items: list[dict]) -> dict:
         if isinstance(year, int):
             year_counts[year] += 1
             conf_years[venue][year] += 1
+        award = paper.get("award")
+        if award:
+            award_count += 1
+        cited = paper.get("cited_by")
+        if cited is None:
+            continue
+        try:
+            cited_int = int(cited)
+        except (TypeError, ValueError):
+            continue
+        if cited_int < 0:
+            continue
+        cited_values.append(cited_int)
+        if award:
+            distinguished_cited.append(cited_int)
+        else:
+            regular_cited.append(cited_int)
     years_sorted = sorted(year_counts)
     conference_order = list(fb.CONFERENCE_LABELS.values())
     by_conference = []
@@ -98,6 +143,14 @@ def compute_stats(items: list[dict]) -> dict:
             for year in years_sorted
         }
         by_conference.append(row)
+    citations = {
+        "coverage": len(cited_values),
+        "coverage_pct": _pct(len(cited_values), total),
+        "mean": _mean(cited_values),
+        "median": _median(cited_values),
+        "distinguished": _citation_group(distinguished_cited),
+        "regular": _citation_group(regular_cited),
+    }
     return {
         "sample_size": total,
         "year_span": fb.format_year_span(years_sorted) if years_sorted else "",
@@ -108,6 +161,11 @@ def compute_stats(items: list[dict]) -> dict:
         ],
         "by_category": _bucket(cat_counts, total, list(fb.CATEGORIES)),
         "by_source": _bucket(source_counts, total, ["top-conf", "arxiv"]),
+        "awards": {
+            "count": award_count,
+            "pct": _pct(award_count, total),
+        },
+        "citations": citations,
     }
 
 
@@ -232,6 +290,21 @@ def lexical_brief(query: str, stats: dict, mode: str, coverage: str) -> dict:
             "title": f"{top['label']} 样本最多",
             "body": f"{top['label']} 贡献 {top['count']} 篇（{top['pct']}%）。会场录用规模不同，不能直接读成该方向只青睐某一会议。",
         })
+    citations = stats.get("citations") or {}
+    awards = stats.get("awards") or {}
+    distinguished = citations.get("distinguished") or {}
+    regular = citations.get("regular") or {}
+    d_med = distinguished.get("median")
+    r_med = regular.get("median")
+    if d_med is not None and r_med is not None and d_med != r_med:
+        higher = "杰出论文" if d_med > r_med else "非杰出论文"
+        findings.insert(0, {
+            "title": f"{higher}引用中位数更高",
+            "body": (
+                f"有引用记录的杰出论文中位数 {d_med}，非杰出论文中位数 {r_med}；"
+                f"引用覆盖 {citations.get('coverage') or 0} 篇（{citations.get('coverage_pct')}%），缺失处不补造。"
+            ),
+        })
     questions = []
     if cats:
         questions.append({
@@ -250,11 +323,15 @@ def lexical_brief(query: str, stats: dict, mode: str, coverage: str) -> dict:
         "title": title,
         "hook": hook,
         "subtitle": " · ".join(part for part in (span, f"{sample} 篇有效样本") if part),
-        "lead": "本期简报把 FastNews 已总结的顶会中文摘要摊开，先核对样本量、会场和类别，再讨论这意味着什么。没有引文窗口，也没有杰出论文标签。",
+        "lead": "".join([
+            "本期简报把 FastNews 已总结的顶会中文摘要摊开，先核对样本量、会场和类别，再讨论这意味着什么。",
+            (f"样本中有 {awards.get('count')} 篇杰出论文（{awards.get('pct')}%）。" if awards.get("count") else ""),
+            (f"引用次数覆盖 {citations.get('coverage')} 篇（{citations.get('coverage_pct')}%），缺失处不编造。" if citations.get("coverage") else ""),
+        ]),
         "findings": findings[:3],
         "method": coverage,
         "questions": questions,
-        "limitations": "语料以 2023–2026 安全四大顶会中文摘要为主，不是近五年全集；分类由 FastNews 自动完成，未做人工逐篇复核，也没有引用次数或获奖信息。",
+        "limitations": "语料以 2023–2026 安全四大顶会中文摘要为主，不是近五年全集；分类由 FastNews 自动完成，未做人工逐篇复核。引用次数与杰出论文标签仅在有覆盖时给出，缺失不编造。",
         "discussion": [
             {
                 "title": "读分布，不要只读单篇热点",
@@ -274,7 +351,9 @@ def evidence_lines(papers: list[dict]) -> str:
         rows.append("\n".join([
             f"{index + 1}. id={paper.get('id')}",
             f"   title={paper.get('title')}",
-            f"   year={paper.get('year')} venue={paper.get('venue')} category={paper.get('category')} source={paper.get('source')}",
+            f"   year={paper.get('year')} venue={paper.get('venue')} category={paper.get('category')} source={paper.get('source')}"
+            + (f" award={paper.get('award')}" if paper.get("award") else "")
+            + (f" cited_by={paper.get('cited_by')}" if paper.get("cited_by") is not None else ""),
             f"   summary={fb.clip(paper.get('summary'), 220)}",
         ]))
     return "\n".join(rows)
@@ -451,6 +530,8 @@ def run_summary_brief(body: dict | None, root: Path, complete, has_api_key: bool
         "brief": None,
         "papers": [],
         "source": "lexical",
+        "retrieval": "rag" if mode == "topic" else "corpus-rag-evidence",
+        "embedding_provider": fb.rag_retriever.provider_name(),
         "coverage": coverage,
     }
     if not items:

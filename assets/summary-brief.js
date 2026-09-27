@@ -19,7 +19,7 @@
     okPrefix: "\u5df2\u6839\u636e\u300c",
     okSuffix: "\u300d\u751f\u6210\u5b9e\u8bc1\u7b80\u62a5\uff0c\u6837\u672c ",
     okTail: "\u7bc7\u3002",
-    fallback: "\u6a21\u578b\u63a5\u53e3\u4e0d\u53ef\u7528\uff0c\u5df2\u7528\u672c\u5730\u7edf\u8ba1\u751f\u6210\u7b80\u62a5\u3002",
+    fallback: "\u4e0a\u6e38\u6a21\u578b\u6682\u65f6\u8d85\u65f6\uff0c\u5df2\u7528\u672c\u5730 RAG \u8bc1\u636e\u751f\u6210\u7b80\u62a5\u3002",
     error: "\u751f\u6210\u5931\u8d25\uff0c\u8bf7\u7a0d\u540e\u91cd\u8bd5\u3002",
     emptySample: "\u6ca1\u6709\u8db3\u591f\u6837\u672c\uff0c\u8bf7\u6362\u4e00\u4e2a\u65b9\u5411\u6216\u6539\u6210\u56db\u5927\u9876\u4f1a\u5168\u666f\u3002",
   };
@@ -74,11 +74,12 @@
         : escapeHtml(titleText);
       const reason = item.reason ? `<p class="conference-reason">${escapeHtml(item.reason)}</p>` : "";
       const actions = window.fastNewsFastReadButton ? `<div class="paper-actions">${window.fastNewsFastReadButton(item)}</div>` : "";
+      const marks = window.fastNewsPaperMarks ? window.fastNewsPaperMarks(item) : {awardHtml: "", citedHtml: ""};
       return `<article class="conference-row has-reason">
-        <h3 class="conference-title">${heading}</h3>
+        <h3 class="conference-title">${heading}${marks.awardHtml}</h3>
         ${item.summary ? `<p class="conference-summary">${escapeHtml(item.summary)}</p>` : ""}
         ${reason}
-        <p class="conference-meta"><span class="conference-tag">${escapeHtml(item.category || sourceLabel(item.source))}</span><span>${escapeHtml([item.year, item.venue, item.author].filter(Boolean).join(" \xb7 "))}</span><span class="briefing-kind">${escapeHtml(sourceLabel(item.source))}</span></p>
+        <p class="conference-meta"><span class="conference-tag">${escapeHtml(item.category || sourceLabel(item.source))}</span>${marks.citedHtml}<span>${escapeHtml([item.year, item.venue, item.author].filter(Boolean).join(" \xb7 "))}</span><span class="briefing-kind">${escapeHtml(sourceLabel(item.source))}</span></p>
         ${actions}
       </article>`;
     }).join("");
@@ -223,6 +224,8 @@
       const shown = payload.query || query || UI.landscape;
       if (payload.source === "llm") {
         setStatus(UI.okPrefix + shown + UI.okSuffix + sample + UI.okTail, "ok");
+      } else if (payload.retrieval === "rag") {
+        setStatus(UI.fallback, "fallback");
       } else {
         setStatus(UI.fallback, "fallback");
       }

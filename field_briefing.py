@@ -11,6 +11,9 @@ from datetime import date, timedelta
 from pathlib import Path
 from urllib.parse import urlparse
 
+import paper_metrics
+import rag_retriever
+
 CONFERENCE_LABELS = {
     "usenix": "USENIX Security",
     "ieee-sp": "IEEE S&P",
@@ -240,6 +243,7 @@ def load_top_conf(root: Path) -> list[dict]:
     papers: list[dict] = []
     if not source_root.exists() or not summary_root.exists():
         return papers
+    awards = paper_metrics.load_award_index(root)
     for source_path in sorted(source_root.glob("*.jsonl")):
         match = CONFERENCE_FILE_RE.match(source_path.stem)
         if not match:
@@ -262,24 +266,32 @@ def load_top_conf(root: Path) -> list[dict]:
             if not paper_id or not title:
                 continue
             summary = summarized.get("summary_zh") or source.get("description") or ""
-            papers.append(
-                {
-                    "id": paper_id,
-                    "source": "top-conf",
-                    "title": title,
-                    "title_zh": "",
-                    "author": summarized.get("author") or source.get("author") or "",
-                    "year": year,
-                    "venue": CONFERENCE_LABELS.get(conference, conference),
-                    "conference": conference,
-                    "category": record.get("category") or "Uncategorized",
-                    "link": summarized.get("link") or source.get("link") or paper_id,
-                    "summary": clip(summary, 360),
-                    "search_title": title,
-                    "search_summary": f"{summary} {source.get('description') or ''}",
-                    "search_author": summarized.get("author") or source.get("author") or "",
-                }
+            item = {
+                "id": paper_id,
+                "source": "top-conf",
+                "title": title,
+                "title_zh": "",
+                "author": summarized.get("author") or source.get("author") or "",
+                "year": year,
+                "venue": CONFERENCE_LABELS.get(conference, conference),
+                "conference": conference,
+                "category": record.get("category") or "Uncategorized",
+                "link": summarized.get("link") or source.get("link") or paper_id,
+                "summary": clip(summary, 360),
+                "search_title": title,
+                "search_summary": f"{summary} {source.get('description') or ''}",
+                "search_author": summarized.get("author") or source.get("author") or "",
+            }
+            item.update(
+                paper_metrics.public_metrics(
+                    source,
+                    awards,
+                    conference=conference,
+                    year=year,
+                    title=title,
+                )
             )
+            papers.append(item)
     return papers
 
 
@@ -359,6 +371,7 @@ def load_arxiv(root: Path, days: int) -> list[dict]:
 
 def clear_corpus_cache() -> None:
     _CORPUS_CACHE.clear()
+    rag_retriever.clear_cache()
 
 
 def get_corpus(root: Path, source: str, arxiv_days: int) -> list[dict]:
@@ -429,54 +442,8 @@ def expand_query(query: str, extra_categories: list[str]) -> tuple[list[str], li
     return expanded, categories, specific
 
 
-def term_in(text: str, term: str) -> bool:
-    needle = term.lower()
-    if not needle:
-        return False
-    if re.search(r"[\u4e00-\u9fff]", needle):
-        return needle in text
-    if len(needle) <= 3:
-        return re.search(rf"(?<![a-z0-9]){re.escape(needle)}(?![a-z0-9])", text) is not None
-    return needle in text
-
-
-def score_paper(paper: dict, terms: list[str], categories: list[str]) -> tuple[float, list[str], bool]:
-    title = str(paper.get("search_title") or "").lower()
-    summary = str(paper.get("search_summary") or "").lower()
-    category = str(paper.get("category") or "").lower()
-    author = str(paper.get("search_author") or "").lower()
-    score = 0.0
-    matched: list[str] = []
-    lexical = False
-    for term in terms:
-        hit = False
-        if term_in(title, term):
-            score += 4
-            hit = True
-        if term_in(category, term):
-            score += 3
-            hit = True
-        if term_in(summary, term):
-            score += 2
-            hit = True
-        if term_in(author, term):
-            score += 1
-            hit = True
-        if hit:
-            lexical = True
-            matched.append(term)
-    if paper.get("category") in categories:
-        score += 2
-        if paper["category"] not in matched:
-            matched.append(paper["category"])
-    year = paper.get("year")
-    if isinstance(year, int) and year >= 2020:
-        score += min(year - 2020, 6) * 0.05
-    return score, matched, lexical
-
-
 def public_item(paper: dict, score: float, matched: list[str]) -> dict:
-    return {
+    item = {
         "id": paper["id"],
         "source": paper["source"],
         "title": paper["title"],
@@ -491,6 +458,8 @@ def public_item(paper: dict, score: float, matched: list[str]) -> dict:
         "score": round(float(score), 3),
         "matched_terms": matched[:8],
     }
+    item.update(paper_metrics.public_metrics(paper))
+    return item
 
 
 def search(
@@ -503,44 +472,47 @@ def search(
     source: str = "all",
     arxiv_days: int = DEFAULT_ARXIV_DAYS,
     limit: int = DEFAULT_SEARCH_LIMIT,
-    min_score: float = 1.0,
+    min_score: float = -1.0,
 ) -> dict:
     extra_categories = [item for item in (categories or []) if item]
+    # Alias expansion is retained only to label the response. Retrieval itself
+    # is always vector based and never uses term-hit scores.
     terms, matched_categories, specific = expand_query(query, extra_categories)
     year_set = {int(year) for year in (years or []) if str(year).isdigit() or isinstance(year, int)}
     conference_set = {str(item).lower() for item in (conferences or []) if item}
     source = source if source in {"all", "top-conf", "arxiv"} else "all"
     corpus = get_corpus(root, source, arxiv_days)
-    ranked: list[tuple[float, list[str], dict]] = []
+    threshold = -1.0 if min_score >= 1.0 else min_score
+    retrieved = rag_retriever.retrieve(
+        corpus,
+        query,
+        limit=max(int(limit), 0),
+        min_score=threshold,
+        source=source,
+        categories=extra_categories,
+        conferences=conference_set,
+        years=year_set,
+    )
+    items = []
     seen_titles: set[str] = set()
-    for paper in corpus:
+    for score, paper in retrieved:
         title_key = re.sub(r"\W+", "", str(paper.get("title") or "").lower())
         if title_key and title_key in seen_titles:
             continue
-        if year_set and paper.get("year") not in year_set:
-            continue
-        if conference_set and paper.get("conference") not in conference_set:
-            continue
-        if extra_categories and paper.get("source") == "top-conf" and paper.get("category") not in extra_categories:
-            continue
-        score, matched, lexical = score_paper(paper, terms, matched_categories)
-        if specific and not lexical:
-            continue
-        if not specific and matched_categories and paper.get("category") not in matched_categories and not lexical:
-            continue
-        if score < min_score:
-            continue
-        ranked.append((score, matched, paper))
-        if title_key:
-            seen_titles.add(title_key)
-    ranked.sort(key=lambda item: (-item[0], -(item[2].get("year") or 0), item[2]["title"]))
-    ranked = ranked[: max(int(limit), 0)]
-    items = [public_item(paper, score, matched) for score, matched, paper in ranked]
+        seen_titles.add(title_key)
+        # Public scores remain in the UI's 0..1 range while the raw vector
+        # score is exposed for diagnostics and downstream re-ranking.
+        normalized = max(0.0, min(1.0, (float(score) + 1.0) / 2.0))
+        item = public_item(paper, normalized, ["semantic"])
+        item["retrieval_score"] = round(float(score), 6)
+        items.append(item)
     return {
         "query": query,
         "terms": terms,
         "categories": matched_categories,
         "specific": specific,
+        "retrieval": "rag",
+        "embedding_provider": rag_retriever.provider_name(),
         "source_filter": source,
         "arxiv_days": arxiv_days,
         "corpus_size": len(corpus),
@@ -644,10 +616,10 @@ def corpus_stats(root: Path, arxiv_days: int = DEFAULT_ARXIV_DAYS) -> dict:
 
 
 def lexical_reason(item: dict) -> str:
-    terms = [str(term) for term in item.get("matched_terms") or [] if term]
-    if terms:
-        return "命中 " + "、".join(terms[:4]) + "，与查询方向重叠。"
-    return DEFAULT_PAPER_REASON
+    score = item.get("retrieval_score")
+    if score is not None:
+        return f"按语义向量召回（相似度 {float(score):.2f}），与查询方向相近。"
+    return "按语义向量召回，与查询方向相近。"
 
 
 def attach_reason(item: dict, reason: str) -> dict:
@@ -657,7 +629,7 @@ def attach_reason(item: dict, reason: str) -> dict:
 
 
 def lexical_papers(items: list[dict], limit: int = 10) -> list[dict]:
-    return [attach_reason(item, lexical_reason(item)) for item in items[:limit]]
+    return [attach_reason(item, "按语义向量召回，与查询方向相近。") for item in items[:limit]]
 
 
 def is_survey_paper(paper: dict) -> bool:
@@ -690,27 +662,28 @@ def search_surveys(
     source = source if source in {"all", "top-conf", "arxiv"} else "all"
     conference_set = {str(item).lower() for item in (conferences or []) if item}
     corpus = get_corpus(root, source, 0)
-    ranked: list[tuple[float, list[str], dict]] = []
+    survey_corpus = [paper for paper in corpus if is_survey_paper(paper)]
+    retrieved = rag_retriever.retrieve(
+        survey_corpus,
+        query,
+        limit=max(int(limit), 0),
+        min_score=-1.0,
+        source=source,
+        categories=extra_categories,
+        conferences=conference_set,
+    )
+    out = []
     seen_titles: set[str] = set()
-    for paper in corpus:
-        if not is_survey_paper(paper):
-            continue
+    for score, paper in retrieved:
         title_key = re.sub(r"\W+", "", str(paper.get("title") or "").lower())
         if title_key and title_key in seen_titles:
             continue
-        if conference_set and paper.get("conference") not in conference_set:
-            continue
-        score, matched, lexical = score_paper(paper, terms, matched_categories)
-        if specific and not lexical:
-            continue
-        if score < 4:
-            continue
-        ranked.append((score + 3, matched, paper))
-        if title_key:
-            seen_titles.add(title_key)
-    ranked.sort(key=lambda item: (-item[0], -(item[2].get("year") or 0), item[2]["title"]))
-    ranked = ranked[: max(int(limit), 0)]
-    return [attach_reason(public_item(paper, score, matched), survey_reason(paper)) for score, matched, paper in ranked]
+        seen_titles.add(title_key)
+        normalized = max(0.0, min(1.0, (float(score) + 1.0) / 2.0))
+        item = public_item(paper, normalized, ["semantic"])
+        item["retrieval_score"] = round(float(score), 6)
+        out.append(attach_reason(item, survey_reason(paper)))
+    return out
 
 
 def surveys_from_papers(items: list[dict], limit: int = MAX_SURVEYS) -> list[dict]:
@@ -877,10 +850,10 @@ def empty_briefing(query: str) -> dict:
     return {
         "field_zh": clip(query, 40),
         "field_en": "",
-        "coverage": "",
-        "scope": "",
+        "coverage": "本页内容由 FastNews 本地 RAG 召回结果整理；上游生成模型暂时不可用。",
+        "scope": "本次导读基于 FastNews 本地论文语料的语义召回结果，展示与查询方向最相关的研究证据。",
         "categories": [],
-        "gaps": "",
+        "gaps": "完整的分类综述和研究不足分析需要上游生成模型返回后补充。",
     }
 
 
@@ -993,7 +966,11 @@ def run_field_briefing(body: dict | None, root: Path, complete, has_api_key: boo
         "briefing": None,
         "surveys": surveys_from_papers(survey_hits),
         "papers": [],
+        # Keep the legacy source label for API clients; retrieval declares the
+        # actual mechanism and is always ``rag``.
         "source": "lexical",
+        "retrieval": result.get("retrieval", "rag"),
+        "embedding_provider": result.get("embedding_provider", rag_retriever.provider_name()),
         "coverage": coverage_note(result, root),
     }
     if not hits:
@@ -1017,8 +994,10 @@ def run_field_briefing(body: dict | None, root: Path, complete, has_api_key: boo
                 % (type(exc).__name__, exc, str(content or "")[:400])
             )
             payload["papers"] = drop_papers_in_surveys(lexical_papers(hits), payload["surveys"])
+            payload["briefing"] = empty_briefing(query)
             return 200, payload
     payload["papers"] = drop_papers_in_surveys(lexical_papers(hits), payload["surveys"])
+    payload["briefing"] = empty_briefing(query)
     return 200, payload
 
 

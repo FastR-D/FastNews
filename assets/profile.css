@@ -30,6 +30,8 @@
 .inbox-reason::before { content: "为何推送 · "; font-weight: 700; }
 .inbox-meta { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 8px; color: var(--subtle); font-size: 12px; }
 .inbox-tag { padding: 1px 6px; color: var(--accent-text); background: var(--accent-soft); border: 1px solid var(--accent-border); border-radius: 4px; }
+.paper-award { display: inline-block; margin-left: 8px; padding: 1px 6px; color: var(--accent-text); background: var(--accent-soft); border: 1px solid var(--accent-border); border-radius: 4px; white-space: nowrap; font-size: 11px; font-weight: 700; vertical-align: middle; }
+.paper-cited { white-space: nowrap; }
 .nav-count.is-unread { color: #fff; background: var(--primary); border-radius: 999px; padding: 0 6px; min-width: 18px; text-align: center; }
 html.sidebar-collapsed .app-shell { grid-template-columns: minmax(0, 1fr); }
 html.sidebar-collapsed .sidebar { display: none; }

@@ -11,6 +11,12 @@ import requests
 from bs4 import BeautifulSoup
 from bs4.element import NavigableString, Tag
 
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+import paper_metrics
+
 
 USER_AGENT = (
     "Mozilla/5.0 (compatible; FastNewsBot/0.1; "
@@ -85,9 +91,7 @@ def default_urls(conference, year):
 
 
 def normalize_title(title):
-    title = clean_text(title).replace("\xa0", " ").lower()
-    title = re.sub(r"[^a-z0-9]+", " ", title)
-    return re.sub(r"\s+", " ", title).strip()
+    return paper_metrics.normalize_title(title)
 
 
 def is_non_paper_title(title):
@@ -147,9 +151,9 @@ def paper_doi(paper):
     return match.group(0).rstrip(").,") if match else ""
 
 
-def make_paper(title, link, year, source, fetched_at, author="", description="", doi=""):
+def make_paper(title, link, year, source, fetched_at, author="", description="", doi="", award="", cited_by=None):
     doi = doi or paper_doi({"link": link, "doi": doi})
-    return {
+    paper = {
         "_id": link or title.lower(),
         "title": title,
         "link": link,
@@ -160,6 +164,13 @@ def make_paper(title, link, year, source, fetched_at, author="", description="",
         "fetched_at": fetched_at,
         **({"doi": doi} if doi else {}),
     }
+    award = paper_metrics.canonical_award(award)
+    if award:
+        paper["award"] = award
+    cited = paper_metrics.parse_cited_by(cited_by)
+    if cited is not None:
+        paper["cited_by"] = cited
+    return paper
 
 
 def merge_papers(base, extra):
@@ -174,9 +185,13 @@ def merge_papers(base, extra):
             merged.append(paper)
             by_title[key] = paper
             continue
-        for field in ("description", "author", "link", "doi"):
+        for field in ("description", "author", "link", "doi", "award"):
             if not existing.get(field) and paper.get(field):
                 existing[field] = paper[field]
+        extra_cited = paper_metrics.parse_cited_by(paper.get("cited_by"))
+        existing_cited = paper_metrics.parse_cited_by(existing.get("cited_by"))
+        if extra_cited is not None and (existing_cited is None or extra_cited > existing_cited):
+            existing["cited_by"] = extra_cited
     return merged
 
 
@@ -223,7 +238,7 @@ def fetch_crossref_container(container_title, year, session):
             "filter": f"container-title:{container_title},type:proceedings-article",
             "rows": page_size,
             "offset": offset,
-            "select": "title,author,DOI,URL,container-title,abstract,type",
+            "select": "title,author,DOI,URL,container-title,abstract,type,is-referenced-by-count",
         }
         response = client.get("https://api.crossref.org/works", params=params, headers=headers, timeout=45)
         response.raise_for_status()
@@ -260,6 +275,7 @@ def fetch_crossref_container(container_title, year, session):
                     author=", ".join(authors),
                     description=abstract,
                     doi=doi,
+                    cited_by=item.get("is-referenced-by-count"),
                 )
             )
         offset += len(items)
@@ -316,13 +332,117 @@ def enrich_from_openalex(papers, session):
         for item in items:
             doi = ((item.get("ids") or {}).get("doi") or "").replace("https://doi.org/", "")
             abstract = reconstruct_openalex_abstract(item.get("abstract_inverted_index"))
-            if doi and abstract:
-                by_doi[doi.lower()] = abstract
+            cited = paper_metrics.parse_cited_by(item.get("cited_by_count"))
+            if doi:
+                by_doi[doi.lower()] = {"abstract": abstract, "cited_by": cited}
         for paper in chunk:
-            abstract = by_doi.get(paper_doi(paper).lower())
+            hit = by_doi.get(paper_doi(paper).lower()) or {}
+            abstract = hit.get("abstract")
             if abstract:
                 paper["description"] = abstract
                 filled += 1
+            cited = hit.get("cited_by")
+            if cited is not None:
+                existing = paper_metrics.parse_cited_by(paper.get("cited_by"))
+                if existing is None or cited > existing:
+                    paper["cited_by"] = cited
+    return filled
+
+
+def enrich_citations_from_openalex(papers, session):
+    pending = [paper for paper in papers if paper_doi(paper)]
+    if not pending:
+        return 0
+    filled = 0
+    headers = {"User-Agent": USER_AGENT + " (mailto:fastnews@local)"}
+    for index in range(0, len(pending), 40):
+        chunk = pending[index:index + 40]
+        dois = [paper_doi(paper) for paper in chunk]
+        try:
+            response = session.get(
+                "https://api.openalex.org/works",
+                params={"filter": "doi:" + "|".join(dois), "per-page": 50},
+                headers=headers,
+                timeout=45,
+            )
+            response.raise_for_status()
+            items = response.json().get("results") or []
+        except requests.RequestException as exc:
+            print(f"  openalex citations skipped: {exc}")
+            continue
+        by_doi = {}
+        for item in items:
+            doi = ((item.get("ids") or {}).get("doi") or "").replace("https://doi.org/", "")
+            cited = paper_metrics.parse_cited_by(item.get("cited_by_count"))
+            if doi and cited is not None:
+                by_doi[doi.lower()] = cited
+        for paper in chunk:
+            cited = by_doi.get(paper_doi(paper).lower())
+            if cited is None:
+                continue
+            existing = paper_metrics.parse_cited_by(paper.get("cited_by"))
+            if existing is None or cited > existing:
+                paper["cited_by"] = cited
+                filled += 1
+    return filled
+
+
+def enrich_citations_by_title(papers, session, *, only_awards=True):
+    pending = [
+        paper for paper in papers
+        if paper.get("title")
+        and paper_metrics.parse_cited_by(paper.get("cited_by")) is None
+        and (not only_awards or paper.get("award"))
+    ]
+    if not pending:
+        return 0
+    filled = 0
+    headers = {"User-Agent": USER_AGENT + " (mailto:fastnews@local)"}
+    for paper in pending:
+        title = paper_metrics.clean_text(paper.get("title"))
+        try:
+            response = session.get(
+                "https://api.openalex.org/works",
+                params={"search": title, "per-page": 5},
+                headers=headers,
+                timeout=45,
+            )
+            response.raise_for_status()
+            items = response.json().get("results") or []
+        except requests.RequestException as exc:
+            print(f"  openalex title skipped: {exc}")
+            continue
+        key = paper_metrics.normalize_title(title)
+        cited = None
+        for item in items:
+            display = item.get("display_name") or item.get("title") or ""
+            if paper_metrics.normalize_title(display) != key:
+                continue
+            cited = paper_metrics.parse_cited_by(item.get("cited_by_count"))
+            if cited is not None:
+                break
+        if cited is None:
+            continue
+        paper["cited_by"] = cited
+        filled += 1
+    return filled
+
+
+def apply_award_overlay(papers, conference, year, root=None):
+    awards = paper_metrics.load_award_index(Path(root or ROOT))
+    filled = 0
+    for paper in papers:
+        metrics = paper_metrics.public_metrics(
+            paper,
+            awards,
+            conference=conference,
+            year=year,
+            title=paper.get("title"),
+        )
+        if metrics.get("award"):
+            if paper.get("award") != metrics["award"]:
+                filled += 1
+            paper["award"] = metrics["award"]
     return filled
 
 
@@ -570,7 +690,11 @@ def parse_row(row, base_url, source, year, fetched_at):
         author = author or inferred_author
         description = description or inferred_description
 
-    return {
+    blob = row.get_text(" ", strip=True)
+    if description:
+        blob = blob.replace(description, " ", 1)
+    award = paper_metrics.detect_award_text(blob)
+    paper = {
         "_id": link,
         "title": title,
         "link": link,
@@ -580,6 +704,9 @@ def parse_row(row, base_url, source, year, fetched_at):
         "source": source,
         "fetched_at": fetched_at,
     }
+    if award:
+        paper["award"] = award
+    return paper
 
 
 def row_candidates(soup):
@@ -947,6 +1074,14 @@ def fetch_papers(conference, year, urls=None, enrich=True):
 
         if enrich:
             enrich_abstracts(all_papers, session)
+            cited_filled = enrich_citations_from_openalex(all_papers, session)
+            print(
+                f"  citations: {sum(1 for paper in all_papers if 'cited_by' in paper)}/{len(all_papers)} "
+                f"(openalex +{cited_filled})"
+            )
+        award_filled = apply_award_overlay(all_papers, conference, year)
+        if award_filled:
+            print(f"  awards overlay: {award_filled}")
 
     return [paper for paper in all_papers if not is_non_paper_title(paper.get("title") or "")]
 

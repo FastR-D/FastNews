@@ -43,12 +43,13 @@
     const summary = item.summary ? `<p class="inbox-summary">${escapeHtml(item.summary)}</p>` : "";
     const meta = [item.year, item.venue, item.authors].filter(Boolean).join(" · ");
     const actions = window.fastNewsFastReadButton ? `<div class="paper-actions">${window.fastNewsFastReadButton(item)}</div>` : "";
+    const marks = window.fastNewsPaperMarks ? window.fastNewsPaperMarks(item) : {awardHtml: "", citedHtml: ""};
     return `<article class="inbox-card${isToday ? " is-today" : ""}">
       <p class="inbox-kicker">${isToday ? "今日推送" : escapeHtml(item.date || "")}</p>
-      <h3>${heading}</h3>
+      <h3>${heading}${marks.awardHtml}</h3>
       ${summary}
       ${reason}
-      <p class="inbox-meta">${item.category ? `<span class="inbox-tag">${escapeHtml(item.category)}</span>` : ""}<span>${escapeHtml(meta)}</span><span>${escapeHtml(item.source || "")}</span></p>
+      <p class="inbox-meta">${item.category ? `<span class="inbox-tag">${escapeHtml(item.category)}</span>` : ""}${marks.citedHtml}<span>${escapeHtml(meta)}</span><span>${escapeHtml(item.source || "")}</span></p>
       ${actions}
     </article>`;
   }

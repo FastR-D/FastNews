@@ -51,6 +51,7 @@ class FastNewsServeTests(unittest.TestCase):
         serve.clear_session_cache()
         self.consume = {}
         self.me = {}
+        self.ticket_requests = []
         self.proxied = []
         self.inbox_items = []
         self.saved_inbox = None
@@ -69,6 +70,11 @@ class FastNewsServeTests(unittest.TestCase):
                 if not identity:
                     raise serve.AuthError(401, {"error": "成员登录已失效"})
                 return identity, 200
+            if url.endswith("/api/sso/ticket"):
+                self.ticket_requests.append({"method": method, "payload": payload, "token": token})
+                if token not in self.me:
+                    raise serve.AuthError(401, {"error": "成员登录已失效"})
+                return {"ticket": "fastread-ticket"}, 200
             if url.endswith("/api/content/inbox"):
                 if token and token not in self.me:
                     raise serve.AuthError(401, {"error": "成员登录已失效"})
@@ -108,11 +114,25 @@ class FastNewsServeTests(unittest.TestCase):
         self._urlopen = serve.urllib.request.urlopen
         serve.json_request = fake_json
         serve.urllib.request.urlopen = fake_urlopen
-        self._env = {key: os.environ.get(key) for key in ("OPENAI_API_KEY", "OPENAI_BASE_URL", "LLM_MODEL", "FASTREAD_URL")}
+        self._env = {
+            key: os.environ.get(key)
+            for key in (
+                "OPENAI_API_KEY",
+                "OPENAI_BASE_URL",
+                "LLM_MODEL",
+                "FASTREAD_URL",
+                "RAG_EMBEDDING_PROVIDER",
+                "RAG_EMBEDDING_URL",
+                "EMBEDDING_MODEL",
+            )
+        }
         os.environ["OPENAI_API_KEY"] = "test-key"
         os.environ["OPENAI_BASE_URL"] = "https://llm.test/v1"
         os.environ["FASTREAD_URL"] = "http://127.0.0.1:3015"
         os.environ["LLM_MODEL"] = "test-model"
+        os.environ["RAG_EMBEDDING_PROVIDER"] = "hash"
+        os.environ.pop("RAG_EMBEDDING_URL", None)
+        os.environ.pop("EMBEDDING_MODEL", None)
         self._complete = serve.complete_related_work
         self._field_complete = serve.complete_field_briefing
         self._summary_complete = serve.complete_summary_brief
@@ -288,7 +308,14 @@ class FastNewsServeTests(unittest.TestCase):
         self.assertIn(b"title required", body)
         self.assertFalse(self.proxied)
 
+    def test_fastread_requires_fastresearch_session(self):
+        status, _headers, body = self.request("/api/fastread", method="POST", data={"title": "TwinBreak"})
+        self.assertEqual(status, 401)
+        self.assertIn("FastResearch", body.decode("utf-8"))
+        self.assertFalse(self.ticket_requests)
+
     def test_fastread_builds_redirect(self):
+        self.me["good-session"] = {"keyId": "aabbcc", "person": "张三"}
         status, _headers, body = self.request("/api/fastread", method="POST", data={
             "title": "TwinBreak",
             "author": "Ada Lovelace",
@@ -297,7 +324,8 @@ class FastNewsServeTests(unittest.TestCase):
             "venue": "ACM CCS",
             "year": 2024,
             "id": "p-twinbreak",
-        })
+            "doi": "10.1145/example",
+        }, headers={"Cookie": "fr_session=good-session"})
         self.assertEqual(status, 200)
         payload = json.loads(body.decode("utf-8"))
         self.assertTrue(payload["ok"])
@@ -305,21 +333,26 @@ class FastNewsServeTests(unittest.TestCase):
         self.assertEqual(payload["paper"]["authors"], "Ada Lovelace")
         self.assertEqual(payload["paper"]["abstract"], "\u4e2d\u6587\u6458\u8981\u7528\u4e8e\u9605\u8bfb\u3002")
         self.assertEqual(payload["paper"]["url"], "https://doi.org/10.1145/example")
-        self.assertTrue(payload["redirect"].startswith("http://127.0.0.1:3015/#fastnews="))
+        self.assertTrue(payload["redirect"].startswith("http://127.0.0.1:3015/?sso=fastread-ticket#fastnews="))
         encoded = payload["redirect"].split("#fastnews=", 1)[1]
         handed = json.loads(urllib.parse.unquote(encoded))
         self.assertEqual(handed["title"], "TwinBreak")
         self.assertEqual(handed["authors"], "Ada Lovelace")
+        self.assertEqual(handed["doi"], "10.1145/example")
+        self.assertEqual(self.ticket_requests, [{"method": "POST", "payload": {"audience": "fast-read"}, "token": "good-session"}])
         self.assertFalse(self.proxied)
 
     def test_fastread_rejects_credentialed_url(self):
+        self.me["good-session"] = {"keyId": "aabbcc", "person": "张三"}
         status, _headers, body = self.request("/api/fastread", method="POST", data={
             "title": "TwinBreak",
             "url": "https://user:pass@example.com/paper.pdf",
-        })
+        }, headers={"Cookie": "fr_session=good-session"})
         self.assertEqual(status, 200)
         payload = json.loads(body.decode("utf-8"))
         self.assertNotIn("url", payload["paper"])
+        self.assertTrue(payload["redirect"].startswith("http://127.0.0.1:3015/?sso=fastread-ticket#fastnews="))
+        self.assertEqual(len(self.ticket_requests), 1)
         self.assertFalse(self.proxied)
 
     def test_fastread_clips_long_abstract(self):
@@ -514,7 +547,8 @@ class FastNewsServeTests(unittest.TestCase):
         self.assertEqual(status, 200)
         payload = json.loads(body.decode("utf-8"))
         self.assertEqual(payload["source"], "lexical")
-        self.assertIsNone(payload["briefing"])
+        self.assertEqual(payload["briefing"]["field_zh"], "LLM jailbreak")
+        self.assertIn("上游生成模型暂时不可用", payload["briefing"]["coverage"])
         self.assertGreaterEqual(len(payload["papers"]), 1)
         self.assertEqual(payload["papers"][0]["id"], "p-jailbreak")
         self.assertEqual(payload["surveys"][0]["id"], "p-sok")
@@ -747,6 +781,15 @@ class FieldBriefingLlmPayloadTests(unittest.TestCase):
         self.assertNotIn("thinking", payload)
         self.assertNotIn("reasoning_effort", payload)
         self.assertNotIn("response_format", payload)
+        self.assertNotIn("enable_thinking", payload)
+
+    def test_qwen_payload_disables_thinking(self):
+        os.environ["OPENAI_BASE_URL"] = "https://maas.example.com/compatible-mode/v1"
+        os.environ["LLM_MODEL"] = "qwen3.8-flash"
+        payload = serve.field_briefing_request_payload("sys", "user")
+        self.assertEqual(payload["enable_thinking"], False)
+        self.assertNotIn("thinking", payload)
+        self.assertTrue(serve.is_reasoning_endpoint())
 
     def test_complete_field_briefing_uses_reasoning_content(self):
         os.environ["OPENAI_BASE_URL"] = "https://api.deepseek.com"

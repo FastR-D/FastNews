@@ -292,44 +292,6 @@ function expandQuery(query, extraCategories) {
   return { terms: expanded, categories, specific };
 }
 
-function termIn(text, term) {
-  const needle = String(term || "").toLowerCase();
-  if (!needle) return false;
-  if (/[\u4e00-\u9fff]/.test(needle)) return text.indexOf(needle) >= 0;
-  if (needle.length <= 3) {
-    const escaped = needle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    return new RegExp("(?<![a-z0-9])" + escaped + "(?![a-z0-9])").test(text);
-  }
-  return text.indexOf(needle) >= 0;
-}
-
-function scorePaper(paper, terms, categories) {
-  const title = String(paper.search_title || "").toLowerCase();
-  const summary = String(paper.search_summary || "").toLowerCase();
-  const category = String(paper.category || "").toLowerCase();
-  const author = String(paper.search_author || "").toLowerCase();
-  let score = 0;
-  const matched = [];
-  let lexical = false;
-  for (const term of terms) {
-    let hit = false;
-    if (termIn(title, term)) { score += 4; hit = true; }
-    if (termIn(category, term)) { score += 3; hit = true; }
-    if (termIn(summary, term)) { score += 2; hit = true; }
-    if (termIn(author, term)) { score += 1; hit = true; }
-    if (hit) {
-      lexical = true;
-      matched.push(term);
-    }
-  }
-  if (categories.indexOf(paper.category) >= 0) {
-    score += 2;
-    if (matched.indexOf(paper.category) < 0) matched.push(paper.category);
-  }
-  if (Number.isInteger(paper.year) && paper.year >= 2020) score += Math.min(paper.year - 2020, 6) * 0.05;
-  return { score, matched, lexical };
-}
-
 function publicItem(paper, score, matched) {
   return {
     id: paper.id,
@@ -348,6 +310,45 @@ function publicItem(paper, score, matched) {
   };
 }
 
+// Deterministic vector retrieval for the serverless handlers. The Python
+// service can use a configured embedding endpoint; this compact provider
+// keeps these handlers on the same RAG contract without keyword filtering.
+function vectorize(text, dimensions = 256) {
+  const value = String(text || "").toLowerCase().replace(/\s+/g, " ");
+  const tokens = value.match(/[a-z0-9]+(?:[./_-][a-z0-9]+)*|[\u4e00-\u9fff]/gi) || [];
+  const grams = [];
+  tokens.forEach((token) => {
+    grams.push(token);
+    if (/^[a-z0-9]+$/i.test(token) && token.length > 3) {
+      for (let index = 0; index + 3 <= token.length; index += 1) grams.push(token.slice(index, index + 3));
+    }
+  });
+  const vector = new Array(dimensions).fill(0);
+  grams.forEach((gram) => {
+    let hash = 2166136261;
+    for (let index = 0; index < gram.length; index += 1) hash = Math.imul(hash ^ gram.charCodeAt(index), 16777619);
+    vector[(hash >>> 0) % dimensions] += (hash & 1) ? -1 : 1;
+  });
+  const norm = Math.sqrt(vector.reduce((sum, item) => sum + item * item, 0)) || 1;
+  return vector.map((item) => item / norm);
+}
+
+function cosine(left, right) {
+  let dot = 0;
+  let leftNorm = 0;
+  let rightNorm = 0;
+  for (let index = 0; index < Math.min(left.length, right.length); index += 1) {
+    dot += left[index] * right[index];
+    leftNorm += left[index] * left[index];
+    rightNorm += right[index] * right[index];
+  }
+  return dot / ((Math.sqrt(leftNorm) || 1) * (Math.sqrt(rightNorm) || 1));
+}
+
+function paperText(paper) {
+  return [paper.title, paper.title_zh, paper.summary, paper.search_summary, paper.author, paper.category, paper.venue].filter(Boolean).join(" ");
+}
+
 function searchPapers(root, query, options) {
   options = options || {};
   const extraCategories = (options.categories || []).filter(Boolean);
@@ -357,8 +358,8 @@ function searchPapers(root, query, options) {
   const source = ["all", "top-conf", "arxiv"].indexOf(options.source) >= 0 ? options.source : "all";
   const arxivDays = Number.isFinite(Number(options.arxivDays)) ? Number(options.arxivDays) : 90;
   const limit = Number.isFinite(Number(options.limit)) ? Number(options.limit) : 16;
-  const minScore = Number.isFinite(Number(options.minScore)) ? Number(options.minScore) : 1;
   const corpus = getCorpus(root, source, arxivDays);
+  const queryVector = vectorize(query);
   const ranked = [];
   const seenTitles = new Set();
   for (const paper of corpus) {
@@ -367,18 +368,15 @@ function searchPapers(root, query, options) {
     if (yearSet.size && !yearSet.has(paper.year)) continue;
     if (conferenceSet.size && !conferenceSet.has(paper.conference)) continue;
     if (extraCategories.length && paper.source === "top-conf" && extraCategories.indexOf(paper.category) < 0) continue;
-    const scored = scorePaper(paper, expanded.terms, expanded.categories);
-    if (expanded.specific && !scored.lexical) continue;
-    if (!expanded.specific && expanded.categories.length && expanded.categories.indexOf(paper.category) < 0 && !scored.lexical) continue;
-    if (scored.score < minScore) continue;
-    ranked.push([scored.score, scored.matched, paper]);
+    const score = cosine(queryVector, vectorize(paperText(paper)));
+    ranked.push([score, ["semantic"], paper]);
     if (titleKey) seenTitles.add(titleKey);
   }
   ranked.sort(function (a, b) {
     return b[0] - a[0] || (b[2].year || 0) - (a[2].year || 0) || String(a[2].title).localeCompare(String(b[2].title));
   });
   const items = ranked.slice(0, Math.max(limit, 0)).map(function (row) {
-    return publicItem(row[2], row[0], row[1]);
+    return publicItem(row[2], Math.max(0, Math.min(1, (row[0] + 1) / 2)), row[1]);
   });
   return {
     query: query,
@@ -390,6 +388,8 @@ function searchPapers(root, query, options) {
     corpus_size: corpus.length,
     hit_count: items.length,
     items: items,
+    retrieval: "rag",
+    embedding_provider: "hash",
   };
 }
 

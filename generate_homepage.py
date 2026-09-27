@@ -8,6 +8,7 @@ import re
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 import field_briefing
+import paper_metrics
 
 
 REPORT_DIRS = (
@@ -137,13 +138,15 @@ def json_for_script(value):
     )
 
 
-def collect_conference_papers():
+def collect_conference_papers(root=None):
     """Load classified conference papers for the interactive top-conference index."""
-    source_root = Path("top-conf/data/conferences")
-    summary_root = Path("top-conf/data/summary")
+    base = Path(root) if root is not None else Path(".")
+    source_root = base / "top-conf" / "data" / "conferences"
+    summary_root = base / "top-conf" / "data" / "summary"
     if not source_root.exists() or not summary_root.exists():
         return []
 
+    awards = paper_metrics.load_award_index(base)
     papers = []
     for source_path in sorted(source_root.glob("*.jsonl")):
         match = re.match(
@@ -198,21 +201,29 @@ def collect_conference_papers():
             if not title:
                 continue
             link = summarized_paper.get("link") or source_paper.get("link", "")
-            papers.append(
-                {
-                    "id": paper_id,
-                    "title": title,
-                    "summary": summarized_paper.get("summary_zh")
-                    or source_paper.get("description", ""),
-                    "author": summarized_paper.get("author")
-                    or source_paper.get("author", ""),
-                    "link": link,
-                    "category": record.get("category") or "Uncategorized",
-                    "conference": conference,
-                    "conference_label": CONFERENCE_LABELS[conference],
-                    "year": year,
-                }
+            item = {
+                "id": paper_id,
+                "title": title,
+                "summary": summarized_paper.get("summary_zh")
+                or source_paper.get("description", ""),
+                "author": summarized_paper.get("author")
+                or source_paper.get("author", ""),
+                "link": link,
+                "category": record.get("category") or "Uncategorized",
+                "conference": conference,
+                "conference_label": CONFERENCE_LABELS[conference],
+                "year": year,
+            }
+            item.update(
+                paper_metrics.public_metrics(
+                    source_paper,
+                    awards,
+                    conference=conference,
+                    year=year,
+                    title=title,
+                )
             )
+            papers.append(item)
     return sorted(
         papers,
         key=lambda item: (item["year"], item["conference_label"], item["category"], item["title"]),

@@ -5,7 +5,33 @@
   const updated = document.getElementById("impressionUpdated");
   const status = document.getElementById("impressionStatus");
   const submit = document.getElementById("impressionSubmit");
+  const modal = document.getElementById("impressionModal");
+  const openButtons = Array.from(document.querySelectorAll("#openImpression, [data-open-impression]"));
+  const closeButton = document.getElementById("closeImpression");
+  const cancelButton = document.getElementById("cancelImpression");
   if (!form || !input) return;
+
+  function openModal() {
+    if (!modal) return;
+    if (typeof modal.showModal === "function") modal.showModal();
+    else modal.setAttribute("open", "");
+    document.body.classList.add("modal-open");
+    window.setTimeout(() => input.focus(), 0);
+  }
+
+  function closeModal() {
+    if (!modal) return;
+    if (typeof modal.close === "function") modal.close();
+    else modal.removeAttribute("open");
+    document.body.classList.remove("modal-open");
+  }
+
+  openButtons.forEach((button) => button.addEventListener("click", openModal));
+  closeButton?.addEventListener("click", closeModal);
+  cancelButton?.addEventListener("click", closeModal);
+  modal?.addEventListener("cancel", (event) => { event.preventDefault(); closeModal(); });
+  modal?.addEventListener("click", (event) => { if (event.target === modal) closeModal(); });
+  modal?.addEventListener("close", () => document.body.classList.remove("modal-open"));
 
   function setStatus(text, kind) {
     if (!status) return;
@@ -67,6 +93,7 @@
         detail: { impression, inboxUnread: window.FASTNEWS_INBOX_UNREAD || 0 },
       }));
       setStatus("研究印象已保存。领域导读、总结汇报、找论文和每日私信都会使用它。", "ok");
+      window.setTimeout(closeModal, 450);
     } catch {
       setStatus("保存失败，请稍后重试。", "error");
     } finally {

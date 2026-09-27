@@ -1,0 +1,670 @@
+{
+  "papers": [
+    {
+      "conference": "ieee-sp",
+      "year": 2025,
+      "title": "COBBL: Dynamic constraint generation for SNARKs",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ieee-sp",
+      "year": 2025,
+      "title": "Transport Layer Obscurity: Circumventing SNI Censorship on the TLS Layer",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ieee-sp",
+      "year": 2025,
+      "title": "Follow My Flow: Unveiling Client-Side Prototype Pollution Gadgets from One Million Real-World Websites",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ieee-sp",
+      "year": 2025,
+      "title": "CipherSteal: Stealing Input Data from TEE-Shielded Neural Networks with Ciphertext Side Channels",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ieee-sp",
+      "year": 2025,
+      "title": "Characterizing Robocalls with Multiple Vantage Points",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ieee-sp",
+      "year": 2025,
+      "title": "Verifiable Boosted Tree Ensembles",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ieee-sp",
+      "year": 2025,
+      "title": "Breaking the Barrier: Post-Barrier Spectre Attacks",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ieee-sp",
+      "year": 2025,
+      "title": "Unveiling Security Vulnerabilities in Git Large File Storage Protocol",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ieee-sp",
+      "year": 2025,
+      "title": "The Inadequacy of Similarity-based Privacy Metrics: Privacy Attacks against ``Truly Anonymous'' Synthetic Datasets",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ieee-sp",
+      "year": 2025,
+      "title": "Empc: Effective Path Prioritization for Symbolic Execution with Path Cover",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ieee-sp",
+      "year": 2025,
+      "title": "SLAP: Data Speculation Attacks via Load Address Prediction on Apple Silicon",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ieee-sp",
+      "year": 2025,
+      "title": "Detecting Taint-Style Vulnerabilities in Microservice-Structured Web Applications",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ieee-sp",
+      "year": 2025,
+      "title": "DataSentinel: A Game-Theoretic Detection of Prompt Injection Attacks",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ieee-sp",
+      "year": 2024,
+      "title": "BENZENE: A Practical Root Cause Analysis System with an Under-Constrained State Mutation",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ieee-sp",
+      "year": 2024,
+      "title": "Shedding Light on CVSS Scoring Inconsistencies: A User-Centric Study on Evaluating Widespread Security Vulnerabilities",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ieee-sp",
+      "year": 2024,
+      "title": "\"False negative - that one is going to kill you.\" - Understanding Industry Perspectives of Static Analysis based Security Testing",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ieee-sp",
+      "year": 2024,
+      "title": "The Great Request Robbery: An Empirical Study of Client-side Request Hijacking Vulnerabilities on the Web",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ieee-sp",
+      "year": 2024,
+      "title": "SoK: Prudent Evaluation Practices for Fuzzing",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ieee-sp",
+      "year": 2024,
+      "title": "SoK: Unintended Interactions among Machine Learning Defenses and Risks",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ieee-sp",
+      "year": 2024,
+      "title": "From Virtual Touch to Tesla Command: Unlocking Unauthenticated Control Chains From Smart Glasses for Vehicle Takeover",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ieee-sp",
+      "year": 2024,
+      "title": "From Chatbots to Phishbots?: Phishing Scam Generation in Commercial Large Language Models",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ieee-sp",
+      "year": 2024,
+      "title": "WeSee: Using Malicious #VC Interrupts to Break AMD SEV-SNP",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ieee-sp",
+      "year": 2023,
+      "title": "MEGA: Malleable Encryption Goes Awry",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ieee-sp",
+      "year": 2023,
+      "title": "Practically-exploitable Cryptographic Vulnerabilities in Matrix",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ieee-sp",
+      "year": 2023,
+      "title": "Weak Fiat-Shamir Attacks on Modern Proof Systems",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ieee-sp",
+      "year": 2023,
+      "title": "Typing High-Speed Cryptography against Spectre v1",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ieee-sp",
+      "year": 2023,
+      "title": "Red Team vs. Blue Team: A Real-World Hardware Trojan Detection Case Study Across Four Modern CMOS Technology Generations",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ieee-sp",
+      "year": 2023,
+      "title": "It’s (DOM) Clobbering Time: Attack Techniques, Prevalence, and Defenses",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ieee-sp",
+      "year": 2023,
+      "title": "The Leaky Web: Automated Discovery of Cross-Site Information Leaks in Browsers and the Web",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ieee-sp",
+      "year": 2023,
+      "title": "WaVe: A Verifiably Secure WebAssembly Sandboxing Runtime",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ieee-sp",
+      "year": 2023,
+      "title": "Characterizing Everyday Misuse of Smart Home Devices",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ieee-sp",
+      "year": 2023,
+      "title": "Not Yet Another Digital ID: Privacy-preserving Humanitarian Aid Distribution",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ieee-sp",
+      "year": 2023,
+      "title": "“In Eighty Percent of the Cases, I Select the Password for Them”: Security and Privacy Challenges, Advice, and Opportunities at Cybercafes in Kenya",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ieee-sp",
+      "year": 2023,
+      "title": "Space Odyssey: An Experimental Software Security Analysis of Satellites",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2024,
+      "title": "\"Better Be Computer or I'm Dumb\": A Large-Scale Evaluation of Humans as Audio Deepfake Detectors",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2024,
+      "title": "Organic or Diffused: Can We Distinguish Human Art from AI-generated Images?",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2024,
+      "title": "Unmasking the Security and Usability of Password Masking",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2024,
+      "title": "Content, Nudges and Incentives: A Study on the Effectiveness and Perception of Embedded Phishing Training",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2024,
+      "title": "Querycheetah: Fast Automated Discovery of Attribute Inference Attacks Against Query-Based Systems",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2024,
+      "title": "Cross-silo Federated Learning with Record-level Personalized Differential Privacy",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2024,
+      "title": "Lutris: A Blockchain Combining Broadcast and Consensus",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2024,
+      "title": "Atomic and Fair Data Exchange via Blockchain",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2024,
+      "title": "DoubleUp Roll: Double-spending in Arbitrum by Rolling It Back",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2024,
+      "title": "ERACAN: Defending Against an Emerging CAN Threat Model",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2024,
+      "title": "Spec-o-Scope: Cache Probing at Cache Speed",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2024,
+      "title": "Principled Microarchitectural Isolation on Cloud CPUs",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2024,
+      "title": "RefleXnoop: Passwords Snooping on NLoS Laptops Leveraging Screen-Induced Sound Reflection",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2024,
+      "title": "Libra: Architectural Support For Principled, Secure And Efficient Balanced Execution On High-End Processors",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2024,
+      "title": "Testing side-channel security of cryptographic implementations against future microarchitectures",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2024,
+      "title": "Isolate and detect the untrusted driver with a virtual box",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2024,
+      "title": "ReSym: Harnessing LLMs to Recover Variable and Data Structure Symbols from Stripped Binaries",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2024,
+      "title": "Manipulative Interference Attacks",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2024,
+      "title": "uMMU: Securing Data Confidentiality with Unobservable Memory Subsystem",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2024,
+      "title": "Jäger: Automated Telephone Call Traceback",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2024,
+      "title": "The Harder You Try, The Harder You Fail: The KeyTrap Denial-of-Service Algorithmic Complexity Attacks on DNSSEC",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2024,
+      "title": "FuzzCache: Optimizing Web Application Fuzzing Through Software-Based Data Cache",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2024,
+      "title": "Stealing Trust: Unraveling Blind Message Attacks in Web3 Authentication",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2024,
+      "title": "Practical Key-Extraction Attacks in Leading MPC Wallets",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2024,
+      "title": "Fast Two-party Threshold ECDSA with Proactive Security",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2024,
+      "title": "Distributed Backdoor Attacks on Federated Graph Learning and Certified Defenses",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2024,
+      "title": "Moderator: Moderating Text-to-Image Diffusion Models through Fine-grained Context-based Policies",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2023,
+      "title": "Alert Alchemy: SOC Workflows and Decisions in the Management of NIDS Rules",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2023,
+      "title": "Amplification by Shuffling without Shuffling",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2023,
+      "title": "Batchman and Robin: Batched and Non-batched Branching for Interactive ZK",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2023,
+      "title": "Capacity: Cryptographically-Enforced In-Process Capabilities for Modern ARM Architectures",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2023,
+      "title": "CoCo: Efficient Browser Extension Vulnerability Detection via Coverage-guided, Concurrent Abstract Interpretation",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2023,
+      "title": "Concurrent Composition for Interactive Differential Privacy with Adaptive Privacy-Loss Parameters",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2023,
+      "title": "FutORAMa: A Concretely Efficient Hierarchical Oblivious RAM",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2023,
+      "title": "HE3DB: An Efficient and Elastic Encrypted Database Via Arithmetic-And-Logic Fully Homomorphic Encryption",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2023,
+      "title": "How Hard is Takeover in DPoS Blockchains? Understanding the Security of Coin-based Voting Governance",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2023,
+      "title": "Large Language Models for Code: Security Hardening and Adversarial Testing",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2023,
+      "title": "PANIC: PAN-assisted Intra-process Memory Isolation on ARM",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2023,
+      "title": "Security Verification of Low-Trust Architectures",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2023,
+      "title": "Silence is not Golden: Disrupting the Load Balancing of Authoritative DNS Servers",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2023,
+      "title": "Specification and Verification of Side-channel Security for Open-source Processors via Leakage Contracts",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2023,
+      "title": "SpecVerilog: Adapting Information Flow Control for Secure Speculation",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2023,
+      "title": "Stealing the Decoding Algorithms of Language Models",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ccs",
+      "year": 2023,
+      "title": "Uncle Maker: (Time)Stamping Out The Competition in Ethereum",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ndss",
+      "year": 2024,
+      "title": "Like, Comment, Get Scammed: Characterizing Comment Scams on Media Platforms",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ndss",
+      "year": 2024,
+      "title": "UntrustIDE: Exploiting Weaknesses in VS Code Extensions",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ndss",
+      "year": 2024,
+      "title": "Eavesdropping on Controller Acoustic Emanation for Keystroke Inference Attack in Virtual Reality",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ndss",
+      "year": 2024,
+      "title": "LMSanitator: Defending Prompt-Tuning Against Task-Agnostic Backdoors",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ndss",
+      "year": 2025,
+      "title": "ReThink: Reveal the Threat of Electromagnetic Interference on Power Inverters",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ndss",
+      "year": 2025,
+      "title": "An Empirical Study on Fingerprint API Misuse with Lifecycle Analysis in Real-world Android Apps",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ndss",
+      "year": 2025,
+      "title": "SafeSplit: A Novel Defense Against Client-Side Backdoor Attacks in Split Learning",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ndss",
+      "year": 2025,
+      "title": "Provably Unlearnable Data Examples",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ndss",
+      "year": 2025,
+      "title": "DUMPLING: Fine-grained Differential JavaScript Engine Fuzzing",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ndss",
+      "year": 2025,
+      "title": "type++: Prohibiting Type Confusion with Inline Type Information",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ndss",
+      "year": 2025,
+      "title": "Rethinking Trust in Forge-Based Git Security",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ndss",
+      "year": 2025,
+      "title": "Blindfold: Confidential Memory Management by Untrusted Operating System",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ndss",
+      "year": 2025,
+      "title": "PropertyGPT: LLM-driven Formal Verification of Smart Contracts through Retrieval-Augmented Property Generation",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ndss",
+      "year": 2025,
+      "title": "DiStefano: Decentralized Infrastructure for Sharing Trusted Encrypted Facts and Nothing More",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ndss",
+      "year": 2025,
+      "title": "ReDAN: An Empirical Study on Remote DoS Attacks against NAT Networks",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "ndss",
+      "year": 2025,
+      "title": "VoiceRadar: Voice Deepfake Detection using Micro-Frequency and Compositional Analysis",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "usenix",
+      "year": 2025,
+      "title": "Branch Privilege Injection: Compromising Spectre v2 Hardware Mitigations by Exploiting Branch Predictor Race Conditions",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "usenix",
+      "year": 2025,
+      "title": "Characterizing and Detecting Propaganda-Spreading Accounts on Telegram",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "usenix",
+      "year": 2025,
+      "title": "Confusing Value with Enumeration: Studying the Use of CVEs in Academia",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "usenix",
+      "year": 2025,
+      "title": "Catch-22: Uncovering Compromised Hosts using SSH Public Keys",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "usenix",
+      "year": 2025,
+      "title": "How Transparent is Usable Privacy and Security Research? A Meta-Study on Current Research Transparency Practices",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "usenix",
+      "year": 2025,
+      "title": "We Have a Package for You! A Comprehensive Analysis of Package Hallucinations by Code Generating LLMs",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "usenix",
+      "year": 2025,
+      "title": "The DOMino Effect: Detecting and Exploiting DOM Clobbering Gadgets via Concolic Execution with Symbolic DOM",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "usenix",
+      "year": 2025,
+      "title": "My ZIP isn't your ZIP: Identifying and Exploiting Semantic Gaps Between ZIP Parsers",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "usenix",
+      "year": 2024,
+      "title": "DVSorder: Ballot Randomization Flaws Threaten Voter Privacy",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "usenix",
+      "year": 2024,
+      "title": "Dancer in the Dark: Synthesizing and Evaluating Polyglots for Blind Cross-Site Scripting",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "usenix",
+      "year": 2024,
+      "title": "Digital Discrimination of Users in Sanctioned States: The Case of the Cuba Embargo",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "usenix",
+      "year": 2024,
+      "title": "Don't Listen To Me: Understanding and Exploring Jailbreak Prompts of Large Language Models",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "usenix",
+      "year": 2024,
+      "title": "InSpectre Gadget: Inspecting the Residual Attack Surface of Cross-privilege Spectre v2",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "usenix",
+      "year": 2024,
+      "title": "Yes, One-Bit-Flip Matters! Universal DNN Model Inference Depletion with Runtime Code Fault Injection",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "usenix",
+      "year": 2024,
+      "title": "HYPERPILL: Fuzzing for Hypervisor-bugs by Leveraging the Hardware Virtualization Interface",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "usenix",
+      "year": 2024,
+      "title": "Indirector: High-Precision Branch Target Injection Attacks Exploiting the Indirect Branch Predictor",
+      "award": "Distinguished Paper"
+    },
+    {
+      "conference": "usenix",
+      "year": 2024,
+      "title": "Data Coverage for Guided Fuzzing",
+      "award": "Distinguished Paper"
+    }
+  ]
+}

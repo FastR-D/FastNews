@@ -55,11 +55,12 @@
         : escapeHtml(titleText);
       const reason = item.reason ? `<p class="conference-reason">${escapeHtml(item.reason)}</p>` : "";
       const actions = window.fastNewsFastReadButton ? `<div class="paper-actions">${window.fastNewsFastReadButton(item)}</div>` : "";
+      const marks = window.fastNewsPaperMarks ? window.fastNewsPaperMarks(item) : {awardHtml: "", citedHtml: ""};
       return `<article class="conference-row has-reason">
-        <h3 class="conference-title">${heading}</h3>
+        <h3 class="conference-title">${heading}${marks.awardHtml}</h3>
         ${item.summary ? `<p class="conference-summary">${escapeHtml(item.summary)}</p>` : ""}
         ${reason}
-        <p class="conference-meta"><span class="conference-tag">${escapeHtml(item.category || sourceLabel(item.source))}</span><span>${escapeHtml([item.year, item.venue, item.author].filter(Boolean).join(" · "))}</span><span class="briefing-kind">${escapeHtml(sourceLabel(item.source))}</span></p>
+        <p class="conference-meta"><span class="conference-tag">${escapeHtml(item.category || sourceLabel(item.source))}</span>${marks.citedHtml}<span>${escapeHtml([item.year, item.venue, item.author].filter(Boolean).join(" · "))}</span><span class="briefing-kind">${escapeHtml(sourceLabel(item.source))}</span></p>
         ${actions}
       </article>`;
     }).join("");
@@ -129,8 +130,10 @@
         setStatus("没有找到足够相关的论文，试着换英文别名或放宽类别。", "error");
       } else if (payload.source === "llm") {
         setStatus("已根据「" + query + "」生成导读，并推荐 " + count + " 篇 FastNews 论文。", "ok");
+      } else if (payload.retrieval === "rag") {
+        setStatus("上游模型暂时超时，已使用本地 RAG 证据列出 " + count + " 篇论文。", "fallback");
       } else {
-        setStatus("导读服务暂不可用，已按本地相关度列出 " + count + " 篇论文。", "fallback");
+        setStatus("导读服务暂不可用，已列出 " + count + " 篇论文。", "fallback");
       }
     } catch (_error) {
       resultNode.hidden = true;

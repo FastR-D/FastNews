@@ -89,6 +89,34 @@ class InboxPushTests(unittest.TestCase):
         field_briefing.clear_corpus_cache()
         self.tmp.cleanup()
 
+    def test_make_item_copies_award_and_citations(self):
+        paper = {
+            "id": "p-cache",
+            "title": "Cache Side Channel Attacks",
+            "title_zh": "",
+            "summary": "summary",
+            "link": "https://example.com/cache",
+            "venue": "NDSS",
+            "year": 2026,
+            "author": "Bob",
+            "category": "Hardware Security",
+            "source": "top-conf",
+            "award": "Distinguished Paper",
+            "cited_by": 0,
+        }
+        item = inbox_push.make_item(paper, title_zh="zh", summary="sum", reason="why", today="2026-09-18")
+        self.assertEqual(item["award"], "Distinguished Paper")
+        self.assertEqual(item["cited_by"], 0)
+        plain = inbox_push.make_item(
+            {"id": "p-plain", "title": "Plain Paper"},
+            title_zh="",
+            summary="",
+            reason="why",
+            today="2026-09-18",
+        )
+        self.assertNotIn("award", plain)
+        self.assertNotIn("cited_by", plain)
+
     def test_query_prefers_impression(self):
         query = inbox_push.query_from_profile(
             "LLM jailbreak\nTEE",

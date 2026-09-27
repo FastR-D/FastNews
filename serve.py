@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Serve FastNews on loopback and require a FastResearch SSO session."""
+"""Serve FastNews on loopback with local accounts and legacy Research SSO."""
 
 from __future__ import annotations
 
@@ -23,6 +23,7 @@ from dotenv import load_dotenv
 import field_briefing
 import inbox_push
 import summary_brief
+import news_auth
 
 AUDIENCE = "fast-news"
 COOKIE_NAME = os.environ.get("FASTRESEARCH_COOKIE_NAME", "fr_session")
@@ -132,7 +133,7 @@ def fastread_url() -> str:
     return f"{parsed.scheme}://{parsed.netloc}"
 
 
-def build_fastread_handoff(body: dict) -> tuple[int, dict]:
+def build_fastread_handoff(body: dict, ticket: str = "") -> tuple[int, dict]:
     if not isinstance(body, dict):
         body = {}
     title = clip(body.get("title"), 300)
@@ -147,6 +148,7 @@ def build_fastread_handoff(body: dict) -> tuple[int, dict]:
     )
     year = clip(body.get("year"), 8)
     paper_id = clip(body.get("id") or body.get("paperId"), 180)
+    doi = clip(body.get("doi") or body.get("identifier"), 200)
     paper = {"title": title, "source": "fastnews"}
     if authors:
         paper["authors"] = authors
@@ -160,13 +162,16 @@ def build_fastread_handoff(body: dict) -> tuple[int, dict]:
         paper["year"] = year
     if paper_id:
         paper["id"] = paper_id
+    if doi:
+        paper["doi"] = doi
 
     def redirect_for(payload: dict) -> str:
         encoded = urllib.parse.quote(
             json.dumps(payload, ensure_ascii=False, separators=(",", ":")),
             safe="",
         )
-        return f"{fastread_url()}/#fastnews={encoded}"
+        query = f"?sso={urllib.parse.quote(ticket, safe='')}" if ticket else ""
+        return f"{fastread_url()}/{query}#fastnews={encoded}"
 
     redirect = redirect_for(paper)
     if len(redirect) > FASTREAD_REDIRECT_MAX and paper.get("abstract"):
@@ -176,6 +181,27 @@ def build_fastread_handoff(body: dict) -> tuple[int, dict]:
         paper.pop("abstract", None)
         redirect = redirect_for(paper)
     return 200, {"ok": True, "redirect": redirect, "paper": paper}
+
+
+def fastread_ticket(token: str) -> str:
+    token = (token or "").strip()
+    if not token:
+        raise AuthError(401, {"error": "请从 FastResearch 进入 FastNews"})
+    try:
+        payload, _status = json_request(
+            "POST",
+            f"{research_api_url()}/api/sso/ticket",
+            {"audience": "fast-read"},
+            token=token,
+        )
+    except AuthError as exc:
+        if exc.status == 401:
+            raise AuthError(401, {"error": "FastResearch 登录已失效，请重新进入 FastNews"}) from None
+        raise
+    ticket = str(payload.get("ticket") or "").strip() if isinstance(payload, dict) else ""
+    if not ticket or len(ticket) > 256:
+        raise AuthError(502, {"error": "FastResearch 未返回 FastRead 登录票据"})
+    return ticket
 
 
 def openai_api_key() -> str:
@@ -243,6 +269,8 @@ def complete_related_work(system_prompt: str, user_prompt: str) -> str:
             {"role": "user", "content": user_prompt},
         ],
     }
+    if is_reasoning_endpoint():
+        payload["enable_thinking"] = False
     request = urllib.request.Request(
         f"{openai_base_url()}/chat/completions",
         data=json.dumps(payload).encode("utf-8"),
@@ -274,8 +302,9 @@ def complete_related_work(system_prompt: str, user_prompt: str) -> str:
         return ""
 
 
-def is_deepseek_endpoint() -> bool:
-    return "deepseek" in f"{openai_base_url()} {llm_model()}".lower()
+def is_reasoning_endpoint() -> bool:
+    endpoint = f"{openai_base_url()} {llm_model()}".lower()
+    return any(name in endpoint for name in ("deepseek", "qwen", "dashscope", "aliyun"))
 
 
 def field_briefing_request_payload(system_prompt: str, user_prompt: str) -> dict:
@@ -288,10 +317,12 @@ def field_briefing_request_payload(system_prompt: str, user_prompt: str) -> dict
             {"role": "user", "content": user_prompt},
         ],
     }
-    if is_deepseek_endpoint():
+    if "deepseek" in f"{openai_base_url()} {llm_model()}".lower():
         payload["thinking"] = {"type": "disabled"}
         payload["reasoning_effort"] = "none"
         payload["response_format"] = {"type": "json_object"}
+    elif is_reasoning_endpoint():
+        payload["enable_thinking"] = False
     return payload
 
 
@@ -427,6 +458,28 @@ def rank_related_work(body: dict) -> tuple[int, dict]:
         })
         if len(candidates) >= 40:
             break
+    # The browser only supplies a presentation pool. Re-rank that pool with
+    # the shared RAG retriever before asking the LLM to explain the matches.
+    # This removes the old client-side keyword candidate ranking while keeping
+    # the endpoint compatible with older clients and tests.
+    rag_query = " ".join(part for part in (topic, keywords, impression) if part).strip()
+    if candidates and rag_query:
+        try:
+            rag_hits = field_briefing.rag_retriever.retrieve(
+                candidates,
+                rag_query,
+                limit=min(40, len(candidates)),
+                min_score=-1.0,
+            )
+            if rag_hits:
+                reordered = []
+                for semantic_score, paper in rag_hits:
+                    row = dict(paper)
+                    row["retrieval_score"] = round(float(semantic_score), 6)
+                    reordered.append(row)
+                candidates = reordered
+        except Exception as exc:
+            field_briefing.log_stderr("related-work RAG fallback: %s" % exc)
     if not candidates:
         return 400, {"error": "candidates required"}
 
@@ -467,7 +520,13 @@ def rank_related_work(body: dict) -> tuple[int, dict]:
         return 502, {"error": "related-work failed"}
     if not items:
         return 502, {"error": "empty ranking"}
-    return 200, {"items": items, "source": "llm"}
+    return 200, {
+        "items": items,
+        "source": "llm",
+        "retrieval": "rag",
+        "embedding_provider": field_briefing.rag_retriever.provider_name(),
+        "candidates": candidates,
+    }
 
 
 def rank_field_briefing(body: dict) -> tuple[int, dict]:
@@ -658,6 +717,11 @@ class FastNewsHandler(BaseHTTPRequestHandler):
 
     def _dispatch(self):
         parsed = urllib.parse.urlparse(self.path)
+        def research_content(method, section, token):
+            return json_request(method, f"{research_api_url()}/api/content/{section}", token=token)
+
+        if news_auth.handle(self, parsed, research_content):
+            return
         if parsed.path == RELATED_WORK_PATH:
             self._related_work()
             return
@@ -684,8 +748,14 @@ class FastNewsHandler(BaseHTTPRequestHandler):
             self._consume(ticket, parsed.path or "/")
             return
         token = cookie_token(self.headers.get("Cookie", ""))
+        if news_auth.current(self):
+            self._file(parsed.path or "/", parsed.query)
+            return
         if not token or not session_valid(token):
-            self._bounce()
+            if token or not news_auth.local_auth_enabled():
+                self._bounce()
+            else:
+                self._redirect("/auth/login")
             return
         self._file(parsed.path or "/", parsed.query)
 
@@ -770,6 +840,19 @@ class FastNewsHandler(BaseHTTPRequestHandler):
         if not isinstance(body, dict):
             body = {}
         status, payload = build_fastread_handoff(body)
+        if status != 200:
+            self._write_json(status, payload)
+            return
+        token = cookie_token(self.headers.get("Cookie", ""))
+        if not token or not session_valid(token):
+            self._write_json(401, {"error": "请从 FastResearch 进入 FastNews 后再跳转 FastRead"})
+            return
+        try:
+            ticket = fastread_ticket(token)
+        except AuthError as exc:
+            self._write_json(exc.status, exc.payload or {"error": "FastRead 登录票据申请失败"})
+            return
+        status, payload = build_fastread_handoff(body, ticket=ticket)
         self._write_json(status, payload)
 
     def _related_work(self):

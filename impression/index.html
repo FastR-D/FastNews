@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 
+
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -97,6 +98,7 @@
   .breadcrumb, .generated { color: var(--muted); font-size: 13px; }
   .breadcrumb strong { color: var(--text); font-weight: 600; }
   .topbar-actions { display: flex; align-items: center; gap: 8px; }
+  .impression-trigger { gap: 7px; color: var(--primary-deep); }
   .generated { white-space: nowrap; }
   .page { width: 100%; max-width: 1180px; padding: 24px; margin: 0 auto; }
   .mobile-nav { display: none; }
@@ -155,6 +157,13 @@
   .icon-button:hover { color: var(--text); background: var(--muted-bg); border-color: var(--border); }
   .icon-button.button-danger:hover { color: var(--danger); background: var(--danger-soft); border-color: transparent; }
   body.modal-open { overflow: hidden; }
+  .impression-dialog { width: min(100% - 32px, 620px); max-width: 620px; padding: 0; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 24px 80px rgb(15 23 42 / .28); }
+  .impression-dialog::backdrop { background: rgb(15 23 42 / .5); backdrop-filter: blur(2px); }
+  .impression-dialog[open] { animation: impression-dialog-in .16s ease-out; }
+  .impression-editor { display: grid; gap: 14px; padding: 22px; }
+  .impression-editor textarea { min-height: 180px; }
+  .impression-editor .editor-actions { justify-content: flex-end; }
+  @keyframes impression-dialog-in { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: none; } }
   .author-modal { position: fixed; inset: 0; z-index: 40; display: flex; align-items: center; justify-content: center; padding: 24px; }
   .author-modal[hidden] { display: none; }
   .author-modal-backdrop { position: absolute; inset: 0; background: rgb(15 23 42 / .48); }
@@ -202,6 +211,8 @@
   .conference-summary { margin: 7px 0 0; color: var(--muted); font-size: 13px; line-height: 1.65; }
   .conference-meta { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 7px; color: var(--subtle); font-size: 12px; }
   .conference-tag { padding: 1px 6px; color: var(--accent-text); background: var(--accent-soft); border: 1px solid var(--accent-border); border-radius: 4px; }
+  .paper-award { display: inline-block; margin-left: 8px; padding: 1px 6px; color: var(--accent-text); background: var(--accent-soft); border: 1px solid var(--accent-border); border-radius: 4px; white-space: nowrap; font-size: 11px; font-weight: 700; vertical-align: middle; }
+  .paper-cited { white-space: nowrap; }
   .report-row { position: relative; padding: 15px 18px 15px 22px; border-bottom: 1px solid var(--border); }
   .report-row:last-child { border-bottom: 0; }
   .report-row::before { position: absolute; top: 0; bottom: 0; left: 0; width: 4px; content: ""; background: var(--primary); }
@@ -211,6 +222,11 @@
   .report-title a:hover { text-decoration: underline; }
   .meta { margin: 5px 0 0; color: var(--muted); font-size: 12px; }
   .row-actions { margin-top: 10px; }
+  .report-download-panel { margin-top: 18px; }
+  .download-list { display: grid; }
+  .download-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 18px; border-bottom: 1px solid var(--border); }
+  .download-row:last-child { border-bottom: 0; }
+  .download-row .row-actions { flex: 0 0 auto; margin-top: 0; }
   .empty { padding: 42px 18px; color: var(--subtle); font-size: 13px; text-align: center; }
   .news-calendar { padding: 16px; border-bottom: 1px solid var(--border); }
   .calendar-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
@@ -274,6 +290,7 @@
     .author-row { grid-template-columns: minmax(0, 1fr) auto; gap: 8px; padding: 13px 14px; }
     .author-row-main { grid-column: 1; grid-template-columns: 1fr; gap: 3px; min-width: 0; }
     .report-toolbar { align-items: stretch; flex-direction: column; gap: 8px; padding: 12px 14px; }
+    .download-row { align-items: flex-start; flex-direction: column; gap: 8px; padding: 13px 14px; }
     .search-field { width: 100%; }
     .filter-grid { grid-template-columns: 1fr; padding: 12px 14px; }
     .news-calendar { padding: 12px; }
@@ -413,7 +430,7 @@
   .conference-row::before, .news-row::before {
     background: var(--accent);
   }
-  .badge, .conference-tag, .news-tag {
+  .badge, .conference-tag, .news-tag, .paper-award {
     font-family: 'JetBrains Mono', monospace;
     border-radius: 4px;
   }
@@ -541,14 +558,13 @@
     <nav aria-label="主导航"><ul class="nav-list">
       <li><a class="" href="../index.html"><span><svg class="icon"><use href="#icon-dashboard"></use></svg>总览</span></a></li>
       <li><a class="" href="../inbox/index.html"><span><svg class="icon"><use href="#icon-mail"></use></svg>私信</span><span class="nav-count" id="inboxNavCount">0</span></a></li>
-      <li><a class="active" href="index.html"><span><svg class="icon"><use href="#icon-profile"></use></svg>研究印象</span></a></li>
       <li><a class="" href="../top-conf/index.html"><span><svg class="icon"><use href="#icon-graduation"></use></svg>顶会报告</span><span class="nav-count">16</span></a></li>
       <li><a class="" href="../field-briefing/index.html"><span><svg class="icon"><use href="#icon-book"></use></svg>领域导读</span><span class="nav-count">4595</span></a></li>
       <li><a class="" href="../summary-brief/index.html"><span><svg class="icon"><use href="#icon-chart"></use></svg>总结汇报</span><span class="nav-count">4595</span></a></li>
       <li><a class="" href="../secnews/index.html"><span><svg class="icon"><use href="#icon-newspaper"></use></svg>安全资讯</span><span class="nav-count">3</span></a></li>
       <li><a href="../index.html#authors"><span><svg class="icon"><use href="#icon-users"></use></svg>关注作者</span><span class="nav-count" id="authorNavCount">0</span></a></li>
     </ul></nav>
-    <div class="sidebar-footer">本地报告索引 · FastRead</div>
+<div class="sidebar-footer">本地报告索引 · FastRead · <a href="/auth/account">账号</a> · <a href="/auth/login">登录</a></div>
   </aside>
   <main class="main">
     <header class="topbar">
@@ -559,12 +575,11 @@
         </button>
         <div class="breadcrumb"><strong>FastNews</strong><span> / Research Profile</span></div>
       </div>
-      <div class="topbar-actions"><span class="generated">更新于 2026-09-20 05:12 UTC</span><button class="icon-button" id="themeToggle" type="button" aria-label="切换深色模式" title="切换深色模式"><svg class="icon theme-sun"><use href="#icon-sun"></use></svg><svg class="icon theme-moon"><use href="#icon-moon"></use></svg></button></div>
+      <div class="topbar-actions"><span class="generated">更新于 2026-09-25 12:03 UTC</span><button class="button button-secondary button-sm impression-trigger" id="openImpression" type="button"><svg class="icon"><use href="#icon-profile"></use></svg>个人印象</button><button class="icon-button" id="themeToggle" type="button" aria-label="切换深色模式" title="切换深色模式"><svg class="icon theme-sun"><use href="#icon-sun"></use></svg><svg class="icon theme-moon"><use href="#icon-moon"></use></svg></button></div>
     </header>
     <nav class="mobile-nav" aria-label="移动端导航">
       <a class="" href="../index.html"><span><svg class="icon"><use href="#icon-dashboard"></use></svg>总览</span></a>
       <a class="" href="../inbox/index.html"><span><svg class="icon"><use href="#icon-mail"></use></svg>私信</span></a>
-      <a class="active" href="index.html"><span><svg class="icon"><use href="#icon-profile"></use></svg>研究印象</span></a>
       <a class="" href="../top-conf/index.html"><span><svg class="icon"><use href="#icon-graduation"></use></svg>顶会报告</span></a>
       <a class="" href="../field-briefing/index.html"><span><svg class="icon"><use href="#icon-book"></use></svg>领域导读</span></a>
       <a class="" href="../summary-brief/index.html"><span><svg class="icon"><use href="#icon-chart"></use></svg>总结汇报</span></a>
@@ -583,19 +598,25 @@
       </section>
       <div class="workspace single-column">
         <section class="surface" id="impressionWorkspace">
-          <form class="impression-form" id="impressionForm">
-            <label class="label" for="impressionText">研究方向与关注点</label>
-            <textarea id="impressionText" maxlength="4000" placeholder="写下你的研究方向、关注问题、常用方法，以及希望跟踪的论文类型。例如：我做大模型安全，关注越狱、提示注入与智能体工具调用风险，也看侧信道与 TEE。"></textarea>
-            <div class="impression-meta"><span id="impressionCount">0 / 4000</span><span id="impressionUpdated">尚未保存</span></div>
-            <p class="impression-hint">保存后，领域导读、总结汇报、找论文和每日私信推送都会结合这份印象。</p>
-            <p class="inbox-status" id="impressionStatus" hidden></p>
-            <div class="impression-actions"><button class="button button-primary" id="impressionSubmit" type="submit"><svg class="icon"><use href="#icon-profile"></use></svg>保存印象</button></div>
-          </form>
+          <div class="impression-form"><h2>个人印象</h2><p class="impression-hint">个人印象已移到界面右上角。点击“个人印象”即可在模态窗口中编辑，保存后会用于领域导读、总结汇报、找论文和每日推送。</p><div class="impression-actions"><button class="button button-primary impression-trigger" type="button" data-open-impression><svg class="icon"><use href="#icon-profile"></use></svg>编辑个人印象</button></div></div>
         </section>
       </div>
+      
     </div>
   </main>
 </div>
+
+<dialog class="impression-dialog" id="impressionModal" aria-labelledby="impressionModalTitle">
+  <form class="impression-editor" id="impressionForm" method="dialog">
+    <div class="editor-head"><div><h2 class="editor-title" id="impressionModalTitle">个人印象</h2><p class="editor-hint">写下你的研究方向、关注问题和希望跟踪的论文类型。</p></div><button class="icon-button" id="closeImpression" type="button" aria-label="关闭个人印象" title="关闭"><svg class="icon"><use href="#icon-x"></use></svg></button></div>
+    <label class="label" for="impressionText">研究方向与关注点</label>
+    <textarea class="field" id="impressionText" maxlength="4000" placeholder="例如：我做大模型安全，关注越狱、提示注入与智能体工具调用风险，也看侧信道与 TEE。"></textarea>
+    <div class="impression-meta"><span id="impressionCount">0 / 4000</span><span id="impressionUpdated">尚未保存</span></div>
+    <p class="impression-hint">保存后，领域导读、总结汇报、找论文和每日私信推送都会结合这份印象。</p>
+    <p class="inbox-status" id="impressionStatus" hidden></p>
+    <div class="editor-actions"><button class="button" id="cancelImpression" type="button">取消</button><button class="button button-primary" id="impressionSubmit" type="submit"><svg class="icon"><use href="#icon-profile"></use></svg>保存印象</button></div>
+  </form>
+</dialog>
 
 <script>
   const root = document.documentElement;
@@ -630,9 +651,21 @@
 </script>
 <script src="../assets/fastread.js"></script>
 <script src="../assets/authors-nav.js"></script>
-
-
 <script src="../assets/impression.js"></script>
+
+
+<script>
+  const reportSearch = document.getElementById("reportSearch");
+  const reportRows = Array.from(document.querySelectorAll(".report-row"));
+  const visibleReportCount = document.getElementById("visibleReportCount");
+  const reportEmpty = document.getElementById("reportEmpty");
+  reportSearch.addEventListener("input", () => {
+    const query = reportSearch.value.trim().toLowerCase();
+    let visible = 0;
+    reportRows.forEach((row) => { const match = !query || row.dataset.search.includes(query); row.classList.toggle("is-hidden", !match); if (match) visible += 1; });
+    visibleReportCount.textContent = visible + " 条结果"; reportEmpty.hidden = visible !== 0;
+  });
+</script>
 
 <script>
   (() => {

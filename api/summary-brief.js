@@ -473,6 +473,11 @@ function isDeepseek() {
   return blob.toLowerCase().indexOf("deepseek") >= 0;
 }
 
+function isReasoningEndpoint() {
+  const blob = (String(process.env.OPENAI_BASE_URL || "") + " " + String(process.env.LLM_MODEL || "")).toLowerCase();
+  return ["deepseek", "qwen", "dashscope", "aliyun"].some((name) => blob.indexOf(name) >= 0);
+}
+
 function summaryBriefRequestPayload(systemPrompt, userPrompt) {
   const payload = {
     model: process.env.LLM_MODEL || "gemini-3-flash-preview",
@@ -487,6 +492,7 @@ function summaryBriefRequestPayload(systemPrompt, userPrompt) {
     payload.thinking = { type: "disabled" };
   } else {
     payload.response_format = { type: "json_object" };
+    if (isReasoningEndpoint()) payload.enable_thinking = false;
   }
   return payload;
 }
@@ -592,7 +598,9 @@ module.exports = async function handler(req, res) {
     stats: stats,
     brief: null,
     papers: [],
-    source: "lexical",
+      source: "rag",
+      retrieval: "rag",
+      embedding_provider: meta.embedding_provider || "hash",
     coverage: coverage,
   };
   if (!items.length) {
@@ -610,7 +618,7 @@ module.exports = async function handler(req, res) {
   try {
     const prompts = buildPrompts(query, stats, evidence, impression, coverage, mode);
     const parsed = parseBrief(await completeChat(prompts.systemPrompt, prompts.userPrompt), query, stats, evidence, mode, coverage);
-    Object.assign(payload, parsed, { source: "llm" });
+    Object.assign(payload, parsed, { source: "rag+llm" });
     res.status(200).json(payload);
   } catch (error) {
     console.error("summary-brief fallback", error && error.message);

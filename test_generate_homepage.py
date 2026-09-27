@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -32,6 +33,72 @@ class CollectReportsTests(unittest.TestCase):
             self.assertEqual(usenix["pdf_download_name"], "USENIX_2026_Report.pdf")
             self.assertEqual(reports[1]["pdf_path"], "")
             self.assertEqual(generate_homepage.report_title(conf / "NDSS_2025_Report.html"), "NDSS 2025")
+
+    def test_collect_conference_papers_overlays_metrics(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            conference = root / "top-conf" / "data" / "conferences"
+            summary = root / "top-conf" / "data" / "summary"
+            conference.mkdir(parents=True)
+            summary.mkdir(parents=True)
+            (conference / "ndss_2026.jsonl").write_text(
+                json.dumps({
+                    "_id": "p-jailbreak",
+                    "title": "TwinBreak: Jailbreak Attack and Defense",
+                    "link": "https://example.com/jailbreak",
+                    "author": "Alice",
+                    "description": "A causal analysis of LLM jailbreak prompts.",
+                    "cited_by": 12,
+                }, ensure_ascii=False) + "\n"
+                + json.dumps({
+                    "_id": "p-plain",
+                    "title": "Plain Paper",
+                    "link": "https://example.com/plain",
+                    "author": "Bob",
+                    "description": "No metrics.",
+                }, ensure_ascii=False) + "\n",
+                encoding="utf-8",
+            )
+            (summary / "ndss_2026_summary.jsonl").write_text(
+                json.dumps({
+                    "category": "ML/AI Security",
+                    "paper": {
+                        "_id": "p-jailbreak",
+                        "title": "TwinBreak: Jailbreak Attack and Defense",
+                        "link": "https://example.com/jailbreak",
+                        "author": "Alice",
+                        "summary_zh": "summary",
+                    },
+                }, ensure_ascii=False) + "\n"
+                + json.dumps({
+                    "category": "Web Security",
+                    "paper": {
+                        "_id": "p-plain",
+                        "title": "Plain Paper",
+                        "link": "https://example.com/plain",
+                        "author": "Bob",
+                        "summary_zh": "plain",
+                    },
+                }, ensure_ascii=False) + "\n",
+                encoding="utf-8",
+            )
+            (root / "top-conf" / "data" / "awards.json").write_text(
+                json.dumps({
+                    "papers": [{
+                        "conference": "ndss",
+                        "year": 2026,
+                        "title": "TwinBreak: Jailbreak Attack and Defense",
+                        "award": "Distinguished Paper",
+                    }]
+                }, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            papers = {item["id"]: item for item in generate_homepage.collect_conference_papers(root=root)}
+            self.assertEqual(papers["p-jailbreak"]["award"], "Distinguished Paper")
+            self.assertEqual(papers["p-jailbreak"]["cited_by"], 12)
+            self.assertNotIn("award", papers["p-plain"])
+            self.assertNotIn("cited_by", papers["p-plain"])
+
 
 
 if __name__ == "__main__":

@@ -28,6 +28,7 @@ class FieldBriefingSearchTests(unittest.TestCase):
                     "link": "https://example.com/jailbreak",
                     "author": "Alice",
                     "description": "A causal analysis of LLM jailbreak prompts.",
+                    "cited_by": 12,
                 }, ensure_ascii=False),
                 json.dumps({
                     "_id": "p-sok",
@@ -76,11 +77,28 @@ class FieldBriefingSearchTests(unittest.TestCase):
             }, ensure_ascii=False) + "\n",
             encoding="utf-8",
         )
+        awards = self.root / "top-conf" / "data" / "awards.json"
+        awards.write_text(json.dumps({
+            "papers": [{
+                "conference": "ndss",
+                "year": 2026,
+                "title": "TwinBreak: Jailbreak Attack and Defense",
+                "award": "Distinguished Paper",
+            }]
+        }, ensure_ascii=False), encoding="utf-8")
         field_briefing.clear_corpus_cache()
 
     def tearDown(self):
         field_briefing.clear_corpus_cache()
         self.tmp.cleanup()
+
+    def test_public_item_copies_award_and_citations(self):
+        payload = field_briefing.search(self.root, "LLM jailbreak", source="top-conf", limit=5)
+        by_id = {item["id"]: item for item in payload["items"]}
+        self.assertEqual(by_id["p-jailbreak"]["award"], "Distinguished Paper")
+        self.assertEqual(by_id["p-jailbreak"]["cited_by"], 12)
+        self.assertNotIn("award", by_id["p-sok"])
+        self.assertNotIn("cited_by", by_id["p-sok"])
 
     def test_search_ranks_jailbreak_first(self):
         payload = field_briefing.search(self.root, "LLM jailbreak", source="top-conf", limit=5)

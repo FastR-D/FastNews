@@ -581,6 +581,7 @@
                              data-fastread-url="{{ (paper.link or '') | e }}"
                              data-fastread-venue="{{ conference | e }}"
                              data-fastread-year="{{ year }}"
+                             data-fastread-doi="{{ (paper.get('doi') or paper.get('identifier') or '') | e }}"
                              data-fastread-id="{{ (paper.get('_id') or paper.link or '') | e }}">
                         <h3 class="paper-title">
                             <a href="{{ paper.link }}">{{ paper.title }}</a>

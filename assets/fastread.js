@@ -26,8 +26,21 @@
       venue: clip(dataset.fastreadVenue, 80),
       year: clip(dataset.fastreadYear, 8),
       id: clip(dataset.fastreadId, 180),
+      doi: clip(dataset.fastreadDoi, 200),
     };
   }
+
+  window.fastNewsPaperMarks = function (paper) {
+    const award = paper && paper.award;
+    const cited = Number(paper && paper.cited_by);
+    const awardHtml = award
+      ? '<span class="paper-award" title="Distinguished Paper">杰出</span>'
+      : "";
+    const citedHtml = Number.isFinite(cited) && cited > 0
+      ? `<span class="paper-cited">引用 ${cited}</span>`
+      : "";
+    return { awardHtml, citedHtml };
+  };
 
   window.fastNewsFastReadButton = function (paper) {
     const title = clip(paper && (paper.title || paper.title_zh), 300);
@@ -41,6 +54,7 @@
       "data-fastread-venue": clip(paper.venue || paper.conference_label || paper.conference, 80),
       "data-fastread-year": clip(paper.year, 8),
       "data-fastread-id": clip(paper.id || paper.paperId, 180),
+      "data-fastread-doi": clip(paper.doi || paper.identifier, 200),
     };
     const encoded = Object.entries(attrs)
       .map(([key, value]) => (value === "" && key !== "data-fastread" ? "" : value === "" ? key : `${key}="${escapeAttr(value)}"`))

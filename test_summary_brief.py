@@ -61,9 +61,9 @@ class SummaryBriefTests(unittest.TestCase):
 
     def test_compute_stats_counts_and_percentages(self):
         items = [
-            {"venue": "NDSS", "category": "ML/AI Security", "source": "top-conf", "year": 2026},
-            {"venue": "NDSS", "category": "Hardware Security", "source": "top-conf", "year": 2026},
-            {"venue": "IEEE S&P", "category": "ML/AI Security", "source": "top-conf", "year": 2025},
+            {"venue": "NDSS", "category": "ML/AI Security", "source": "top-conf", "year": 2026, "award": "Distinguished Paper", "cited_by": 4},
+            {"venue": "NDSS", "category": "Hardware Security", "source": "top-conf", "year": 2026, "cited_by": 10},
+            {"venue": "IEEE S&P", "category": "ML/AI Security", "source": "top-conf", "year": 2025, "award": "Distinguished Paper", "cited_by": 2},
             {"venue": "arXiv cs.CR", "category": "cs.CR", "source": "arxiv", "year": 2026},
         ]
         stats = summary_brief.compute_stats(items)
@@ -84,6 +84,33 @@ class SummaryBriefTests(unittest.TestCase):
         sources = {row["label"]: row for row in stats["by_source"]}
         self.assertEqual(sources["top-conf"]["count"], 3)
         self.assertEqual(sources["arxiv"]["count"], 1)
+        self.assertEqual(stats["awards"]["count"], 2)
+        self.assertEqual(stats["awards"]["pct"], 50.0)
+        self.assertEqual(stats["citations"]["coverage"], 3)
+        self.assertEqual(stats["citations"]["coverage_pct"], 75.0)
+        self.assertEqual(stats["citations"]["mean"], 5.33)
+        self.assertEqual(stats["citations"]["median"], 4.0)
+        self.assertEqual(stats["citations"]["distinguished"]["median"], 3.0)
+        self.assertEqual(stats["citations"]["regular"]["median"], 10.0)
+        empty = summary_brief.compute_stats([
+            {"venue": "NDSS", "category": "ML/AI Security", "source": "top-conf", "year": 2026},
+        ])
+        self.assertEqual(empty["awards"]["count"], 0)
+        self.assertIsNone(empty["citations"]["mean"])
+        self.assertIsNone(empty["citations"]["median"])
+
+    def test_lexical_brief_leads_with_citation_contrast(self):
+        stats = summary_brief.compute_stats([
+            {"venue": "NDSS", "category": "ML/AI Security", "source": "top-conf", "year": 2026, "award": "Distinguished Paper", "cited_by": 4},
+            {"venue": "NDSS", "category": "Hardware Security", "source": "top-conf", "year": 2026, "cited_by": 10},
+            {"venue": "IEEE S&P", "category": "ML/AI Security", "source": "top-conf", "year": 2025, "award": "Distinguished Paper", "cited_by": 2},
+            {"venue": "arXiv cs.CR", "category": "cs.CR", "source": "arxiv", "year": 2026},
+        ])
+        brief = summary_brief.lexical_brief("landscape", stats, "landscape", "coverage")
+        self.assertEqual(brief["findings"][0]["title"], "非杰出论文引用中位数更高")
+        self.assertIn("10", brief["findings"][0]["body"])
+        self.assertNotIn("没有引文窗口", brief["lead"])
+        self.assertIn("覆盖", brief["lead"])
 
     def test_is_landscape_query(self):
         self.assertTrue(summary_brief.is_landscape_query(""))
@@ -258,6 +285,8 @@ class SummaryBriefTests(unittest.TestCase):
         self.assertIn("\u5b9e\u8bc1\u7b80\u62a5", system)
         self.assertIn("STATS", user)
         self.assertIn("\u56db\u5927\u9876\u4f1a\u5168\u666f", user)
+        self.assertIn("\u8986\u76d6\u7387", system)
+        self.assertNotIn("\u65e0\u5f15\u6587\u3001\u65e0\u6770\u51fa\u8bba\u6587\u6807\u7b7e", system)
 
     def test_empty_corpus_returns_null_brief(self):
         empty = tempfile.TemporaryDirectory()

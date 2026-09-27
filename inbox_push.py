@@ -7,6 +7,7 @@ import re
 from datetime import datetime, timedelta, timezone
 
 import field_briefing
+import paper_metrics
 
 SHANGHAI = timezone(timedelta(hours=8))
 DEFAULT_QUERY = "computer security \u7cfb\u7edf\u5b89\u5168 \u7f51\u7edc\u5b89\u5168"
@@ -167,24 +168,36 @@ def followed_author_hits(root, authors, inbox, limit: int = 12) -> list[dict]:
         return []
     used_ids, used_urls = existing_keys(inbox)
     corpus = field_briefing.get_corpus(root, "all", field_briefing.DEFAULT_ARXIV_DAYS)
-    ranked: list[dict] = []
+    author_candidates: list[dict] = []
     seen_titles: set[str] = set()
     for paper in corpus:
         matched = matching_followed_names(paper.get("author") or paper.get("search_author") or "", names)
         if not matched:
             continue
-        public = field_briefing.public_item(paper, 10.0, matched)
+        public = field_briefing.public_item(paper, 0.5, ["author"])
         if not unused_paper(public, used_ids, used_urls):
             continue
         title_key = re.sub(r"\W+", "", str(public.get("title") or "").lower())
         if title_key and title_key in seen_titles:
             continue
         public["followed_authors"] = matched
-        ranked.append(public)
+        author_candidates.append(public)
         if title_key:
             seen_titles.add(title_key)
-    ranked.sort(key=lambda item: (-(item.get("year") or 0), item.get("title") or ""))
-    return ranked[: max(int(limit), 0)]
+    query = " ".join(names)
+    retrieved = field_briefing.rag_retriever.retrieve(
+        author_candidates,
+        query,
+        limit=max(int(limit), 0),
+        min_score=-1.0,
+    )
+    ranked: list[dict] = []
+    for score, paper in retrieved:
+        item = dict(paper)
+        item["score"] = round(max(0.0, min(1.0, (float(score) + 1.0) / 2.0)), 3)
+        item["retrieval_score"] = round(float(score), 6)
+        ranked.append(item)
+    return ranked
 
 
 def search_hits(root, query: str, inbox, *, limit: int, min_score: float) -> list[dict]:
@@ -294,6 +307,7 @@ def make_item(paper: dict, *, title_zh: str, summary: str, reason: str, today: s
     }
     if followed:
         item["followedAuthor"] = followed[0]
+    item.update(paper_metrics.public_metrics(paper))
     return item
 
 
