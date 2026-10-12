@@ -29,18 +29,18 @@
 <script src="../assets/gate.js"></script>
 <style>
   :root {
-    --app-bg: #f0f5f2; --muted-bg: #eaf1ec; --surface: #ffffff; --soft: #f8faf8;
-    --border: #d6e3db; --input-border: #cbd7d0; --primary: #155e45; --primary-deep: #104936;
-    --primary-soft: #e8f3ed; --primary-border: #8fb9a0; --accent: #b45309; --accent-soft: #fffbeb;
-    --accent-border: #fde68a; --accent-text: #92400e; --text: #172720; --muted: #567265;
-    --subtle: #7f998d; --danger: #dc2626; --danger-soft: #fef2f2; --focus: rgba(21, 94, 69, 0.16);
+    --app-bg: #f0f4ff; --muted-bg: #e8effe; --surface: #ffffff; --soft: #f5f7ff;
+    --border: #d0d9f5; --input-border: #b8c6f0; --primary: #1d4ed8; --primary-deep: #1e40af;
+    --primary-soft: #eff6ff; --primary-border: #93c5fd; --accent: #b45309; --accent-soft: #fffbeb;
+    --accent-border: #fde68a; --accent-text: #92400e; --text: #0f172a; --muted: #475569;
+    --subtle: #64748b; --danger: #dc2626; --danger-soft: #fef2f2; --focus: rgba(29, 78, 216, 0.16);
   }
   html.dark {
-    --app-bg: #151a19; --muted-bg: #18201d; --surface: #1b2220; --soft: #202925;
-    --border: #2d3934; --input-border: #3c4b45; --primary: #2dd4bf; --primary-deep: #5eead4;
-    --primary-soft: #042f2e; --primary-border: #315147; --accent: #fb923c; --accent-soft: #431407;
-    --accent-border: #7c2d12; --accent-text: #fed7aa; --text: #f3f4f6; --muted: #a5b1ab;
-    --subtle: #7f8c86; --danger: #f87171; --danger-soft: #431407; --focus: rgb(45 212 191 / .18);
+    --app-bg: #0f1623; --muted-bg: #131b2e; --surface: #1a2340; --soft: #1e2a48;
+    --border: #2d3f6b; --input-border: #3d5080; --primary: #60a5fa; --primary-deep: #93c5fd;
+    --primary-soft: rgba(59, 130, 246, 0.12); --primary-border: #1e40af; --accent: #fb923c; --accent-soft: #431407;
+    --accent-border: #7c2d12; --accent-text: #fed7aa; --text: #f1f5f9; --muted: #94a3b8;
+    --subtle: #64748b; --danger: #f87171; --danger-soft: #431407; --focus: rgba(96, 165, 250, 0.18);
   }
   * { box-sizing: border-box; }
   html { color-scheme: light; }
@@ -48,6 +48,11 @@
   body {
     min-height: 100vh; margin: 0; background: var(--app-bg); color: var(--text);
     font: 14px/1.6 Inter, "Noto Sans SC", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background-image: linear-gradient(to right, rgba(29,78,216,.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(29,78,216,.03) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+  html.dark body {
+    background-image: linear-gradient(to right, rgba(96,165,250,.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(96,165,250,.05) 1px, transparent 1px);
   }
   a { color: inherit; text-decoration: none; }
   button, input, textarea { font: inherit; }
@@ -297,221 +302,6 @@
     .calendar-day button { min-height: 34px; }
     .news-list-head { align-items: flex-start; flex-direction: column; gap: 3px; padding: 12px 14px; }
     .news-row { padding: 14px 14px 14px 18px; }
-  }
-  /* FastResearch Scientific Console Styling (统一浅绿科研质感) */
-  :root {
-    --app-bg: #f0f5f2;
-    --muted-bg: #eaf1ec;
-    --surface: #ffffff;
-    --soft: #f8faf8;
-    --border: #d6e3db;
-    --input-border: #cbd7d0;
-    --primary: #155e45;
-    --primary-deep: #104936;
-    --primary-soft: #e8f3ed;
-    --primary-border: #8fb9a0;
-    --accent: #b45309;
-    --accent-soft: #fffbeb;
-    --accent-border: #fde68a;
-    --accent-text: #92400e;
-    --text: #172720;
-    --muted: #567265;
-    --subtle: #7f998d;
-    --focus: rgba(21, 94, 69, 0.16);
-  }
-  html.dark {
-    --app-bg: #0d1713;
-    --muted-bg: #14221c;
-    --surface: #192b23;
-    --soft: #111d17;
-    --border: #233b30;
-    --input-border: #2d4b3e;
-    --primary: #34d399;
-    --primary-deep: #10b981;
-    --primary-soft: rgba(52, 211, 153, 0.12);
-    --primary-border: #3b6b55;
-    --accent: #fbbf24;
-    --accent-soft: #451a03;
-    --accent-border: #78350f;
-    --accent-text: #fde68a;
-    --text: #e2ede7;
-    --muted: #8faea0;
-    --subtle: #648275;
-    --focus: rgba(52, 211, 153, 0.18);
-  }
-  body {
-    min-height: 100vh;
-    margin: 0;
-    background-color: var(--app-bg);
-    background-image:
-      linear-gradient(to right, rgba(21, 94, 69, 0.035) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(21, 94, 69, 0.035) 1px, transparent 1px);
-    background-size: 32px 32px;
-    color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
-  }
-  html.dark body {
-    background-color: #0d1713;
-    background-image:
-      linear-gradient(to right, rgba(52, 211, 153, 0.06) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(52, 211, 153, 0.06) 1px, transparent 1px);
-    background-size: 32px 32px;
-  }
-  .app-shell { min-height: 100vh; }
-  .sidebar {
-    background: var(--muted-bg);
-    border-right: 1px solid var(--border);
-  }
-  .topbar {
-    height: 64px;
-    padding: 0 28px;
-    background: rgba(246, 250, 247, 0.88);
-    backdrop-filter: blur(12px) saturate(150%);
-    border-bottom: 1px solid var(--border);
-  }
-  html.dark .topbar {
-    background: rgba(13, 23, 19, 0.88);
-    border-bottom: 1px solid var(--border);
-  }
-  .brand-mark {
-    background: var(--primary);
-    color: #ffffff;
-    border-radius: 7px;
-    box-shadow: 0 2px 6px rgba(21, 94, 69, 0.2);
-  }
-  .brand-name {
-    color: var(--text);
-    font-weight: 700;
-  }
-  .brand-name b {
-    color: var(--primary);
-  }
-  .page {
-    max-width: 1240px;
-    padding: 32px 28px 48px;
-  }
-  .page-header {
-    margin-bottom: 26px;
-  }
-  h1 {
-    font-size: clamp(26px, 3.5vw, 36px);
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    color: var(--text);
-  }
-  .description {
-    line-height: 1.7;
-    color: var(--muted);
-  }
-  .surface {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(21, 94, 69, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
-  }
-  .section-head, .news-list-head {
-    background: var(--soft);
-    border-bottom: 1px solid var(--border);
-  }
-  .stat-value {
-    color: var(--primary);
-    font-family: 'JetBrains Mono', monospace;
-  }
-  .report-title a, .conference-title a, .article-title a, .news-title a {
-    color: var(--text);
-    transition: color 0.15s ease;
-  }
-  .report-title a:hover, .conference-title a:hover, .article-title a:hover, .news-title a:hover {
-    color: var(--primary);
-  }
-  .report-row:hover, .conference-row:hover, .article:hover, .news-row:hover, .gateway-row:hover, .author-row:hover {
-    background: var(--primary-soft);
-  }
-  .conference-row::before, .news-row::before {
-    background: var(--accent);
-  }
-  .badge, .conference-tag, .news-tag, .paper-award {
-    font-family: 'JetBrains Mono', monospace;
-    border-radius: 4px;
-  }
-  .badge {
-    background: var(--accent-soft);
-    color: var(--accent-text);
-    border: 1px solid var(--accent-border);
-  }
-  .button-primary {
-    background: var(--primary);
-    color: #ffffff;
-    border: 1px solid var(--primary-deep);
-    border-radius: 6px;
-    font-weight: 600;
-    box-shadow: 0 2px 4px rgba(21, 94, 69, 0.15);
-  }
-  .button-primary:hover {
-    background: var(--primary-deep);
-  }
-  .button, .icon-button {
-    background: var(--surface);
-    color: var(--primary);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-  }
-  .button:hover, .icon-button:hover {
-    background: var(--primary-soft);
-    border-color: var(--primary);
-  }
-  .field {
-    border-radius: 6px;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--text);
-  }
-  .field:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px var(--focus);
-  }
-  .pagination {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 8px;
-    padding: 12px 18px;
-    border-top: 1px solid var(--border);
-    background: var(--soft);
-  }
-  .pagination button {
-    min-width: 32px;
-    height: 30px;
-    padding: 0 9px;
-    color: var(--muted);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 5px;
-    cursor: pointer;
-    font: 11px 'JetBrains Mono', monospace;
-  }
-  .pagination button:hover:not(:disabled), .pagination button.is-current {
-    color: var(--primary);
-    border-color: var(--primary);
-    background: var(--primary-soft);
-  }
-  .pagination button:disabled {
-    cursor: default;
-    opacity: 0.45;
-  }
-  .pagination .pagination-info {
-    margin-right: auto;
-    color: var(--subtle);
-    font: 11px 'JetBrains Mono', monospace;
-  }
-  @media (max-width: 920px) {
-    .page { padding: 22px 16px 32px; }
-    h1 { font-size: 28px; }
-  }
-  @media (max-width: 620px) {
-    .topbar { height: 56px; padding: 0 16px; }
-    .pagination { justify-content: center; padding: 10px 12px; }
-    .pagination .pagination-info { display: none; }
   }
 </style>
 

@@ -1,6 +1,6 @@
 /* Author editor and task notifications share the FastResearch theme. */
-:root { --author-panel: #f8fcfb; --author-muted: #5c7779; --author-line: #b8cfcc; --author-chip: rgba(8,127,120,.08); --author-error: #b42318; }
-html.dark { --author-panel: #12261d; --author-muted: #89a1a3; --author-line: #2d4b50; --author-chip: rgba(101,234,217,.08); --author-error: #ff8686; }
+:root { --author-panel: #f5f7ff; --author-muted: #475569; --author-line: #b8c6f0; --author-chip: rgba(29,78,216,.08); --author-error: #b42318; }
+html.dark { --author-panel: #1a2340; --author-muted: #94a3b8; --author-line: #2d3f6b; --author-chip: rgba(96,165,250,.10); --author-error: #ff8686; }
 .author-dialog { width: min(600px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); margin: auto; padding: 0; overflow-y: auto; color: var(--text); background: var(--author-panel); border: 1px solid var(--primary-border); box-shadow: 0 22px 80px rgb(0 0 0 / .3); }
 .author-dialog::backdrop { background: rgb(3 12 8 / .66); backdrop-filter: blur(6px); }
 html:not(.dark) .author-dialog::backdrop { background: rgb(30 58 60 / .36); }
