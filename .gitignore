@@ -217,3 +217,5 @@ __marimo__/
 
 # Generated PDF output
 output/
+# Local accounts, sessions and personal content
+.fastnews-data/

@@ -124,8 +124,10 @@ class FastNewsServeTests(unittest.TestCase):
                 "RAG_EMBEDDING_PROVIDER",
                 "RAG_EMBEDDING_URL",
                 "EMBEDDING_MODEL",
+                "FASTNEWS_PUBLIC_PATH",
             )
         }
+        os.environ.pop("FASTNEWS_PUBLIC_PATH", None)
         os.environ["OPENAI_API_KEY"] = "test-key"
         os.environ["OPENAI_BASE_URL"] = "https://llm.test/v1"
         os.environ["FASTREAD_URL"] = "http://127.0.0.1:3015"
@@ -150,6 +152,8 @@ class FastNewsServeTests(unittest.TestCase):
         serve.complete_field_briefing = blocked_field_llm
         serve.complete_summary_brief = blocked_summary_llm
         self.server = ThreadingHTTPServer(("127.0.0.1", 0), serve.FastNewsHandler)
+        self.server.accounts = serve.Accounts(self.root / 'accounts')
+        self.server.cas = serve.CASService(self.server.accounts, env={})
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
         self.thread.start()
         self.base = f"http://127.0.0.1:{self.server.server_address[1]}"
@@ -189,11 +193,20 @@ class FastNewsServeTests(unittest.TestCase):
             body = exc.read()
             return exc.code, dict(exc.headers), body
 
-    def test_anonymous_document_redirects_to_panel(self):
-        status, headers, _body = self.request("/")
-        self.assertEqual(status, 302)
-        self.assertEqual(headers.get("Location"), "http://127.0.0.1:5173")
-        self.assertNotIn(b"secret-report", _body)
+    def test_public_document_and_optional_local_login_gate(self):
+        status, _headers, body = self.request("/")
+        self.assertEqual(status, 200)
+        self.assertIn(b"secret-report", body)
+        previous = os.environ.get("FASTNEWS_REQUIRE_LOGIN")
+        try:
+            os.environ["FASTNEWS_REQUIRE_LOGIN"] = "true"
+            status, headers, body = self.request("/")
+            self.assertEqual(status, 302)
+            self.assertEqual(headers.get("Location"), "/login")
+            self.assertNotIn(b"secret-report", body)
+        finally:
+            if previous is None: os.environ.pop("FASTNEWS_REQUIRE_LOGIN", None)
+            else: os.environ["FASTNEWS_REQUIRE_LOGIN"] = previous
 
     def test_sso_ticket_sets_cookie_and_redirects_home(self):
         self.consume["ticket-1"] = {
@@ -209,10 +222,61 @@ class FastNewsServeTests(unittest.TestCase):
         self.assertIn("HttpOnly", headers.get("Set-Cookie", ""))
         self.assertIn("good-session", headers.get("Set-Cookie", ""))
 
-    def test_invalid_ticket_redirects_to_panel(self):
+    def test_public_location_prefixes_subpath(self):
+        os.environ["FASTNEWS_PUBLIC_PATH"] = "/news"
+        try:
+            self.assertEqual(serve.public_path(), "/news")
+            self.assertEqual(serve.public_location("/"), "/news/")
+            self.assertEqual(serve.public_location("/inbox/"), "/news/inbox/")
+        finally:
+            os.environ.pop("FASTNEWS_PUBLIC_PATH", None)
+
+    def test_sso_ticket_redirects_with_public_path(self):
+        os.environ["FASTNEWS_PUBLIC_PATH"] = "/news"
+        try:
+            self.consume["ticket-1"] = {
+                "session": "good-session",
+                "keyId": "aabbcc",
+                "person": "张三",
+                "expiresAt": 9_999_999_999_000,
+            }
+            status, headers, _body = self.request("/?sso=ticket-1")
+            self.assertEqual(status, 302)
+            self.assertEqual(headers.get("Location"), "/news/")
+        finally:
+            os.environ.pop("FASTNEWS_PUBLIC_PATH", None)
+
+    def test_html_injects_panel_url(self):
+        (self.root / "index.html").write_text(
+            "<html><head></head><body>secret-report</body></html>",
+            encoding="utf-8",
+        )
+        self.me["good-session"] = {"keyId": "aabbcc", "person": "张三"}
+        status, _headers, body = self.request("/", headers={"Cookie": "fr_session=good-session"})
+        self.assertEqual(status, 200)
+        self.assertIn(b"window.FASTNEWS_PANEL_URL", body)
+        self.assertIn(b"http://127.0.0.1:5173", body)
+        self.assertIn(b'window.FASTNEWS_PUBLIC_PATH=""', body)
+        self.assertIn(b"secret-report", body)
+
+    def test_html_injects_public_path(self):
+        os.environ["FASTNEWS_PUBLIC_PATH"] = "/news"
+        try:
+            (self.root / "index.html").write_text(
+                "<html><head></head><body>secret-report</body></html>",
+                encoding="utf-8",
+            )
+            self.me["good-session"] = {"keyId": "aabbcc", "person": "张三"}
+            status, _headers, body = self.request("/", headers={"Cookie": "fr_session=good-session"})
+            self.assertEqual(status, 200)
+            self.assertIn(b'window.FASTNEWS_PUBLIC_PATH="/news"', body)
+        finally:
+            os.environ.pop("FASTNEWS_PUBLIC_PATH", None)
+
+    def test_invalid_ticket_redirects_to_local_login(self):
         status, headers, _body = self.request("/?sso=expired")
         self.assertEqual(status, 302)
-        self.assertEqual(headers.get("Location"), "http://127.0.0.1:5173")
+        self.assertEqual(headers.get("Location"), "/login")
         self.assertNotIn("Set-Cookie", headers)
 
     def test_valid_cookie_serves_index(self):
@@ -221,11 +285,17 @@ class FastNewsServeTests(unittest.TestCase):
         self.assertEqual(status, 200)
         self.assertIn(b"secret-report", body)
 
-    def test_invalid_cookie_redirects_to_panel(self):
-        status, headers, body = self.request("/", headers={"Cookie": "fr_session=bad"})
-        self.assertEqual(status, 302)
-        self.assertEqual(headers.get("Location"), "http://127.0.0.1:5173")
-        self.assertNotIn(b"secret-report", body)
+    def test_invalid_cookie_does_not_pass_optional_gate(self):
+        previous = os.environ.get("FASTNEWS_REQUIRE_LOGIN")
+        try:
+            os.environ["FASTNEWS_REQUIRE_LOGIN"] = "true"
+            status, headers, body = self.request("/", headers={"Cookie": "fr_session=bad"})
+            self.assertEqual(status, 302)
+            self.assertEqual(headers.get("Location"), "/login")
+            self.assertNotIn(b"secret-report", body)
+        finally:
+            if previous is None: os.environ.pop("FASTNEWS_REQUIRE_LOGIN", None)
+            else: os.environ["FASTNEWS_REQUIRE_LOGIN"] = previous
 
     def test_health_api_is_not_redirected(self):
         status, _headers, body = self.request("/api/content/me", headers={"Cookie": "fr_session=good-session"})
@@ -694,7 +764,7 @@ class FastNewsServeTests(unittest.TestCase):
     def test_inbox_requires_session(self):
         status, _headers, body = self.request("/api/content/inbox")
         self.assertEqual(status, 401)
-        self.assertIn("成员登录已失效".encode("utf-8"), body)
+        self.assertIn("请先登录".encode("utf-8"), body)
         self.assertFalse(self.proxied)
 
     def test_inbox_returns_existing_today_item(self):

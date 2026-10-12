@@ -588,7 +588,7 @@
       <li><a class="{% if page_mode == 'secnews' %}active{% endif %}" href="{{ secnews_path }}"><span><svg class="icon"><use href="#icon-newspaper"></use></svg>安全资讯</span><span class="nav-count">{{ secnews_count }}</span></a></li>
       <li><a href="{% if page_mode == 'home' %}#authors{% else %}{{ home_path }}#authors{% endif %}"><span><svg class="icon"><use href="#icon-users"></use></svg>关注作者</span><span class="nav-count" id="authorNavCount">0</span></a></li>
     </ul></nav>
-<div class="sidebar-footer">本地报告索引 · FastRead · <a href="/auth/account">账号</a> · <a href="/auth/login">登录</a></div>
+    <div class="sidebar-footer"><a id="fastnews-account-link" href="{{ account_path }}">FastNews 账号</a> · 本地报告索引</div>
   </aside>
   <main class="main">
     <header class="topbar">
@@ -1137,7 +1137,7 @@
     renderConferencePapers();
   }
   async function requestRelatedWork(topic, keywords, candidates, impression) {
-    const response = await fetch("/api/related-work", {
+    const response = await fetch(window.fastNewsApi("/api/related-work"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ topic, keywords, impression, candidates: candidates.map(serializeCandidate) }),
