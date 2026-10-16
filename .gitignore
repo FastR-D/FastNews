@@ -219,3 +219,5 @@ __marimo__/
 output/
 # Local accounts, sessions and personal content
 .fastnews-data/
+secnews/data/.daily_user_jobs.lock
+secnews/data/user_daily/

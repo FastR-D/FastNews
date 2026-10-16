@@ -142,17 +142,20 @@ def fastread_url() -> str:
         parsed = urllib.parse.urlparse(raw)
     except ValueError:
         return DEFAULT_FASTREAD_URL
+    path = parsed.path.rstrip("/")
+    segments = [urllib.parse.unquote(item) for item in path.split("/") if item]
     if (
         parsed.scheme not in {"http", "https"}
         or not parsed.hostname
-        or parsed.path not in {"", "/"}
+        or parsed.params
         or parsed.query
         or parsed.fragment
         or parsed.username
         or parsed.password
+        or any(item in {"", ".", ".."} or "/" in item or "\\" in item for item in segments)
     ):
         return DEFAULT_FASTREAD_URL
-    return f"{parsed.scheme}://{parsed.netloc}"
+    return f"{parsed.scheme}://{parsed.netloc}{path}"
 
 
 def build_fastread_handoff(body: dict, ticket: str = "") -> tuple[int, dict]:

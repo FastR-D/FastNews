@@ -260,7 +260,7 @@ uv run python top-conf/generate_conf_report.py ieee-sp 2026
 | `FASTRESEARCH_API_URL` | 否 | `http://127.0.0.1:8787` | FastNews `serve.py` 兑换票据与反代 `/api` 的地址 |
 | `FASTRESEARCH_PANEL_URL` | 否 | `http://127.0.0.1:5173` | 无会话直开时 302 的 Panel 地址 |
 | `FASTNEWS_HOST` / `FASTNEWS_PORT` | 否 | `127.0.0.1` / `4173` | 本地门禁服务监听地址 |
-| `FASTREAD_URL` | 否 | `http://127.0.0.1:3015` | `POST /api/fastread` 跳转 FastRead 的地址；跳转需携带当前 FastResearch 的 `fr_session` |
+| `FASTREAD_URL` | 否 | `http://127.0.0.1:3015` | `POST /api/fastread` 跳转 FastRead 的根地址或安全子路径（生产建议 `https://fastrd.io/read`） |
 
 论文卡片上的「跳转 FastRead」按钮会把标题、作者、会议、年份、DOI、摘要和公开链接编码到 handoff 中，并调用 FastResearch 的 `POST /api/sso/ticket`（`audience=fast-read`）申请一次性票据。FastRead 消费票据后进入同一账户，再自动创建论文导入任务；没有有效 FastResearch 会话时接口返回 401，不会把个人 Key 放进 URL。
 
@@ -318,4 +318,3 @@ FASTNEWS_PUBLIC_PATH=/news
 `serve.py` 会把 `FASTNEWS_PUBLIC_PATH` 注入页面；领域导读、总结汇报、相关工作和 FastRead 跳转会请求 `/news/api/...`，而不是根路径 `/api/...`（后者由 FastResearch 处理）。SSO / 关注作者仍走 FastResearch 的 `/api/content/*`。
 
 `main` 推送后 GitHub Actions `CD FastNews` 做语法检查；配置 SSH Secrets 后会自动在服务器执行 `scripts/deploy-local.sh`。服务器本机也有定时 `git pull` 热更新。
-

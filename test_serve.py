@@ -412,6 +412,14 @@ class FastNewsServeTests(unittest.TestCase):
         self.assertEqual(self.ticket_requests, [{"method": "POST", "payload": {"audience": "fast-read"}, "token": "good-session"}])
         self.assertFalse(self.proxied)
 
+    def test_fastread_supports_public_subpath(self):
+        os.environ["FASTREAD_URL"] = "https://fastrd.io/read/"
+        status, payload = serve.build_fastread_handoff({
+            "title": "TwinBreak",
+        }, ticket="fastread-ticket")
+        self.assertEqual(status, 200)
+        self.assertTrue(payload["redirect"].startswith("https://fastrd.io/read/?sso=fastread-ticket#fastnews="))
+
     def test_fastread_rejects_credentialed_url(self):
         self.me["good-session"] = {"keyId": "aabbcc", "person": "张三"}
         status, _headers, body = self.request("/api/fastread", method="POST", data={
@@ -436,6 +444,12 @@ class FastNewsServeTests(unittest.TestCase):
 
     def test_fastread_rejects_unsafe_base_url(self):
         os.environ["FASTREAD_URL"] = "javascript:alert(1)"
+        status, payload = serve.build_fastread_handoff({"title": "TwinBreak"})
+        self.assertEqual(status, 200)
+        self.assertTrue(payload["redirect"].startswith("http://127.0.0.1:3015/#fastnews="))
+
+    def test_fastread_rejects_unsafe_subpath(self):
+        os.environ["FASTREAD_URL"] = "https://fastrd.io/read/../write"
         status, payload = serve.build_fastread_handoff({"title": "TwinBreak"})
         self.assertEqual(status, 200)
         self.assertTrue(payload["redirect"].startswith("http://127.0.0.1:3015/#fastnews="))

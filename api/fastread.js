@@ -28,8 +28,10 @@ function fastreadUrl() {
   try {
     const url = new URL(raw);
     if (!["http:", "https:"].includes(url.protocol) || url.username || url.password) return fallback;
-    if ((url.pathname && url.pathname !== "/") || url.search || url.hash) return fallback;
-    return url.protocol + "//" + url.host;
+    const path = url.pathname.replace(/\/+$/, "");
+    const segments = path.split("/").filter(Boolean).map((item) => decodeURIComponent(item));
+    if (url.search || url.hash || segments.some(item => !item || item === "." || item === ".." || item.includes("/") || item.includes("\\"))) return fallback;
+    return url.protocol + "//" + url.host + path;
   } catch {
     return fallback;
   }
