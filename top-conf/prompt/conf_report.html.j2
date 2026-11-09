@@ -158,6 +158,13 @@
             margin-bottom: 24px;
         }
 
+        .report-navigation {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
         .header-copy {
             display: flex;
             gap: 12px;
@@ -471,6 +478,7 @@
 
             .sidebar,
             .topbar,
+            .report-navigation,
             .mobile-toc {
                 display: none;
             }
@@ -526,6 +534,9 @@
         </header>
 
         <div class="page">
+            <nav class="report-navigation" aria-label="报告导航">
+                <a class="button" href="../../index.html">返回顶会列表</a>
+            </nav>
             <section class="page-header">
                 <div class="header-copy">
                     <span class="header-icon">P</span>
