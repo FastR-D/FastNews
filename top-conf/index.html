@@ -10,37 +10,37 @@
 <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png">
 <link rel="icon" href="../favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../assets/fastui/tokens.css">
+<link rel="stylesheet" href="../assets/fastui/controls.css">
+<script src="../assets/fastui/theme-init.js"></script>
+<script defer src="../assets/theme.js"></script>
 <script>
   (() => {
-    const applyTheme = () => {
-      const saved = window.localStorage.getItem("fastresearch-theme") ?? window.localStorage.getItem("fastnews.theme");
-      document.documentElement.classList.toggle("dark", saved === "dark");
-    };
     const applySidebar = () => {
-      const collapsed = window.localStorage.getItem("fastnews.sidebarCollapsed") === "1";
+      let collapsed = false;
+      try { collapsed = window.localStorage.getItem("fastnews.sidebarCollapsed") === "1"; } catch {}
       document.documentElement.classList.toggle("sidebar-collapsed", collapsed);
     };
-    applyTheme();
     applySidebar();
-    window.addEventListener("pageshow", () => { applyTheme(); applySidebar(); });
+    window.addEventListener("pageshow", applySidebar);
   })();
 </script>
 <style>html:not(.fastnews-ready) .app-shell{visibility:hidden!important}</style>
 <script src="../assets/gate.js"></script>
 <style>
   :root {
-    --app-bg: #f0f4ff; --muted-bg: #e8effe; --surface: #ffffff; --soft: #f5f7ff;
-    --border: #d0d9f5; --input-border: #b8c6f0; --primary: #1d4ed8; --primary-deep: #1e40af;
-    --primary-soft: #eff6ff; --primary-border: #93c5fd; --accent: #b45309; --accent-soft: #fffbeb;
-    --accent-border: #fde68a; --accent-text: #92400e; --text: #0f172a; --muted: #475569;
-    --subtle: #64748b; --danger: #dc2626; --danger-soft: #fef2f2; --focus: rgba(29, 78, 216, 0.16);
+    --app-bg: #f0f5f2; --muted-bg: #eaf1ec; --surface: #ffffff; --soft: #f8faf8;
+    --border: #d6e3db; --input-border: #cbd7d0; --primary: #155e45; --primary-deep: #104936;
+    --primary-soft: #e8f3ed; --primary-border: #8fb9a0; --accent: #b45309; --accent-soft: #fffbeb;
+    --accent-border: #fde68a; --accent-text: #92400e; --text: #172720; --muted: #567265;
+    --subtle: #7f998d; --danger: #dc2626; --danger-soft: #fef2f2; --focus: rgba(21, 94, 69, 0.16);
   }
   html.dark {
-    --app-bg: #0f1623; --muted-bg: #131b2e; --surface: #1a2340; --soft: #1e2a48;
-    --border: #2d3f6b; --input-border: #3d5080; --primary: #60a5fa; --primary-deep: #93c5fd;
-    --primary-soft: rgba(59, 130, 246, 0.12); --primary-border: #1e40af; --accent: #fb923c; --accent-soft: #431407;
-    --accent-border: #7c2d12; --accent-text: #fed7aa; --text: #f1f5f9; --muted: #94a3b8;
-    --subtle: #64748b; --danger: #f87171; --danger-soft: #431407; --focus: rgba(96, 165, 250, 0.18);
+    --app-bg: #151a19; --muted-bg: #18201d; --surface: #1b2220; --soft: #202925;
+    --border: #2d3934; --input-border: #3c4b45; --primary: #2dd4bf; --primary-deep: #5eead4;
+    --primary-soft: #042f2e; --primary-border: #315147; --accent: #fb923c; --accent-soft: #431407;
+    --accent-border: #7c2d12; --accent-text: #fed7aa; --text: #f3f4f6; --muted: #a5b1ab;
+    --subtle: #7f8c86; --danger: #f87171; --danger-soft: #431407; --focus: rgb(45 212 191 / .18);
   }
   * { box-sizing: border-box; }
   html { color-scheme: light; }
@@ -48,11 +48,6 @@
   body {
     min-height: 100vh; margin: 0; background: var(--app-bg); color: var(--text);
     font: 14px/1.6 Inter, "Noto Sans SC", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background-image: linear-gradient(to right, rgba(29,78,216,.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(29,78,216,.03) 1px, transparent 1px);
-    background-size: 32px 32px;
-  }
-  html.dark body {
-    background-image: linear-gradient(to right, rgba(96,165,250,.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(96,165,250,.05) 1px, transparent 1px);
   }
   a { color: inherit; text-decoration: none; }
   button, input, textarea { font: inherit; }
@@ -128,7 +123,8 @@
   .workspace { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(360px, .95fr); gap: 18px; align-items: start; }
   .workspace.single-column { grid-template-columns: minmax(0, 1fr); }
   .workspace-wide { grid-column: 1 / -1; }
-  .report-column { position: sticky; top: 72px; }
+  /* A grid spanning later sections cannot constrain a sticky item to its row. */
+  .report-column { position: static; }
   .report-list-scroll { max-height: min(720px, calc(100vh - 220px)); overflow-y: auto; }
   .report-column .report-row { padding: 12px 16px 12px 20px; }
   .report-column .report-title { font-size: 13px; }
@@ -303,6 +299,221 @@
     .news-list-head { align-items: flex-start; flex-direction: column; gap: 3px; padding: 12px 14px; }
     .news-row { padding: 14px 14px 14px 18px; }
   }
+  /* FastResearch Scientific Console Styling (统一浅绿科研质感) */
+  :root {
+    --app-bg: #f0f5f2;
+    --muted-bg: #eaf1ec;
+    --surface: #ffffff;
+    --soft: #f8faf8;
+    --border: #d6e3db;
+    --input-border: #cbd7d0;
+    --primary: #155e45;
+    --primary-deep: #104936;
+    --primary-soft: #e8f3ed;
+    --primary-border: #8fb9a0;
+    --accent: #b45309;
+    --accent-soft: #fffbeb;
+    --accent-border: #fde68a;
+    --accent-text: #92400e;
+    --text: #172720;
+    --muted: #567265;
+    --subtle: #7f998d;
+    --focus: rgba(21, 94, 69, 0.16);
+  }
+  html.dark {
+    --app-bg: #0d1713;
+    --muted-bg: #14221c;
+    --surface: #192b23;
+    --soft: #111d17;
+    --border: #233b30;
+    --input-border: #2d4b3e;
+    --primary: #34d399;
+    --primary-deep: #10b981;
+    --primary-soft: rgba(52, 211, 153, 0.12);
+    --primary-border: #3b6b55;
+    --accent: #fbbf24;
+    --accent-soft: #451a03;
+    --accent-border: #78350f;
+    --accent-text: #fde68a;
+    --text: #e2ede7;
+    --muted: #8faea0;
+    --subtle: #648275;
+    --focus: rgba(52, 211, 153, 0.18);
+  }
+  body {
+    min-height: 100vh;
+    margin: 0;
+    background-color: var(--app-bg);
+    background-image:
+      linear-gradient(to right, rgba(21, 94, 69, 0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(21, 94, 69, 0.035) 1px, transparent 1px);
+    background-size: 32px 32px;
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  }
+  html.dark body {
+    background-color: #0d1713;
+    background-image:
+      linear-gradient(to right, rgba(52, 211, 153, 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(52, 211, 153, 0.06) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+  .app-shell { min-height: 100vh; }
+  .sidebar {
+    background: var(--muted-bg);
+    border-right: 1px solid var(--border);
+  }
+  .topbar {
+    height: 64px;
+    padding: 0 28px;
+    background: rgba(246, 250, 247, 0.88);
+    backdrop-filter: blur(12px) saturate(150%);
+    border-bottom: 1px solid var(--border);
+  }
+  html.dark .topbar {
+    background: rgba(13, 23, 19, 0.88);
+    border-bottom: 1px solid var(--border);
+  }
+  .brand-mark {
+    background: var(--primary);
+    color: #ffffff;
+    border-radius: 7px;
+    box-shadow: 0 2px 6px rgba(21, 94, 69, 0.2);
+  }
+  .brand-name {
+    color: var(--text);
+    font-weight: 700;
+  }
+  .brand-name b {
+    color: var(--primary);
+  }
+  .page {
+    max-width: 1240px;
+    padding: 32px 28px 48px;
+  }
+  .page-header {
+    margin-bottom: 26px;
+  }
+  h1 {
+    font-size: clamp(26px, 3.5vw, 36px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+  .description {
+    line-height: 1.7;
+    color: var(--muted);
+  }
+  .surface {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(21, 94, 69, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  }
+  .section-head, .news-list-head {
+    background: var(--soft);
+    border-bottom: 1px solid var(--border);
+  }
+  .stat-value {
+    color: var(--primary);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .report-title a, .conference-title a, .article-title a, .news-title a {
+    color: var(--text);
+    transition: color 0.15s ease;
+  }
+  .report-title a:hover, .conference-title a:hover, .article-title a:hover, .news-title a:hover {
+    color: var(--primary);
+  }
+  .report-row:hover, .conference-row:hover, .article:hover, .news-row:hover, .gateway-row:hover, .author-row:hover {
+    background: var(--primary-soft);
+  }
+  .conference-row::before, .news-row::before {
+    background: var(--accent);
+  }
+  .badge, .conference-tag, .news-tag, .paper-award {
+    font-family: 'JetBrains Mono', monospace;
+    border-radius: 4px;
+  }
+  .badge {
+    background: var(--accent-soft);
+    color: var(--accent-text);
+    border: 1px solid var(--accent-border);
+  }
+  .button-primary {
+    background: var(--primary);
+    color: #ffffff;
+    border: 1px solid var(--primary-deep);
+    border-radius: 6px;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(21, 94, 69, 0.15);
+  }
+  .button-primary:hover {
+    background: var(--primary-deep);
+  }
+  .button, .icon-button {
+    background: var(--surface);
+    color: var(--primary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+  .button:hover, .icon-button:hover {
+    background: var(--primary-soft);
+    border-color: var(--primary);
+  }
+  .field {
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+  }
+  .field:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--focus);
+  }
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 18px;
+    border-top: 1px solid var(--border);
+    background: var(--soft);
+  }
+  .pagination button {
+    min-width: 32px;
+    height: 30px;
+    padding: 0 9px;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    cursor: pointer;
+    font: 11px 'JetBrains Mono', monospace;
+  }
+  .pagination button:hover:not(:disabled), .pagination button.is-current {
+    color: var(--primary);
+    border-color: var(--primary);
+    background: var(--primary-soft);
+  }
+  .pagination button:disabled {
+    cursor: default;
+    opacity: 0.45;
+  }
+  .pagination .pagination-info {
+    margin-right: auto;
+    color: var(--subtle);
+    font: 11px 'JetBrains Mono', monospace;
+  }
+  @media (max-width: 920px) {
+    .page { padding: 22px 16px 32px; }
+    h1 { font-size: 28px; }
+  }
+  @media (max-width: 620px) {
+    .topbar { height: 56px; padding: 0 16px; }
+    .pagination { justify-content: center; padding: 10px 12px; }
+    .pagination .pagination-info { display: none; }
+  }
 </style>
 
 <link rel="stylesheet" href="../assets/related-work.css">
@@ -311,6 +522,7 @@
 
 
 <link rel="stylesheet" href="../assets/fastread.css">
+<link rel="stylesheet" href="../assets/workbench.css">
 </head>
 <body>
 <svg class="icon-sprite" aria-hidden="true" focusable="false">
@@ -354,7 +566,7 @@
       <li><a class="" href="../secnews/index.html"><span><svg class="icon"><use href="#icon-newspaper"></use></svg>安全资讯</span><span class="nav-count">3</span></a></li>
       <li><a href="../index.html#authors"><span><svg class="icon"><use href="#icon-users"></use></svg>关注作者</span><span class="nav-count" id="authorNavCount">0</span></a></li>
     </ul></nav>
-<div class="sidebar-footer">本地报告索引 · FastRead · <a href="/auth/account">账号</a> · <a href="/auth/login">登录</a></div>
+    <div class="sidebar-footer"><a id="fastnews-account-link" href="../login">FastNews 账号</a> · 本地报告索引</div>
   </aside>
   <main class="main">
     <header class="topbar">
@@ -365,7 +577,7 @@
         </button>
         <div class="breadcrumb"><strong>FastNews</strong><span> / Top Conference</span></div>
       </div>
-      <div class="topbar-actions"><span class="generated">更新于 2026-09-25 12:03 UTC</span><button class="button button-secondary button-sm impression-trigger" id="openImpression" type="button"><svg class="icon"><use href="#icon-profile"></use></svg>个人印象</button><button class="icon-button" id="themeToggle" type="button" aria-label="切换深色模式" title="切换深色模式"><svg class="icon theme-sun"><use href="#icon-sun"></use></svg><svg class="icon theme-moon"><use href="#icon-moon"></use></svg></button></div>
+      <div class="topbar-actions"><span class="generated">更新于 2026-11-10 17:38 UTC</span><button class="button button-secondary button-sm impression-trigger" id="openImpression" type="button"><svg class="icon"><use href="#icon-profile"></use></svg>个人印象</button><button class="icon-button" id="themeToggle" type="button" aria-label="切换深色模式" title="切换深色模式"><svg class="icon theme-sun"><use href="#icon-sun"></use></svg><svg class="icon theme-moon"><use href="#icon-moon"></use></svg></button></div>
     </header>
     <nav class="mobile-nav" aria-label="移动端导航">
       <a class="" href="../index.html"><span><svg class="icon"><use href="#icon-dashboard"></use></svg>总览</span></a>
@@ -420,23 +632,22 @@
           <div class="section-head"><div><h2>顶会报告</h2><p class="section-description">打开或下载已生成的会议报告</p></div><span class="section-count">16 份</span></div>
           <div class="report-toolbar"><label class="search-field" for="reportSearch"><svg class="icon"><use href="#icon-search"></use></svg><input class="field" id="reportSearch" type="search" placeholder="搜索会议或年份" aria-label="搜索顶会报告"></label><span class="section-count" id="visibleReportCount">16 条结果</span></div>
           <div class="report-list-scroll" id="reportList">
-          <article class="report-row" data-search="usenix security 2026 top conference 2026-09-19 22:28 usenix_2026_report.html"><h3 class="report-title"><a href="data/report/USENIX_2026_Report.html">USENIX Security 2026</a></h3><p class="meta">1.2 MB · 2026-09-19 22:28</p><div class="row-actions"><a class="button button-primary button-sm" href="data/report/USENIX_2026_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a></div></article>
-          <article class="report-row" data-search="ieee s&amp;p 2026 top conference 2026-09-19 22:28 ieee-sp_2026_report.html"><h3 class="report-title"><a href="data/report/IEEE-SP_2026_Report.html">IEEE S&amp;P 2026</a></h3><p class="meta">629.0 KB · 2026-09-19 22:28</p><div class="row-actions"><a class="button button-primary button-sm" href="data/report/IEEE-SP_2026_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a></div></article>
-          <article class="report-row" data-search="ndss 2026 top conference 2026-09-19 22:28 ndss_2026_report.html"><h3 class="report-title"><a href="data/report/NDSS_2026_Report.html">NDSS 2026</a></h3><p class="meta">938.5 KB · 2026-09-19 22:28</p><div class="row-actions"><a class="button button-primary button-sm" href="data/report/NDSS_2026_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a></div></article>
-          <article class="report-row" data-search="acm ccs 2026 top conference 2026-09-19 22:28 ccs_2026_report.html"><h3 class="report-title"><a href="data/report/CCS_2026_Report.html">ACM CCS 2026</a></h3><p class="meta">560.4 KB · 2026-09-19 22:28</p><div class="row-actions"><a class="button button-primary button-sm" href="data/report/CCS_2026_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a></div></article>
-          <article class="report-row" data-search="usenix security 2025 top conference 2026-09-19 22:28 usenix_2025_report.html"><h3 class="report-title"><a href="data/report/USENIX_2025_Report.html">USENIX Security 2025</a></h3><p class="meta">HTML 1.3 MB · PDF 508.4 KB · 2026-09-19 22:28</p><div class="row-actions"><a class="button button-primary button-sm" href="data/report/USENIX_2025_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a></div></article>
-          <article class="report-row" data-search="ieee s&amp;p 2025 top conference 2026-09-19 22:28 ieee-sp_2025_report.html"><h3 class="report-title"><a href="data/report/IEEE-SP_2025_Report.html">IEEE S&amp;P 2025</a></h3><p class="meta">767.5 KB · 2026-09-19 22:28</p><div class="row-actions"><a class="button button-primary button-sm" href="data/report/IEEE-SP_2025_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a></div></article>
-          <article class="report-row" data-search="ndss 2025 top conference 2026-09-19 22:28 ndss_2025_report.html"><h3 class="report-title"><a href="data/report/NDSS_2025_Report.html">NDSS 2025</a></h3><p class="meta">737.0 KB · 2026-09-19 22:28</p><div class="row-actions"><a class="button button-primary button-sm" href="data/report/NDSS_2025_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a></div></article>
-          <article class="report-row" data-search="acm ccs 2025 top conference 2026-09-19 22:28 ccs_2025_report.html"><h3 class="report-title"><a href="data/report/CCS_2025_Report.html">ACM CCS 2025</a></h3><p class="meta">938.1 KB · 2026-09-19 22:28</p><div class="row-actions"><a class="button button-primary button-sm" href="data/report/CCS_2025_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a></div></article>
-          <article class="report-row" data-search="usenix security 2024 top conference 2026-09-19 22:28 usenix_2024_report.html"><h3 class="report-title"><a href="data/report/USENIX_2024_Report.html">USENIX Security 2024</a></h3><p class="meta">1.3 MB · 2026-09-19 22:28</p><div class="row-actions"><a class="button button-primary button-sm" href="data/report/USENIX_2024_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a></div></article>
-          <article class="report-row" data-search="ieee s&amp;p 2024 top conference 2026-09-19 22:28 ieee-sp_2024_report.html"><h3 class="report-title"><a href="data/report/IEEE-SP_2024_Report.html">IEEE S&amp;P 2024</a></h3><p class="meta">912.2 KB · 2026-09-19 22:28</p><div class="row-actions"><a class="button button-primary button-sm" href="data/report/IEEE-SP_2024_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a></div></article>
-          <article class="report-row" data-search="ndss 2024 top conference 2026-09-19 22:28 ndss_2024_report.html"><h3 class="report-title"><a href="data/report/NDSS_2024_Report.html">NDSS 2024</a></h3><p class="meta">495.2 KB · 2026-09-19 22:28</p><div class="row-actions"><a class="button button-primary button-sm" href="data/report/NDSS_2024_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a></div></article>
-          <article class="report-row" data-search="acm ccs 2024 top conference 2026-09-19 22:28 ccs_2024_report.html"><h3 class="report-title"><a href="data/report/CCS_2024_Report.html">ACM CCS 2024</a></h3><p class="meta">1.1 MB · 2026-09-19 22:28</p><div class="row-actions"><a class="button button-primary button-sm" href="data/report/CCS_2024_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a></div></article>
-          <article class="report-row" data-search="usenix security 2023 top conference 2026-09-19 22:28 usenix_2023_report.html"><h3 class="report-title"><a href="data/report/USENIX_2023_Report.html">USENIX Security 2023</a></h3><p class="meta">1.3 MB · 2026-09-19 22:28</p><div class="row-actions"><a class="button button-primary button-sm" href="data/report/USENIX_2023_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a></div></article>
-          <article class="report-row" data-search="ieee s&amp;p 2023 top conference 2026-09-19 22:28 ieee-sp_2023_report.html"><h3 class="report-title"><a href="data/report/IEEE-SP_2023_Report.html">IEEE S&amp;P 2023</a></h3><p class="meta">681.1 KB · 2026-09-19 22:28</p><div class="row-actions"><a class="button button-primary button-sm" href="data/report/IEEE-SP_2023_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a></div></article>
-          <article class="report-row" data-search="ndss 2023 top conference 2026-09-19 22:28 ndss_2023_report.html"><h3 class="report-title"><a href="data/report/NDSS_2023_Report.html">NDSS 2023</a></h3><p class="meta">332.7 KB · 2026-09-19 22:28</p><div class="row-actions"><a class="button button-primary button-sm" href="data/report/NDSS_2023_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a></div></article>
-          <article class="report-row" data-search="acm ccs 2023 top conference 2026-09-19 22:28 ccs_2023_report.html"><h3 class="report-title"><a href="data/report/CCS_2023_Report.html">ACM CCS 2023</a></h3><p class="meta">629.3 KB · 2026-09-19 22:28</p><div class="row-actions"><a class="button button-primary button-sm" href="data/report/CCS_2023_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a></div></article>
-          
+          <article class="report-row" data-search="usenix security 2026 top conference 2026-11-11 01:38 usenix_2026_report.html"><h3 class="report-title"><a href="data/report/USENIX_2026_Report.html">USENIX Security 2026</a></h3><p class="meta">1.2 MB · 2026-11-11 01:38</p><div class="row-actions"><a class="button button-primary button-sm" href="data/report/USENIX_2026_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a></div></article>
+          <article class="report-row" data-search="ieee s&amp;p 2026 top conference 2026-11-11 01:38 ieee-sp_2026_report.html"><h3 class="report-title"><a href="data/report/IEEE-SP_2026_Report.html">IEEE S&amp;P 2026</a></h3><p class="meta">626.5 KB · 2026-11-11 01:38</p><div class="row-actions"><a class="button button-primary button-sm" href="data/report/IEEE-SP_2026_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a></div></article>
+          <article class="report-row" data-search="ndss 2026 top conference 2026-11-11 01:38 ndss_2026_report.html"><h3 class="report-title"><a href="data/report/NDSS_2026_Report.html">NDSS 2026</a></h3><p class="meta">936.4 KB · 2026-11-11 01:38</p><div class="row-actions"><a class="button button-primary button-sm" href="data/report/NDSS_2026_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a></div></article>
+          <article class="report-row" data-search="acm ccs 2026 top conference 2026-11-11 01:38 ccs_2026_report.html"><h3 class="report-title"><a href="data/report/CCS_2026_Report.html">ACM CCS 2026</a></h3><p class="meta">561.6 KB · 2026-11-11 01:38</p><div class="row-actions"><a class="button button-primary button-sm" href="data/report/CCS_2026_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a></div></article>
+          <article class="report-row" data-search="usenix security 2025 top conference 2026-11-11 01:38 usenix_2025_report.html"><h3 class="report-title"><a href="data/report/USENIX_2025_Report.html">USENIX Security 2025</a></h3><p class="meta">HTML 1.3 MB · PDF 508.4 KB · 2026-11-11 01:38</p><div class="row-actions"><a class="button button-primary button-sm" href="data/report/USENIX_2025_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a></div></article>
+          <article class="report-row" data-search="ieee s&amp;p 2025 top conference 2026-11-11 01:38 ieee-sp_2025_report.html"><h3 class="report-title"><a href="data/report/IEEE-SP_2025_Report.html">IEEE S&amp;P 2025</a></h3><p class="meta">765.0 KB · 2026-11-11 01:38</p><div class="row-actions"><a class="button button-primary button-sm" href="data/report/IEEE-SP_2025_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a></div></article>
+          <article class="report-row" data-search="ndss 2025 top conference 2026-11-11 01:38 ndss_2025_report.html"><h3 class="report-title"><a href="data/report/NDSS_2025_Report.html">NDSS 2025</a></h3><p class="meta">734.8 KB · 2026-11-11 01:38</p><div class="row-actions"><a class="button button-primary button-sm" href="data/report/NDSS_2025_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a></div></article>
+          <article class="report-row" data-search="acm ccs 2025 top conference 2026-11-11 01:38 ccs_2025_report.html"><h3 class="report-title"><a href="data/report/CCS_2025_Report.html">ACM CCS 2025</a></h3><p class="meta">939.4 KB · 2026-11-11 01:38</p><div class="row-actions"><a class="button button-primary button-sm" href="data/report/CCS_2025_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a></div></article>
+          <article class="report-row" data-search="usenix security 2024 top conference 2026-11-11 01:38 usenix_2024_report.html"><h3 class="report-title"><a href="data/report/USENIX_2024_Report.html">USENIX Security 2024</a></h3><p class="meta">1.3 MB · 2026-11-11 01:38</p><div class="row-actions"><a class="button button-primary button-sm" href="data/report/USENIX_2024_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a></div></article>
+          <article class="report-row" data-search="ieee s&amp;p 2024 top conference 2026-11-11 01:38 ieee-sp_2024_report.html"><h3 class="report-title"><a href="data/report/IEEE-SP_2024_Report.html">IEEE S&amp;P 2024</a></h3><p class="meta">909.6 KB · 2026-11-11 01:38</p><div class="row-actions"><a class="button button-primary button-sm" href="data/report/IEEE-SP_2024_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a></div></article>
+          <article class="report-row" data-search="ndss 2024 top conference 2026-11-11 01:38 ndss_2024_report.html"><h3 class="report-title"><a href="data/report/NDSS_2024_Report.html">NDSS 2024</a></h3><p class="meta">493.3 KB · 2026-11-11 01:38</p><div class="row-actions"><a class="button button-primary button-sm" href="data/report/NDSS_2024_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a></div></article>
+          <article class="report-row" data-search="acm ccs 2024 top conference 2026-11-11 01:38 ccs_2024_report.html"><h3 class="report-title"><a href="data/report/CCS_2024_Report.html">ACM CCS 2024</a></h3><p class="meta">1.1 MB · 2026-11-11 01:38</p><div class="row-actions"><a class="button button-primary button-sm" href="data/report/CCS_2024_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a></div></article>
+          <article class="report-row" data-search="usenix security 2023 top conference 2026-11-11 01:38 usenix_2023_report.html"><h3 class="report-title"><a href="data/report/USENIX_2023_Report.html">USENIX Security 2023</a></h3><p class="meta">1.3 MB · 2026-11-11 01:38</p><div class="row-actions"><a class="button button-primary button-sm" href="data/report/USENIX_2023_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a></div></article>
+          <article class="report-row" data-search="ieee s&amp;p 2023 top conference 2026-11-11 01:38 ieee-sp_2023_report.html"><h3 class="report-title"><a href="data/report/IEEE-SP_2023_Report.html">IEEE S&amp;P 2023</a></h3><p class="meta">679.0 KB · 2026-11-11 01:38</p><div class="row-actions"><a class="button button-primary button-sm" href="data/report/IEEE-SP_2023_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a></div></article>
+          <article class="report-row" data-search="ndss 2023 top conference 2026-11-11 01:38 ndss_2023_report.html"><h3 class="report-title"><a href="data/report/NDSS_2023_Report.html">NDSS 2023</a></h3><p class="meta">334.0 KB · 2026-11-11 01:38</p><div class="row-actions"><a class="button button-primary button-sm" href="data/report/NDSS_2023_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a></div></article>
+          <article class="report-row" data-search="acm ccs 2023 top conference 2026-11-11 01:38 ccs_2023_report.html"><h3 class="report-title"><a href="data/report/CCS_2023_Report.html">ACM CCS 2023</a></h3><p class="meta">630.5 KB · 2026-11-11 01:38</p><div class="row-actions"><a class="button button-primary button-sm" href="data/report/CCS_2023_Report.html"><svg class="icon"><use href="#icon-file"></use></svg>打开</a></div></article>
           </div>
           <div class="empty" id="reportEmpty" hidden>没有匹配的报告。</div>
         </section>
@@ -445,23 +656,22 @@
       <section class="surface workspace-wide report-download-panel" id="reportDownloads">
           <div class="section-head"><div><h2>报告下载</h2><p class="section-description">集中下载已生成的 HTML 或 PDF 文件</p></div><span class="section-count">16 份</span></div>
           <div class="download-list">
-          <article class="download-row"><div><h3 class="report-title">USENIX Security 2026</h3><p class="meta">1.2 MB · 2026-09-19 22:28</p></div><div class="row-actions"><a class="button button-secondary button-sm" href="data/report/USENIX_2026_Report.html?download=1" download="USENIX_2026_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
-          <article class="download-row"><div><h3 class="report-title">IEEE S&amp;P 2026</h3><p class="meta">629.0 KB · 2026-09-19 22:28</p></div><div class="row-actions"><a class="button button-secondary button-sm" href="data/report/IEEE-SP_2026_Report.html?download=1" download="IEEE-SP_2026_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
-          <article class="download-row"><div><h3 class="report-title">NDSS 2026</h3><p class="meta">938.5 KB · 2026-09-19 22:28</p></div><div class="row-actions"><a class="button button-secondary button-sm" href="data/report/NDSS_2026_Report.html?download=1" download="NDSS_2026_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
-          <article class="download-row"><div><h3 class="report-title">ACM CCS 2026</h3><p class="meta">560.4 KB · 2026-09-19 22:28</p></div><div class="row-actions"><a class="button button-secondary button-sm" href="data/report/CCS_2026_Report.html?download=1" download="CCS_2026_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
-          <article class="download-row"><div><h3 class="report-title">USENIX Security 2025</h3><p class="meta">HTML 1.3 MB · PDF 508.4 KB · 2026-09-19 22:28</p></div><div class="row-actions"><a class="button button-secondary button-sm" href="data/report/USENIX_2025_Report.html?download=1" download="USENIX_2025_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a><a class="button button-secondary button-sm" href="data/report/USENIX_2025_Report.pdf?download=1" download="USENIX_2025_Report.pdf"><svg class="icon"><use href="#icon-download"></use></svg>PDF</a></div></article>
-          <article class="download-row"><div><h3 class="report-title">IEEE S&amp;P 2025</h3><p class="meta">767.5 KB · 2026-09-19 22:28</p></div><div class="row-actions"><a class="button button-secondary button-sm" href="data/report/IEEE-SP_2025_Report.html?download=1" download="IEEE-SP_2025_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
-          <article class="download-row"><div><h3 class="report-title">NDSS 2025</h3><p class="meta">737.0 KB · 2026-09-19 22:28</p></div><div class="row-actions"><a class="button button-secondary button-sm" href="data/report/NDSS_2025_Report.html?download=1" download="NDSS_2025_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
-          <article class="download-row"><div><h3 class="report-title">ACM CCS 2025</h3><p class="meta">938.1 KB · 2026-09-19 22:28</p></div><div class="row-actions"><a class="button button-secondary button-sm" href="data/report/CCS_2025_Report.html?download=1" download="CCS_2025_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
-          <article class="download-row"><div><h3 class="report-title">USENIX Security 2024</h3><p class="meta">1.3 MB · 2026-09-19 22:28</p></div><div class="row-actions"><a class="button button-secondary button-sm" href="data/report/USENIX_2024_Report.html?download=1" download="USENIX_2024_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
-          <article class="download-row"><div><h3 class="report-title">IEEE S&amp;P 2024</h3><p class="meta">912.2 KB · 2026-09-19 22:28</p></div><div class="row-actions"><a class="button button-secondary button-sm" href="data/report/IEEE-SP_2024_Report.html?download=1" download="IEEE-SP_2024_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
-          <article class="download-row"><div><h3 class="report-title">NDSS 2024</h3><p class="meta">495.2 KB · 2026-09-19 22:28</p></div><div class="row-actions"><a class="button button-secondary button-sm" href="data/report/NDSS_2024_Report.html?download=1" download="NDSS_2024_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
-          <article class="download-row"><div><h3 class="report-title">ACM CCS 2024</h3><p class="meta">1.1 MB · 2026-09-19 22:28</p></div><div class="row-actions"><a class="button button-secondary button-sm" href="data/report/CCS_2024_Report.html?download=1" download="CCS_2024_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
-          <article class="download-row"><div><h3 class="report-title">USENIX Security 2023</h3><p class="meta">1.3 MB · 2026-09-19 22:28</p></div><div class="row-actions"><a class="button button-secondary button-sm" href="data/report/USENIX_2023_Report.html?download=1" download="USENIX_2023_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
-          <article class="download-row"><div><h3 class="report-title">IEEE S&amp;P 2023</h3><p class="meta">681.1 KB · 2026-09-19 22:28</p></div><div class="row-actions"><a class="button button-secondary button-sm" href="data/report/IEEE-SP_2023_Report.html?download=1" download="IEEE-SP_2023_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
-          <article class="download-row"><div><h3 class="report-title">NDSS 2023</h3><p class="meta">332.7 KB · 2026-09-19 22:28</p></div><div class="row-actions"><a class="button button-secondary button-sm" href="data/report/NDSS_2023_Report.html?download=1" download="NDSS_2023_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
-          <article class="download-row"><div><h3 class="report-title">ACM CCS 2023</h3><p class="meta">629.3 KB · 2026-09-19 22:28</p></div><div class="row-actions"><a class="button button-secondary button-sm" href="data/report/CCS_2023_Report.html?download=1" download="CCS_2023_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
-          
+          <article class="download-row"><div><h3 class="report-title">USENIX Security 2026</h3><p class="meta">1.2 MB · 2026-11-11 01:38</p></div><div class="row-actions"><a class="button button-secondary button-sm" href="data/report/USENIX_2026_Report.html?download=1" download="USENIX_2026_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
+          <article class="download-row"><div><h3 class="report-title">IEEE S&amp;P 2026</h3><p class="meta">626.5 KB · 2026-11-11 01:38</p></div><div class="row-actions"><a class="button button-secondary button-sm" href="data/report/IEEE-SP_2026_Report.html?download=1" download="IEEE-SP_2026_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
+          <article class="download-row"><div><h3 class="report-title">NDSS 2026</h3><p class="meta">936.4 KB · 2026-11-11 01:38</p></div><div class="row-actions"><a class="button button-secondary button-sm" href="data/report/NDSS_2026_Report.html?download=1" download="NDSS_2026_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
+          <article class="download-row"><div><h3 class="report-title">ACM CCS 2026</h3><p class="meta">561.6 KB · 2026-11-11 01:38</p></div><div class="row-actions"><a class="button button-secondary button-sm" href="data/report/CCS_2026_Report.html?download=1" download="CCS_2026_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
+          <article class="download-row"><div><h3 class="report-title">USENIX Security 2025</h3><p class="meta">HTML 1.3 MB · PDF 508.4 KB · 2026-11-11 01:38</p></div><div class="row-actions"><a class="button button-secondary button-sm" href="data/report/USENIX_2025_Report.html?download=1" download="USENIX_2025_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a><a class="button button-secondary button-sm" href="data/report/USENIX_2025_Report.pdf?download=1" download="USENIX_2025_Report.pdf"><svg class="icon"><use href="#icon-download"></use></svg>PDF</a></div></article>
+          <article class="download-row"><div><h3 class="report-title">IEEE S&amp;P 2025</h3><p class="meta">765.0 KB · 2026-11-11 01:38</p></div><div class="row-actions"><a class="button button-secondary button-sm" href="data/report/IEEE-SP_2025_Report.html?download=1" download="IEEE-SP_2025_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
+          <article class="download-row"><div><h3 class="report-title">NDSS 2025</h3><p class="meta">734.8 KB · 2026-11-11 01:38</p></div><div class="row-actions"><a class="button button-secondary button-sm" href="data/report/NDSS_2025_Report.html?download=1" download="NDSS_2025_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
+          <article class="download-row"><div><h3 class="report-title">ACM CCS 2025</h3><p class="meta">939.4 KB · 2026-11-11 01:38</p></div><div class="row-actions"><a class="button button-secondary button-sm" href="data/report/CCS_2025_Report.html?download=1" download="CCS_2025_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
+          <article class="download-row"><div><h3 class="report-title">USENIX Security 2024</h3><p class="meta">1.3 MB · 2026-11-11 01:38</p></div><div class="row-actions"><a class="button button-secondary button-sm" href="data/report/USENIX_2024_Report.html?download=1" download="USENIX_2024_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
+          <article class="download-row"><div><h3 class="report-title">IEEE S&amp;P 2024</h3><p class="meta">909.6 KB · 2026-11-11 01:38</p></div><div class="row-actions"><a class="button button-secondary button-sm" href="data/report/IEEE-SP_2024_Report.html?download=1" download="IEEE-SP_2024_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
+          <article class="download-row"><div><h3 class="report-title">NDSS 2024</h3><p class="meta">493.3 KB · 2026-11-11 01:38</p></div><div class="row-actions"><a class="button button-secondary button-sm" href="data/report/NDSS_2024_Report.html?download=1" download="NDSS_2024_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
+          <article class="download-row"><div><h3 class="report-title">ACM CCS 2024</h3><p class="meta">1.1 MB · 2026-11-11 01:38</p></div><div class="row-actions"><a class="button button-secondary button-sm" href="data/report/CCS_2024_Report.html?download=1" download="CCS_2024_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
+          <article class="download-row"><div><h3 class="report-title">USENIX Security 2023</h3><p class="meta">1.3 MB · 2026-11-11 01:38</p></div><div class="row-actions"><a class="button button-secondary button-sm" href="data/report/USENIX_2023_Report.html?download=1" download="USENIX_2023_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
+          <article class="download-row"><div><h3 class="report-title">IEEE S&amp;P 2023</h3><p class="meta">679.0 KB · 2026-11-11 01:38</p></div><div class="row-actions"><a class="button button-secondary button-sm" href="data/report/IEEE-SP_2023_Report.html?download=1" download="IEEE-SP_2023_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
+          <article class="download-row"><div><h3 class="report-title">NDSS 2023</h3><p class="meta">334.0 KB · 2026-11-11 01:38</p></div><div class="row-actions"><a class="button button-secondary button-sm" href="data/report/NDSS_2023_Report.html?download=1" download="NDSS_2023_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
+          <article class="download-row"><div><h3 class="report-title">ACM CCS 2023</h3><p class="meta">630.5 KB · 2026-11-11 01:38</p></div><div class="row-actions"><a class="button button-secondary button-sm" href="data/report/CCS_2023_Report.html?download=1" download="CCS_2023_Report.html"><svg class="icon"><use href="#icon-download"></use></svg>HTML</a></div></article>
           </div>
         </section>
       
@@ -483,23 +693,6 @@
 
 <script>
   const root = document.documentElement;
-  const themeToggle = document.getElementById("themeToggle");
-  const sunIcon = themeToggle.querySelector(".theme-sun");
-  const moonIcon = themeToggle.querySelector(".theme-moon");
-  function updateThemeButton() {
-    const dark = root.classList.contains("dark");
-    sunIcon.hidden = dark; moonIcon.hidden = !dark;
-    themeToggle.title = dark ? "切换浅色模式" : "切换深色模式";
-    themeToggle.setAttribute("aria-label", themeToggle.title);
-  }
-  themeToggle.addEventListener("click", () => {
-    const dark = !root.classList.contains("dark");
-    root.classList.toggle("dark", dark);
-    window.localStorage.setItem("fastresearch-theme", dark ? "dark" : "light");
-    window.localStorage.setItem("fastnews.theme", dark ? "dark" : "light");
-    updateThemeButton();
-  });
-  updateThemeButton();
   function renderPagination(container, current, total, onChange) {
     if (!container || total <= 1) { if (container) container.innerHTML = ''; return; }
     const buttons = [];

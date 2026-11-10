@@ -552,6 +552,8 @@ def render_page(page_mode, output, field_stats):
 
 
 def render_homepage(output):
+    from fastui_report import supply_archived_reports
+    supply_archived_reports()
     field_stats = field_briefing.corpus_stats(Path("."))
     Path("field-briefing").mkdir(exist_ok=True)
     Path("summary-brief").mkdir(exist_ok=True)

@@ -1,5 +1,260 @@
 <!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FastNews · 账号</title>
 <style>body{margin:0;background:#f3f7f5;color:#15352b;font:16px system-ui}main{max-width:430px;margin:8vh auto;padding:32px;background:white;border:1px solid #d1e0d8;border-radius:16px}h1{font-size:26px}label{display:block;margin:18px 0}input{display:block;box-sizing:border-box;width:100%;padding:12px;margin-top:7px;border:1px solid #9fb7aa;border-radius:6px;font:inherit}input[type=checkbox]{display:inline;width:auto;padding:0;margin:0 6px 0 0}button,a{font:inherit}button{padding:10px 16px;border:1px solid #2b7054;border-radius:6px;background:#245c45;color:white;cursor:pointer}button:disabled{opacity:.5}nav{display:flex;gap:8px;margin-top:22px}nav button{background:white;color:#245c45}p{line-height:1.6}a{color:#245c45}[hidden]{display:none!important}</style>
+<style>/* Generated from tokens.json. */
+:root {
+  --fastui-font: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans CJK SC', sans-serif;
+  --fastui-font-size: 14px;
+  --fastui-radius-control: 6px;
+  --fastui-radius-panel: 8px;
+  --fastui-space-1: 4px;
+  --fastui-space-2: 8px;
+  --fastui-space-3: 12px;
+  --fastui-space-4: 16px;
+  --fastui-space-6: 24px;
+  --fastui-space-8: 32px;
+  --fastui-height-xs: 24px;
+  --fastui-height-sm: 30px;
+  --fastui-height-md: 38px;
+  --fastui-on-primary: #ffffff;
+  --fastui-on-primary-rgb: 255, 255, 255;
+}
+:root, [data-fastui-theme="light"] {
+  --fastui-page: #f7f8fa;
+  --fastui-page-rgb: 247, 248, 250;
+  --fastui-workspace: #eef0f3;
+  --fastui-workspace-rgb: 238, 240, 243;
+  --fastui-surface: #ffffff;
+  --fastui-surface-rgb: 255, 255, 255;
+  --fastui-raised: #eef0f3;
+  --fastui-raised-rgb: 238, 240, 243;
+  --fastui-text: #151c28;
+  --fastui-text-rgb: 21, 28, 40;
+  --fastui-secondary: #4b5565;
+  --fastui-secondary-rgb: 75, 85, 101;
+  --fastui-muted: #687384;
+  --fastui-muted-rgb: 104, 115, 132;
+  --fastui-border: #dfe3e8;
+  --fastui-border-rgb: 223, 227, 232;
+  --fastui-border-strong: #a7b0bd;
+  --fastui-border-strong-rgb: 167, 176, 189;
+  --fastui-primary: #155fb8;
+  --fastui-primary-rgb: 21, 95, 184;
+  --fastui-primary-hover: #104a91;
+  --fastui-primary-hover-rgb: 16, 74, 145;
+  --fastui-focus: #155fb8;
+  --fastui-focus-rgb: 21, 95, 184;
+  --fastui-selected: #e5effb;
+  --fastui-selected-rgb: 229, 239, 251;
+  --fastui-disabled: #e8ebef;
+  --fastui-disabled-rgb: 232, 235, 239;
+  --fastui-success: #16834a;
+  --fastui-success-rgb: 22, 131, 74;
+  --fastui-warning: #8c5b09;
+  --fastui-warning-rgb: 140, 91, 9;
+  --fastui-danger: #c93636;
+  --fastui-danger-rgb: 201, 54, 54;
+  --fastui-danger-fill: #c93636;
+  --fastui-danger-fill-rgb: 201, 54, 54;
+  --fastui-overlay: #151c2880;
+  --fastui-color-scheme: light;
+}
+[data-fastui-theme="dark"] {
+  --fastui-page: #111820;
+  --fastui-page-rgb: 17, 24, 32;
+  --fastui-workspace: #111820;
+  --fastui-workspace-rgb: 17, 24, 32;
+  --fastui-surface: #171e27;
+  --fastui-surface-rgb: 23, 30, 39;
+  --fastui-raised: #273342;
+  --fastui-raised-rgb: 39, 51, 66;
+  --fastui-text: #f4f7fa;
+  --fastui-text-rgb: 244, 247, 250;
+  --fastui-secondary: #c5cfdb;
+  --fastui-secondary-rgb: 197, 207, 219;
+  --fastui-muted: #9aa8b9;
+  --fastui-muted-rgb: 154, 168, 185;
+  --fastui-border: #354252;
+  --fastui-border-rgb: 53, 66, 82;
+  --fastui-border-strong: #65758a;
+  --fastui-border-strong-rgb: 101, 117, 138;
+  --fastui-primary: #0e639c;
+  --fastui-primary-rgb: 14, 99, 156;
+  --fastui-primary-hover: #1177bb;
+  --fastui-primary-hover-rgb: 17, 119, 187;
+  --fastui-focus: #5ba3ea;
+  --fastui-focus-rgb: 91, 163, 234;
+  --fastui-selected: #094771;
+  --fastui-selected-rgb: 9, 71, 113;
+  --fastui-disabled: #273342;
+  --fastui-disabled-rgb: 39, 51, 66;
+  --fastui-success: #6acc96;
+  --fastui-success-rgb: 106, 204, 150;
+  --fastui-warning: #e6ba6a;
+  --fastui-warning-rgb: 230, 186, 106;
+  --fastui-danger: #ff848c;
+  --fastui-danger-rgb: 255, 132, 140;
+  --fastui-danger-fill: #b03030;
+  --fastui-danger-fill-rgb: 176, 48, 48;
+  --fastui-overlay: #00000099;
+  --fastui-color-scheme: dark;
+}
+/* Every appearance rule is explicitly opted into by a fastui class. No reset. */
+.fastui-button, .fastui-input, .fastui-textarea, .fastui-select {
+  box-sizing: border-box;
+  font-family: var(--fastui-font);
+  font-size: 13px;
+  line-height: 1.5;
+  min-height: var(--fastui-height-md);
+  padding: 7px 10px;
+  border: 1px solid var(--fastui-border-strong);
+  border-radius: var(--fastui-radius-control);
+  background: var(--fastui-surface);
+  color: var(--fastui-text);
+  max-width: 100%;
+  min-width: 0;
+  color-scheme: var(--fastui-color-scheme);
+}
+.fastui-button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; font-weight: 500; text-decoration: none; }
+.fastui-button--sm, .fastui-input--sm, .fastui-select--sm { min-height: var(--fastui-height-sm); padding: 4px 8px; font-size: 12px; }
+.fastui-button--xs, .fastui-input--xs, .fastui-select--xs { min-height: var(--fastui-height-xs); padding: 1px 6px; font-size: 12px; }
+.fastui-button:hover:not(:disabled) { background: var(--fastui-selected); }
+.fastui-button--primary { background: var(--fastui-primary); border-color: var(--fastui-primary); color: var(--fastui-on-primary); }
+.fastui-button--primary:hover:not(:disabled) { background: var(--fastui-primary-hover); }
+.fastui-button--danger { background: var(--fastui-danger-fill); border-color: var(--fastui-danger-fill); color: var(--fastui-on-primary); }
+.fastui-button--danger:hover:not(:disabled) { filter: brightness(.9); background: var(--fastui-danger-fill); }
+.fastui-button--quiet, .fastui-button--icon, .fastui-button--navigation { background: transparent; border-color: transparent; }
+.fastui-button--icon { aspect-ratio: 1; padding: 5px; }
+.fastui-button--navigation { border-radius: 0; }
+.fastui-button[aria-pressed=true], .fastui-button[aria-selected=true] { box-shadow: inset 0 -2px var(--fastui-focus); }
+.fastui-button:disabled, .fastui-input:disabled, .fastui-textarea:disabled, .fastui-select:disabled { opacity: .6; cursor: not-allowed; }
+.fastui-button:focus-visible, .fastui-input:focus-visible, .fastui-textarea:focus-visible, .fastui-select:focus-visible, .fastui-link:focus-visible, .fastui-disclosure-trigger:focus-visible { outline: 2px solid var(--fastui-focus); outline-offset: 2px; }
+.fastui-input::placeholder, .fastui-textarea::placeholder { color: var(--fastui-muted); }
+.fastui-input[aria-invalid=true], .fastui-textarea[aria-invalid=true] { border-color: var(--fastui-danger); }
+.fastui-input[type=checkbox], .fastui-input[type=radio], .fastui-input[type=range] { min-height: auto; padding: 0; accent-color: var(--fastui-primary); }
+.fastui-textarea { resize: vertical; }
+.fastui-field { display: grid; gap: 6px; color: var(--fastui-secondary); font: 13px/1.5 var(--fastui-font); }
+.fastui-fieldset { border: 1px solid var(--fastui-border); border-radius: var(--fastui-radius-panel); min-width: 0; padding: 16px; }
+.fastui-legend { color: var(--fastui-secondary); padding: 0 4px; }
+.fastui-heading { color: var(--fastui-text); font-weight: 600; }
+.fastui-link { color: var(--fastui-focus); text-underline-offset: 3px; }
+.fastui-progress { accent-color: var(--fastui-primary); }
+.fastui-table { border-collapse: collapse; text-align: left; }
+.fastui-table :where(th, td) { padding: 12px; border-bottom: 1px solid var(--fastui-border); }
+.fastui-table th { background: var(--fastui-raised); font-weight: 600; }
+.fastui-disclosure-trigger { padding: 5px 8px; cursor: pointer; }
+.fastui-dialog { box-sizing: border-box; width: min(620px, calc(100% - 32px)); max-height: calc(100dvh - 32px); overflow: auto; padding: 0; border: 1px solid var(--fastui-border); border-radius: var(--fastui-radius-panel); background: var(--fastui-surface); color: var(--fastui-text); font: 14px/1.5 var(--fastui-font); box-shadow: 0 16px 48px #0004; }
+.fastui-dialog--lg { width: min(880px, calc(100% - 32px)); }
+.fastui-dialog--xl { width: min(1100px, calc(100% - 32px)); }
+.fastui-dialog::backdrop { background: var(--fastui-overlay); }
+.fastui-dialog > :where(header, footer), .fastui-modal-body { padding: 20px 24px; }
+.fastui-dialog > header { border-bottom: 1px solid var(--fastui-border); }
+.fastui-dialog > footer { display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid var(--fastui-border); }
+.fastui-modal-body { display: grid; gap: 16px; }
+.fastui-alert, .fastui-badge, .fastui-empty, .fastui-loading { font-family: var(--fastui-font); color: var(--fastui-text); }
+.fastui-alert { border: 1px solid var(--fastui-border); border-left: 3px solid var(--fastui-tone, var(--fastui-focus)); border-radius: var(--fastui-radius-control); padding: 12px 16px; background: var(--fastui-surface); }
+.fastui-badge { display: inline-block; border: 1px solid currentColor; color: var(--fastui-tone, var(--fastui-focus)); border-radius: 4px; padding: 1px 6px; font-size: 12px; }
+.fastui-tone-success { --fastui-tone: var(--fastui-success); }
+.fastui-tone-warning { --fastui-tone: var(--fastui-warning); }
+.fastui-tone-danger { --fastui-tone: var(--fastui-danger); }
+.fastui-empty { padding: 24px; text-align: center; }
+.fastui-empty > h2 { font-size: 16px; }
+.fastui-loading { display: inline-flex; align-items: center; gap: 8px; }
+</style>
+<script>// Generated from @fastrd/ui-foundation 0.1.0; do not edit.
+(() => {
+// packages/foundation/src/index.ts
+var parse = (value) => value === "light" || value === "dark" ? value : "system";
+function initColorMode({ storageKey, target = document.documentElement }) {
+  const win = target.ownerDocument.defaultView;
+  const media = win.matchMedia("(prefers-color-scheme: dark)");
+  let mode = "system";
+  try {
+    mode = parse(win.localStorage.getItem(storageKey));
+  } catch {
+  }
+  let disposed = false;
+  const listeners = /* @__PURE__ */ new Set();
+  const resolved = () => mode === "system" ? media.matches ? "dark" : "light" : mode;
+  const apply = () => {
+    target.dataset.fastuiTheme = resolved();
+    listeners.forEach((listener) => listener({ mode, resolved: resolved() }));
+  };
+  const systemChange = () => {
+    if (mode === "system") apply();
+  };
+  const storageChange = (event) => {
+    let storage;
+    try {
+      storage = win.localStorage;
+    } catch {
+      return;
+    }
+    if (event.storageArea !== storage || event.key !== storageKey && event.key !== null) return;
+    mode = parse(event.newValue);
+    apply();
+  };
+  media.addEventListener("change", systemChange);
+  win.addEventListener("storage", storageChange);
+  apply();
+  return {
+    get mode() {
+      return mode;
+    },
+    get resolved() {
+      return resolved();
+    },
+    setMode(value) {
+      if (disposed) return;
+      mode = parse(value);
+      try {
+        win.localStorage.setItem(storageKey, mode);
+      } catch {
+      }
+      apply();
+    },
+    subscribe(listener) {
+      if (disposed) return () => {
+      };
+      listeners.add(listener);
+      listener({ mode, resolved: resolved() });
+      return () => {
+        listeners.delete(listener);
+      };
+    },
+    dispose() {
+      disposed = true;
+      media.removeEventListener("change", systemChange);
+      win.removeEventListener("storage", storageChange);
+      listeners.clear();
+    }
+  };
+}
+function syncDialog(element, open) {
+  if (open && !element.open) {
+    const descendants = Array.from(element.querySelectorAll("dialog:modal"));
+    for (const child of [...descendants].reverse()) child.close();
+    element.showModal();
+    for (const child of descendants) child.showModal();
+  } else if (!open && element.open) element.close();
+}
+
+// This adapter is bundled after the verified foundation ESM by supply_fastui.py.
+// The resulting classic script runs before gate.js and before page content.
+try {
+  if (localStorage.getItem('fastresearch-theme') === null) {
+    const old = localStorage.getItem('fastnews.theme');
+    if (old === 'light' || old === 'dark') localStorage.setItem('fastresearch-theme', old);
+  }
+} catch { /* Preference storage is optional. */ }
+const colorMode = initColorMode({ storageKey: 'fastresearch-theme' });
+colorMode.subscribe(({ resolved }) => {
+  document.documentElement.classList.toggle('dark', resolved === 'dark');
+});
+window.fastNewsColorMode = colorMode;
+
+})();
+</script>
+<style>body{background:var(--fastui-page);color:var(--fastui-text)}main{background:var(--fastui-surface);border-color:var(--fastui-border);border-radius:8px}input{background:var(--fastui-surface);color:var(--fastui-text);border-color:var(--fastui-border-strong)}button{background:var(--fastui-primary);color:var(--fastui-on-primary);border-color:var(--fastui-primary)}nav button{background:var(--fastui-surface);color:var(--fastui-focus)}a{color:var(--fastui-focus)}:is(button,input,a):focus-visible{outline:2px solid var(--fastui-focus);outline-offset:2px}</style>
 <main><a id="home">← 返回报告</a><h1 id="title">登录 FastNews</h1><p>使用本项目账号登录。邀请注册和账号恢复凭证由实例管理员提供。</p><p id="message" role="status"></p><section id="signed" hidden><p id="identity"></p><button id="logout">退出本地账号</button></section>
 <form id="form"><label id="email-label">邮箱<input id="email" type="email" autocomplete="username" required maxlength="254"></label><label id="token-label" hidden>一次性凭证<input id="token" maxlength="256"></label><label>密码<input id="password" type="password" autocomplete="current-password" required maxlength="256"></label><button id="submit">登录</button></form>
 <section id="cas" hidden><h2>FastCAS</h2><a id="cas-login">使用 FastCAS 登录</a><div id="cas-account" hidden><p id="cas-state"></p><label>本地密码<input id="cas-password" type="password" maxlength="256" autocomplete="current-password"></label><button id="cas-link">认证当前账号</button> <button id="cas-reconcile" hidden>重试完成认证</button> <button id="cas-revoke" hidden>解除认证</button></div></section>

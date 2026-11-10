@@ -5,6 +5,11 @@ from datetime import datetime, UTC
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from fastui_report import report_assets
+
 
 def refresh_homepage():
     try:
@@ -78,6 +83,7 @@ def render_conf_report(conference, year):
     template = env.get_template('conf_report.html.j2')
 
     html_content = template.render(
+        **report_assets(),
         conference=conference_label(conference),
         year=year,
         generated_date=datetime.now(UTC).strftime('%Y-%m-%d %H:%M:%S UTC'),

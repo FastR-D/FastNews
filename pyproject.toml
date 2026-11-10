@@ -20,7 +20,7 @@ dependencies = [
 
 [project.optional-dependencies]
 fastcas = [
-    "fastcas-sdk",
+    "fastcas-sdk==0.1.1",
     "cryptography>=50.0.1",
 ]
 
@@ -28,6 +28,7 @@ fastcas = [
 dev = [
     "pytest>=9.1.1",
 ]
-
-[tool.uv.sources]
-fastcas-sdk = { path = "../FastCAS/sdk/python", editable = true }
+browser = [
+    "playwright>=1.50,<2",
+    "PyMuPDF>=1.25,<2",
+]

@@ -14,10 +14,16 @@
 import argparse
 import json
 import shutil
+import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
 from jinja2 import Template
+
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from fastui_report import report_assets
 
 SUMMARIES_DIR = Path("secnews/data/daily_summaries")
 TEMPLATE_PATH = Path("secnews/prompt/newspaper.html.j2")
@@ -89,6 +95,7 @@ def render(start_date, end_date, report_title, output_path, backup_name=None):
         print(f"  {key}: {len(items)}")
 
     html = Template(TEMPLATE_PATH.read_text(encoding="utf-8")).render(
+        **report_assets(),
         report_title=report_title,
         date_range=f"{start_date} ~ {end_date}",
         sections=sections,

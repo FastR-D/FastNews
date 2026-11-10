@@ -67,7 +67,7 @@ def run(browser, prefix, private):
         threads = [threading.Thread(target=server.serve_forever, daemon=True) for server in [backend, proxy]]
         for thread in threads:
             thread.start()
-        context = browser.new_context()
+        context = browser.new_context(color_scheme='light')
         page = context.new_page()
         errors = []
         page.on('pageerror', lambda error: errors.append(str(error)))
@@ -78,6 +78,8 @@ def run(browser, prefix, private):
                 page.wait_for_url(origin + prefix + '/login')
             else:
                 expect(page.locator('html')).to_have_class(re.compile('fastnews-ready'))
+            # Login must receive its theme even when private mode gates assets.
+            expect(page.locator('html')).to_have_attribute('data-fastui-theme', 'light')
             init = context.request.get(origin + prefix + '/api/auth/session-init').json()
             response = context.request.post(origin + prefix + '/api/auth/login',
                 data={'email': 'reader@example.test', 'password': 'browser-password'},

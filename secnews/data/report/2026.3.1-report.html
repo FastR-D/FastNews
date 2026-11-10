@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" class="fastnews-report">
 <head>
 <meta charset="UTF-8">
 <title>2026年3月第一周安全事件报告 2026-03-07 ~ 2026-03-07</title>
@@ -68,6 +68,54 @@
     padding-top: 1em;
   }
 </style>
+<!-- fastnews-publication:start -->
+<style>
+/* Publications own their paper palette. No application theme, storage or OS
+   preference can change the document body, either on screen or on paper. */
+html.fastnews-report {
+  color-scheme: light;
+  --app-bg: #ffffff;
+  --muted-bg: #eef0f3;
+  --surface: #ffffff;
+  --surface-muted: #f7f8fa;
+  --soft: #f7f8fa;
+  --border: #dfe3e8;
+  --input-border: #687384;
+  --primary: #155fb8;
+  --primary-deep: #104a91;
+  --primary-soft: #eef0f3;
+  --accent: #8c5b09;
+  --accent-soft: #fff8e6;
+  --accent-border: #dfe3e8;
+  --accent-text: #8c5b09;
+  --text: #151c28;
+  --muted: #4b5565;
+  --subtle: #687384;
+}
+.fastnews-report body {
+  background: #ffffff;
+  color: #151c28;
+  font-family: Inter, "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+}
+.fastnews-report :is(.surface, .paper, .article, .sidebar, .topbar) {
+  background: #ffffff;
+  border-color: #dfe3e8;
+  box-shadow: none;
+}
+.fastnews-report :is(.paper-summary, .article-intro, .article-summary) { color: #151c28; }
+.fastnews-report :is(.paper-title a, .article-title a) { color: #155fb8; }
+.fastnews-report .toc-list a:hover { background: #eef0f3; }
+.fastnews-report :is(.brand-mark, .header-icon) { border-color: #dfe3e8; }
+.fastnews-report .badge { background: #fff8e6; border-color: #dfe3e8; color: #8c5b09; }
+@media print {
+  html.fastnews-report { color-scheme: light; }
+  .fastnews-report body { background: #ffffff; color: #151c28; }
+  .fastnews-report :is(.sidebar, .topbar, .mobile-toc, .paper-actions, .fastread-open) { display: none; }
+  .fastnews-report :is(.paper-summary, .article-intro, .article-summary) { color: #151c28; }
+}
+
+</style>
+<!-- fastnews-publication:end -->
 </head>
 <body>
 

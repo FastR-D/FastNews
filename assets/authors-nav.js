@@ -39,7 +39,7 @@
 
   function applySidebar(collapsed) {
     document.documentElement.classList.toggle("sidebar-collapsed", collapsed);
-    window.localStorage.setItem("fastnews.sidebarCollapsed", collapsed ? "1" : "0");
+    try { window.localStorage.setItem("fastnews.sidebarCollapsed", collapsed ? "1" : "0"); } catch { /* optional preference storage */ }
     if (sidebarToggle) {
       sidebarToggle.title = collapsed ? "打开总览栏" : "隐藏总览栏";
       sidebarToggle.setAttribute("aria-label", sidebarToggle.title);

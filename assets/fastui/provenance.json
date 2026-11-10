@@ -1,0 +1,21 @@
+{
+  "package": "@fastrd/ui-foundation",
+  "version": "0.1.0",
+  "url": "https://github.com/FastR-D/FastUI/releases/download/v0.1.0/fastrd-ui-foundation-0.1.0.tgz",
+  "sha256": "5c87e8f60c2c349c98b17349396a4f6ac335de30f92d0d0b8ec2171b951ebd9e",
+  "files": {
+    "tokens.css": "fadf2cf99aa54150ff65776032c4f61b007ebe47a0051723f81afac0b397de38",
+    "controls.css": "f34fa4d48fbae9dcbf22fc7fcb1718e2b1a5cb33c36bc287805fd49b61cecbc4",
+    "index.js": "5085eb867b23e1531bd512bd55f1ba87da551f74bc2008e38a45ab748940c201",
+    "color-mode.js": "596e123cf27bf280dec4cabafe98dfbcf780fbef546763c8c27a0c28e6c52f99"
+  },
+  "generated_by": "python scripts/supply_fastui.py",
+  "generated": {
+    "theme-init.js": {
+      "sha256": "d9e54224806ad3e339ebf5e06525e3c027e5394f6cfb1ae0a7f2e9e397659e38",
+      "foundation_source": "index.js",
+      "adapter": "scripts/theme-init.js",
+      "adapter_sha256": "978165ab783b8b5f127fa1c73fe2ca2e2fe02e617210465b1ef5c36ef13ef53f"
+    }
+  }
+}
