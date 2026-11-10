@@ -59,7 +59,7 @@
     applySidebar(document.documentElement.classList.contains("sidebar-collapsed"));
   }
 
-  fetch("/api/content/me", { credentials: "include" })
+  fetch(window.fastNewsApi("/api/content/me"), { credentials: "include" })
     .then((response) => (response.ok ? response.json() : null))
     .then((payload) => {
       if (!payload) return;
@@ -77,7 +77,7 @@
     })
     .catch(() => {});
 
-  fetch("/api/content/inbox", { credentials: "include" })
+  fetch(window.fastNewsApi("/api/content/inbox"), { credentials: "include" })
     .then((response) => (response.ok ? response.json() : null))
     .then((payload) => {
       if (!payload) return;

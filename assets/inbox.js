@@ -76,8 +76,8 @@
   }
   async function markRead(ids) {
     try {
-      const profile = await fetch("/api/content/me", {credentials:"include"}).then(r => r.json());
-      const response = await fetch("/api/content/inbox", {
+      const profile = await fetch(window.fastNewsApi("/api/content/me"), {credentials:"include"}).then(r => r.json());
+      const response = await fetch(window.fastNewsApi("/api/content/inbox"), {
         method: "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json", ...(profile.csrf ? {"X-CSRF-Token":profile.csrf} : {}) },

@@ -39,7 +39,7 @@
     bounce();
     return;
   }
-  fetch("/api/content/me", { credentials: "include" })
+  fetch(window.fastNewsApi("/api/content/me"), { credentials: "include" })
     .then((response) => (response.ok ? response.json() : Promise.reject()))
     .then((payload) => {
       if (!payload || !(payload.keyId || payload.userId)) throw new Error("no session");
