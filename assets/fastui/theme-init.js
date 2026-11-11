@@ -1,4 +1,4 @@
-// Generated from @fastrd/ui-foundation 0.1.0; do not edit.
+// Generated from @fastrd/ui-foundation 0.1.2; do not edit.
 (() => {
 // packages/foundation/src/index.ts
 var parse = (value) => value === "light" || value === "dark" ? value : "system";

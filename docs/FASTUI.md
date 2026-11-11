@@ -1,4 +1,4 @@
-# FastUI 0.1.0
+# FastUI 0.1.2
 
 构建时执行，生成资产与页面一同部署：
 
@@ -7,7 +7,7 @@ python scripts/supply_fastui.py
 python generate_homepage.py
 ```
 
-离线构建可将第一条改为 `python scripts/supply_fastui.py --artifact /path/to/fastrd-ui-foundation-0.1.0.tgz`。两种入口校验同一个固定 SHA-256；`assets/fastui/provenance.json` 记录版本、release URL、包摘要和逐文件摘要。该目录是生成物，升级时改供应脚本的版本和摘要并重新构建；不编辑供应的 CSS/JS。运行时只请求本站资产，无 npm/CDN。
+离线构建可将第一条改为 `python scripts/supply_fastui.py --artifact /path/to/ui-foundation-0.1.2.tgz`。两种入口校验同一个固定 SHA-256；`assets/fastui/provenance.json` 记录版本、官方 npm tarball URL、包摘要和逐文件摘要。该目录是生成物，升级时从公开 registry metadata 确认实际 tarball URL 并下载核准版本和摘要，再改供应脚本并重新构建；不编辑供应的 CSS/JS。运行时只请求本站资产，无 npm/CDN。
 
 主页模板生成根页面和 top-conf、secnews、field-briefing、summary-brief、inbox、impression 七个入口。head 从 `asset_prefix` 同步加载经典脚本 `fastui/theme-init.js`，先迁移旧 key 再由唯一 foundation controller 初始化首屏；`gate.js` 放行内容前颜色已解析。`assets/theme.js` 为 defer 脚本，只连接同一 controller 的按钮/图标，不再初始化或监听系统/storage。
 
