@@ -35,7 +35,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: FastR-D/FastDeploy
-          ref: cc223a0b83b0ef2389974dd70a4b74148cd1af87
+          ref: 9a2c51dcd63f47a0e6c8f6bb07bd22ea589abbd2
           path: .fastdeploy-tools
           persist-credentials: false
       - name: Package the tested runtime
@@ -50,7 +50,7 @@ jobs:
   deploy:
     needs: validate
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-    uses: FastR-D/FastDeploy/.github/workflows/deploy.yml@cc223a0b83b0ef2389974dd70a4b74148cd1af87
+    uses: FastR-D/FastDeploy/.github/workflows/deploy.yml@9a2c51dcd63f47a0e6c8f6bb07bd22ea589abbd2
     with:
       app: fastnews
       artifact-name: release-${{ github.sha }}
@@ -61,9 +61,10 @@ jobs:
         FASTNEWS_FASTCAS_ALLOW_LOOPBACK_HTTP=false
         FASTNEWS_FASTCAS_CLIENT_ID=news
         FASTNEWS_FASTCAS_ISSUER=https://cas.fastrd.io
-        FASTNEWS_FASTCAS_REDIRECT_URI=https://fastrd.io/news/api/auth/fastcas/callback
+        FASTNEWS_FASTCAS_REDIRECT_URI=https://news.fastrd.io/api/auth/fastcas/callback
         FASTNEWS_HOST=127.0.0.1
         FASTNEWS_PORT=8788
+        FASTNEWS_PUBLIC_ORIGIN=https://news.fastrd.io
         FASTNEWS_PUBLIC_PATH=/news
         FASTNEWS_ROOT=/home/dev/FastNews
         FASTREAD_URL=https://fastrd.io/read
