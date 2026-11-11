@@ -15,12 +15,15 @@ class CASService:
         env = os.environ if env is None else env
         self.accounts, self._sdk, self._lock = accounts, sdk, threading.Lock()
         self.config = {key:env.get('FASTNEWS_FASTCAS_'+key.upper(),'') for key in ('issuer','client_id','client_secret','redirect_uri')}
-        self.enabled = all(self.config.values())
-        if any(self.config.values()) and not self.enabled:
+        configured = env.get('FASTNEWS_FASTCAS_ENABLED') != 'false'
+        self.login_enabled = configured and env.get('FASTNEWS_FASTCAS_LOGIN_ENABLED') != 'false'
+        self.link_enabled = configured and env.get('FASTNEWS_FASTCAS_LINK_ENABLED') != 'false'
+        self.enabled = configured and all(self.config.values())
+        if configured and any(self.config.values()) and not self.enabled:
             raise ValueError('FastCAS requires all four connection settings')
         self.development = env.get('FASTNEWS_FASTCAS_ALLOW_LOOPBACK_HTTP') == 'true'
         self.store = CASStore(accounts,self.config['issuer'],self.config['client_id'])
-        self.research_enabled = env.get('FASTNEWS_FASTCAS_RESEARCH_CONNECT') == 'true'
+        self.research_enabled = self.enabled and env.get('FASTNEWS_FASTCAS_RESEARCH_CONNECT') == 'true'
         self.research_url = env.get('FASTRESEARCH_API_URL','')
         if self.research_enabled:
             if not self.enabled:
@@ -53,10 +56,14 @@ class CASService:
         return session
 
     def begin_link(self, binding, raw, password, peer):
+        if not self.link_enabled:
+            raise AccountError('此实例已关闭新的 FastCAS 认证',403)
         session = self.prove(raw,password,peer)
         return self.sdk.begin_link(binding,local_account_ref=session['user_id'],local_session_id=session['hash'])
 
     def begin_login(self, binding):
+        if not self.login_enabled:
+            raise AccountError('此实例已关闭 FastCAS 登录',403)
         scopes = ['openid','profile','email','offline_access','research:read'] if self.research_enabled else None
         return self.sdk.begin_login(binding,scopes=scopes)
 
@@ -82,6 +89,8 @@ class CASService:
         if not self.same_identity(local,remote):
             raise AccountError('认证关系不匹配',403)
         if remote['state'] == 'prepared':
+            if not self.link_enabled:
+                raise AccountError('此实例已关闭新的 FastCAS 认证',403)
             remote = self.sdk.activate_link(remote['id'])
         self.accept(remote)
         return remote
@@ -90,6 +99,8 @@ class CASService:
         session = self.accounts.session(raw)
         result = self.sdk.finish_login(callback,binding,local_account_ref=session['user_id'] if session else '',local_session_id=session['hash'] if session else '')
         if result['transaction']['purpose'] == 'link':
+            if not self.link_enabled:
+                raise AccountError('此实例已关闭新的 FastCAS 认证',403)
             link = self.sdk.prepare_link(result)
             with self.accounts.connect(True) as db:
                 live = db.execute("SELECT s.user_id FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.hash=? AND s.expires>? AND u.status='active'",(session['hash'],time.time())).fetchone() if session else None
@@ -98,6 +109,8 @@ class CASService:
                 self.store.save_in_transaction(db,link)
             self.accept(self.sdk.activate_link(link['id']))
             return None
+        if not self.login_enabled:
+            raise AccountError('此实例已关闭 FastCAS 登录',403)
         if result['transaction']['purpose'] != 'login':
             raise AccountError('请先按项目邀请注册账号',403)
         local = self.store.subject(result['identity']['subject'])

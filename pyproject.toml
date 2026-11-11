@@ -20,7 +20,7 @@ dependencies = [
 
 [project.optional-dependencies]
 fastcas = [
-    "fastcas-sdk==0.1.1",
+    "fastcas-sdk==0.1.2",
     "cryptography>=50.0.1",
 ]
 

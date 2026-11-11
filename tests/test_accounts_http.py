@@ -27,7 +27,7 @@ def test_real_handler_local_login_csrf_and_logout(tmp_path, monkeypatch):
     thread.start()
     try:
         with httpx.Client(base_url=f'http://127.0.0.1:{server.server_port}') as client:
-            assert client.get('/api/auth/fastcas/available').json() == {'enabled':False}
+            assert client.get('/api/auth/fastcas/available').json() == {'enabled':False,'login_enabled':False,'link_enabled':False}
             assert client.get('/api/auth/fastcas/login').status_code == 404
             assert client.get('/login').status_code == 200
             assert '__FASTNEWS_BASE__' not in client.get('/login').text

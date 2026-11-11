@@ -21,11 +21,13 @@ jobs:
 
   deploy:
     needs: check
-    if: ${{ secrets.DEPLOY_SSH_KEY != '' }}
+    env:
+      DEPLOY_ENABLED: ${{ secrets.DEPLOY_SSH_KEY != '' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - name: Prepare SSH
+        if: env.DEPLOY_ENABLED == 'true'
         env:
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
@@ -58,4 +60,5 @@ jobs:
           chmod 600 "$HOME/.ssh/config"
 
       - name: Deploy over SSH
+        if: env.DEPLOY_ENABLED == 'true'
         run: ssh deploy 'bash /home/dev/FastNews/scripts/deploy-local.sh --force'

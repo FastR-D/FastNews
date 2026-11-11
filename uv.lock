@@ -285,14 +285,14 @@ wheels = [
 
 [[package]]
 name = "fastcas-sdk"
-version = "0.1.1"
+version = "0.1.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "authlib" },
     { name = "httpx" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/18/ca/563b7a8d8db0dbaf0e4ab1083f941e0a77ade6cd55ed3d515c1304e0b44d/fastcas_sdk-0.1.1-py3-none-any.whl", hash = "sha256:64ab7f5993feffc8482f9153e63df9c01ab4e834a953057247e8e34c576e0dc4", size = 13861, upload-time = "2026-11-04T08:48:15.058Z" },
+    { url = "https://files.pythonhosted.org/packages/df/51/0656d48c0b9d30f2b087f3dbaeaf9b71d653d69ab23d7d79534d70e627c6/fastcas_sdk-0.1.2-py3-none-any.whl", hash = "sha256:6352da96790c9339757c1fd46e8e1ae0d1f0ca71309c03c9d01e316fa6cdbd4b", size = 13915, upload-time = "2026-11-11T08:12:32.696Z" },
 ]
 
 [[package]]
@@ -333,7 +333,7 @@ requires-dist = [
     { name = "authlib", specifier = ">=1.3.2" },
     { name = "beautifulsoup4", specifier = ">=4.14.3" },
     { name = "cryptography", marker = "extra == 'fastcas'", specifier = ">=50.0.1" },
-    { name = "fastcas-sdk", marker = "extra == 'fastcas'", specifier = "==0.1.1" },
+    { name = "fastcas-sdk", marker = "extra == 'fastcas'", specifier = "==0.1.2" },
     { name = "feedparser", specifier = ">=6.0.12" },
     { name = "httpx", specifier = ">=0.27.0" },
     { name = "jinja2", specifier = ">=3.1.6" },

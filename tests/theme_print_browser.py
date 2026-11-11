@@ -106,6 +106,19 @@ def run(browser_path, output):
                         check(f'theme-button-{stored}-{legacy}', after, after['theme'] != expected)
                         context.close()
 
+                    context = browser.new_context(color_scheme='light')
+                    context.add_init_script("localStorage.setItem('fastresearch-theme', 'dark')")
+                    page = context.new_page()
+                    for section in ['top-conf', 'secnews', 'field-briefing', 'summary-brief', 'inbox', 'impression']:
+                        response = page.goto(origin + '/' + section + '/index.html', wait_until='domcontentloaded')
+                        page.wait_for_function("document.documentElement.classList.contains('fastnews-ready')")
+                        observed = appearance(page)
+                        check('section-' + section, observed, response.status == 200 and observed['theme'] == 'dark' and observed['ready'] and observed['appVisible'])
+                        page.locator('#fastnews-account-link').click()
+                        page.wait_for_url(origin + '/login')
+                        check('section-account-' + section, appearance(page), page.locator('#form').is_visible())
+                    context.close()
+
                     rendered = templates()
                     archived = ['top-conf/data/report/CCS_2026_Report.html', 'secnews/data/report/2026.9.1-report.html']
                     baseline = subprocess.check_output(['git', 'show', 'HEAD:' + archived[0]], cwd=ROOT).decode('utf-8')
@@ -149,6 +162,9 @@ def run(browser_path, output):
                     context.close()
                 finally:
                     browser.close()
+
+            # Keep completed browser evidence even when host PDF libraries fail.
+            (output / 'browser-results.json').write_text(json.dumps({'results': results, 'failures': failures}, indent=2), encoding='utf-8')
 
             # Render actual template output with JS disabled by WeasyPrint, then
             # inspect rendered PDF pixels and selectable text, not a print-CSS string.
