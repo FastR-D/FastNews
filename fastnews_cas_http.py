@@ -33,7 +33,7 @@ def dispatch(handler, path, public_base=''):
         return handler.rfile.read(size)
     try:
         if path.endswith('/available') and handler.command == 'GET':
-            reply(handler,200,{'enabled':service.enabled})
+            reply(handler,200,{'enabled':service.enabled,'login_enabled':service.enabled and service.login_enabled,'link_enabled':service.enabled and service.link_enabled})
             return True
         if not service.enabled:
             raise AccountError('未启用 FastCAS',404)
@@ -74,7 +74,7 @@ def dispatch(handler, path, public_base=''):
             if not current:
                 raise AccountError('请先登录本地账号',401)
             if path.endswith('/status') and handler.command == 'GET':
-                reply(handler,200,{'enabled':True,'link':service.store.current(current['user_id'])})
+                reply(handler,200,{'enabled':True,'link_enabled':service.link_enabled,'link':service.store.current(current['user_id'])})
                 return True
             target = urlparse(service.config['redirect_uri'])
             if handler.command != 'POST' or handler.headers.get('Origin') != target.scheme+'://'+target.netloc:

@@ -4,7 +4,7 @@ FastNews 的本地登录、邀请注册和恢复独立于 FastCAS。FastCAS 只�
 
 ## 本地运行
 
-使用 `uv sync` 安装本地账号依赖，启用 FastCAS 时使用 `uv sync --extra fastcas` 安装同级 FastCAS Python SDK。服务器数据目录由 `FASTNEWS_DATA_DIR` 指定，默认 `.fastnews-data`；SQLite 保存稳定用户 UUID、密码哈希、摘要会话、一次性凭证和个人内容。新目录权限 0700，数据库 0600。
+使用 `uv sync` 安装本地账号依赖，启用 FastCAS 时使用 `uv sync --extra fastcas` 安装锁定的 PyPI FastCAS SDK 0.1.2。服务器数据目录由 `FASTNEWS_DATA_DIR` 指定，默认 `.fastnews-data`；SQLite 保存稳定用户 UUID、密码哈希、摘要会话、一次性凭证和个人内容。新目录权限 0700，数据库 0600。
 
 管理员命令：
 
@@ -55,3 +55,17 @@ CAS 来源会话可调用 `/api/auth/research/live` 实时读取 Research 的关
 FastCAS 应用登记还需设置 `backchannel_logout_uri` 为 `/api/auth/fastcas/backchannel-logout`。接收端验证标准签名 `logout_token`，按身份及可选 sid 原子去重，只撤销 FastCAS 来源会话；项目本地登录、账号、内容和权限保持独立。
 
 `events_uri` 同时接收签名 `identity.status_changed` 通知。中心停用只终止对应 FastCAS 来源会话，重新启用不恢复旧会话；本地密码登录、个人印象和收件箱不受影响。真实提供方到 FastNews 接收端的状态事件契约已通过。
+
+## 独立启停开关（2026-11-11）
+
+四项连接配置完整时默认启用，未配置时保留原有入口且不访问中心。可显式设置：
+
+| 环境变量 | 默认 | 行为 |
+| --- | --- | --- |
+| `FASTNEWS_FASTCAS_ENABLED` | `true`（仍需完整连接配置） | `false` 时完全关闭可选 FastCAS provider，允许保留未填完的配置 |
+| `FASTNEWS_FASTCAS_LOGIN_ENABLED` | `true` | `false` 时隐藏并拒绝新的 FastCAS 登录，阻断已发起登录的回调签发会话 |
+| `FASTNEWS_FASTCAS_LINK_ENABLED` | `true` | `false` 时拒绝新的已有账号绑定及 pending 激活，仍允许查询和撤销已有关系 |
+
+使用字面量 `false` 关闭。两个分项开关不会阻断签名事件、来源会话撤销或原本地登录，也不改变账号和业务数据；全局关闭时 CAS 来源会话在项目原有有效性检查边界失效。保留独立的本地恢复方式后再关闭中心登录。
+
+发布依赖基线更新为 FastCAS SDK **0.1.2**：使用正式 npm/PyPI 包或 Go 模块标签，不再依赖同级 FastCAS 源码目录。开发者修改 SDK 时可自行使用本地 override；生产锁文件固定已验收版本。

@@ -81,3 +81,28 @@ def test_connector_requires_distinct_vault_key(tmp_path):
     accounts = Accounts(tmp_path)
     env = {'FASTNEWS_FASTCAS_'+key:value for key,value in dict(ISSUER='https://cas.example',CLIENT_ID='news',CLIENT_SECRET='secret',REDIRECT_URI='https://news.example/callback',RESEARCH_CONNECT='true').items()}
     with pytest.raises(ValueError): CASService(accounts,env=env)
+
+
+def test_independent_modes_keep_local_login_and_revocation(tmp_path):
+    accounts = Accounts(tmp_path)
+    user = accounts.create('reader@example.com', 'original-password')
+    local, _ = accounts.login('reader@example.com', 'original-password', 'peer')
+    class SDK:
+        link = dict(id='link',client_id='news',subject='subject',local_account_ref=user,state='prepared',version=1)
+        def get_link(self, _): return self.link.copy()
+        def activate_link(self, _): pytest.fail('Disabled link mode activated an account')
+        def begin_login(self, *args, **kwargs): pytest.fail('Disabled login mode contacted provider')
+    sdk = SDK()
+    env = {'FASTNEWS_FASTCAS_'+key:value for key,value in dict(ISSUER='https://cas.example',CLIENT_ID='news',CLIENT_SECRET='secret',REDIRECT_URI='https://news.example/callback',LOGIN_ENABLED='false',LINK_ENABLED='false').items()}
+    service = CASService(accounts, sdk, env)
+    service.store.save(sdk.link)
+    assert service.enabled and not service.login_enabled and not service.link_enabled
+    with pytest.raises(AccountError): service.begin_login('binding')
+    with pytest.raises(AccountError): service.begin_link('binding', local, 'original-password', 'peer')
+    with pytest.raises(AccountError): service.reconcile(user)
+    sdk.link.update(state='revoked', version=2)
+    service.revoke(local, 'original-password', 'peer')
+    assert accounts.session(local) and service.store.current(user) is None
+    disabled = CASService(accounts, env={'FASTNEWS_FASTCAS_ENABLED':'false', 'FASTNEWS_FASTCAS_ISSUER':'https://cas.example', 'FASTNEWS_FASTCAS_RESEARCH_CONNECT':'true'})
+    assert not disabled.enabled and not disabled.research_enabled
+    with pytest.raises(AccountError): _ = disabled.sdk
