@@ -4,7 +4,9 @@ FastNews 的本地登录、邀请注册和恢复独立于 FastCAS。FastCAS 只�
 
 ## 本地运行
 
-使用 `uv sync` 安装本地账号依赖，启用 FastCAS 时使用 `uv sync --extra fastcas` 安装锁定的 PyPI FastCAS SDK 0.1.2。服务器数据目录由 `FASTNEWS_DATA_DIR` 指定，默认 `.fastnews-data`；SQLite 保存稳定用户 UUID、密码哈希、摘要会话、一次性凭证和个人内容。新目录权限 0700，数据库 0600。
+使用 `uv sync --locked` 安装本地账号及默认 dev 依赖；运行部署可用 `uv sync --locked --no-dev`。启用 FastCAS 时使用 `uv sync --locked --extra fastcas`，从 PyPI 安装固定发行版 `fastcas-sdk==0.1.2`（导入名 `fastcas`），完整 uv.lock 记录制品摘要，不需要相邻 SDK checkout。关闭 CAS 的部署不需要此 extra。服务器数据目录由 `FASTNEWS_DATA_DIR` 指定，默认 `.fastnews-data`；SQLite 保存稳定用户 UUID、密码哈希、摘要会话、一次性凭证和个人内容。新目录权限 0700，数据库 0600。
+
+浏览器/打印回归环境用 `uv sync --locked --extra fastcas --group browser`，额外安装 Playwright 与 PyMuPDF；它们仅在 browser 依赖组，不属于运行时 dependencies。测试使用已有 Chromium 时直接传其路径；需要 Playwright 管理的浏览器时另执行 `uv run --locked --group browser python -m playwright install chromium`。WeasyPrint 的平台 Pango/GTK 运行库仍需由宿主提供；安装 Python 依赖不等于这些系统库已安装。主题/打印场景入口为 `PYTHONPATH=. uv run --locked --group browser python tests/theme_print_browser.py <chromium路径> <证据目录>`；该场景详见 `FASTUI.md`，本次依赖迁移不修改测试脚本。
 
 管理员命令：
 

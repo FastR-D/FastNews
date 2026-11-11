@@ -61,7 +61,7 @@
 
   async function loadImpression() {
     try {
-      const response = await fetch("/api/content/impression", { credentials: "include" });
+      const response = await fetch(window.fastNewsApi("/api/content/impression"), { credentials: "include" });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload.error || "load failed");
       const impression = payload.impression || {};
@@ -78,8 +78,8 @@
     submit.disabled = true;
     setStatus("正在保存…", "pending");
     try {
-      const profile = await fetch("/api/content/me", {credentials:"include"}).then(r => r.json());
-      const response = await fetch("/api/content/impression", {
+      const profile = await fetch(window.fastNewsApi("/api/content/me"), {credentials:"include"}).then(r => r.json());
+      const response = await fetch(window.fastNewsApi("/api/content/impression"), {
         method: "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json", ...(profile.csrf ? {"X-CSRF-Token":profile.csrf} : {}) },

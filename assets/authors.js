@@ -101,7 +101,7 @@
   async function persistRemote() {
     if (!researchSession) return;
     try {
-      await fetch("/api/content/authors", {
+      await fetch(window.fastNewsApi("/api/content/authors"), {
         method: "PUT",
         credentials: "include",
         headers: {
@@ -145,14 +145,14 @@
   }
 
   async function fetchCookieSession() {
-    const response = await fetch("/api/content/me", { credentials: "include" });
+    const response = await fetch(window.fastNewsApi("/api/content/me"), { credentials: "include" });
     const payload = await response.json().catch(() => ({}));
     if (!response.ok || !(payload.keyId || payload.userId)) return null;
     return sessionFromPayload("", payload);
   }
 
   async function fetchRemoteAuthors() {
-    const response = await fetch("/api/content/authors", {
+    const response = await fetch(window.fastNewsApi("/api/content/authors"), {
       credentials: "include",
       headers: researchSession.session ? { Authorization: `Bearer ${researchSession.session}` } : {},
     });

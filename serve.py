@@ -723,19 +723,15 @@ def resolve_public_file(url_path: str) -> Path | None:
         return None
     root = public_root()
     code = Path(os.environ.get("FASTNEWS_CODE_ROOT", str(root))).resolve()
-    if (rel.startswith(("assets/", "api/")) or Path(rel).suffix.lower() in {".html", ".ico"}) and (code / rel).is_file():
+    if (code / rel).is_dir() or (root / rel).is_dir():
+        rel = posixpath.join(rel, "index.html")
+    if "data" not in Path(rel).parts and (rel.startswith(("assets/", "api/")) or Path(rel).suffix.lower() in {".html", ".ico"}) and (code / rel).is_file():
         root = code
     candidate = (root / rel).resolve()
     try:
         candidate.relative_to(root)
     except ValueError:
         return None
-    if candidate.is_dir():
-        candidate = (candidate / "index.html").resolve()
-        try:
-            candidate.relative_to(root)
-        except ValueError:
-            return None
     if not candidate.is_file():
         return None
     if candidate.suffix.lower() not in ALLOWED_SUFFIXES:

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" class="fastnews-report">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,22 +8,6 @@
   @page {
     size: A4;
     margin: 16mm;
-  }
-
-  :root {
-    --app-bg: #f0f5f2;
-    --muted-bg: #eaf1ec;
-    --surface: #ffffff;
-    --border: #d6e3db;
-    --primary: #155e45;
-    --primary-deep: #104936;
-    --primary-soft: #e8f3ed;
-    --accent-soft: #fffbeb;
-    --accent-border: #fde68a;
-    --accent-text: #92400e;
-    --text: #172720;
-    --muted: #567265;
-    --subtle: #7f998d;
   }
 
   * {
@@ -70,7 +54,7 @@
     height: 32px;
     border-radius: 8px;
     background: var(--primary-soft);
-    border: 1px solid #d4e7df;
+    border: 1px solid var(--border);
     color: var(--primary);
     display: inline-flex;
     align-items: center;
@@ -207,7 +191,7 @@
 
   .article-intro {
     margin: 8px 0 0;
-    color: #26312d;
+    color: var(--text);
     font-size: 13px;
     text-align: justify;
   }
@@ -251,49 +235,7 @@
     }
   }
 
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --app-bg: #151a19;
-      --muted-bg: #202925;
-      --surface: #1b2220;
-      --border: #2d3934;
-      --primary: #2dd4bf;
-      --primary-deep: #5eead4;
-      --primary-soft: #042f2e;
-      --accent-soft: #431407;
-      --accent-border: #7c2d12;
-      --accent-text: #fde68a;
-      --text: #f3f4f6;
-      --muted: #a5b1ab;
-      --subtle: #7f8c86;
-    }
-
-    .header-icon {
-      border-color: #315147;
-    }
-
-    .article-intro {
-      color: #d8dfdb;
-    }
-  }
-
   @media print {
-    :root {
-      --app-bg: #ffffff;
-      --muted-bg: #eaf1ec;
-      --surface: #ffffff;
-      --border: #d6e3db;
-      --primary: #155e45;
-      --primary-deep: #104936;
-      --primary-soft: #e8f3ed;
-      --accent-soft: #fffbeb;
-      --accent-border: #fde68a;
-      --accent-text: #92400e;
-      --text: #172720;
-      --muted: #567265;
-      --subtle: #7f998d;
-    }
-
     body {
       background: #ffffff;
       font-size: 11pt;
@@ -308,10 +250,8 @@
       margin-top: 8mm;
     }
   }
-  /* FastResearch console layer */
-  :root { --app-bg:#0b1a14; --muted-bg:#12261d; --surface:#12261d; --border:rgba(141,198,200,.18); --primary:#65ead9; --primary-deep:#9cfff2; --primary-soft:rgba(101,234,217,.08); --accent:#ffc36d; --accent-soft:rgba(255,195,109,.1); --accent-border:rgba(255,195,109,.35); --accent-text:#ffc36d; --text:#e7f1f0; --muted:#89a1a3; --subtle:#587478; }
-  body { font-family:'Space Grotesk','Noto Sans SC',Inter,sans-serif; background:radial-gradient(circle at 80% -10%,rgba(28,77,56,.65),transparent 35%),var(--app-bg); color:var(--text); } .sidebar { background:rgba(18,38,29,.88); border-color:var(--border); } .topbar { background:rgba(11,26,20,.78); border-color:var(--border); } .surface { background:rgba(18,38,29,.88); border-color:var(--border); box-shadow:0 8px 28px rgba(0,0,0,.16); } h1 { font-family:'Space Grotesk','Noto Sans SC',sans-serif; font-size:clamp(28px,4vw,48px); font-weight:500; letter-spacing:-.04em; } .article-title a { color:var(--primary); } .article:hover { background:rgba(101,234,217,.06); }
 </style>
+<style>{{ report_css | safe }}</style>
 </head>
 <body>
 <main class="page">

@@ -5,6 +5,10 @@ from datetime import datetime, UTC, timedelta
 from pathlib import Path
 
 from jinja2 import Template
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from fastui_report import report_assets
 import subprocess, platform
 
 # On macOS, WeasyPrint needs Homebrew native libs (pango, glib)
@@ -98,6 +102,7 @@ def main():
 
     report_title = get_report_title(datetime.strptime(end_date, '%Y-%m-%d'))
     html_content = template.render(
+        **report_assets(),
         report_title=report_title,
         date_range=date_range,
         sections={
