@@ -31,6 +31,7 @@ def test_existing_account_login_and_revoke_without_local_dependency(tmp_path):
 
 
 def test_delegated_research_vault_refresh_and_session_isolation(tmp_path, monkeypatch):
+    monkeypatch.setenv("FASTRESEARCH_API_URL", "http://127.0.0.1:8787")
     accounts = Accounts(tmp_path)
     user = accounts.create('reader@example.com','original-password')
     local, _ = accounts.login('reader@example.com','original-password','peer')

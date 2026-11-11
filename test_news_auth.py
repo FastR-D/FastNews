@@ -55,25 +55,14 @@ class NewsAuthTests(unittest.TestCase):
         except urllib.error.HTTPError as exc:
             return exc.code, dict(exc.headers), exc.read()
 
-    def test_offline_local_account_and_no_database_on_failed_login(self):
-        database = self.root / "accounts.sqlite"
-        status, _, _ = self.request("/auth/login", "POST", {"username": "a", "password": "wrong-password"})
-        self.assertEqual(status, 400)
-        self.assertFalse(database.exists())
-        status, headers, data = self.request("/auth/register", "POST", {"invite": "test-invite", "username": "Alice", "display_name": "同名", "password": "strong-password-1"})
-        self.assertEqual(status, 201)
-        self.assertTrue(database.exists())
-        self.assertTrue(json.loads(data)["recoveryCode"])
-        cookie = headers["Set-Cookie"].split(";", 1)[0]
-        self.assertTrue(cookie.startswith("fastnews_session="))
-        self.assertEqual(self.request("/", cookie=cookie)[0], 200)
-        self.assertEqual(self.request("/api/content/me", cookie=cookie)[0], 200)
-        status, _, data = self.request("/api/content/authors", "PUT", {"authors": [{"name": "Alice"}], "customTags": ["AI"]}, cookie)
-        self.assertEqual(status, 200)
-        self.assertEqual(len(json.loads(data)["authors"]), 1)
-        self.assertEqual(self.request("/api/content/authors", cookie=cookie)[0], 200)
-        self.assertEqual(self.request("/auth/fastcas/available")[0], 200)
-        self.assertEqual(self.request("/api/me/research")[0], 401)
+    def test_removed_legacy_auth_does_not_create_database(self):
+        # Independent accounts now use /api/auth/*, with Origin and CSRF checks.
+        # The retired /auth/* endpoints must not recreate the legacy database.
+        for path in ("/auth/login", "/auth/register"):
+            status, _, _ = self.request(path, "POST", {"username": "a", "password": "wrong-password"})
+            self.assertEqual(status, 405)
+        self.assertFalse((self.root / "accounts.sqlite").exists())
+        self.assertEqual(self.request("/")[0], 200)
 
 
 if __name__ == "__main__":

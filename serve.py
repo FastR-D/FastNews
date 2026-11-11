@@ -722,17 +722,16 @@ def resolve_public_file(url_path: str) -> Path | None:
     if rel.startswith(".") or "/." in f"/{rel}":
         return None
     root = public_root()
+    code = Path(os.environ.get("FASTNEWS_CODE_ROOT", str(root))).resolve()
+    if (code / rel).is_dir() or (root / rel).is_dir():
+        rel = posixpath.join(rel, "index.html")
+    if "data" not in Path(rel).parts and (rel.startswith(("assets/", "api/")) or Path(rel).suffix.lower() in {".html", ".ico"}) and (code / rel).is_file():
+        root = code
     candidate = (root / rel).resolve()
     try:
         candidate.relative_to(root)
     except ValueError:
         return None
-    if candidate.is_dir():
-        candidate = (candidate / "index.html").resolve()
-        try:
-            candidate.relative_to(root)
-        except ValueError:
-            return None
     if not candidate.is_file():
         return None
     if candidate.suffix.lower() not in ALLOWED_SUFFIXES:
@@ -766,6 +765,19 @@ class FastNewsHandler(BaseHTTPRequestHandler):
 
     def _dispatch(self):
         parsed = urllib.parse.urlparse(self.path)
+        if parsed.path == '/api/health' and self.command in {'GET', 'HEAD'}:
+            # Readiness requires the persistent accounts store to be readable.
+            with self.server.accounts.connect() as db:
+                db.execute('SELECT 1 FROM users LIMIT 1').fetchone()
+            payload = b'{"ok":true}'
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Cache-Control', 'no-store')
+            self.send_header('Content-Length', str(len(payload)))
+            self.end_headers()
+            if self.command != 'HEAD':
+                self.wfile.write(payload)
+            return
         if parsed.path == '/login' and self.command in {'GET','HEAD'}:
             page = (Path(__file__).resolve().parent / 'assets/account.html').read_text(encoding='utf-8')
             page = page.replace('__FASTNEWS_BASE__', json.dumps(public_path().rstrip('/'))).encode('utf-8')
