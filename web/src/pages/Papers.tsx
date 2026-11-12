@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
-import { Badge, Button, EmptyState, Select, TextField } from '@fastrd/ui-react'
+import { useSearchParams } from 'react-router-dom'
+import { Badge, Button, EmptyState, Select, TextField, Toolbar } from '@fastrd/ui-react'
 import { Search } from 'lucide-react'
 import { api, message } from '../api'
 import { useApp } from '../context'
 import type { Generation, Paper } from '../types'
 import {
   Busy,
+  Metrics,
   ErrorMessage,
   PageHeading,
   Pagination,
@@ -15,15 +17,28 @@ import {
 } from '../components/Common'
 export default function Papers() {
   const { catalog, profile } = useApp()
-  const [query, setQuery] = useState(
-      () => new URLSearchParams(window.location.search).get('q') ?? '',
-    ),
-    [q, setQ] = useState(query),
-    [conference, setConference] = useState(''),
-    [year, setYear] = useState(''),
-    [category, setCategory] = useState(''),
-    [page, setPage] = useState(1),
-    [papers, setPapers] = useState<Paper[]>([]),
+  const [params, setParams] = useSearchParams()
+  const q = params.get('q') || ''
+  const conference = params.get('conference') || ''
+  const year = params.get('year') || ''
+  const category = params.get('category') || ''
+  const page = Math.max(1, Number(params.get('page')) || 1)
+  const [query, setQuery] = useState(q)
+  const setFilter = (key: string, value: string) => {
+    setParams((previous) => {
+      const next = new URLSearchParams(previous)
+      if (value) next.set(key, value)
+      else next.delete(key)
+      if (key !== 'page') next.delete('page')
+      return next
+    })
+    setRelated(null)
+  }
+  useEffect(() => {
+    setQuery(q)
+    setRelated(null)
+  }, [q])
+  const [papers, setPapers] = useState<Paper[]>([]),
     [total, setTotal] = useState(0),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(''),
@@ -55,11 +70,6 @@ export default function Papers() {
       })
     return () => abort.abort()
   }, [q, conference, year, category, page])
-  const filter = (fn: (s: string) => void, value: string) => {
-    fn(value)
-    setPage(1)
-    setRelated(null)
-  }
   async function findRelated() {
     setRanking(true)
     setError('')
@@ -83,7 +93,7 @@ export default function Papers() {
       })
       const byID = new Map(v.items?.map((i) => [i.id, i]))
       setRelated(
-        (v.candidates || papers)
+        (v.candidates || pool.papers)
           .filter((p) => byID.has(p.id))
           .map((p) => ({ ...p, reason: byID.get(p.id)?.reason }))
           .sort((a, b) => (byID.get(b.id)?.score || 0) - (byID.get(a.id)?.score || 0)),
@@ -99,32 +109,34 @@ export default function Papers() {
       <PageHeading
         title="顶会论文总结"
         description="按研究方向浏览 USENIX、IEEE S&P、NDSS 和 ACM CCS 等安全顶会总结。"
-        action={<Badge>Local Index</Badge>}
+        action={<Badge>四大安全顶会</Badge>}
       />
-      <section className="stats">
-        <div className="stat">
-          <strong>{catalog?.topPapers.toLocaleString() || '—'}</strong>
-          <span>已总结论文</span>
-        </div>
-        <div className="stat">
-          <strong>4</strong>
-          <span>会议</span>
-        </div>
-        <div className="stat">
-          <strong>{catalog?.categories.length || '—'}</strong>
-          <span>研究类别</span>
-        </div>
-      </section>
-      <div className="workspace papers-workspace">
-        <Panel title="论文检索" action={<span className="muted">{total} 篇</span>}>
+      <Metrics
+        items={[
+          { label: '已总结论文', value: catalog?.topPapers || '—', detail: '中文摘要与原文链接' },
+          { label: '安全顶会', value: 4, detail: 'USENIX · S&P · NDSS · CCS' },
+          {
+            label: '研究类别',
+            value: catalog?.categories.length || '—',
+            detail: '按方向定位相关工作',
+          },
+          { label: '当前结果', value: total, detail: '支持会议、年份与类别组合筛选' },
+        ]}
+      />
+      <div className="grid min-[1200px]:grid-cols-[minmax(0,1fr)_280px] gap-4 items-start">
+        <Panel
+          title="论文检索"
+          action={<span className="text-[var(--fastui-muted)]">{total} 篇</span>}
+        >
           <form
-            className="search-toolbar"
+            className="flex flex-wrap gap-2 p-3"
             onSubmit={(e) => {
               e.preventDefault()
-              filter(setQ, query)
+              setFilter('q', query.trim())
             }}
           >
             <TextField
+              className="flex-1 min-w-0"
               aria-label="搜索论文"
               placeholder="输入方向或关键词，使用向量检索…"
               value={query}
@@ -138,13 +150,28 @@ export default function Papers() {
               找 related work
             </Button>
           </form>
-          <div className="filter-grid">
+          <Toolbar label="筛选状态">
+            <span>{q ? `检索：${q}` : '全部研究方向'}</span>
+            <Button
+              className="ml-auto"
+              variant="quiet"
+              disabled={!params.size}
+              onClick={() => {
+                setParams({})
+                setQuery('')
+                setRelated(null)
+              }}
+            >
+              清除筛选
+            </Button>
+          </Toolbar>
+          <div className="grid sm:grid-cols-3 gap-3 p-3">
             <label className="fastui-field">
               会议
               <Select
                 aria-label="会议"
                 value={conference}
-                onChange={(e) => filter(setConference, e.target.value)}
+                onChange={(e) => setFilter('conference', e.target.value)}
               >
                 <option value="">全部会议</option>
                 {Object.entries(catalog?.conferences || {}).map(([id, name]) => (
@@ -159,7 +186,7 @@ export default function Papers() {
               <Select
                 aria-label="年份"
                 value={year}
-                onChange={(e) => filter(setYear, e.target.value)}
+                onChange={(e) => setFilter('year', e.target.value)}
               >
                 <option value="">全部年份</option>
                 {catalog?.years.map((y) => <option key={y}>{y}</option>)}
@@ -170,7 +197,7 @@ export default function Papers() {
               <Select
                 aria-label="研究类别"
                 value={category}
-                onChange={(e) => filter(setCategory, e.target.value)}
+                onChange={(e) => setFilter('category', e.target.value)}
               >
                 <option value="">全部类别</option>
                 {catalog?.categories.map((c) => <option key={c}>{c}</option>)}
@@ -179,7 +206,7 @@ export default function Papers() {
           </div>
           <ErrorMessage error={error} />
           {related && (
-            <div className="result-toolbar">
+            <div className="flex items-center justify-between gap-3 p-3">
               <span>Related work · {related.length} 篇</span>
               <Button onClick={() => setRelated(null)}>返回论文列表</Button>
             </div>
@@ -191,7 +218,14 @@ export default function Papers() {
           ) : (
             <EmptyState title="没有符合筛选条件的论文" />
           )}
-          {!related && <Pagination page={page} total={total} size={12} onChange={setPage} />}
+          {!related && (
+            <Pagination
+              page={page}
+              total={total}
+              size={12}
+              onChange={(value) => setFilter('page', String(value))}
+            />
+          )}
         </Panel>
         <aside>
           <Panel title="顶会报告">

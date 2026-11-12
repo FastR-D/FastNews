@@ -41,7 +41,7 @@ Go 可直接提供构建后的 SPA，也可由 nginx / 静态服务器提供 `we
 | 研究印象 | `/impression/` 或顶栏 | 最长 4000 字，按当前账号保存 |
 | 账号 | `/login` | 本地登录、邀请注册、恢复、FastCAS、Research 导入及持续连接 |
 
-原 `/index.html`、各栏目 `/index.html`、`/auth/login`、`/auth/account` 和 `?date=YYYY-MM-DD` 继续可用。原 `top-conf/data/report/`、`secnews/data/report/` 下的 HTML/PDF 地址保持；`?download=1` 返回附件。主题、可折叠导航和手机布局由 React 管理，控件、弹窗、状态与语义色由 FastUI 提供。
+原 `/index.html`、各栏目 `/index.html`、`/auth/login`、`/auth/account` 和 `?date=YYYY-MM-DD` 继续可用。原 `top-conf/data/report/`、`secnews/data/report/` 下的 HTML/PDF 地址保持；`?download=1` 返回附件。前端已重构为 FastUI 工作台：分组导航面板、页签报告库和手机导航弹窗；旧自定义 CSS 已全部删除。视觉与控件直接使用 FastUI，宿主布局使用 UnoCSS 工具类，论文筛选条件随 URL 保存。实现约定见 [FastUI 接入说明](docs/FASTUI.md)。
 
 ## 账号和身份
 

@@ -1,6 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { Badge, Button, Checkbox, SegmentedControl, TextField } from '@fastrd/ui-react'
+import {
+  Badge,
+  Button,
+  Checkbox,
+  InspectorSection,
+  SegmentedControl,
+  TextField,
+} from '@fastrd/ui-react'
 import { api, asset, message, setCSRF, safeURL } from '../api'
 import { useApp } from '../context'
 import { ErrorMessage, PageHeading, Panel } from '../components/Common'
@@ -14,7 +21,7 @@ type Connection = {
 export default function Account() {
   const { profile, refresh, notify } = useApp()
   const [params] = useSearchParams()
-  const [mode, setMode] = useState('login'),
+  const [mode, setMode] = useState(params.get('mode') === 'register' ? 'register' : 'login'),
     [name, setName] = useState(''),
     [email, setEmail] = useState(''),
     [password, setPassword] = useState(''),
@@ -154,18 +161,25 @@ export default function Account() {
       <PageHeading
         title="FastNews 账号"
         description="使用本地账号或 FastCAS 登录，个人内容归当前账号所有。"
-        action={<Link to="/">返回总览</Link>}
+        action={
+          <Link className="fastui-link" to="/">
+            返回总览
+          </Link>
+        }
       />
       {params.get('fastcas') === 'failed' && (
         <ErrorMessage error="FastCAS 登录未完成。请先使用本地账号登录并绑定，再重试。" />
       )}
-      {params.get('fastcas') === 'complete' && <p className="success-text">FastCAS 认证已完成。</p>}
+      {params.get('fastcas') === 'complete' && (
+        <p className="text-[var(--fastui-success)]">FastCAS 认证已完成。</p>
+      )}
       <ErrorMessage error={error} />
-      <div className="account-layout">
+      <div className="grid lg:grid-cols-2 gap-4 items-start">
         {!profile ? (
           <Panel title="登录与恢复">
             <form
-              className="account-form"
+              aria-label="本地账号"
+              className="grid gap-4 p-4 sm:p-6"
               onSubmit={(e) => {
                 e.preventDefault()
                 submit()
@@ -175,6 +189,7 @@ export default function Account() {
                 label="账号操作"
                 options={[
                   { value: 'login', label: '登录' },
+                  { value: 'register', label: '邀请注册' },
                   ...(mode === 'cas-register'
                     ? [{ value: 'cas-register', label: '完善平台账号' }]
                     : []),
@@ -187,7 +202,7 @@ export default function Account() {
                 }}
               />
               {mode === 'cas-register' && (
-                <label>
+                <label className="fastui-field">
                   姓名
                   <TextField
                     value={name}
@@ -235,22 +250,29 @@ export default function Account() {
                   ? '登录'
                   : mode === 'cas-register'
                     ? '创建并绑定账号'
-                    : '更新密码'}
+                    : mode === 'register'
+                      ? '创建账号'
+                      : '更新密码'}
               </Button>
               {cas?.login_enabled && (
-                <a className="file-link" href={asset('api/auth/fastcas/login')}>
+                <a
+                  className="fastui-button fastui-button--sm no-underline"
+                  href={asset('api/auth/fastcas/login')}
+                >
                   使用 FastCAS 登录
                 </a>
               )}
-              <p className="muted">已有账号可登录后绑定 FastCAS。恢复凭证由管理员发放。</p>
+              <p className="text-[var(--fastui-muted)]">
+                已有账号可登录后绑定 FastCAS。恢复凭证由管理员发放。
+              </p>
             </form>
           </Panel>
         ) : (
           <Panel title="当前账号" action={<Badge tone="success">已登录</Badge>}>
-            <div className="account-form">
+            <div className="grid gap-4 p-4 sm:p-6">
               <strong>{profile.person}</strong>
               <p>{profile.email}</p>
-              <p className="muted">
+              <p className="text-[var(--fastui-muted)]">
                 登录来源：
                 {profile.source === 'fastcas'
                   ? 'FastCAS'
@@ -282,11 +304,11 @@ export default function Account() {
         {profile && profile.source !== 'research' && <FastReadConnection key={profile.userId} />}
         {profile && profile.source !== 'research' && (
           <Panel title="FastCAS 认证">
-            <div className="account-form">
+            <div className="grid gap-4 p-4 sm:p-6">
               {cas?.enabled ? (
                 <>
                   <p>{link ? `绑定状态：${link.state}` : '尚未绑定 FastCAS 身份'}</p>
-                  <p className="muted">
+                  <p className="text-[var(--fastui-muted)]">
                     同邮箱或同名不会自动合并。绑定与解绑需要验证当前账号的本地密码。
                   </p>
                   <label className="fastui-field">
@@ -298,7 +320,7 @@ export default function Account() {
                       onChange={(e) => setProof(e.target.value)}
                     />
                   </label>
-                  <div className="row-actions">
+                  <div className="flex flex-wrap items-center gap-2">
                     {!link && cas.link_enabled && (
                       <Button
                         variant="primary"
@@ -326,25 +348,31 @@ export default function Account() {
                     )}
                   </div>
                   {cas.login_enabled && (
-                    <a href={asset('api/auth/fastcas/login')}>使用 FastCAS 重新登录</a>
+                    <a className="fastui-link" href={asset('api/auth/fastcas/login')}>
+                      使用 FastCAS 重新登录
+                    </a>
                   )}
                 </>
               ) : (
-                <p className="muted">此实例未启用 FastCAS，本地登录照常可用。</p>
+                <p className="text-[var(--fastui-muted)]">
+                  此实例未启用 FastCAS，本地登录照常可用。
+                </p>
               )}
             </div>
           </Panel>
         )}
         {profile && profile.source !== 'research' && (
-          <Panel title="Research 内容连接" className="workspace-wide">
-            <div className="account-form">
+          <Panel title="Research 内容连接" className="col-span-full">
+            <div className="grid gap-4 p-4 sm:p-6">
               {connection && (
-                <p className="success-text">
+                <p className="text-[var(--fastui-success)]">
                   已导入 {connection.counts.authors} 位作者、{connection.counts.inbox} 条私信 ·{' '}
-                  {new Date(connection.importedAt * 1000).toLocaleString('zh-CN')}
+                  {new Date(connection.importedAt * 1000).toLocaleString('zh-CN', {
+                    timeZone: 'Asia/Shanghai',
+                  })}
                 </p>
               )}
-              <p className="muted">
+              <p className="text-[var(--fastui-muted)]">
                 输入 Research Key，验证后复制关注作者、研究印象与收件箱。复制后两边各自保存。
               </p>
               <label className="fastui-field">
@@ -356,11 +384,11 @@ export default function Account() {
                   onChange={(e) => setKey(e.target.value)}
                 />
               </label>
-              <label className="checkbox-label">
+              <label className="flex items-center gap-2">
                 <Checkbox checked={replace} onChange={(e) => setReplace(e.target.checked)} />
                 明确替换本地已有作者、研究印象和私信
               </label>
-              <div className="row-actions">
+              <div className="flex flex-wrap items-center gap-2">
                 <Button
                   variant="primary"
                   disabled={!key}
@@ -389,10 +417,11 @@ export default function Account() {
                 )}
               </div>
               {live !== null && (
-                <details open>
-                  <summary>Research 实时内容</summary>
-                  <pre className="json-preview">{JSON.stringify(live, null, 2)}</pre>
-                </details>
+                <InspectorSection open label="Research 实时内容">
+                  <pre className="overflow-auto max-h-90 whitespace-pre-wrap break-all p-4 text-xs bg-[var(--fastui-raised)]">
+                    {JSON.stringify(live, null, 2)}
+                  </pre>
+                </InspectorSection>
               )}
             </div>
           </Panel>

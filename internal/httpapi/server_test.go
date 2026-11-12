@@ -32,11 +32,17 @@ func fixture(t *testing.T) *harness {
 		}
 	}
 	for _, name := range []string{"handoff.js", "report.css"} {
-		data, e := os.ReadFile(filepath.Join("..", "..", "web/public/reports", name))
-		if e != nil {
-			t.Fatal(e)
+		// CSS is now emitted from FastUI by Vite. The Go contract only needs
+		// a build-output fixture; npm assets are verified by browser tests.
+		data := []byte("/* Generated FastUI stylesheet fixture. */")
+		if name == "handoff.js" {
+			var e error
+			data, e = os.ReadFile(filepath.Join("..", "..", "web/public/reports", name))
+			if e != nil {
+				t.Fatal(e)
+			}
 		}
-		if e = os.WriteFile(filepath.Join(root, "web/dist/reports", name), data, 0600); e != nil {
+		if e := os.WriteFile(filepath.Join(root, "web/dist/reports", name), data, 0600); e != nil {
 			t.Fatal(e)
 		}
 	}

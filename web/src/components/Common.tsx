@@ -1,11 +1,28 @@
-import { useState, type ReactNode } from 'react'
+import { useId, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { Alert, Badge, Button, EmptyState, Loading } from '@fastrd/ui-react'
-import { ArrowUpRight, BookOpen, Download, ChevronLeft, ChevronRight } from 'lucide-react'
+import {
+  Alert,
+  Badge,
+  Button,
+  EmptyState,
+  InspectorSection,
+  Loading,
+  ListRow,
+  PanelHeader,
+  Section,
+  Toolbar,
+} from '@fastrd/ui-react'
+import { ArrowUpRight, BookOpen, Download, ChevronLeft, ChevronRight, FileText } from 'lucide-react'
 import { api, asset, message, safeURL } from '../api'
 import type { Paper, Report } from '../types'
+import { useApp } from '../context'
+
 export function ErrorMessage({ error }: { error: string }) {
-  return error ? <Alert tone="danger">{error}</Alert> : null
+  return error ? (
+    <Alert tone="danger" className="my-3 break-words">
+      {error}
+    </Alert>
+  ) : null
 }
 export function PageHeading({
   title,
@@ -17,10 +34,13 @@ export function PageHeading({
   action?: ReactNode
 }) {
   return (
-    <header className="page-heading">
-      <div>
-        <h1>{title}</h1>
-        <p>{description}</p>
+    <header className="flex flex-wrap items-start justify-between gap-4 mb-6">
+      <div className="min-w-0">
+        <span className="text-[var(--fastui-muted)] text-10px tracking-widest">
+          RESEARCH WORKSPACE
+        </span>
+        <h1 className="fastui-heading text-xl sm:text-2xl mt-1 mb-2">{title}</h1>
+        <p className="text-[var(--fastui-secondary)] m-0">{description}</p>
       </div>
       {action}
     </header>
@@ -37,14 +57,15 @@ export function Panel({
   action?: ReactNode
   className?: string
 }) {
+  const id = useId()
   return (
-    <section className={`panel ${className}`}>
-      <div className="panel-head">
-        <h2>{title}</h2>
-        {action}
-      </div>
+    <Section className={`min-w-0 overflow-hidden mb-4 ${className}`} aria-labelledby={id}>
+      <PanelHeader>
+        <h2 id={id}>{title}</h2>
+        <div className="ml-auto min-w-0 flex items-center gap-2">{action}</div>
+      </PanelHeader>
       {children}
-    </section>
+    </Section>
   )
 }
 export function LoginHint() {
@@ -52,7 +73,7 @@ export function LoginHint() {
     <EmptyState
       title="登录后管理个人内容"
       action={
-        <Link className="text-link" to="/login">
+        <Link className="fastui-link inline-flex items-center gap-1" to="/login">
           进入账号页 <ArrowUpRight size={13} />
         </Link>
       }
@@ -63,7 +84,7 @@ export function LoginHint() {
 }
 export function Busy() {
   return (
-    <div className="loading-wrap">
+    <div className="p-8 flex justify-center">
       <Loading label="正在加载…" />
     </div>
   )
@@ -81,8 +102,8 @@ export function Pagination({
 }) {
   const pages = Math.max(1, Math.ceil(total / size))
   return (
-    <nav className="pagination" aria-label="分页">
-      <span>共 {total} 项</span>
+    <Toolbar label="分页" className="justify-end">
+      <span className="mr-auto">共 {total} 项</span>
       <Button aria-label="上一页" disabled={page <= 1} onClick={() => onChange(page - 1)}>
         <ChevronLeft size={14} />
       </Button>
@@ -102,7 +123,7 @@ export function Pagination({
       <Button aria-label="下一页" disabled={page >= pages} onClick={() => onChange(page + 1)}>
         <ChevronRight size={14} />
       </Button>
-    </nav>
+    </Toolbar>
   )
 }
 export function PaperCard({ paper }: { paper: Paper }) {
@@ -119,35 +140,45 @@ export function PaperCard({ paper }: { paper: Paper }) {
       })
       const target = safeURL(result.redirect)
       if (target) window.location.assign(target)
-    } catch (e) {
-      setError(message(e))
+    } catch (error) {
+      setError(message(error))
     } finally {
       setBusy(false)
     }
   }
   return (
-    <article className="paper-row">
-      <h3>
+    <article
+      data-testid="paper-row"
+      className="min-w-0 p-4 grid gap-3 border-b border-b-solid border-b-[var(--fastui-border)]"
+    >
+      <div className="flex flex-wrap items-center gap-2 text-[var(--fastui-muted)]">
+        <Badge>{paper.category || paper.source}</Badge>
+        <span>{[paper.year, paper.venue].filter(Boolean).join(' · ')}</span>
+        {paper.cited_by !== undefined && <span>引用 {paper.cited_by}</span>}
+        {paper.award && <Badge tone="warning">杰出论文</Badge>}
+      </div>
+      <h3 className="fastui-heading m-0 text-sm break-words">
         {href ? (
-          <a href={href} target="_blank" rel="noreferrer">
-            {paper.title}
-            <ArrowUpRight size={12} />
+          <a className="fastui-link no-underline" href={href} target="_blank" rel="noreferrer">
+            {paper.title} <ArrowUpRight className="inline" size={12} />
           </a>
         ) : (
           paper.title
         )}
-        {paper.award && <Badge tone="warning">杰出论文</Badge>}
       </h3>
-      {paper.title_zh && <p className="paper-zh">{paper.title_zh}</p>}
-      {paper.summary && <p className="paper-summary">{paper.summary}</p>}
-      {paper.reason && <p className="paper-reason">{paper.reason}</p>}
-      <div className="paper-meta">
-        <Badge>{paper.category || paper.source}</Badge>
-        <span>{[paper.year, paper.venue].filter(Boolean).join(' · ')}</span>
-        {paper.cited_by !== undefined && <span>引用 {paper.cited_by}</span>}
-        <span className="paper-author">{paper.author || paper.authors}</span>
-      </div>
-      <div className="row-actions">
+      {paper.title_zh && <p className="m-0">{paper.title_zh}</p>}
+      {(paper.author || paper.authors) && (
+        <p className="m-0 text-[var(--fastui-muted)] break-words">
+          {paper.author || paper.authors}
+        </p>
+      )}
+      {paper.summary && (
+        <InspectorSection label="中文摘要">
+          <p className="m-0 leading-loose">{paper.summary}</p>
+        </InspectorSection>
+      )}
+      {paper.reason && <Alert tone="info">{paper.reason}</Alert>}
+      <div>
         <Button size="xs" loading={busy} onClick={open}>
           <BookOpen size={13} />
           跳转 FastRead
@@ -169,38 +200,83 @@ export function ReportList({
       {reports.length === 0 ? (
         <EmptyState title="暂无报告" />
       ) : (
-        reports.map((r) => (
-          <article className="report-row" key={r.html}>
-            <div>
-              <h3>
-                <a href={asset(r.html)} target="_blank" rel="noreferrer">
-                  {r.title}
-                  <ArrowUpRight size={12} />
+        reports.map((report) => (
+          <ListRow data-testid="report-row" className="flex-wrap" key={report.html}>
+            <FileText size={17} className="shrink-0 text-[var(--fastui-muted)]" />
+            <div className="flex-1 min-w-0">
+              <h3 className="m-0 text-xs font-semibold break-words">
+                <a
+                  className="fastui-link no-underline"
+                  href={asset(report.html)}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {report.title} <ArrowUpRight className="inline" size={12} />
                 </a>
               </h3>
-              <p className="muted">
-                {(r.size / 1024).toFixed(1)} KB · {new Date(r.updated).toLocaleDateString('zh-CN')}
+              <p className="m-0 mt-1 text-11px text-[var(--fastui-muted)]">
+                {(report.size / 1024).toFixed(1)} KB ·{' '}
+                {new Date(report.updated).toLocaleDateString('zh-CN', {
+                  timeZone: 'Asia/Shanghai',
+                })}
               </p>
             </div>
-            <div className="row-actions">
+            <div className="flex flex-wrap items-center gap-2">
               <a
-                className="file-link"
-                href={asset(r.html) + (download ? '?download=1' : '')}
+                className="fastui-button fastui-button--xs no-underline"
+                href={asset(report.html) + (download ? '?download=1' : '')}
                 download={download || undefined}
+                aria-label={`${download ? '下载' : '打开'} ${report.title} HTML`}
               >
                 <Download size={12} />
                 HTML
               </a>
-              {r.pdf && (
-                <a className="file-link" href={asset(r.pdf) + '?download=1'} download>
+              {report.pdf && (
+                <a
+                  className="fastui-button fastui-button--xs no-underline"
+                  href={asset(report.pdf) + '?download=1'}
+                  download
+                  aria-label={`下载 ${report.title} PDF`}
+                >
                   <Download size={12} />
                   PDF
                 </a>
               )}
             </div>
-          </article>
+          </ListRow>
         ))
       )}
     </div>
+  )
+}
+export function Metrics({
+  items,
+}: {
+  items: { label: string; value: number | string; detail?: string; icon?: ReactNode }[]
+}) {
+  return (
+    <section className="grid grid-cols-2 xl:grid-cols-4 gap-3 mb-6" aria-label="概览统计">
+      {items.map((item) => (
+        <Section className="p-4 min-w-0" key={item.label}>
+          <div className="flex items-center justify-between gap-2 text-[var(--fastui-muted)]">
+            {item.label}
+            {item.icon}
+          </div>
+          <strong className="block text-2xl font-semibold tabular-nums my-2">
+            {typeof item.value === 'number' ? item.value.toLocaleString('zh-CN') : item.value}
+          </strong>
+          {item.detail && <small className="text-[var(--fastui-muted)]">{item.detail}</small>}
+        </Section>
+      ))}
+    </section>
+  )
+}
+export function CatalogState() {
+  const { catalogLoading, catalogError } = useApp()
+  if (catalogLoading) return <Busy />
+  return (
+    <EmptyState title={catalogError ? '资料库暂时无法加载' : '暂无可用资料'}>
+      请稍后重试，或登录后查看研究资料。
+    </EmptyState>
   )
 }

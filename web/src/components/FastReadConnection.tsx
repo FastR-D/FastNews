@@ -33,12 +33,12 @@ export default function FastReadConnection() {
   }
   return (
     <Panel title="FastRead 联动" action={<Badge>{connected ? '已授权连接' : '尚未连接'}</Badge>}>
-      <div className="account-form">
+      <div className="grid gap-4 p-4 sm:p-6">
         <p>
           将 FastRead
           中所选论文提炼出的研究方向同步到当前账号的个人印象，供领域导读和相关工作检索使用。
         </p>
-        <p className="muted">
+        <p className="text-[var(--fastui-muted)]">
           生成连接码后，复制到 FastRead 设置中的 FastNews
           连接。连接码只在生成时显示；重新生成会替换旧连接码。
         </p>
@@ -66,7 +66,7 @@ export default function FastReadConnection() {
             </Button>
           </label>
         )}
-        <div className="row-actions">
+        <div className="flex flex-wrap items-center gap-2">
           <Button variant="primary" loading={busy} onClick={() => update('POST')}>
             {connected ? '重新生成连接码' : '生成连接码'}
           </Button>

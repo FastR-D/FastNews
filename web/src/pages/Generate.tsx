@@ -9,14 +9,20 @@ const examples = ['LLM jailbreak', '侧信道', 'TEE', '提示注入', '模糊�
 function Bars({ title, rows }: { title: string; rows: Count[] }) {
   const max = Math.max(1, ...rows.map((r) => r.count))
   return (
-    <section className="chart">
-      <h3>{title}</h3>
+    <section className="min-w-0">
+      <h3 className="fastui-heading my-2">{title}</h3>
       {rows.slice(0, 12).map((row) => (
-        <div className="bar-row" key={row.label}>
+        <div
+          className="grid grid-cols-[minmax(70px,1fr)_minmax(60px,2fr)_70px] items-center gap-3 mb-2"
+          key={row.label}
+        >
           <span>{row.label}</span>
-          <span className="bar-track">
-            <span style={{ width: `${(row.count / max) * 100}%` }} />
-          </span>
+          <progress
+            className="fastui-progress w-full"
+            aria-label={`${title}：${row.label}`}
+            value={row.count}
+            max={max}
+          />
           <small>
             {row.count} · {row.pct.toFixed(1)}%
           </small>
@@ -28,13 +34,13 @@ function Bars({ title, rows }: { title: string; rows: Count[] }) {
 function Statistics({ stats }: { stats: Stats }) {
   return (
     <>
-      <div className="charts">
+      <div className="grid gap-5">
         <Bars title="类别分布" rows={stats.by_category} />
         <Bars title="会场对照" rows={stats.by_conference} />
         <Bars title="年份覆盖" rows={stats.by_year} />
       </div>
-      <div className="table-scroll">
-        <table>
+      <div className="fastui-table-scroll">
+        <table className="fastui-table w-full">
           <caption>会场、年份与样本统计</caption>
           <thead>
             <tr>
@@ -60,7 +66,7 @@ function Statistics({ stats }: { stats: Stats }) {
           </tbody>
         </table>
       </div>
-      <p className="muted">
+      <p className="text-[var(--fastui-muted)]">
         数字仅来自本次本地统计。
         {stats.citation_coverage
           ? `有引用记录 ${stats.citation_coverage} 篇，记录引用总计 ${stats.citation_total}。`
@@ -116,7 +122,7 @@ export default function Generate({ kind }: { kind: 'field-briefing' | 'summary-b
         action={<Badge>{catalog?.papers || '—'} 篇本地论文</Badge>}
       >
         <form
-          className="generation-form"
+          className="grid gap-4 p-4 sm:p-6"
           onSubmit={(e) => {
             e.preventDefault()
             run()
@@ -136,7 +142,7 @@ export default function Generate({ kind }: { kind: 'field-briefing' | 'summary-b
               maxLength={4000}
             />
           </label>
-          <div className="filter-grid">
+          <div className="grid sm:grid-cols-3 gap-3 p-3">
             <label className="fastui-field">
               语料来源
               <Select
@@ -160,14 +166,14 @@ export default function Generate({ kind }: { kind: 'field-briefing' | 'summary-b
                 {catalog?.categories.map((c) => <option key={c}>{c}</option>)}
               </Select>
             </label>
-            <div className="submit-field">
+            <div className="flex items-end">
               <Button variant="primary" loading={busy} type="submit">
                 <Sparkles size={14} />
                 {busy ? '正在生成…' : isSummary ? '生成简报' : '生成导读'}
               </Button>
             </div>
           </div>
-          <div className="example-chips">
+          <div className="flex flex-wrap gap-2">
             {(isSummary ? ['四大顶会全景', ...examples] : examples).map((q) => (
               <Button
                 key={q}
@@ -183,30 +189,32 @@ export default function Generate({ kind }: { kind: 'field-briefing' | 'summary-b
             ))}
           </div>
           {profile?.impression.text && (
-            <p className="muted">已结合个人研究印象：{profile.impression.text.slice(0, 120)}</p>
+            <p className="text-[var(--fastui-muted)]">
+              已结合个人研究印象：{profile.impression.text.slice(0, 120)}
+            </p>
           )}
           <ErrorMessage error={error} />
           {busy && (
-            <p className="muted" role="status">
+            <p className="text-[var(--fastui-muted)]" role="status">
               正在召回证据并生成内容，请稍候…
             </p>
           )}
         </form>
       </Panel>
       {result && (
-        <div className="generation-results">
+        <div className="grid gap-4 mt-5">
           {result.warning && <Alert tone="warning">{result.warning}</Alert>}
           {result.briefing && (
             <Panel title={result.briefing.field_zh || result.query}>
-              <article className="review">
+              <article className="grid gap-5 p-4 sm:p-6 leading-loose break-words">
                 <section>
-                  <h3>综述范围</h3>
+                  <h3 className="fastui-heading my-2">综述范围</h3>
                   <p>{result.briefing.scope}</p>
                 </section>
                 {result.briefing.categories.map((c, i) => (
                   <section key={`${c.name}-${i}`}>
-                    <h3>
-                      <span className="section-index">{i + 1}</span>
+                    <h3 className="fastui-heading my-2">
+                      <span className="mr-2">{i + 1}</span>
                       {c.name}
                     </h3>
                     {c.consensus && (
@@ -227,11 +235,15 @@ export default function Generate({ kind }: { kind: 'field-briefing' | 'summary-b
                         {c.gaps}
                       </p>
                     )}
-                    <div className="evidence-links">
+                    <div className="grid gap-2">
                       {c.paper_ids.map((id) => {
                         const p = result.papers.find((p) => p.id === id)
                         return p ? (
-                          <a key={id} href={`#paper-${result.papers.indexOf(p)}`}>
+                          <a
+                            className="fastui-link"
+                            key={id}
+                            href={`#paper-${result.papers.indexOf(p)}`}
+                          >
                             {p.title}
                           </a>
                         ) : null
@@ -240,7 +252,7 @@ export default function Generate({ kind }: { kind: 'field-briefing' | 'summary-b
                   </section>
                 ))}
                 <section>
-                  <h3>研究空白与局限</h3>
+                  <h3 className="fastui-heading my-2">研究空白与局限</h3>
                   <p>{result.briefing.gaps}</p>
                   <p>{result.briefing.limitations}</p>
                 </section>
@@ -249,23 +261,23 @@ export default function Generate({ kind }: { kind: 'field-briefing' | 'summary-b
           )}
           {result.brief && (
             <Panel title={result.brief.title || result.query}>
-              <article className="brief-document">
-                <header className="brief-cover">
+              <article className="grid gap-6 p-4 sm:p-6 leading-loose break-words">
+                <header className="grid gap-3">
                   <small>{result.brief.kicker}</small>
-                  <h2>{result.brief.hook || result.brief.title}</h2>
+                  <h2 className="fastui-heading my-2">{result.brief.hook || result.brief.title}</h2>
                   <p>{result.brief.subtitle}</p>
                   <p>{result.brief.lead}</p>
-                  <div className="row-actions">
+                  <div className="flex flex-wrap items-center gap-2">
                     <Badge>{result.stats?.year_span}</Badge>
                     <Badge>{result.stats?.sample_size} 篇有效样本</Badge>
                   </div>
                 </header>
                 <section>
-                  <h3>01 · Overview</h3>
-                  <div className="findings">
+                  <h3 className="fastui-heading my-2">01 · Overview</h3>
+                  <div className="grid md:grid-cols-2 gap-4">
                     {result.brief.findings?.map((f, i) => (
                       <article key={i}>
-                        <h4>
+                        <h4 className="fastui-heading my-2">
                           ({i + 1}) {f.title}
                         </h4>
                         <p>{f.body}</p>
@@ -274,16 +286,16 @@ export default function Generate({ kind }: { kind: 'field-briefing' | 'summary-b
                   </div>
                 </section>
                 <section>
-                  <h3>02 · 数据口径</h3>
+                  <h3 className="fastui-heading my-2">02 · 数据口径</h3>
                   <p>{result.brief.method || result.coverage}</p>
                 </section>
                 <section>
-                  <h3>03 · 会场、年份与类别</h3>
+                  <h3 className="fastui-heading my-2">03 · 会场、年份与类别</h3>
                   {result.stats && <Statistics stats={result.stats} />}
                 </section>
                 {result.brief.questions?.map((q) => (
                   <section key={q.qid}>
-                    <h3>
+                    <h3 className="fastui-heading my-2">
                       {q.qid} · {q.question}
                     </h3>
                     <p>{q.answer}</p>
@@ -308,18 +320,18 @@ export default function Generate({ kind }: { kind: 'field-briefing' | 'summary-b
           </Panel>
           {result.brief && (
             <Panel title="局限与讨论">
-              <article className="review">
+              <article className="grid gap-5 p-4 sm:p-6 leading-loose break-words">
                 <p>{result.brief.limitations}</p>
                 {result.brief.discussion?.map((d, i) => (
                   <section key={i}>
-                    <h3>{d.title}</h3>
+                    <h3 className="fastui-heading my-2">{d.title}</h3>
                     <p>{d.body}</p>
                   </section>
                 ))}
               </article>
             </Panel>
           )}
-          <p className="muted">{result.coverage}</p>
+          <p className="text-[var(--fastui-muted)]">{result.coverage}</p>
         </div>
       )}
     </>

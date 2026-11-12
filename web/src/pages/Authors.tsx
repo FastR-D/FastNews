@@ -1,5 +1,14 @@
 import { useState } from 'react'
-import { Badge, Button, Checkbox, Dialog, EmptyState, TextField } from '@fastrd/ui-react'
+import {
+  Badge,
+  Button,
+  Checkbox,
+  Dialog,
+  EmptyState,
+  InspectorSection,
+  ListRow,
+  TextField,
+} from '@fastrd/ui-react'
 import { ExternalLink, Pencil, Plus, RefreshCw, Trash2, X } from 'lucide-react'
 import { api, message, safeURL } from '../api'
 import { useApp } from '../context'
@@ -138,27 +147,31 @@ export default function Authors({ embedded = false }: { embedded?: boolean }) {
         <EmptyState title="还没有关注作者">添加姓名、主页和研究方向，开始持续跟踪。</EmptyState>
       ) : (
         <>
-          <div className="authors-head">
-            <span>名称</span>
-            <span>研究方向 / 主页</span>
-            <span>操作</span>
-          </div>
           {profile.authors.map((a) => (
-            <article className="author-row" key={a.id}>
-              <button className="author-edit" onClick={() => edit(a)}>
-                <strong>{a.name}</strong>
-                <span>
-                  <span className="author-tags">
+            <ListRow data-testid="author-row" className="flex-wrap" key={a.id}>
+              <div className="flex-1 min-w-0 grid gap-2">
+                <div>
+                  <Button variant="quiet" onClick={() => edit(a)}>
+                    {a.name}
+                  </Button>
+                </div>
+                <div>
+                  <span className="flex flex-wrap gap-2">
                     {(a.tags || a.research?.split(/[,，]/) || []).map((t) => (
                       <Badge key={t}>{t}</Badge>
                     ))}
                   </span>
-                  <small>{a.homepage}</small>
-                  {a.fetchSummary && <small className="fetch-summary">{a.fetchSummary}</small>}
-                </span>
-              </button>
-              <div className="row-actions">
+                  <small className="block break-all text-[var(--fastui-muted)] mt-2">
+                    {a.homepage}
+                  </small>
+                  {a.fetchSummary && (
+                    <small className="block text-[var(--fastui-muted)]">{a.fetchSummary}</small>
+                  )}
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
                 <a
+                  className="fastui-link"
                   href={safeURL(a.homepage)}
                   target="_blank"
                   rel="noreferrer"
@@ -182,16 +195,21 @@ export default function Authors({ embedded = false }: { embedded?: boolean }) {
                 </Button>
               </div>
               {a.papers && a.papers.length > 0 && (
-                <details className="author-papers">
-                  <summary>{a.papers.length} 个论文链接</summary>
+                <InspectorSection className="w-full" label={`${a.papers.length} 个论文链接`}>
                   {a.papers.map((p) => (
-                    <a key={p.url} href={safeURL(p.url)} target="_blank" rel="noreferrer">
+                    <a
+                      className="fastui-link"
+                      key={p.url}
+                      href={safeURL(p.url)}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
                       {p.title || p.url}
                     </a>
                   ))}
-                </details>
+                </InspectorSection>
               )}
-            </article>
+            </ListRow>
           ))}
         </>
       )}
@@ -209,19 +227,21 @@ export default function Authors({ embedded = false }: { embedded?: boolean }) {
         label={profile?.authors.some((a) => a.id === editing?.id) ? '编辑作者' : '新增作者'}
       >
         <form
-          className="dialog-body"
+          className="fastui-modal-body"
           onSubmit={(e) => {
             e.preventDefault()
             save()
           }}
         >
-          <div className="dialog-title">
-            <h2>{profile?.authors.some((a) => a.id === editing?.id) ? '编辑作者' : '新增作者'}</h2>
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="fastui-heading my-2">
+              {profile?.authors.some((a) => a.id === editing?.id) ? '编辑作者' : '新增作者'}
+            </h2>
             <Button variant="icon" aria-label="关闭编辑" onClick={() => setOpen(false)}>
               <X size={15} />
             </Button>
           </div>
-          <div className="form-grid">
+          <div className="grid sm:grid-cols-2 gap-4">
             <label className="fastui-field">
               姓名
               <TextField
@@ -243,12 +263,12 @@ export default function Authors({ embedded = false }: { embedded?: boolean }) {
               />
             </label>
           </div>
-          <fieldset>
-            <legend>研究方向</legend>
-            <div className="tag-options">
+          <fieldset className="fastui-fieldset">
+            <legend className="fastui-legend">研究方向</legend>
+            <div className="grid sm:grid-cols-2 gap-3">
               {Array.from(new Set([...defaultTags, ...customTags, ...(editing?.tags || [])])).map(
                 (t) => (
-                  <label key={t}>
+                  <label className="flex items-center gap-2" key={t}>
                     <Checkbox
                       checked={editing?.tags.includes(t) || false}
                       onChange={(e) =>
@@ -266,7 +286,7 @@ export default function Authors({ embedded = false }: { embedded?: boolean }) {
                 ),
               )}
             </div>
-            <div className="search-toolbar">
+            <div className="flex flex-wrap gap-2 p-3">
               <TextField
                 aria-label="自定义标签"
                 value={newTag}
@@ -284,7 +304,7 @@ export default function Authors({ embedded = false }: { embedded?: boolean }) {
             </div>
           </fieldset>
           <ErrorMessage error={error} />
-          <div className="dialog-actions">
+          <div className="flex flex-wrap justify-end gap-2">
             <Button onClick={() => setOpen(false)}>取消</Button>
             <Button type="submit" variant="primary" loading={busy}>
               保存作者
@@ -293,10 +313,10 @@ export default function Authors({ embedded = false }: { embedded?: boolean }) {
         </form>
       </Dialog>
       <Dialog open={!!confirm} onClose={() => setConfirm(null)} label="删除作者">
-        <div className="dialog-body">
-          <h2>删除 {confirm?.name}</h2>
+        <div className="fastui-modal-body">
+          <h2 className="fastui-heading my-2">删除 {confirm?.name}</h2>
           <p>此作者将从关注列表移除。</p>
-          <div className="dialog-actions">
+          <div className="flex flex-wrap justify-end gap-2">
             <Button onClick={() => setConfirm(null)}>取消</Button>
             <Button variant="danger" loading={busy} onClick={remove}>
               确认删除

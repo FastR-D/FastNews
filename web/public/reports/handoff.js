@@ -13,6 +13,12 @@
       .trim()
       .slice(0, limit)
 
+  // HTML reports do not run React. Opt their controls into the same official
+  // foundation classes without maintaining a separate report component theme.
+  document.querySelectorAll('button[data-fastread]').forEach((button) => {
+    button.classList.add('fastui-button', 'fastui-button--sm')
+  })
+
   document.addEventListener('click', async (event) => {
     if (!(event.target instanceof Element)) return
     const button = event.target.closest('button[data-fastread]')
@@ -59,7 +65,7 @@
     } catch (error) {
       if (popup) popup.close()
       status = document.createElement('p')
-      status.className = 'report-handoff-status'
+      status.className = 'report-handoff-status fastui-alert fastui-tone-danger'
       status.setAttribute('role', 'alert')
       status.textContent = error instanceof Error ? error.message : 'FastRead 跳转失败，请重试'
       button.insertAdjacentElement('afterend', status)

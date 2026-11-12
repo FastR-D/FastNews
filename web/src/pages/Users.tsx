@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Button, TextField } from '@fastrd/ui-react'
+import { Button, Select, TextField, Toolbar } from '@fastrd/ui-react'
 import { api, message } from '../api'
 import { useApp } from '../context'
 import { ErrorMessage, PageHeading, Panel } from '../components/Common'
@@ -62,14 +62,16 @@ export default function Users() {
           </Button>
         }
       >
-        <TextField
-          aria-label="搜索用户"
-          placeholder="搜索姓名或邮箱"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
-        <div style={{ overflowX: 'auto' }}>
-          <table>
+        <Toolbar label="用户筛选">
+          <TextField
+            aria-label="搜索用户"
+            placeholder="搜索姓名或邮箱"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+        </Toolbar>
+        <div className="fastui-table-scroll">
+          <table className="fastui-table w-full">
             <thead>
               <tr>
                 <th>姓名</th>
@@ -106,13 +108,13 @@ export default function Users() {
       </Panel>
       <Panel title={form.id ? '编辑用户' : '创建用户'}>
         <form
-          className="account-form"
+          className="grid gap-4 p-4 sm:p-6"
           onSubmit={(e) => {
             e.preventDefault()
             save(deleting)
           }}
         >
-          <label>
+          <label className="fastui-field">
             邮箱
             <TextField
               type="email"
@@ -121,7 +123,7 @@ export default function Users() {
               onChange={(e) => setForm({ ...form, email: e.target.value })}
             />
           </label>
-          <label>
+          <label className="fastui-field">
             姓名
             <TextField
               maxLength={120}
@@ -129,7 +131,7 @@ export default function Users() {
               onChange={(e) => setForm({ ...form, name: e.target.value })}
             />
           </label>
-          <label>
+          <label className="fastui-field">
             {form.id ? '重置密码（留空保持）' : '初始密码'}
             <TextField
               type="password"
@@ -141,24 +143,24 @@ export default function Users() {
               onChange={(e) => setForm({ ...form, password: e.target.value })}
             />
           </label>
-          <label>
+          <label className="fastui-field">
             角色
-            <select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
+            <Select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
               <option value="user">用户</option>
               <option value="admin">管理员</option>
-            </select>
+            </Select>
           </label>
-          <label>
+          <label className="fastui-field">
             状态
-            <select
+            <Select
               value={form.status}
               onChange={(e) => setForm({ ...form, status: e.target.value })}
             >
               <option value="active">启用</option>
               <option value="disabled">停用</option>
-            </select>
+            </Select>
           </label>
-          <label>
+          <label className="fastui-field">
             操作原因
             <TextField
               required
@@ -169,7 +171,7 @@ export default function Users() {
           {deleting && (
             <p role="alert">删除后此用户将无法登录，现有会话会失效。确认删除 {form.email}？</p>
           )}
-          <div className="row-actions">
+          <div className="flex flex-wrap items-center gap-2">
             <Button type="submit" variant={deleting ? 'danger' : 'primary'} loading={busy}>
               {deleting ? '确认删除' : '保存'}
             </Button>

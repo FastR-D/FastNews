@@ -68,7 +68,7 @@ export default function Inbox() {
             <Panel title="历史私信">
               {older.map((p) => (
                 <div key={p.id}>
-                  <p className="inbox-date">{p.date}</p>
+                  <p className="px-4 text-[var(--fastui-muted)]">{p.date}</p>
                   <PaperCard paper={p} />
                 </div>
               ))}
