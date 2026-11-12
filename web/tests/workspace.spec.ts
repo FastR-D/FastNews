@@ -144,3 +144,17 @@ test('historical report uses maintained handoff assets and the correct API prefi
   expect(resourceResponses.sort()).toEqual([200, 200])
   expect(errors).toEqual([])
 })
+
+test('subpath application accepts independent-domain root and login entries', async ({
+  page,
+  baseURL,
+}, info) => {
+  test.skip(info.project.name !== 'subpath', 'Only the prefixed build needs entry canonicalization')
+  const origin = new URL(baseURL!).origin
+  await page.goto(origin + '/?date=2026-09-04#reports')
+  await expect(page).toHaveURL(origin + '/news/?date=2026-09-04#reports')
+  await expect(page.getByRole('heading', { name: '安全研究报告工作台', exact: true })).toBeVisible()
+  await page.goto(origin + '/login?from=entry')
+  await expect(page).toHaveURL(origin + '/news/login?from=entry')
+  await expect(page.getByLabel('邮箱', { exact: true })).toBeVisible()
+})

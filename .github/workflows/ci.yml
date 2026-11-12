@@ -1,4 +1,4 @@
-name: Go and React CI
+name: Go and React CI and deployment
 
 on:
   pull_request:
@@ -59,7 +59,7 @@ jobs:
 
   release:
     needs: validate
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
@@ -84,3 +84,41 @@ jobs:
             gh release create "$RELEASE_TAG" release/release.tar.gz release/manifest.json \
               --verify-tag --title "FastNews $RELEASE_TAG" --generate-notes
           fi
+
+  deploy:
+    needs: validate
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    uses: FastR-D/FastDeploy/.github/workflows/deploy.yml@30ef06dac8aa820a9550a22799b72025609b36fd
+    with:
+      app: fastnews
+      artifact-name: release-${{ github.sha }}
+      runtime-env: |
+        FASTNEWS_DATA_DIR=/home/dev/FastNews/.fastnews-data
+        FASTNEWS_FASTCAS_ENABLED=true
+        FASTNEWS_FASTCAS_ALLOW_LOOPBACK_HTTP=false
+        FASTNEWS_FASTCAS_CLIENT_ID=news
+        FASTNEWS_FASTCAS_ISSUER=https://cas.fastrd.io
+        FASTNEWS_FASTCAS_REDIRECT_URI=https://news.fastrd.io/api/auth/fastcas/callback
+        FASTNEWS_HOST=127.0.0.1
+        FASTNEWS_PORT=8788
+        FASTNEWS_PUBLIC_ORIGIN=https://news.fastrd.io
+        FASTNEWS_PUBLIC_PATH=/news
+        FASTNEWS_ROOT=/home/dev/FastNews
+        FASTNEWS_COOKIE_SECURE=true
+        FASTNEWS_REQUIRE_LOGIN=false
+        FASTREAD_URL=https://read.fastrd.io
+        FASTRESEARCH_API_URL=http://127.0.0.1:8787
+        FASTRESEARCH_COOKIE_NAME=fr_session
+        LLM_MODEL=deepseek-flash
+        OPENAI_BASE_URL=https://api.deepseek.com
+    secrets:
+      SSH_HOST: ${{ secrets.FASTRD_SSH_HOST }}
+      SSH_PORT: ${{ secrets.FASTRD_SSH_PORT }}
+      SSH_USER: ${{ secrets.FASTRD_SSH_USER }}
+      SSH_PRIVATE_KEY: ${{ secrets.FASTRD_SSH_PRIVATE_KEY }}
+      SSH_KNOWN_HOSTS: ${{ secrets.FASTRD_SSH_KNOWN_HOSTS }}
+      runtime-secrets: |
+        {
+          "FASTNEWS_FASTCAS_CLIENT_SECRET": ${{ toJSON(secrets.FASTNEWS_FASTCAS_CLIENT_SECRET) }},
+          "OPENAI_API_KEY": ${{ toJSON(secrets.OPENAI_API_KEY) }}
+        }

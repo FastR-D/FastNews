@@ -15,9 +15,8 @@ test -f web/dist/reports/report.css
 mkdir -p "$STAGE/bin" "$STAGE/web"
 cp bin/fastnews "$STAGE/bin/fastnews"
 cp -R web/dist "$STAGE/web/dist"
-cp deployments/fastnews.service "$STAGE/fastnews.service"
-tar -czf "$DEST/release.tar.gz" -C "$STAGE" .
+tar -czf "$DEST/release.tar.gz" -C "$STAGE" bin web
 TASK_SHA="${GITHUB_SHA:-$(git rev-parse HEAD)}"
 TASK_SUM="$(sha256sum "$DEST/release.tar.gz" | cut -d ' ' -f1)"
-printf '{"repository":"%s","sha":"%s","archive_sha256":"%s","runtime":"go"}\n' "${GITHUB_REPOSITORY:-FastR-D/FastNews}" "$TASK_SHA" "$TASK_SUM" > "$DEST/manifest.json"
+printf '{"repository":"%s","sha":"%s","archive_sha256":"%s"}\n' "${GITHUB_REPOSITORY:-FastR-D/FastNews}" "$TASK_SHA" "$TASK_SUM" > "$DEST/manifest.json"
 printf 'Packaged %s\n' "$DEST/release.tar.gz"

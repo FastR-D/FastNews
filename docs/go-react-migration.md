@@ -29,7 +29,7 @@
 
 ## 运行时和数据分离
 
-构建产物只含 Go 二进制、React `web/dist`（包括 `reports/` 阅读跳转资源）和 systemd 样例。个人 SQLite、语料、生成报告和 `.env` 不进发布包。
+构建产物只含 Go 二进制、React `web/dist`（包括 `reports/` 阅读跳转资源）。个人 SQLite、语料、生成报告和 `.env` 不进发布包。
 
 ```env
 FASTNEWS_ROOT=/home/dev/FastNews

@@ -23,7 +23,8 @@
   "required_files": [
     "bin/fastnews",
     "web/dist/index.html",
-    "web/dist/reports/handoff.js"
+    "web/dist/reports/handoff.js",
+    "web/dist/reports/report.css"
   ],
   "required_env": [
     "FASTNEWS_HOST",
@@ -42,5 +43,10 @@
   ],
   "release_env": {
     "FASTNEWS_WEB_DIR": "{release}/web/dist"
-  }
+  },
+  "runtime_check": [
+    "/usr/bin/python3",
+    "-c",
+    "import sys; assert sys.version_info >= (3,12)"
+  ]
 }
