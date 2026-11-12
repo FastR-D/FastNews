@@ -1,0 +1,18 @@
+[Unit]
+Description=FastNews Go API and React workspace
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/fastnews/current
+EnvironmentFile=/etc/fastnews.env
+ExecStart=/opt/fastnews/current/bin/fastnews serve
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=20
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=default.target

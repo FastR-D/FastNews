@@ -15,10 +15,11 @@ When the user wants to learn a research area, write a grounded literature review
 2. Search local papers before drafting:
 
 ```bash
-python .agents/skills/field-briefing/scripts/search_papers.py -q "<field and aliases>" --limit 16
+go run ./cmd/fastnews search-papers --query "<field and aliases>" --limit 16
 ```
 
-Prefer the repo venv interpreter if present (`.venv/Scripts/python.exe` on Windows, `.venv/bin/python` otherwise). Add `--category`, `--conference`, `--year`, `--source top-conf|arxiv`, or `--arxiv-days 0` when the user narrows the scope. If hits are weak, rerun with English aliases or a broader category, then inspect the JSON `items`.
+The Go command reads the existing corpus without generating content or starting a server. It uses the same vector retriever as the application. Add `--category`, `--conference`, `--year`, or `--source top-conf|arxiv` to narrow the evidence. If hits are weak, rerun with English aliases or a broader category, then inspect the JSON `items`.
+
 3. Use web search only for canonical surveys or seminal papers that FastNews does not cover (the local top-conference set is recent Big4, not a historical archive). Open a real page before citing an external paper. Skip web search when local hits already answer a narrow request.
 4. Write the briefing from the retrieved papers plus established field knowledge. Do not invent FastNews papers, venues, years, or links.
 
@@ -36,12 +37,12 @@ Typical shape unless the user asks otherwise:
 Split recommendations:
 
 - **奠基与综述**：2–4 篇经典/survey，可以来自外部检索，必须有真实标题和链接
-- **FastNews 高相关**：6–10 篇来自脚本结果。每篇包含标题、venue/year、作者、链接、一句话相关原因（方法、主题、对象或问题重叠），并可用中文摘要
+- **FastNews 高相关**：6–10 篇来自检索结果。每篇包含标题、venue/year、作者、链接、一句话相关原因（方法、主题、对象或问题重叠），并可用中文摘要
 
 If local coverage is thin, say so and lean on surveys plus recent arXiv. Prefer specific overlap over generic “也属于该领域”.
 
 ## Constraints
 
-- FastNews papers must come from `search_papers.py` output or the underlying JSONL files.
+- FastNews papers must come from `fastnews search-papers` output or the underlying JSONL files.
 - Do not start newspaper generation, conference fetching, or homepage edits.
 - Do not dump dozens of papers. If the user only wants an intro or only wants papers, follow that request.

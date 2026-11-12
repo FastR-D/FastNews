@@ -1,7 +1,13 @@
 # FastNews 账号与 FastCAS
 
-设置 `FASTNEWS_INVITE_CODE` 后启用本地账号。注册、登录、恢复和个人资料使用 `fastnews_session`；未绑定 Research 的 FastCAS 身份会回到登录页，不会创建本地账号。
+当前 Go 服务拥有独立 SQLite 账号与个人内容。本地登录、单次邀请注册、恢复与管理命令不依赖中心可用性。正式 Go SDK 固定为 `github.com/FastR-D/FastCAS/sdk/go v0.1.2`，不使用同级源码 replace。
 
-FastCAS 是可选入口，需要同时配置 issuer、client ID、secret 和 redirect URI。已有本地账号可以在账号页输入本地密码发起绑定。Research 内容只有在用户明确证明 Research 会话并执行导入后才进入本地资料；导入会保存计数和内容 hash。
+配置四项：`FASTNEWS_FASTCAS_ISSUER`、`FASTNEWS_FASTCAS_CLIENT_ID`、`FASTNEWS_FASTCAS_CLIENT_SECRET`、`FASTNEWS_FASTCAS_REDIRECT_URI`。部分配置会启动失败，未配置时不会发起中心请求。登录/绑定还可分别通过 `FASTNEWS_FASTCAS_LOGIN_ENABLED` 和 `FASTNEWS_FASTCAS_LINK_ENABLED` 关闭；本地密码与恢复保持独立。
 
-公开报告生成不需要 CAS。没有本地会话时，未启用本地账号的旧部署继续使用 Research 门户跳转；启用邀请注册后，首页进入本地登录页。启用 CAS 时安装 FastCAS Python SDK 的依赖 `authlib` 和 `httpx`。
+`/api/auth/fastcas/` 保留 `available/login/callback/status/link/reconcile/revoke/events/backchannel-logout`。本地账号绑定需要当前会话、密码和 CSRF。事务持久化并原子消费，回调绑定原浏览器，pending 关系可对账；同邮箱或同名不会自动创建或合并账号。
+
+签名通知经 SDK 验证后在 SQLite 事务内去重、更新关系、撤销对应 CAS 来源会话。解绑、停用或后端退出不会删除本地用户、个人内容与本地密码会话。会话有效性每五分钟复核关系；refresh token 使用 AES-GCM 并绑定来源会话。
+
+Research 内容只有在账号页显式验证 Key 并导入，或启用委托连接并得到用户同意后才会读取。快照默认拒绝覆盖本地内容。持续连接需要 `FASTNEWS_FASTCAS_RESEARCH_CONNECT=true`、独立 vault key 以及中心的相应 scope 和 token exchange 策略。
+
+迁移和本地验收范围见 [Go / React 重构](go-react-migration.md)，接口与 CSRF 使用见 [API 说明](api.md)。正式上线前需与实际身份提供方完成环境验收。

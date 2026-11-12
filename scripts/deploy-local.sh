@@ -38,26 +38,19 @@ if [[ "$FORCE" -eq 0 && "$sha" == "$prev" ]] && systemctl --user is-active --qui
   exit 0
 fi
 
-systemctl --user daemon-reload || true
+# The unit must use bin/fastnews serve (see deployments/fastnews.service).
+if ! systemctl --user cat "$UNIT" | grep -q 'ExecStart=.*bin/fastnews'; then
+  echo "Install the native Go systemd unit before deploying; current unit still starts the legacy runtime." >&2
+  exit 1
+fi
+pnpm --dir web install --frozen-lockfile
+make test
+make build
+systemctl --user daemon-reload
 systemctl --user restart "$UNIT"
 systemctl --user is-active "$UNIT"
-sleep 2
-python3 - <<'PY'
-import sys, urllib.error, urllib.request
-urls = ["http://127.0.0.1:8788/", "http://127.0.0.1/news/"]
-ok = {200, 301, 302, 401}
-for url in urls:
-    try:
-        with urllib.request.urlopen(urllib.request.Request(url, method="GET"), timeout=8) as resp:
-            status, body = resp.status, resp.read(120)
-    except urllib.error.HTTPError as exc:
-        status, body = exc.code, exc.read(120)
-    text = body.decode("utf-8", "replace")
-    if status not in ok:
-        print("FAIL", url, status, text)
-        sys.exit(1)
-    print("OK", status, url)
-PY
+TASK_HEALTH="http://${FASTNEWS_HOST:-127.0.0.1}:${FASTNEWS_PORT:-8788}/api/health"
+curl --fail --silent --show-error --retry 5 --retry-connrefused --retry-delay 1 "$TASK_HEALTH"
 
 echo "$sha" > "$STATE_DIR/deployed-sha"
 echo "FastNews deployed $sha"

@@ -1,30 +1,33 @@
-name: update
+name: Fetch news
 
 on:
   schedule:
     - cron: '0 6 * * *'
   workflow_dispatch:
 
+permissions:
+  contents: write
 concurrency:
-  group: data-commit
+  group: fastnews-data-commit
   cancel-in-progress: false
 
 jobs:
   update:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v5
-      - run: uv run python -m secnews.update bleepingcomputer
-      - run: uv run python -m secnews.update arxiv_cs_cr
-      - run: uv run python -m secnews.update arxiv_cs_ai
-      - name: Commit and push data
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add secnews/data/articles/
-          git diff --cached --quiet || git commit -m "update articles $(date -u +'%Y-%m-%d %H:%M')"
-          git pull --rebase
-          git push
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - run: go build -trimpath -o bin/fastnews ./cmd/fastnews
+      - run: ./bin/fastnews fetch-news --source bleepingcomputer
+      - run: ./bin/fastnews fetch-news --source arxiv_cs_cr
+      - run: ./bin/fastnews fetch-news --source arxiv_cs_ai
+      - name: Commit fetched records, including partial progress
+        if: ${{ !cancelled() }}
+        env:
+          FASTNEWS_DATA_COMMIT_MESSAGE: 'data: fetch daily news'
+        run: ./scripts/commit-data.sh secnews/data/articles/

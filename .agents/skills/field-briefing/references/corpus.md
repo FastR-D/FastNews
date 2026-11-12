@@ -1,6 +1,6 @@
 # FastNews paper corpus
 
-Local sources used by `scripts/search_papers.py`.
+Local sources used by `go run ./cmd/fastnews search-papers`.
 
 ## Layout
 
@@ -13,7 +13,7 @@ Local sources used by `scripts/search_papers.py`.
 
 Conference file stems: `usenix`, `ieee-sp`, `ndss`, `ccs`. Labels: USENIX Security, IEEE S&P, NDSS, ACM CCS.
 
-Current FastNews coverage is recent Big4 (today: USENIX 2025/2026, IEEE S&P 2026, NDSS 2026). CCS may be absent. arXiv coverage is whatever `secnews.update` has fetched (`cs.CR`, `cs.AI+cs.CL`). This is not a complete historical library.
+FastNews covers summarized Big4 papers from the years present in the corpus, plus the last 90 days of fetched arXiv feeds (`cs.CR`, `cs.AI+cs.CL`). Inspect the actual files for coverage; this is not a complete historical library.
 
 ## Categories
 
@@ -34,14 +34,12 @@ A few summary rows may use `Network & System Security`; treat them as network/sy
 
 ## Search output
 
-`search_papers.py` prints JSON:
+`fastnews search-papers` prints JSON:
 
 ```text
-query, terms, categories, corpus_size, hit_count, items[]
+query, corpus_size, hit_count, embedding_provider, items[]
 ```
 
-Each item: `id`, `source` (`top-conf` or `arxiv`), `title`, `title_zh`, `author`, `year`, `venue`, `category`, `link`, `summary`, `score`, `matched_terms`.
+Each item includes `id`, `source`, `title`, `title_zh`, `author`, `year`, `venue`, `conference`, `category`, `link`, `summary`, and `retrieval_score`. Results are ranked by vector similarity after metadata filtering; score is not a calibrated confidence.
 
-Default arXiv window is 90 days; `--arxiv-days 0` reads all dates. `--min-score` defaults to 1.
-
-Select from `items` with the highest specific overlap. If you need the full Chinese abstract, read the matching `*_summary.jsonl` record rather than guessing.
+Default arXiv coverage is the most recent 90 days. Read the matching `*_summary.jsonl` record for a full conference abstract. Do not infer that the local corpus covers every paper or year.

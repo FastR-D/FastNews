@@ -1,6 +1,0 @@
-# Preserve byte-addressed assets; recognize CRLF while retaining whitespace checks.
-assets/fastui/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-# The generated bootstrap records this adapter's source-byte digest.
-scripts/theme-init.js -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-# Preserve the complete generated account page used by delivery byte audits.
-assets/account.html -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

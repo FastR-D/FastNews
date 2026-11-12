@@ -1,0 +1,46 @@
+{
+  "repository": "FastR-D/FastNews",
+  "legacy_app": "news",
+  "unit": "fastnews.service",
+  "command": [
+    "{release}/bin/fastnews",
+    "serve"
+  ],
+  "services": [
+    {
+      "unit": "fastnews.service",
+      "command": [
+        "{release}/bin/fastnews",
+        "serve"
+      ]
+    }
+  ],
+  "health_url": "http://127.0.0.1:8788/api/health",
+  "artifact_roots": [
+    "bin",
+    "web"
+  ],
+  "required_files": [
+    "bin/fastnews",
+    "web/dist/index.html",
+    "web/dist/reports/handoff.js"
+  ],
+  "required_env": [
+    "FASTNEWS_HOST",
+    "FASTNEWS_PORT",
+    "FASTNEWS_ROOT",
+    "FASTNEWS_DATA_DIR"
+  ],
+  "fixed_env": {
+    "FASTNEWS_HOST": "127.0.0.1",
+    "FASTNEWS_PORT": "8788",
+    "FASTNEWS_ROOT": "/home/dev/FastNews",
+    "FASTNEWS_DATA_DIR": "/home/dev/FastNews/.fastnews-data"
+  },
+  "shared_paths": [
+    "/home/dev/FastNews"
+  ],
+  "release_env": {
+    "FASTNEWS_WEB_DIR": "{release}/web/dist"
+  }
+}

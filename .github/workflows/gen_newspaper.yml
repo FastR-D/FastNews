@@ -1,37 +1,36 @@
-name: gen_newspaper
+name: Summarize daily news
 
 on:
   schedule:
     - cron: '30 22 * * *'
   workflow_dispatch:
 
+permissions:
+  contents: write
 concurrency:
-  group: data-commit
+  group: fastnews-data-commit
   cancel-in-progress: false
 
 jobs:
-  gen_newspaper:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
+  summarize:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      OPENAI_BASE_URL: ${{ secrets.OPENAI_BASE_URL }}
+      LLM_MODEL: ${{ secrets.LLM_MODEL }}
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v5
-      - run: uv run python -m secnews.generate_newspaper
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - run: go build -trimpath -o bin/fastnews ./cmd/fastnews
+      - run: ./bin/fastnews daily-summary
+      - run: ./bin/fastnews newspaper
+      - name: Commit summaries, including interrupted checkpoints
+        if: ${{ !cancelled() }}
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_BASE_URL: ${{ secrets.OPENAI_BASE_URL }}
-          LLM_MODEL: ${{ secrets.LLM_MODEL }}
-      - run: uv run python -m secnews.generate_daily_summary
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_BASE_URL: ${{ secrets.OPENAI_BASE_URL }}
-          LLM_MODEL: ${{ secrets.LLM_MODEL }}
-      - name: Commit and push data
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add secnews/data/newspapers/ secnews/data/daily_summaries/ secnews/index.html index.html
-          git diff --cached --quiet || git commit -m "generate newspaper $(date -u +'%Y-%m-%d')"
-          git pull --rebase
-          git push
+          FASTNEWS_DATA_COMMIT_MESSAGE: 'data: summarize daily news'
+        run: ./scripts/commit-data.sh secnews/data/daily_summaries/ secnews/data/newspapers/

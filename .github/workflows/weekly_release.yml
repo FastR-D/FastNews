@@ -1,62 +1,56 @@
-name: weekly_release
+name: Weekly news report
 
 on:
   schedule:
     - cron: '0 6 * * 6'
   workflow_dispatch:
 
+permissions:
+  contents: write
+concurrency:
+  group: fastnews-data-commit
+  cancel-in-progress: false
+
 jobs:
-  release_pdf:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
+  report:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
-
-      - uses: astral-sh/setup-uv@v5
-
-      - name: Install system dependencies for weasyprint
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - run: go build -trimpath -o bin/fastnews ./cmd/fastnews
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+      - run: pnpm --dir web install --frozen-lockfile
+      - run: pnpm --dir web exec playwright install --with-deps chromium
+      - name: Generate weekly HTML and PDF
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf-2.0-0 libffi-dev libcairo2 fonts-noto-cjk
-
-      - name: Generate PDF and HTML
-        id: gen_pdf
-        run: uv run python -m secnews.generate_pdf
-
-      - name: Get current date
-        id: date
-        run: echo "DATE=$(date -u +'%Y-%m-%d')" >> "$GITHUB_OUTPUT"
-
-      - name: Commit and push report
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git config core.quotepath false
-          # Only commit HTML backups to keep the repo small
-          git add secnews/data/report/*.html secnews/index.html index.html
-          git diff --cached --quiet || git commit -m "generate weekly report ${{ steps.date.outputs.DATE }}"
-          git pull --rebase
-          git push
-
-      - name: Create Release
-        if: hashFiles('output/*.pdf') != '' || hashFiles('output/*.html') != ''
+          export FASTNEWS_CHROME="$(pnpm --dir web exec node -e 'console.log(require("@playwright/test").chromium.executablePath())')"
+          ./bin/fastnews weekly-report --days 7 --pdf
+      - name: Commit the HTML report
+        if: ${{ !cancelled() }}
+        env:
+          FASTNEWS_DATA_COMMIT_MESSAGE: 'data: generate weekly news report'
+        run: ./scripts/commit-data.sh secnews/data/report/
+      - name: Publish or update weekly assets
         env:
           GH_TOKEN: ${{ github.token }}
-          LANG: C.UTF-8
         run: |
-          TAG="release-${{ steps.date.outputs.DATE }}"
-          TITLE="${{ steps.gen_pdf.outputs.REPORT_TITLE }}"
-          
-          echo "Debug: Listing files in output/"
-          ls -l output/
-          
-          # Delete existing release/tag if it exists to allow re-run
-          gh release delete "$TAG" -y --cleanup-tag || true
-          
-          # Create new release sourcing assets from the temporary output/ directory
-          gh release create "$TAG" \
-            --title "$TITLE" \
-            --notes "自动生成的 $TITLE PDF 与 HTML。" \
-            output/*.pdf \
-            output/*.html
+          TAG="release-$(date -u +'%Y-%m-%d')"
+          TITLE="FastNews 安全资讯周报 $(date -u +'%Y-%m-%d')"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" output/*.html output/*.pdf --clobber
+          else
+            gh release create "$TAG" output/*.html output/*.pdf \
+              --target main --title "$TITLE" --notes '安全资讯周报 PDF 与 HTML。'
+          fi

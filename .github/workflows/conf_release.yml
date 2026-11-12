@@ -1,79 +1,83 @@
-name: Top Conferences Release
+name: Top conference report
 
 on:
   workflow_dispatch:
     inputs:
       conference:
-        description: 'Conference identifier (usenix/ieee-sp/ndss/ccs)'
+        description: Conference
         required: true
-        default: 'usenix'
+        default: usenix
         type: choice
-        options:
-          - usenix
-          - ieee-sp
-          - ndss
-          - ccs
+        options: [usenix, ieee-sp, ndss, ccs]
       year:
-        description: 'Conference year (e.g. 2025)'
+        description: Conference year
         required: true
-        default: '2025'
+        default: '2026'
         type: string
 
+permissions:
+  contents: write
+concurrency:
+  group: fastnews-data-commit
+  cancel-in-progress: false
+
 jobs:
-  generate-report:
-    runs-on: ubuntu-latest
+  report:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
     timeout-minutes: 360
-
+    env:
+      CONFERENCE: ${{ inputs.conference }}
+      YEAR: ${{ inputs.year }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      OPENAI_BASE_URL: ${{ secrets.OPENAI_BASE_URL }}
+      LLM_MODEL: ${{ secrets.LLM_MODEL }}
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.13'
-
-    - name: Install dependencies
-      run: |
-        pip install uv
-        uv pip install -e . --system
-        sudo apt-get update && sudo apt-get install -y fonts-noto-cjk libpango-1.0-0 libpangoft2-1.0-0
-
-    - name: Fetch Papers
-      run: uv run python top-conf/fetch_big4.py ${{ github.event.inputs.conference }} ${{ github.event.inputs.year }}
-
-    - name: Generate Paper Summaries
-      env:
-        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        OPENAI_BASE_URL: ${{ secrets.OPENAI_BASE_URL }}
-        LLM_MODEL: ${{ secrets.LLM_MODEL }}
-      run: uv run python top-conf/generate_conf_summary.py ${{ github.event.inputs.conference }} ${{ github.event.inputs.year }}
-      # If the LLM generation fails (e.g. API limits), the job will fail.
-      # But since it saves progress to summary.jsonl iteratively, 
-      # we can cache it or push the progress so it picks up where it left off next time.
-      # To do this correctly, we will unconditionally commit the progress if there are changes.
-
-    - name: Generate PDF and HTML Report
-      if: always()
-      run: uv run python top-conf/generate_conf_report.py ${{ github.event.inputs.conference }} ${{ github.event.inputs.year }}
-
-    - name: Commit Progress Data
-      if: always()
-      run: |
-        git config --global user.name "GitHub Action"
-        git config --global user.email "action@github.com"
-        git add top-conf/data/ top-conf/index.html index.html
-        git commit -m "chore: top-conf automatically generated checkpoint/data" || echo "No changes to commit"
-        git push || echo "Push failed, probably no changes"
-
-    - name: Create Release and Upload Report
-      if: success()
-      uses: softprops/action-gh-release@v1
-      with:
-        tag_name: report-${{ github.event.inputs.conference }}-${{ github.event.inputs.year }}-${{ github.run_id }}
-        name: ${{ github.event.inputs.conference }} ${{ github.event.inputs.year }} Summary
-        files: |
-          top-conf/data/report/*.pdf
-          top-conf/data/report/*.html
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - run: go build -trimpath -o bin/fastnews ./cmd/fastnews
+      - name: Fetch official paper records
+        run: ./bin/fastnews fetch-conf --conference "$CONFERENCE" --year "$YEAR"
+      - name: Generate resumable summaries
+        run: ./bin/fastnews summarize-conf --conference "$CONFERENCE" --year "$YEAR"
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+      - run: pnpm --dir web install --frozen-lockfile
+      - run: pnpm --dir web exec playwright install --with-deps chromium
+      - name: Generate HTML and PDF
+        run: |
+          export FASTNEWS_CHROME="$(pnpm --dir web exec node -e 'console.log(require("@playwright/test").chromium.executablePath())')"
+          ./bin/fastnews conference-report --conference "$CONFERENCE" --year "$YEAR" --pdf
+      - name: Commit conference records and summary checkpoints
+        if: ${{ !cancelled() }}
+        env:
+          FASTNEWS_DATA_COMMIT_MESSAGE: 'data: update conference report and checkpoints'
+        run: ./scripts/commit-data.sh top-conf/data/
+      - name: Publish this conference report
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: report-${{ inputs.conference }}-${{ inputs.year }}
+        run: |
+          case "$CONFERENCE" in
+            usenix) PREFIX=USENIX ;;
+            ieee-sp) PREFIX=IEEE-SP ;;
+            ndss) PREFIX=NDSS ;;
+            ccs) PREFIX=CCS ;;
+            *) exit 2 ;;
+          esac
+          REPORT="top-conf/data/report/${PREFIX}_${YEAR}_Report"
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" "$REPORT.html" "$REPORT.pdf" --clobber
+          else
+            gh release create "$RELEASE_TAG" "$REPORT.html" "$REPORT.pdf" \
+              --target main --title "$PREFIX $YEAR Summary" --notes '安全顶会论文中文报告。'
+          fi
