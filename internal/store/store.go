@@ -38,6 +38,7 @@ type Session struct {
 	UserID   string `json:"user_id"`
 	Email    string `json:"email"`
 	Name     string `json:"name"`
+	Role     string `json:"role"`
 	CSRF     string `json:"csrf"`
 	Source   string `json:"source"`
 	Provider string `json:"-"`
@@ -85,6 +86,10 @@ func Open(root string) (*Store, error) {
  CREATE UNIQUE INDEX IF NOT EXISTS cas_subject_live ON cas_links(issuer,client_id,subject) WHERE state!='revoked';
  CREATE TABLE IF NOT EXISTS cas_events(issuer TEXT NOT NULL,id TEXT NOT NULL,created REAL NOT NULL,PRIMARY KEY(issuer,id));`)
 	if e != nil {
+		db.Close()
+		return nil, e
+	}
+	if e = s.initAccounts(); e != nil {
 		db.Close()
 		return nil, e
 	}
@@ -206,7 +211,7 @@ func (s *Store) Session(raw string) (*Session, error) {
 		return nil, nil
 	}
 	v := new(Session)
-	e := s.DB.QueryRow(`SELECT s.hash,s.user_id,s.csrf,s.source,s.provider,u.email,u.name FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.hash=? AND s.expires>? AND u.status='active'`, Digest(raw), Now()).Scan(&v.Hash, &v.UserID, &v.CSRF, &v.Source, &v.Provider, &v.Email, &v.Name)
+	e := s.DB.QueryRow(`SELECT s.hash,s.user_id,s.csrf,s.source,s.provider,u.email,u.name,u.role FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.hash=? AND s.expires>? AND u.status='active'`, Digest(raw), Now()).Scan(&v.Hash, &v.UserID, &v.CSRF, &v.Source, &v.Provider, &v.Email, &v.Name, &v.Role)
 	if errors.Is(e, sql.ErrNoRows) {
 		return nil, nil
 	}

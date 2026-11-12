@@ -14,7 +14,8 @@ type Connection = {
 export default function Account() {
   const { profile, refresh, notify } = useApp()
   const [params] = useSearchParams()
-  const [mode, setMode] = useState(params.get('mode') === 'register' ? 'register' : 'login'),
+  const [mode, setMode] = useState('login'),
+    [name, setName] = useState(''),
     [email, setEmail] = useState(''),
     [password, setPassword] = useState(''),
     [token, setToken] = useState(''),
@@ -45,8 +46,27 @@ export default function Account() {
     }
   }
   useEffect(() => {
+    if (params.get('fastcas') === 'register') {
+      setMode('cas-register')
+      api<{ email: string; name: string }>('api/auth/fastcas/registration')
+        .then((p) => {
+          setEmail(p.email)
+          setName(p.name)
+        })
+        .catch((e) => setError(message(e)))
+    }
+  }, [params])
+  useEffect(() => {
     api<CASStatus>('api/auth/fastcas/available')
-      .then(setCAS)
+      .then((value) => {
+        setCAS(value)
+        if (
+          params.get('mode') === 'register' &&
+          params.get('fastcas') !== 'register' &&
+          value.login_enabled
+        )
+          window.location.replace(asset('api/auth/fastcas/login'))
+      })
       .catch((e) => setError(message(e)))
   }, [])
   useEffect(() => {
@@ -57,6 +77,15 @@ export default function Account() {
     setError('')
     try {
       await preauth()
+      if (mode === 'cas-register') {
+        const result = await api<{ url: string }>('api/auth/fastcas/registration', {
+          method: 'POST',
+          body: JSON.stringify({ email, name, password }),
+        })
+        const target = safeURL(result.url)
+        if (target) window.location.assign(target)
+        return
+      }
       await api(
         `api/auth/${mode === 'recover' ? 'recover' : mode === 'register' ? 'register' : 'login'}`,
         {
@@ -124,7 +153,7 @@ export default function Account() {
     <>
       <PageHeading
         title="FastNews 账号"
-        description="本地登录、邀请注册与恢复独立于 FastCAS，个人内容归当前账号所有。"
+        description="使用本地账号或 FastCAS 登录，个人内容归当前账号所有。"
         action={<Link to="/">返回总览</Link>}
       />
       {params.get('fastcas') === 'failed' && (
@@ -146,7 +175,9 @@ export default function Account() {
                 label="账号操作"
                 options={[
                   { value: 'login', label: '登录' },
-                  { value: 'register', label: '邀请注册' },
+                  ...(mode === 'cas-register'
+                    ? [{ value: 'cas-register', label: '完善平台账号' }]
+                    : []),
                   { value: 'recover', label: '恢复账号' },
                 ]}
                 value={mode}
@@ -155,7 +186,17 @@ export default function Account() {
                   setError('')
                 }}
               />
-              {mode === 'login' ? (
+              {mode === 'cas-register' && (
+                <label>
+                  姓名
+                  <TextField
+                    value={name}
+                    maxLength={120}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </label>
+              )}
+              {mode === 'login' || mode === 'cas-register' ? (
                 <label className="fastui-field">
                   邮箱
                   <TextField
@@ -190,14 +231,18 @@ export default function Account() {
                 />
               </label>
               <Button type="submit" variant="primary" loading={busy}>
-                {mode === 'login' ? '登录' : mode === 'register' ? '创建账号' : '更新密码'}
+                {mode === 'login'
+                  ? '登录'
+                  : mode === 'cas-register'
+                    ? '创建并绑定账号'
+                    : '更新密码'}
               </Button>
               {cas?.login_enabled && (
                 <a className="file-link" href={asset('api/auth/fastcas/login')}>
                   使用 FastCAS 登录
                 </a>
               )}
-              <p className="muted">邀请与恢复凭证由管理员发放，一小时内有效且仅能使用一次。</p>
+              <p className="muted">已有账号可登录后绑定 FastCAS。恢复凭证由管理员发放。</p>
             </form>
           </Panel>
         ) : (

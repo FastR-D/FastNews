@@ -18,7 +18,7 @@ func (s *Server) auth(w http.ResponseWriter, r *http.Request, p string) error {
 	if r.Method == "GET" {
 		switch p {
 		case "/api/auth/info":
-			reply(w, r, 200, map[string]any{"local": true, "registration": "invite", "fastcas": s.Config.CASEnabled})
+			reply(w, r, 200, map[string]any{"local": true, "registration": false, "fastcas": s.Config.CASEnabled})
 			return nil
 		case "/api/auth/session-init":
 			csrf := store.Random()
@@ -129,6 +129,9 @@ func (s *Server) auth(w http.ResponseWriter, r *http.Request, p string) error {
 		s.setCookie(w, "fastnews_preauth", "", -1)
 		reply(w, r, 200, map[string]string{"csrf": csrf})
 	case "/api/auth/register", "/api/auth/recover":
+		if p == "/api/auth/register" {
+			return store.Fail(403, "自主注册已关闭，请使用 FastCAS 或联系管理员")
+		}
 		kind := "invite"
 		if strings.HasSuffix(p, "recover") {
 			kind = "recovery"
@@ -198,7 +201,7 @@ func (s *Server) content(w http.ResponseWriter, r *http.Request, p string) error
 		if impression == nil {
 			impression = map[string]any{"text": "", "updatedAt": ""}
 		}
-		reply(w, r, 200, map[string]any{"userId": v.UserID, "person": v.Name, "email": v.Email, "source": v.Source, "csrf": v.CSRF, "authors": authors["authors"], "customTags": authors["customTags"], "impression": impression, "inboxUnread": unread(items)})
+		reply(w, r, 200, map[string]any{"userId": v.UserID, "person": v.Name, "email": v.Email, "role": v.Role, "source": v.Source, "csrf": v.CSRF, "authors": authors["authors"], "customTags": authors["customTags"], "impression": impression, "inboxUnread": unread(items)})
 		return nil
 	}
 	if name != "authors" && name != "impression" && name != "inbox" && name != "settings" {

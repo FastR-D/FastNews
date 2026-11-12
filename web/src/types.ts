@@ -37,6 +37,7 @@ export interface Impression {
   updatedAt: string
 }
 export interface Profile {
+  role?: string
   userId: string
   person: string
   email: string

@@ -172,6 +172,8 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request) {
 		e = s.fastreadIntegration(w, r, p)
 	case p == "/api/integrations/fastresearch/workspace":
 		e = s.workspaceHTTP(w, r)
+	case p == "/api/admin/users" || strings.HasPrefix(p, "/api/admin/users/"):
+		e = s.adminUsers(w, r, p)
 	case strings.HasPrefix(p, "/api/auth/fastcas/"):
 		e = s.casHTTP(w, r, p)
 	case strings.HasPrefix(p, "/api/auth/"):

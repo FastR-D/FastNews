@@ -247,6 +247,9 @@ func (c *CAS) Finish(ctx context.Context, callback, binding, raw string) (string
 	if e != nil {
 		return "", e
 	}
+	if result.Transaction.Purpose == "register" {
+		return c.finishRegistration(ctx, binding, result)
+	}
 	if result.Transaction.Purpose == "link" {
 		if !c.Config.CASLink || s == nil {
 			return "", store.Fail(403, "无法绑定账号")
@@ -275,15 +278,24 @@ func (c *CAS) Finish(ctx context.Context, callback, binding, raw string) (string
 		if e != nil {
 			return "", e
 		}
-		return "", c.Accept(link)
+		if e = c.Accept(link); e != nil {
+			return "", e
+		}
+		if result.Identity.Role == "admin" {
+			_, e = c.Store.DB.Exec(`UPDATE users SET role='admin' WHERE id=? AND status='active'`, link.LocalRef)
+		}
+		return "", e
 	}
 	if result.Transaction.Purpose != "login" || !c.Config.CASLogin {
 		return "", store.Fail(403, "此实例已关闭 FastCAS 登录")
 	}
 	var user string
 	e = c.Store.DB.QueryRow(`SELECT user_id FROM cas_links WHERE issuer=? AND client_id=? AND subject=? AND state!='revoked'`, c.Config.CASIssuer, c.Config.CASClientID, result.Identity.Subject).Scan(&user)
+	if errors.Is(e, sql.ErrNoRows) {
+		return "", c.promptRegistration(ctx, binding, result)
+	}
 	if e != nil {
-		return "", store.Fail(409, "尚未绑定本地账号，请先使用原方式登录并认证")
+		return "", e
 	}
 	local, e := c.Current(ctx, user)
 	if e != nil {
@@ -317,6 +329,11 @@ func (c *CAS) issue(link *fastcas.Link, result *fastcas.LoginResult) (string, er
 	var local fastcas.Link
 	if json.Unmarshal([]byte(payload), &local) != nil || !same(&local, link) {
 		return "", store.Fail(403, "认证关系不匹配")
+	}
+	if result.Identity.Role == "admin" {
+		if _, e = tx.Exec(`UPDATE users SET role='admin' WHERE id=? AND status='active'`, link.LocalRef); e != nil {
+			return "", e
+		}
 	}
 	raw := store.Random()
 	provider, _ := json.Marshal(map[string]any{"issuer": c.Config.CASIssuer, "sid": result.Identity.SessionID, "link_id": link.ID, "link_version": link.Version, "checked": store.Now()})

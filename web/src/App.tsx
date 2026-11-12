@@ -27,6 +27,7 @@ import Generate from './pages/Generate'
 import Authors from './pages/Authors'
 import Inbox from './pages/Inbox'
 import Account from './pages/Account'
+import UsersPage from './pages/Users'
 import { theme } from './theme'
 const navigation: [string, string, ReactNode][] = [
   ['/', '总览', <LayoutDashboard />],
@@ -120,6 +121,12 @@ export default function App() {
   }
   const nav = (
     <>
+      {profile?.role === 'admin' && (
+        <NavLink to="/admin/users" className="nav-item">
+          <Users />
+          <span>用户管理</span>
+        </NavLink>
+      )}
       {navigation.map(([to, label, icon]) => (
         <NavLink
           key={to}
@@ -216,6 +223,7 @@ export default function App() {
               </Alert>
             )}
             <Routes>
+              <Route path="/admin/users" element={<UsersPage />} />
               <Route path="/" element={<Home />} />
               <Route path="/index.html" element={<Navigate to="/" replace />} />
               <Route path="/top-conf/*" element={<Papers />} />

@@ -5,7 +5,7 @@ go 1.26.0
 toolchain go1.26.8
 
 require (
-	github.com/FastR-D/FastCAS/sdk/go v0.1.2
+	github.com/FastR-D/FastCAS/sdk/go v0.1.3
 	github.com/google/uuid v1.6.0
 	github.com/joho/godotenv v1.5.1
 	github.com/mattn/go-sqlite3 v1.14.22

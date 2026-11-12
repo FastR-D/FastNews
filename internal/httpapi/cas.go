@@ -2,6 +2,7 @@ package httpapi
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	fastcas "github.com/FastR-D/FastCAS/sdk/go"
 	"io"
@@ -10,6 +11,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/FastR-D/FastNews/internal/identity"
 	"github.com/FastR-D/FastNews/internal/store"
 )
 
@@ -77,15 +79,47 @@ func (s *Server) casHTTP(w http.ResponseWriter, r *http.Request, p string) error
 	if action == "callback" && r.Method == "GET" {
 		callback := strings.Split(s.Config.CASRedirect, "?")[0] + "?" + r.URL.RawQuery
 		token, e := s.CAS.Finish(r.Context(), callback, cookie(r, "fastnews_cas_binding"), cookie(r, "fastnews_session"))
-		s.setCookie(w, "fastnews_cas_binding", "", -1)
 		status := "complete"
-		if e != nil {
+		if errors.Is(e, identity.ErrRegistrationRequired) {
+			status = "register"
+		} else if e != nil {
 			status = "failed"
 		} else if token != "" {
 			s.setCookie(w, "fastnews_session", token, 7*86400)
 		}
+		if status != "register" {
+			s.setCookie(w, "fastnews_cas_binding", "", -1)
+		}
 		w.Header().Set("Referrer-Policy", "no-referrer")
 		http.Redirect(w, r, s.Config.PublicPath+"/login?fastcas="+status, 302)
+		return nil
+	}
+	if action == "registration" {
+		binding := cookie(r, "fastnews_cas_binding")
+		if r.Method == "GET" {
+			profile, e := s.CAS.RegistrationStatus(binding)
+			if e != nil {
+				return e
+			}
+			reply(w, r, 200, profile)
+			return nil
+		}
+		if r.Method != "POST" {
+			return store.Fail(405, "Method not allowed")
+		}
+		if e := s.csrf(r, cookie(r, "fastnews_preauth")); e != nil {
+			return e
+		}
+		var input store.UserInput
+		if e := decode(w, r, &input, 8192); e != nil {
+			return e
+		}
+		next, target, e := s.CAS.BeginRegistration(r.Context(), binding, input)
+		if e != nil {
+			return e
+		}
+		s.setCookie(w, "fastnews_cas_binding", next, 300)
+		reply(w, r, 200, map[string]string{"url": target})
 		return nil
 	}
 	current, e := s.require(r)
