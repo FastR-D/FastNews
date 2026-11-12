@@ -14,7 +14,7 @@ type Connection = {
 export default function Account() {
   const { profile, refresh, notify } = useApp()
   const [params] = useSearchParams()
-  const [mode, setMode] = useState('login'),
+  const [mode, setMode] = useState(params.get('mode') === 'register' ? 'register' : 'login'),
     [email, setEmail] = useState(''),
     [password, setPassword] = useState(''),
     [token, setToken] = useState(''),

@@ -30,12 +30,13 @@ import (
 )
 
 type Server struct {
-	Config  config.Config
-	Store   *store.Store
-	Catalog *catalog.Catalog
-	AI      *ai.Service
-	CAS     *identity.CAS
-	locks   [64]sync.Mutex
+	Config       config.Config
+	Store        *store.Store
+	Catalog      *catalog.Catalog
+	AI           *ai.Service
+	CAS          *identity.CAS
+	locks        [64]sync.Mutex
+	workspaceCAS workspaceProvider
 }
 
 func New(c config.Config, s *store.Store) (*Server, error) {
@@ -169,6 +170,8 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request) {
 	switch {
 	case strings.HasPrefix(p, "/api/integrations/fastread/"):
 		e = s.fastreadIntegration(w, r, p)
+	case p == "/api/integrations/fastresearch/workspace":
+		e = s.workspaceHTTP(w, r)
 	case strings.HasPrefix(p, "/api/auth/fastcas/"):
 		e = s.casHTTP(w, r, p)
 	case strings.HasPrefix(p, "/api/auth/"):

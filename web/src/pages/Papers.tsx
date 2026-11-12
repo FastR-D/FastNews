@@ -15,8 +15,8 @@ import {
 } from '../components/Common'
 export default function Papers() {
   const { catalog, profile } = useApp()
-  const [query, setQuery] = useState(''),
-    [q, setQ] = useState(''),
+  const [query, setQuery] = useState(() => new URLSearchParams(window.location.search).get('q') ?? ''),
+    [q, setQ] = useState(query),
     [conference, setConference] = useState(''),
     [year, setYear] = useState(''),
     [category, setCategory] = useState(''),
