@@ -4,6 +4,7 @@ import { Badge, Button, Checkbox, SegmentedControl, TextField } from '@fastrd/ui
 import { api, asset, message, setCSRF, safeURL } from '../api'
 import { useApp } from '../context'
 import { ErrorMessage, PageHeading, Panel } from '../components/Common'
+import FastReadConnection from '../components/FastReadConnection'
 type CASStatus = { enabled: boolean; login_enabled: boolean; link_enabled: boolean }
 type Connection = {
   researchAccountId: string
@@ -233,6 +234,7 @@ export default function Account() {
             </div>
           </Panel>
         )}
+        {profile && profile.source !== 'research' && <FastReadConnection key={profile.userId} />}
         {profile && profile.source !== 'research' && (
           <Panel title="FastCAS 认证">
             <div className="account-form">

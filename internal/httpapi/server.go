@@ -167,6 +167,8 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request) {
 	}
 	var e error
 	switch {
+	case strings.HasPrefix(p, "/api/integrations/fastread/"):
+		e = s.fastreadIntegration(w, r, p)
 	case strings.HasPrefix(p, "/api/auth/fastcas/"):
 		e = s.casHTTP(w, r, p)
 	case strings.HasPrefix(p, "/api/auth/"):
