@@ -78,6 +78,11 @@ test('local login, impression, authors, inbox and logout persist across reloads'
   await dialog
     .getByLabel('研究印象', { exact: true })
     .fill(`LLM prompt injection ${info.project.name}`)
+  await page.mouse.click(1, 1)
+  await expect(dialog).toBeVisible()
+  await expect(dialog.getByLabel('研究印象', { exact: true })).toHaveValue(
+    `LLM prompt injection ${info.project.name}`,
+  )
   await dialog.getByRole('button', { name: '保存印象' }).click()
   await expect(dialog).not.toBeVisible()
   await page.reload()
@@ -89,7 +94,16 @@ test('local login, impression, authors, inbox and logout persist across reloads'
   await visit(page, baseURL, 'authors')
   await page.getByRole('button', { name: '添加作者', exact: true }).click()
   const editor = page.getByRole('dialog', { name: '新增作者' })
+  await editor.getByRole('button', { name: '取消', exact: true }).click()
+  await expect(editor).not.toBeVisible()
+  await page.getByRole('button', { name: '添加作者', exact: true }).click()
+  await editor.getByRole('button', { name: '关闭编辑', exact: true }).click()
+  await expect(editor).not.toBeVisible()
+  await page.getByRole('button', { name: '添加作者', exact: true }).click()
   await editor.getByLabel('姓名', { exact: true }).fill(`Alice ${info.project.name}`)
+  await page.mouse.click(1, 1)
+  await expect(editor).toBeVisible()
+  await expect(editor.getByLabel('姓名', { exact: true })).toHaveValue(`Alice ${info.project.name}`)
   await editor.getByLabel('主页链接', { exact: true }).fill('http://127.0.0.1:9')
   await editor.getByLabel('ML/AI Security', { exact: true }).check()
   await editor.getByRole('button', { name: '保存作者' }).click()

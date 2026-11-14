@@ -38,7 +38,7 @@ export default function ImpressionDialog({
     }
   }
   return (
-    <Dialog open={open} onClose={onClose} label="个人印象">
+    <Dialog open={open} dismissible={false} onClose={onClose} label="个人印象">
       <form
         className="fastui-modal-body"
         onSubmit={(event) => {
