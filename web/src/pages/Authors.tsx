@@ -223,6 +223,7 @@ export default function Authors({ embedded = false }: { embedded?: boolean }) {
       {content}
       <Dialog
         open={open}
+        dismissible={false}
         onClose={() => setOpen(false)}
         label={profile?.authors.some((a) => a.id === editing?.id) ? '编辑作者' : '新增作者'}
       >
