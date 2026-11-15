@@ -189,7 +189,9 @@ export default function Papers() {
                 onChange={(e) => setFilter('year', e.target.value)}
               >
                 <option value="">全部年份</option>
-                {catalog?.years.map((y) => <option key={y}>{y}</option>)}
+                {catalog?.years.map((y) => (
+                  <option key={y}>{y}</option>
+                ))}
               </Select>
             </label>
             <label className="fastui-field">
@@ -200,7 +202,9 @@ export default function Papers() {
                 onChange={(e) => setFilter('category', e.target.value)}
               >
                 <option value="">全部类别</option>
-                {catalog?.categories.map((c) => <option key={c}>{c}</option>)}
+                {catalog?.categories.map((c) => (
+                  <option key={c}>{c}</option>
+                ))}
               </Select>
             </label>
           </div>

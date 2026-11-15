@@ -18,7 +18,7 @@
   "dependencies": {
     "@fastrd/ui-foundation": "0.3.0",
     "@fastrd/ui-react": "0.3.0",
-    "lucide-react": "^0.468.0",
+    "lucide-react": "^1.72.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-markdown": "^10.1.0",
@@ -27,13 +27,13 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.56.1",
-    "@types/node": "^22.0.0",
+    "@types/node": "^26.6.6",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "@vitejs/plugin-react": "^4.7.0",
-    "prettier": "3.5.3",
-    "typescript": "~5.7.3",
+    "@vitejs/plugin-react": "^6.3.0",
+    "prettier": "3.10.0",
+    "typescript": "~7.0.2",
     "unocss": "^66.12.0",
-    "vite": "~6.4.1"
+    "vite": "~8.3.8"
   }
 }
