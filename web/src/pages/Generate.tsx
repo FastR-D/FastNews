@@ -163,7 +163,9 @@ export default function Generate({ kind }: { kind: 'field-briefing' | 'summary-b
                 onChange={(e) => setCategory(e.target.value)}
               >
                 <option value="">全部类别</option>
-                {catalog?.categories.map((c) => <option key={c}>{c}</option>)}
+                {catalog?.categories.map((c) => (
+                  <option key={c}>{c}</option>
+                ))}
               </Select>
             </label>
             <div className="flex items-end">
