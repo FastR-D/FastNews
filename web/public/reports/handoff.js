@@ -7,6 +7,47 @@
     ? '/reports/handoff.js'
     : '/assets/fastread.js'
   const base = scriptPath.endsWith(suffix) ? scriptPath.slice(0, -suffix.length) : ''
+  const tools = document.createElement('nav')
+  tools.setAttribute('aria-label', '报告阅读导航')
+  tools.className = 'fastui-toolbar'
+  Object.assign(tools.style, {
+    position: 'sticky',
+    top: '0',
+    zIndex: '10',
+    background: 'var(--fastui-surface)',
+  })
+  const back = document.createElement('a')
+  back.className = 'fastui-button fastui-button--sm'
+  back.href = `${base}/`
+  back.textContent = '返回报告工作台'
+  const top = document.createElement('button')
+  top.className = 'fastui-button fastui-button--sm'
+  top.type = 'button'
+  top.textContent = '回到顶部'
+  top.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'instant' }))
+  tools.append(back, top)
+  document.body.prepend(tools)
+
+  const categories = [...document.querySelectorAll('section.category[id]')]
+  categories.forEach((category, index) => {
+    const heading = category.querySelector('.category-head')
+    if (!heading) return
+    const details = document.createElement('details')
+    details.open = index === 0
+    const summary = document.createElement('summary')
+    summary.append(heading)
+    details.append(summary, ...category.childNodes)
+    category.append(details)
+  })
+  const revealHash = () => {
+    const category = categories.find((item) => `#${item.id}` === window.location.hash)
+    if (!category) return
+    const details = category.querySelector('details')
+    if (details) details.open = true
+    category.scrollIntoView()
+  }
+  window.addEventListener('hashchange', revealHash)
+  revealHash()
   const text = (value, limit) =>
     String(value || '')
       .replace(/\s+/g, ' ')
