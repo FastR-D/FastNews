@@ -36,7 +36,9 @@ export default function Authors({ embedded = false }: { embedded?: boolean }) {
     [customTags, setCustomTags] = useState<string[]>([]),
     [error, setError] = useState(''),
     [busy, setBusy] = useState(false),
-    [fetching, setFetching] = useState(''),
+    [fetching, setFetching] = useState<
+      Record<string, { stage: 'fetching' | 'saving' | 'done' | 'error'; text: string }>
+    >({}),
     [confirm, setConfirm] = useState<Author | null>(null)
   function edit(author?: Author) {
     setError('')
@@ -81,13 +83,23 @@ export default function Authors({ embedded = false }: { embedded?: boolean }) {
     }
   }
   async function fetchHome(author: Author) {
-    setFetching(author.id)
+    setFetching((current) => ({
+      ...current,
+      [author.id]: { stage: 'fetching', text: '正在抓取并解析作者主页…' },
+    }))
     try {
       const parsed = await api<{
         title: string
         description: string
         papers: { url: string; title: string }[]
       }>('api/authors/preview', { method: 'POST', body: JSON.stringify({ url: author.homepage }) })
+      setFetching((current) => ({
+        ...current,
+        [author.id]: {
+          stage: 'saving',
+          text: `已找到 ${parsed.papers.length} 个论文链接，正在保存…`,
+        },
+      }))
       const current = await api<{ authors: Author[]; customTags: string[] }>('api/content/authors')
       await persist(
         current.authors.map((a) =>
@@ -104,10 +116,22 @@ export default function Authors({ embedded = false }: { embedded?: boolean }) {
         current.customTags,
       )
       notify(`已解析 ${author.name} 的主页，找到 ${parsed.papers.length} 个论文链接`)
+      setFetching((current) => ({
+        ...current,
+        [author.id]: {
+          stage: 'done',
+          text: `主页解析完成，已保存 ${parsed.papers.length} 个论文链接`,
+        },
+      }))
     } catch (e) {
+      setFetching((current) => ({
+        ...current,
+        [author.id]: {
+          stage: 'error',
+          text: `主页解析未完成：${message(e)}。作者资料已保留，可重新抓取。`,
+        },
+      }))
       notify(message(e))
-    } finally {
-      setFetching('')
     }
   }
   async function remove() {
@@ -167,6 +191,17 @@ export default function Authors({ embedded = false }: { embedded?: boolean }) {
                   {a.fetchSummary && (
                     <small className="block text-[var(--fastui-muted)]">{a.fetchSummary}</small>
                   )}
+                  {fetching[a.id] && (
+                    <div role={fetching[a.id].stage === 'error' ? 'alert' : 'status'}>
+                      <small>{fetching[a.id].text}</small>
+                      {['fetching', 'saving'].includes(fetching[a.id].stage) && (
+                        <progress
+                          className="fastui-progress w-full"
+                          aria-label={`${a.name} 主页解析进度`}
+                        />
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="flex flex-wrap items-center gap-2">
@@ -185,7 +220,9 @@ export default function Authors({ embedded = false }: { embedded?: boolean }) {
                 <Button
                   variant="icon"
                   aria-label={`抓取 ${a.name} 主页`}
-                  loading={fetching === a.id}
+                  loading={
+                    !!fetching[a.id] && ['fetching', 'saving'].includes(fetching[a.id].stage)
+                  }
                   onClick={() => fetchHome(a)}
                 >
                   <RefreshCw size={14} />
@@ -266,6 +303,9 @@ export default function Authors({ embedded = false }: { embedded?: boolean }) {
           </div>
           <fieldset className="fastui-fieldset">
             <legend className="fastui-legend">研究方向</legend>
+            <p className="text-[var(--fastui-secondary)]">
+              只勾选你希望关注这位作者的方向，可多选或添加自定义标签。这些标签记录你的关注范围；主页解析会列出识别到的论文链接，目前不会按标签自动过滤。
+            </p>
             <div className="grid sm:grid-cols-2 gap-3">
               {Array.from(new Set([...defaultTags, ...customTags, ...(editing?.tags || [])])).map(
                 (t) => (

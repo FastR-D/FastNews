@@ -133,34 +133,40 @@ export default function Home() {
               </Link>
             }
           >
-            <TabBar
-              label="报告分类"
-              tabs={[
-                { id: 'conference', label: `顶会报告 · ${top.length}`, controls: 'report-results' },
-                {
-                  id: 'weekly',
-                  label: `安全资讯周报 · ${weekly.length}`,
-                  controls: 'report-results',
-                },
-                { id: 'downloads', label: '全部下载', controls: 'report-results' },
-              ]}
-              activeId={tab}
-              onSelect={setTab}
-            />
-            <Toolbar label="报告筛选">
-              <Search size={14} />
-              <TextField
-                className="flex-1"
-                aria-label="搜索报告"
-                placeholder="按报告名称筛选…"
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
+            <InspectorSection label="浏览报告与下载" open>
+              <TabBar
+                label="报告分类"
+                tabs={[
+                  {
+                    id: 'conference',
+                    label: `顶会报告 · ${top.length}`,
+                    controls: 'report-results',
+                  },
+                  {
+                    id: 'weekly',
+                    label: `安全资讯周报 · ${weekly.length}`,
+                    controls: 'report-results',
+                  },
+                  { id: 'downloads', label: '全部下载', controls: 'report-results' },
+                ]}
+                activeId={tab}
+                onSelect={setTab}
               />
-              <span className="text-[var(--fastui-muted)]">{reports.length} 份报告</span>
-            </Toolbar>
-            <div id="report-results" role="tabpanel" aria-labelledby={tab}>
-              <ReportList reports={reports} download={tab === 'downloads'} />
-            </div>
+              <Toolbar label="报告筛选">
+                <Search size={14} />
+                <TextField
+                  className="flex-1"
+                  aria-label="搜索报告"
+                  placeholder="按报告名称筛选…"
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                />
+                <span className="text-[var(--fastui-muted)]">{reports.length} 份报告</span>
+              </Toolbar>
+              <div id="report-results" role="tabpanel" aria-labelledby={tab}>
+                <ReportList reports={reports} download={tab === 'downloads'} />
+              </div>
+            </InspectorSection>
           </Panel>
           <Authors embedded />
         </div>

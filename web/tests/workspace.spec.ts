@@ -20,6 +20,20 @@ test('all old entries, real catalog, downloads, calendar, theme and responsive l
   await visit(page, baseURL, '')
   await expect(page.getByRole('heading', { name: '安全研究报告工作台' })).toBeVisible()
   await expect(page.getByRole('heading', { name: '顶会报告', exact: true })).toBeVisible()
+  const catalogResponse = await page.request.get(route(baseURL, 'api/catalog'))
+  const catalog = await catalogResponse.json()
+  const latestResponse = await page.request.get(route(baseURL, `api/news?date=${catalog.dates[0]}`))
+  const { articles } = await latestResponse.json()
+  const latest = page.getByRole('region', { name: '最新快讯', exact: true })
+  for (const article of articles.slice(0, 5)) {
+    await expect(
+      latest.getByRole('link', { name: article.title_zh || article.title, exact: true }),
+    ).toHaveAttribute('href', article.link)
+  }
+  await expect(latest.getByRole('link', { name: '查看全部资讯' })).toHaveAttribute(
+    'href',
+    `${new URL(baseURL!).pathname}secnews/?date=${catalog.dates[0]}`,
+  )
   await page.getByRole('button', { name: '切换深色模式' }).click()
   await expect(page.locator('html')).toHaveAttribute('data-fastui-theme', 'dark')
   await page.reload()
@@ -61,7 +75,13 @@ test('all old entries, real catalog, downloads, calendar, theme and responsive l
   await expect(page.getByTestId('calendar')).toBeVisible()
   await visit(page, baseURL, 'field-briefing/')
   await page.getByLabel('研究方向', { exact: true }).fill('LLM jailbreak')
+  const generation = page.waitForResponse(
+    (response) =>
+      response.url() === route(baseURL, 'api/field-briefing') &&
+      response.request().method() === 'POST',
+  )
   await page.getByRole('button', { name: '生成导读', exact: true }).click()
+  expect((await generation).ok()).toBeTruthy()
   await expect(page.getByRole('status')).toContainText('本地证据整理')
   await expect(page.getByRole('heading', { name: '高相关论文推荐', exact: true })).toBeVisible()
   await visit(page, baseURL, '')
@@ -126,6 +146,57 @@ test('local login, impression, authors, inbox and logout persist across reloads'
   await expect(page.getByText('登录后管理个人内容', { exact: true })).toBeVisible()
 })
 
+test('author UI shows pending and saved homepage results and survives report tabs and folding', async ({
+  page,
+  baseURL,
+}, info) => {
+  await login(page, baseURL)
+  await visit(page, baseURL, '')
+  await page.getByRole('button', { name: '添加作者', exact: true }).click()
+  const editor = page.getByRole('dialog', { name: '新增作者' })
+  await expect(editor.getByText(/目前不会按标签自动过滤/)).toBeVisible()
+  const name = `Homepage ${info.project.name}`
+  await editor.getByLabel('姓名', { exact: true }).fill(name)
+  await editor.getByLabel('主页链接', { exact: true }).fill('https://example.com/author')
+  await editor.getByLabel('Software Security', { exact: true }).check()
+  let release!: () => void
+  const gate = new Promise<void>((resolve) => {
+    release = resolve
+  })
+  // This case verifies UI handling and real local persistence. Homepage parsing
+  // itself is outside this browser scenario's claim.
+  await page.route('**/api/authors/preview', async (route) => {
+    await gate
+    await route.fulfill({
+      json: {
+        title: 'Research homepage',
+        description: 'Selected research links',
+        papers: [{ url: 'https://arxiv.org/abs/2401.00001', title: 'Saved paper' }],
+      },
+    })
+  })
+  await editor.getByRole('button', { name: '保存作者' }).click()
+  const row = page.getByTestId('author-row').filter({ hasText: name })
+  await expect(row.getByRole('progressbar')).toBeVisible()
+  await expect(row.getByRole('status')).toContainText('正在抓取并解析')
+  release()
+  await expect(row.getByRole('status')).toContainText('主页解析完成，已保存 1 个论文链接')
+  for (const tab of ['安全资讯周报', '全部下载', '顶会报告']) {
+    await page.getByRole('tab', { name: new RegExp(tab) }).click()
+    await expect(row).toBeVisible()
+  }
+  await page.locator('summary').filter({ hasText: '浏览报告与下载' }).click()
+  await expect(page.getByRole('tabpanel')).not.toBeVisible()
+  await expect(row).toBeVisible()
+  await page.reload()
+  await expect(row).toContainText('Selected research links')
+  await row.locator('summary').click()
+  await expect(row.getByRole('link', { name: 'Saved paper' })).toHaveAttribute(
+    'href',
+    'https://arxiv.org/abs/2401.00001',
+  )
+})
+
 test('historical report uses maintained handoff assets and the correct API prefix', async ({
   page,
   baseURL,
@@ -151,6 +222,19 @@ test('historical report uses maintained handoff assets and the correct API prefi
     await request.fulfill({ status: 409, json: { error: '阅读授权需要连接 Research' } })
   })
   await visit(page, baseURL, report.html)
+  await expect(page.getByRole('link', { name: '返回报告工作台' })).toHaveAttribute(
+    'href',
+    new URL(baseURL!).pathname,
+  )
+  const secondCategory = page.locator('section.category').nth(1)
+  await expect(secondCategory.locator('details')).not.toHaveAttribute('open')
+  await secondCategory.locator('summary').click()
+  await expect(secondCategory.locator('details')).toHaveAttribute('open')
+  await secondCategory.locator('summary').click()
+  await page.goto(route(baseURL, report.html) + '#cat-2')
+  await expect(secondCategory.locator('details')).toHaveAttribute('open')
+  await page.getByRole('button', { name: '回到顶部', exact: true }).click()
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0)
   await expect(page.locator('button[data-fastread]').first()).toBeVisible()
   await page.locator('button[data-fastread]').first().click()
   await expect(page.getByRole('alert')).toHaveText('阅读授权需要连接 Research')
