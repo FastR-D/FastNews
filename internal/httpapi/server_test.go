@@ -237,7 +237,7 @@ func TestOfflineBriefingAndStatisticsRemainAvailable(t *testing.T) {
 	for _, kind := range []string{"field-briefing", "summary-brief"} {
 		body := map[string]any{"query": "LLM prompt injection", "source": "top-conf"}
 		if kind == "summary-brief" {
-			body["query"] = "四大顶会全景"
+			body["query"] = ""
 		}
 		status, v, _ := h.request(t, "POST", "/api/"+kind, body, "", false)
 		if status != 200 || v["fallback"] != true || len(v["papers"].([]any)) != 1 {

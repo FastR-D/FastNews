@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -15,6 +16,18 @@ import (
 )
 
 func ConferenceURLs(conf string, year int) ([]string, error) {
+	metadata, ok := catalog.Conferences[conf]
+	if !ok {
+		return nil, fmt.Errorf("unknown conference %q", conf)
+	}
+	if metadata.Provider == "openreview" {
+		query := url.Values{"content.venueid": {fmt.Sprintf("%s/%d/Conference", metadata.RemoteID, year)}}
+		return []string{"https://api2.openreview.net/notes?" + query.Encode()}, nil
+	}
+	if metadata.Provider == "dblp" {
+		query := url.Values{"q": {fmt.Sprintf("stream:conf/%s: year:%d:", metadata.RemoteID, year)}, "format": {"json"}}
+		return []string{"https://dblp.org/search/publ/api?" + query.Encode()}, nil
+	}
 	switch conf {
 	case "usenix":
 		base := fmt.Sprintf("https://www.usenix.org/conference/usenixsecurity%02d/", year%100)
@@ -157,6 +170,9 @@ func (p *Pipeline) FetchConference(ctx context.Context, conf string, year int, o
 	if year < 2000 || year > 2100 {
 		return fmt.Errorf("invalid conference year")
 	}
+	if catalog.Conferences[conf].Provider != "html" {
+		return p.fetchStructuredConference(ctx, conf, year, catalog.First(override, urls[0]))
+	}
 	if override != "" {
 		urls = []string{override}
 	}
@@ -253,7 +269,13 @@ func (p *Pipeline) SummarizeConference(ctx context.Context, conf string, year in
 			Category string `json:"category"`
 			Summary  string `json:"summary_zh"`
 		}
-		if e = p.AI.Complete(ctx, `你是安全顶会论文编辑。仅根据提供的标题和摘要归纳问题、方法、结果与局限；无摘要时明确说明仅据标题，禁止捏造实验。返回JSON {"category":"Web Security/System Security/Cryptography/Privacy/ML/AI Security/Network Security/Software Security/Hardware Security/Usable Security/Other 中一个类别","summary_zh":"中文深度摘要"}。`, string(b), &result); e != nil {
+		taxonomy := map[string]string{
+			"security": "Web Security、System Security、Cryptography、Privacy、ML/AI Security、Network Security、Software Security、Hardware Security、Usable Security、Other",
+			"ml":       "模型架构与训练、推理与规划、Coding Agents、智能体评测、对齐与安全、视觉与多模态、强化学习、机器学习理论等",
+			"software": "Coding Agents、代码生成、程序修复、软件测试、程序分析、需求与设计、软件维护、实证软件工程等",
+		}[catalog.Conferences[conf].Domain]
+		prompt := fmt.Sprintf(`你是%s论文编辑。仅根据提供的标题、摘要与关键词归纳问题、方法、结果与局限；无摘要时明确说明仅据标题，禁止捏造实验。按论文实际贡献给出具体研究类别，参考方向：%s。返回JSON {"category":"具体研究类别","summary_zh":"中文深度摘要"}。`, catalog.Labels[conf], taxonomy)
+		if e = p.AI.Complete(ctx, prompt, string(b), &result); e != nil {
 			return e
 		}
 		if result.Category == "" || result.Summary == "" {
