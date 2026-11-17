@@ -21,7 +21,6 @@ const sourceLabels: Record<string, string> = {
 function channel(a: NewsArticle) {
   const source = a.source.toLowerCase()
   if (source.includes('bleepingcomputer')) return 'bleepingcomputer'
-  if (source.includes('arxiv')) return 'arxiv'
   return 'other'
 }
 function score(a: NewsArticle) {
@@ -190,7 +189,7 @@ export default function News() {
                   <InspectorSection
                     key={board}
                     open
-                    label={`${board === 'top' ? '优先推荐 · Top 10' : board === 'bleepingcomputer' ? 'BleepingComputer' : board === 'arxiv' ? 'arXiv' : '其他来源'} · ${sorted.length} 条`}
+                    label={`${board === 'top' ? '优先推荐 · Top 10' : board === 'bleepingcomputer' ? 'BleepingComputer' : '其他来源'} · ${sorted.length} 条`}
                   >
                     {(showAll ? sorted : sorted.slice(0, 10)).map((a, i) => (
                       <article
@@ -224,9 +223,7 @@ export default function News() {
                             <Badge>
                               {channel(a) === 'bleepingcomputer'
                                 ? 'BleepingComputer'
-                                : channel(a) === 'arxiv'
-                                  ? 'arXiv'
-                                  : sourceLabels[a.source] || '其他来源'}
+                                : sourceLabels[a.source] || '其他来源'}
                             </Badge>
                             <span title={a.score_reason}>价值 {score(a).toFixed(1)}</span>
                             <span>{a.published?.slice(0, 10)}</span>

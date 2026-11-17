@@ -17,17 +17,28 @@ test('arXiv navigation, dated corpus, fields, pagination and reading use real AP
 }, info) => {
   await login(page, baseURL)
   const catalog = await (await page.request.get(route(baseURL, 'api/catalog'))).json()
-  const date = catalog.dates[0]
-  const { articles } = await (
-    await page.request.get(route(baseURL, `api/news?date=${date}`))
-  ).json()
-  const papers = articles.filter((article: { source: string }) =>
-    article.source.toLowerCase().includes('arxiv'),
-  )
+  let date = ''
+  let articles: { source: string; title: string; categories?: string[] }[] = []
+  for (const candidate of catalog.dates) {
+    const response = await (
+      await page.request.get(route(baseURL, `api/news?date=${candidate}`))
+    ).json()
+    if (
+      response.articles.filter((article: { source: string }) =>
+        article.source.toLowerCase().includes('arxiv'),
+      ).length > 12
+    ) {
+      date = candidate
+      articles = response.articles
+      break
+    }
+  }
+  const papers = articles.filter((article) => article.source.toLowerCase().includes('arxiv'))
   expect(papers.length).toBeGreaterThan(12)
   if (info.project.name === 'mobile') await page.getByRole('button', { name: '打开导航' }).click()
   await page.getByRole('link', { name: 'arXiv 导读', exact: true }).click()
   await expect(page.getByRole('heading', { name: 'arXiv 最新导读', level: 1 })).toBeVisible()
+  await page.getByLabel('采集日期', { exact: true }).selectOption(date)
   await expect(page.getByTestId('paper-row')).toHaveCount(12)
   await expect(page.getByTestId('paper-row').first()).toContainText(papers[0].title)
   await page.getByRole('button', { name: '下一页', exact: true }).click()
