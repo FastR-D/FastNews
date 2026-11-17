@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 
 	"github.com/FastR-D/FastNews/internal/config"
@@ -317,6 +318,72 @@ func TestRequireLoginProtectsCatalogAndReport(t *testing.T) {
 	status, _, _ = h.request(t, "GET", "/api/catalog", nil, "", true)
 	if status != 200 {
 		t.Fatal("local reader blocked", status)
+	}
+}
+
+func TestPrivateGenerationRejectsBeforeModelCalls(t *testing.T) {
+	h := fixture(t)
+	var calls atomic.Int32
+	model := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		calls.Add(1)
+		content := `{"scope":"Fixture corpus","title":"Fixture report","findings":[{"title":"Observed","body":"Fixture evidence"}],"items":[{"id":"paper-a","score":0.9,"reason":"Relevant fixture"}]}`
+		json.NewEncoder(w).Encode(map[string]any{"choices": []any{map[string]any{"finish_reason": "stop", "message": map[string]string{"content": content}}}})
+	}))
+	defer model.Close()
+	research := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/api/content/me" || r.Header.Get("Authorization") != "Bearer valid-legacy" {
+			w.WriteHeader(401)
+			json.NewEncoder(w).Encode(map[string]string{"error": "invalid legacy session"})
+			return
+		}
+		json.NewEncoder(w).Encode(map[string]string{"accountId": "legacy-reader"})
+	}))
+	defer research.Close()
+	h.app.Config.RequireLogin = true
+	h.app.Config.ResearchURL = research.URL
+	h.app.AI.Config.LLMURL = model.URL
+	h.app.AI.Config.LLMKey = "fixture-key"
+	h.app.AI.Config.LLMModel = "fixture-model"
+	payload := map[string]any{"query": "LLM", "topic": "LLM", "candidates": []any{map[string]string{"id": "paper-a", "title": "Prompt Injection in LLM Agents"}}}
+	paths := []string{"/api/field-briefing", "/api/summary-brief", "/api/related-work"}
+	for _, path := range paths {
+		for _, cookie := range []*http.Cookie{nil, {Name: "fastnews_session", Value: "invalid-local"}, {Name: "fr_session", Value: "invalid-legacy"}} {
+			h.cookie = cookie
+			status, _, _ := h.request(t, "POST", path, payload, "", cookie != nil)
+			if status != 401 || calls.Load() != 0 {
+				t.Fatalf("unauthorized %s status=%d model calls=%d", path, status, calls.Load())
+			}
+		}
+	}
+	h.login(t, "generation-reader@example.test")
+	for _, path := range paths {
+		status, _, _ := h.request(t, "POST", path, payload, h.csrf, true)
+		if status != 200 {
+			t.Fatalf("authenticated generation %s: %d", path, status)
+		}
+	}
+	if calls.Load() != 3 {
+		t.Fatal("authenticated requests did not exercise the actual model transport", calls.Load())
+	}
+	h.cookie = &http.Cookie{Name: "fr_session", Value: "valid-legacy"}
+	for _, path := range paths {
+		status, _, _ := h.request(t, "POST", path, payload, "", true)
+		if status != 200 {
+			t.Fatalf("valid legacy generation %s: %d", path, status)
+		}
+	}
+	if calls.Load() != 6 {
+		t.Fatal("valid legacy model calls", calls.Load())
+	}
+	h.app.Config.RequireLogin = false
+	for _, path := range paths {
+		status, _, _ := h.request(t, "POST", path, payload, "", false)
+		if status != 200 {
+			t.Fatalf("public generation %s: %d", path, status)
+		}
+	}
+	if calls.Load() != 9 {
+		t.Fatal("public mode behavior changed", calls.Load())
 	}
 }
 
