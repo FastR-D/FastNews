@@ -13,6 +13,10 @@ import { api, message, safeURL } from '../api'
 import { useApp } from '../context'
 import type { NewsArticle } from '../types'
 import { Busy, ErrorMessage, PageHeading, Panel, ReportList } from '../components/Common'
+const sourceLabels: Record<string, string> = {
+  thehackernews: 'The Hacker News',
+  securityweek: 'SecurityWeek',
+}
 function channel(a: NewsArticle) {
   const source = a.source.toLowerCase()
   if (source.includes('bleepingcomputer')) return 'bleepingcomputer'
@@ -225,7 +229,7 @@ export default function News() {
                                 ? 'BleepingComputer'
                                 : channel(a) === 'arxiv'
                                   ? 'arXiv'
-                                  : '其他来源'}
+                                  : sourceLabels[a.source] || '其他来源'}
                             </Badge>
                             <span title={a.score_reason}>价值 {score(a).toFixed(1)}</span>
                             <span>{a.published?.slice(0, 10)}</span>

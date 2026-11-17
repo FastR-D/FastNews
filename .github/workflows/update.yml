@@ -23,9 +23,7 @@ jobs:
           go-version-file: go.mod
           cache: true
       - run: go build -trimpath -o bin/fastnews ./cmd/fastnews
-      - run: ./bin/fastnews fetch-news --source bleepingcomputer
-      - run: ./bin/fastnews fetch-news --source arxiv_cs_cr
-      - run: ./bin/fastnews fetch-news --source arxiv_cs_ai
+      - run: ./bin/fastnews fetch-news --source all
       - name: Commit fetched records, including partial progress
         if: ${{ !cancelled() }}
         env:

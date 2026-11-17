@@ -6,10 +6,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"maps"
 	"net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -158,7 +160,7 @@ func (p *Pipeline) Weekly(days int, pdf bool) error {
 				return err
 			}
 			rows = []map[string]any{}
-			for _, source := range []string{"bleepingcomputer", "arxiv_cs_cr", "arxiv_cs_ai"} {
+			for _, source := range slices.Sorted(maps.Keys(newspaper.Articles)) {
 				rows = append(rows, newspaper.Articles[source]...)
 			}
 		}
@@ -170,8 +172,8 @@ func (p *Pipeline) Weekly(days int, pdf bool) error {
 			seen[id] = true
 			source := catalog.Str(v, "source")
 			category := "安全资讯"
-			if strings.Contains(source, "cs_ai") || strings.Contains(source, "cs.ai") {
-				category = "AI 研究"
+			if strings.HasPrefix(source, "arxiv_") || strings.HasPrefix(source, "https://rss.arxiv.org/") {
+				category = "arXiv 研究"
 			}
 			cats[category] = true
 			papers = append(papers, catalog.Paper{ID: id, Title: catalog.Str(v, "title"), TitleZH: catalog.Str(v, "title_zh"), Link: catalog.Str(v, "link"), Summary: catalog.First(catalog.Str(v, "summary_zh"), catalog.Str(v, "intro"), catalog.Str(v, "description")), Author: catalog.Str(v, "author"), Category: category, Venue: source, Date: day})
