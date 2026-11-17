@@ -11,6 +11,63 @@ async function login(page: Page, baseURL: string | undefined) {
   await page.getByRole('form', { name: '本地账号' }).locator('button[type=submit]').click()
   await expect(page.getByText('当前账号', { exact: true })).toBeVisible()
 }
+test('arXiv navigation, dated corpus, fields, pagination and reading use real API records', async ({
+  page,
+  baseURL,
+}, info) => {
+  await login(page, baseURL)
+  const catalog = await (await page.request.get(route(baseURL, 'api/catalog'))).json()
+  const date = catalog.dates[0]
+  const { articles } = await (
+    await page.request.get(route(baseURL, `api/news?date=${date}`))
+  ).json()
+  const papers = articles.filter((article: { source: string }) =>
+    article.source.toLowerCase().includes('arxiv'),
+  )
+  expect(papers.length).toBeGreaterThan(12)
+  if (info.project.name === 'mobile') await page.getByRole('button', { name: '打开导航' }).click()
+  await page.getByRole('link', { name: 'arXiv 导读', exact: true }).click()
+  await expect(page.getByRole('heading', { name: 'arXiv 最新导读', level: 1 })).toBeVisible()
+  await expect(page.getByTestId('paper-row')).toHaveCount(12)
+  await expect(page.getByTestId('paper-row').first()).toContainText(papers[0].title)
+  await page.getByRole('button', { name: '下一页', exact: true }).click()
+  await expect(page.getByTestId('paper-row').first()).toContainText(papers[12].title)
+  await page.reload()
+  await expect(page.getByRole('button', { name: '2', exact: true })).toHaveAttribute(
+    'aria-current',
+    'page',
+  )
+  const category = papers.find((article: { categories?: string[] }) => article.categories?.length)
+    ?.categories[0]
+  expect(category).toBeTruthy()
+  await page.getByLabel('论文领域', { exact: true }).selectOption(category)
+  const matching = papers.filter((article: { categories?: string[] }) =>
+    article.categories?.includes(category),
+  )
+  await expect(page.getByTestId('paper-row')).toHaveCount(Math.min(12, matching.length))
+  await expect(page.getByTestId('paper-row').first()).toContainText(matching[0].title)
+  expect(new URL(page.url()).searchParams.get('page')).toBeNull()
+  const handoff = page.waitForResponse(
+    (response) =>
+      response.url().endsWith('/api/fastread') && response.request().method() === 'POST',
+  )
+  await page.getByTestId('paper-row').first().getByRole('button', { name: '跳转 FastRead' }).click()
+  expect((await handoff).status()).toBe(409)
+  const nextDate = catalog.dates[1]
+  await page.getByLabel('采集日期', { exact: true }).selectOption(nextDate)
+  expect(new URL(page.url()).searchParams.get('category')).toBeNull()
+  const next = await (await page.request.get(route(baseURL, `api/news?date=${nextDate}`))).json()
+  const nextPapers = next.articles.filter((article: { source: string }) =>
+    article.source.toLowerCase().includes('arxiv'),
+  )
+  await expect(page.getByTestId('paper-row')).toHaveCount(Math.min(12, nextPapers.length))
+  await page.reload()
+  await expect(page.getByLabel('采集日期', { exact: true })).toHaveValue(nextDate)
+  await visit(page, baseURL, `secnews/?date=${date}`)
+  await page.getByRole('button', { name: '查看全部详情', exact: true }).click()
+  await expect(page.getByTestId('news-row')).toHaveCount(articles.length - papers.length)
+  await expect(page.getByRole('button', { name: 'arXiv', exact: true })).toHaveCount(0)
+})
 test('all old entries, real catalog, downloads, calendar, theme and responsive layout', async ({
   page,
   baseURL,

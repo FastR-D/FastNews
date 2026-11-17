@@ -35,7 +35,8 @@ Go 可直接提供构建后的 SPA，也可由 nginx / 静态服务器提供 `we
 | 顶会报告 | `/top-conf/` | 会议/年份/类别筛选、向量搜索、分页、related work、报告打开与下载 |
 | 领域导读 | `/field-briefing/` | 印象补全方向、向量召回、分类综述、综述/SoK、论文推荐 |
 | 总结汇报 | `/summary-brief/` | 全景或主题简报、发现、统计表与条形图、问答、局限与讨论 |
-| 安全资讯 | `/secnews/` | 资讯日历、Top 10、BleepingComputer、The Hacker News、SecurityWeek、arXiv 来源、价值分、详情折叠 |
+| 安全资讯 | `/secnews/` | 资讯日历、Top 10、BleepingComputer、The Hacker News、SecurityWeek、价值分、详情折叠 |
+| arXiv 导读 | `/arxiv/` | 按采集日期浏览预印本、论文领域筛选、分页、摘要与 FastRead 阅读跳转 |
 | 关注作者 | `/authors` | 增删改、研究标签、主页解析、解析结果与论文链接 |
 | 私信 | `/inbox/` | 上海日历日每天一篇、关注作者优先、去重、已读和历史 |
 | 研究印象 | `/impression/` 或顶栏 | 最长 4000 字，按当前账号保存 |

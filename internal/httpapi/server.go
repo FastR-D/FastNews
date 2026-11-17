@@ -413,7 +413,7 @@ func (s *Server) static(w http.ResponseWriter, r *http.Request, p string) error 
 
 	} else {
 		switch strings.TrimSuffix(p, "/") {
-		case "", "/index.html", "/top-conf", "/top-conf/index.html", "/field-briefing", "/field-briefing/index.html", "/summary-brief", "/summary-brief/index.html", "/inbox", "/inbox/index.html", "/impression", "/impression/index.html", "/secnews", "/secnews/index.html", "/authors", "/login", "/auth/login", "/auth/account":
+		case "", "/index.html", "/top-conf", "/top-conf/index.html", "/field-briefing", "/field-briefing/index.html", "/summary-brief", "/summary-brief/index.html", "/inbox", "/inbox/index.html", "/impression", "/impression/index.html", "/secnews", "/secnews/index.html", "/arxiv", "/arxiv/index.html", "/authors", "/login", "/auth/login", "/auth/account":
 			rel = "index.html"
 		default:
 			return store.Fail(404, "Not found")
