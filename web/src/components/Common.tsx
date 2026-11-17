@@ -173,7 +173,7 @@ export function PaperCard({ paper }: { paper: Paper }) {
         </p>
       )}
       {paper.summary && (
-        <InspectorSection label="中文摘要">
+        <InspectorSection label="摘要">
           <p className="m-0 leading-loose">{paper.summary}</p>
         </InspectorSection>
       )}

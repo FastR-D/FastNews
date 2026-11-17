@@ -25,6 +25,7 @@ import { theme } from './theme'
 const Home = lazy(() => import('./pages/Home'))
 const Papers = lazy(() => import('./pages/Papers'))
 const News = lazy(() => import('./pages/News'))
+const Arxiv = lazy(() => import('./pages/Arxiv'))
 const Generate = lazy(() => import('./pages/Generate'))
 const Authors = lazy(() => import('./pages/Authors'))
 const Inbox = lazy(() => import('./pages/Inbox'))
@@ -277,6 +278,7 @@ function Workspace() {
                   element={<Generate key="summary-brief" kind="summary-brief" />}
                 />
                 <Route path="/secnews/*" element={<News />} />
+                <Route path="/arxiv/*" element={<Arxiv />} />
                 <Route path="/inbox/*" element={<Inbox />} />
                 <Route path="/authors" element={<Authors />} />
                 <Route path="/impression/*" element={<Home />} />
