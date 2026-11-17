@@ -6,12 +6,15 @@ import (
 	"context"
 	"encoding/json"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"io"
+	"maps"
 	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -22,7 +25,14 @@ import (
 	"github.com/FastR-D/FastNews/internal/store"
 )
 
-var Sources = map[string]string{"bleepingcomputer": "https://www.bleepingcomputer.com/feed/", "arxiv_cs_cr": "https://rss.arxiv.org/atom/cs.cr", "arxiv_cs_ai": "https://rss.arxiv.org/atom/cs.ai+cs.cl"}
+var Sources = map[string]string{
+	"bleepingcomputer": "https://www.bleepingcomputer.com/feed/",
+	"thehackernews":    "https://feeds.feedburner.com/TheHackersNews",
+	"securityweek":     "https://www.securityweek.com/feed/",
+	"arxiv_cs_cr":      "https://rss.arxiv.org/atom/cs.cr",
+	"arxiv_cs_ai":      "https://rss.arxiv.org/atom/cs.ai+cs.cl",
+	"arxiv_cs_se":      "https://rss.arxiv.org/atom/cs.se",
+}
 
 type Pipeline struct {
 	Config  config.Config
@@ -110,6 +120,7 @@ func appendRows(file string, rows []map[string]any) error {
 }
 
 type Feed struct {
+	XMLName xml.Name
 	Channel struct {
 		Items []FeedItem `xml:"item"`
 	} `xml:"channel"`
@@ -127,7 +138,8 @@ type FeedItem struct {
 	Creator     string `xml:"creator"`
 	Announce    string `xml:"announce_type"`
 	Authors     []struct {
-		Name string `xml:"name"`
+		Name  string `xml:"name"`
+		Value string `xml:",chardata"`
 	} `xml:"author"`
 	Links []struct {
 		Href string `xml:"href,attr"`
@@ -144,6 +156,9 @@ func ParseFeed(raw []byte, source string) ([]map[string]any, error) {
 	var feed Feed
 	if e := xml.Unmarshal(raw, &feed); e != nil {
 		return nil, e
+	}
+	if feed.XMLName.Local != "rss" && feed.XMLName.Local != "feed" {
+		return nil, fmt.Errorf("source is not an RSS or Atom feed: %s", feed.XMLName.Local)
 	}
 	items := append(feed.Channel.Items, feed.Entries...)
 	rows := []map[string]any{}
@@ -163,7 +178,7 @@ func ParseFeed(raw []byte, source string) ([]map[string]any, error) {
 		}
 		authors := []string{}
 		for _, a := range item.Authors {
-			authors = append(authors, a.Name)
+			authors = append(authors, catalog.First(a.Name, a.Value))
 		}
 		tags := []string{}
 		for _, t := range item.Categories {
@@ -175,6 +190,18 @@ func ParseFeed(raw []byte, source string) ([]map[string]any, error) {
 	return rows, nil
 }
 func (p *Pipeline) FetchNews(ctx context.Context, source, override string) error {
+	if source == "all" {
+		if override != "" {
+			return fmt.Errorf("--url requires a single source")
+		}
+		var failures []error
+		for _, name := range slices.Sorted(maps.Keys(Sources)) {
+			if err := p.FetchNews(ctx, name, ""); err != nil {
+				failures = append(failures, fmt.Errorf("%s: %w", name, err))
+			}
+		}
+		return errors.Join(failures...)
+	}
 	rawURL := Sources[source]
 	if rawURL == "" {
 		return fmt.Errorf("unknown source %q", source)
