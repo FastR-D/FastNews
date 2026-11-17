@@ -8,7 +8,7 @@ on:
         required: true
         default: usenix
         type: choice
-        options: [usenix, ieee-sp, ndss, ccs]
+        options: [usenix, ieee-sp, ndss, ccs, iclr, icml, neurips, icse, ase]
       year:
         description: Conference year
         required: true
@@ -68,10 +68,7 @@ jobs:
           RELEASE_TAG: report-${{ inputs.conference }}-${{ inputs.year }}
         run: |
           case "$CONFERENCE" in
-            usenix) PREFIX=USENIX ;;
-            ieee-sp) PREFIX=IEEE-SP ;;
-            ndss) PREFIX=NDSS ;;
-            ccs) PREFIX=CCS ;;
+            usenix|ieee-sp|ndss|ccs|iclr|icml|neurips|icse|ase) PREFIX="$(printf '%s' "$CONFERENCE" | tr '[:lower:]' '[:upper:]')" ;;
             *) exit 2 ;;
           esac
           REPORT="top-conf/data/report/${PREFIX}_${YEAR}_Report"
@@ -79,5 +76,5 @@ jobs:
             gh release upload "$RELEASE_TAG" "$REPORT.html" "$REPORT.pdf" --clobber
           else
             gh release create "$RELEASE_TAG" "$REPORT.html" "$REPORT.pdf" \
-              --target main --title "$PREFIX $YEAR Summary" --notes '安全顶会论文中文报告。'
+              --target main --title "$PREFIX $YEAR Summary" --notes '会议论文分类与中文报告。'
           fi

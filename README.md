@@ -1,6 +1,6 @@
 # FastNews
 
-安全研究报告工作台：Go 后端与 React / TypeScript 前端分离，前端使用 **FastUI 0.3.0**。总览、安全资讯、四大顶会论文、领域导读、总结汇报、关注作者、每日私信及账号管理共用同一套 JSON API。
+安全研究报告工作台：Go 后端与 React / TypeScript 前端分离，前端使用 **FastUI 0.3.0**。总览、安全资讯、多领域会议论文、领域导读、总结汇报、关注作者、每日私信及账号管理共用同一套 JSON API。
 
 ## 开发
 
@@ -71,7 +71,7 @@ FastRead 保留现有授权边界：Research 会话申请 `fast-read` 一次性�
 ```bash
 ./bin/fastnews search-papers --query 'LLM jailbreak' --limit 16  # 只读 JSON 检索
 ./bin/fastnews field-briefing --query 'LLM jailbreak' --limit 5 --format text
-./bin/fastnews summary-brief --query '四大顶会全景'
+./bin/fastnews summary-brief                         # 会议论文全景
 ```
 
 ## Go 数据任务
@@ -101,7 +101,9 @@ FastRead 保留现有授权边界：Research 会话申请 `fast-read` 一次性�
 ./bin/fastnews index
 ```
 
-会议支持 `usenix / ieee-sp / ndss / ccs`，采集地址可通过 `--url` 指定。官方页面改版导致解析不到论文时返回错误，不用空结果覆盖历史文件。新闻以 ID / URL 去重，论文摘要按 ID 续跑，日报保持原 `source_hash` 检查点算法。`enrich-metrics` 使用 OpenAlex 并要求标题规范化后完全匹配。
+会议支持安全四会 `usenix / ieee-sp / ndss / ccs`、机器学习 `iclr / icml / neurips` 以及软件工程 `icse / ase`。安全会议读取官方页面；机器学习会议读取 OpenReview API v2 中指定年份的正式会议 venue；ICSE/ASE 读取 DBLP 中对应年份、会议流的会议及研讨会论文记录，并保留原始 venue。DBLP 不提供摘要时，生成结果必须说明仅依据标题，不补造实验。分类参考会议领域，支持 Coding Agents 等细分方向，不通过标题关键词自动判定类别。
+
+采集地址可通过 `--url` 指定同协议的来源。OpenReview/DBLP 分页全部校验完成后才追加数据；来源要求登录、返回验证页、分页不完整或会议/年份不符时返回错误并保留已有文件。新闻以 ID / URL 去重，结构化会议记录和论文摘要按稳定 ID 续跑，日报保持原 `source_hash` 检查点算法。`update-range` 仍按原安全四会运行，其他会议按 `fetch-conf → summarize-conf → conference-report` 单独选择年份；手动报告工作流支持全部已接入会议。`enrich-metrics` 使用 OpenAlex 并要求标题规范化后完全匹配。
 
 HTML 报告由 Go 模板生成。PDF 使用 Chromium，通过 `FASTNEWS_CHROME` 指定可执行文件；不请求 PDF 时不需要浏览器。周报同时输出到 `output/` 及 `secnews/data/report/`。CI 的采集、摘要与报告工作流已改为 Go CLI。
 

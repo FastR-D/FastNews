@@ -54,8 +54,30 @@ type Catalog struct {
 	papers []Paper
 }
 
-var Labels = map[string]string{"usenix": "USENIX Security", "ieee-sp": "IEEE S&P", "ndss": "NDSS", "ccs": "ACM CCS"}
-var confRE = regexp.MustCompile(`^(usenix|ieee-sp|ndss|ccs)_(\d{4})_summary\.jsonl$`)
+type Conference struct {
+	Name, Domain, Provider, RemoteID string
+}
+
+var Conferences = map[string]Conference{
+	"usenix":  {"USENIX Security", "security", "html", ""},
+	"ieee-sp": {"IEEE S&P", "security", "html", ""},
+	"ndss":    {"NDSS", "security", "html", ""},
+	"ccs":     {"ACM CCS", "security", "html", ""},
+	"iclr":    {"ICLR", "ml", "openreview", "ICLR.cc"},
+	"icml":    {"ICML", "ml", "openreview", "ICML.cc"},
+	"neurips": {"NeurIPS", "ml", "openreview", "NeurIPS.cc"},
+	"icse":    {"ICSE", "software", "dblp", "icse"},
+	"ase":     {"ASE", "software", "dblp", "kbse"},
+}
+
+var Labels = func() map[string]string {
+	labels := map[string]string{}
+	for id, conference := range Conferences {
+		labels[id] = conference.Name
+	}
+	return labels
+}()
+var confRE = regexp.MustCompile(`^([a-z][a-z0-9-]*)_(\d{4})_summary\.jsonl$`)
 
 func Rows(path string) ([]map[string]any, error) {
 	f, e := os.Open(path)
@@ -143,6 +165,9 @@ func (c *Catalog) Papers() ([]Paper, error) {
 		if m == nil {
 			continue
 		}
+		if _, ok := Conferences[m[1]]; !ok {
+			continue
+		}
 		year, _ := strconv.Atoi(m[2])
 		src, e := Rows(filepath.Join(c.Root, "top-conf/data/conferences", m[1]+"_"+m[2]+".jsonl"))
 		if e != nil {
@@ -168,7 +193,7 @@ func (c *Catalog) Papers() ([]Paper, error) {
 				continue
 			}
 			summary := First(Str(p, "summary_zh"), Str(s, "description"))
-			v := Paper{ID: id, Source: "top-conf", Title: title, Author: First(Str(p, "author"), Str(s, "author")), Year: year, Venue: Labels[m[1]], Conference: m[1], Category: First(Str(r, "category"), "Uncategorized"), Link: First(Str(p, "link"), Str(s, "link"), id), Summary: Clip(summary, 1200), SearchSummary: summary + " " + Str(s, "description"), DOI: Str(s, "doi"), Award: awards[m[1]+m[2]+NormalizeTitle(title)]}
+			v := Paper{ID: id, Source: "top-conf", Title: title, Author: First(Str(p, "author"), Str(s, "author")), Year: year, Venue: First(Str(s, "venue"), Labels[m[1]]), Conference: m[1], Category: First(Str(r, "category"), "Uncategorized"), Link: First(Str(p, "link"), Str(s, "link"), id), Summary: Clip(summary, 1200), SearchSummary: summary + " " + Str(s, "description"), DOI: Str(s, "doi"), Award: awards[m[1]+m[2]+NormalizeTitle(title)]}
 			if award := CanonicalAward(Str(s, "award")); award != "" {
 				v.Award = award
 			}
