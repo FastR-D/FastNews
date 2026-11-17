@@ -67,6 +67,7 @@ export interface Catalog {
   publicReports: boolean
 }
 export interface NewsArticle {
+  categories?: string[]
   score_reason?: string
   _id: string
   title: string

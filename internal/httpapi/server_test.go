@@ -180,7 +180,7 @@ func TestLocalContentIsolationCSRFAndInbox(t *testing.T) {
 }
 func TestCatalogOldRoutesAndPrivateFiles(t *testing.T) {
 	h := fixture(t)
-	for _, p := range []string{"/", "/index.html", "/top-conf/index.html", "/field-briefing/index.html", "/summary-brief/index.html", "/inbox/index.html", "/impression/index.html", "/secnews/index.html", "/login", "/top-conf/data/report/USENIX_2026_Report.html?download=1"} {
+	for _, p := range []string{"/", "/index.html", "/top-conf/index.html", "/field-briefing/index.html", "/summary-brief/index.html", "/inbox/index.html", "/impression/index.html", "/secnews/index.html", "/arxiv/", "/arxiv/index.html", "/login", "/top-conf/data/report/USENIX_2026_Report.html?download=1"} {
 		resp, e := http.Get(h.http.URL + p)
 		if e != nil {
 			t.Fatal(e)

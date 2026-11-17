@@ -10,6 +10,7 @@ import {
 } from '@fastrd/ui-react'
 import { ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react'
 import { api, message, safeURL } from '../api'
+import { isArxiv } from '../news'
 import { useApp } from '../context'
 import type { NewsArticle } from '../types'
 import { Busy, ErrorMessage, PageHeading, Panel, ReportList } from '../components/Common'
@@ -20,7 +21,6 @@ const sourceLabels: Record<string, string> = {
 function channel(a: NewsArticle) {
   const source = a.source.toLowerCase()
   if (source.includes('bleepingcomputer')) return 'bleepingcomputer'
-  if (source.includes('arxiv')) return 'arxiv'
   return 'other'
 }
 function score(a: NewsArticle) {
@@ -60,7 +60,7 @@ export default function News() {
       setError('')
       setShowAll(false)
       api<{ articles: NewsArticle[] }>(`api/news?date=${date}`, { signal: abort.signal })
-        .then((v) => setArticles(v.articles))
+        .then((v) => setArticles(v.articles.filter((article) => !isArxiv(article))))
         .catch((e) => {
           if (!abort.signal.aborted) setError(message(e))
         })
@@ -83,17 +83,13 @@ export default function News() {
   const boards = !showAll
     ? ['top']
     : kind === 'all'
-      ? [
-          'bleepingcomputer',
-          'arxiv',
-          ...(articles.some((a) => channel(a) === 'other') ? ['other'] : []),
-        ]
+      ? ['bleepingcomputer', ...(articles.some((a) => channel(a) === 'other') ? ['other'] : [])]
       : [kind]
   return (
     <>
       <PageHeading
         title="安全资讯"
-        description="按日期浏览安全新闻与 AI 研究，查看每日导读和重点推荐。"
+        description="按日期浏览安全新闻，查看每日导读和重点推荐。预印本请进入 arXiv 导读。"
       />
       <div className="grid min-[1100px]:grid-cols-[260px_minmax(0,1fr)] gap-4 items-start">
         <aside>
@@ -164,7 +160,7 @@ export default function News() {
               options={[
                 { value: 'all', label: '全部' },
                 { value: 'bleepingcomputer', label: 'BleepingComputer' },
-                { value: 'arxiv', label: 'arXiv' },
+                { value: 'other', label: '更多安全来源' },
               ]}
               value={kind}
               onChange={(value) => {
@@ -193,7 +189,7 @@ export default function News() {
                   <InspectorSection
                     key={board}
                     open
-                    label={`${board === 'top' ? '优先推荐 · Top 10' : board === 'bleepingcomputer' ? 'BleepingComputer' : board === 'arxiv' ? 'arXiv' : '其他来源'} · ${sorted.length} 条`}
+                    label={`${board === 'top' ? '优先推荐 · Top 10' : board === 'bleepingcomputer' ? 'BleepingComputer' : '其他来源'} · ${sorted.length} 条`}
                   >
                     {(showAll ? sorted : sorted.slice(0, 10)).map((a, i) => (
                       <article
@@ -227,9 +223,7 @@ export default function News() {
                             <Badge>
                               {channel(a) === 'bleepingcomputer'
                                 ? 'BleepingComputer'
-                                : channel(a) === 'arxiv'
-                                  ? 'arXiv'
-                                  : sourceLabels[a.source] || '其他来源'}
+                                : sourceLabels[a.source] || '其他来源'}
                             </Badge>
                             <span title={a.score_reason}>价值 {score(a).toFixed(1)}</span>
                             <span>{a.published?.slice(0, 10)}</span>

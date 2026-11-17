@@ -39,6 +39,13 @@ export const navigation = [
     description: '领域导读',
   },
   {
+    to: '/arxiv/',
+    label: 'arXiv 导读',
+    icon: BookOpen,
+    group: '发现与研究',
+    description: 'arXiv 最新导读',
+  },
+  {
     to: '/summary-brief/',
     label: '总结汇报',
     icon: ChartNoAxesCombined,
