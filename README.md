@@ -147,6 +147,6 @@ FASTNEWS_PUBLIC_PATH=/news make build
 FASTNEWS_PUBLIC_PATH=/news FASTNEWS_PORT=8788 ./bin/fastnews serve
 ```
 
-`ci.yml` 在 PR、main、`v*` 标签和手动运行时执行 Go、React 与浏览器检查并打包；推送 `v*` 标签会在检查通过后发布同一份原生包到 GitHub Releases，并调用固定版本的 FastDeploy 部署到 fastrd。其余四个工作流负责采集、日报、顶会报告和周报，统一调用 Go CLI，并串行提交生成数据。
+`ci.yml` 在 PR、main、`v*` 标签和手动运行时执行 Go、React 与浏览器检查并打包；推送 `v*` 标签会在检查通过后发布同一份原生包到 GitHub Releases，并通过 HTTPS 上传到生产接收端，由服务器上的 FastDeploy 激活。其余四个工作流负责采集、日报、顶会报告和周报，统一调用 Go CLI，并串行提交生成数据。
 
 旧 Python、serverless API、模板、静态应用页面、依赖和对应测试已删除。历史语料、报告与账号数据保留；历史报告资源 URL 由 Go 映射到当前前端资源。失效的旧部署与回滚入口已移除。普通 main 提交只验证；标签部署由 FastDeploy 原子切换版本并检查健康，失败时恢复前态。配置见 [部署说明](docs/fastdeploy.md)。
