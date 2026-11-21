@@ -102,7 +102,7 @@ func PDF(ctx context.Context, html, pdf string) error {
 	return e
 }
 func (p *Pipeline) ConferenceReport(conf string, year int, pdf bool) error {
-	if _, e := ConferenceURLs(conf, year); e != nil {
+	if _, e := conferenceInfo(conf, year); e != nil {
 		return e
 	}
 	papers, e := p.Catalog.Papers()

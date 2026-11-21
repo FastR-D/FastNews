@@ -64,8 +64,8 @@ var Conferences = map[string]Conference{
 	"ndss":    {"NDSS", "security", "html", ""},
 	"ccs":     {"ACM CCS", "security", "html", ""},
 	"iclr":    {"ICLR", "ml", "openreview", "ICLR.cc"},
-	"icml":    {"ICML", "ml", "openreview", "ICML.cc"},
-	"neurips": {"NeurIPS", "ml", "openreview", "NeurIPS.cc"},
+	"icml":    {"ICML", "ml", "pmlr", ""},
+	"neurips": {"NeurIPS", "ml", "neurips-proceedings", ""},
 	"icse":    {"ICSE", "software", "dblp", "icse"},
 	"ase":     {"ASE", "software", "dblp", "kbse"},
 }
