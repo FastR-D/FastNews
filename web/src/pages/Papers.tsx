@@ -108,13 +108,17 @@ export default function Papers() {
     <>
       <PageHeading
         title="顶会论文总结"
-        description="按研究方向浏览 USENIX、IEEE S&P、NDSS 和 ACM CCS 等安全顶会总结。"
-        action={<Badge>四大安全顶会</Badge>}
+        description="按研究方向浏览安全、软件工程与机器学习会议论文。"
+        action={<Badge>多领域会议</Badge>}
       />
       <Metrics
         items={[
           { label: '已总结论文', value: catalog?.topPapers || '—', detail: '中文摘要与原文链接' },
-          { label: '安全顶会', value: 4, detail: 'USENIX · S&P · NDSS · CCS' },
+          {
+            label: '已接入会议',
+            value: Object.keys(catalog?.conferences || {}).length,
+            detail: '安全 · 软件工程 · 机器学习',
+          },
           {
             label: '研究类别',
             value: catalog?.categories.length || '—',

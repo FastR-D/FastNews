@@ -82,7 +82,7 @@ export default function Home() {
           {
             label: '已总结论文',
             value: catalog.topPapers,
-            detail: '四大安全顶会 · 中文摘要',
+            detail: '多领域会议 · 中文摘要',
             icon: <GraduationCap size={16} />,
           },
           {

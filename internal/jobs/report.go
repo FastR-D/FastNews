@@ -125,7 +125,7 @@ func (p *Pipeline) ConferenceReport(conf string, year int, pdf bool) error {
 		cats = append(cats, c)
 	}
 	sort.Strings(cats)
-	filename := map[string]string{"usenix": "USENIX", "ieee-sp": "IEEE-SP", "ndss": "NDSS", "ccs": "CCS"}[conf] + fmt.Sprintf("_%d_Report.html", year)
+	filename := strings.ToUpper(conf) + fmt.Sprintf("_%d_Report.html", year)
 	return p.render(reportData{Title: fmt.Sprintf("%s %d", catalog.Labels[conf], year), Subtitle: "顶会论文分类与中文深度摘要", Generated: time.Now().UTC().Format(time.RFC3339), Papers: out, Categories: cats, Base: p.Config.PublicPath}, filepath.Join(p.Config.Root, "top-conf/data/report", filename), pdf)
 }
 func (p *Pipeline) Weekly(days int, pdf bool) error {

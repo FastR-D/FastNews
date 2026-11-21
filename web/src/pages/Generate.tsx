@@ -85,7 +85,7 @@ export default function Generate({ kind }: { kind: 'field-briefing' | 'summary-b
     [error, setError] = useState(''),
     [result, setResult] = useState<Generation | null>(null)
   const isSummary = kind === 'summary-brief'
-  async function run(value = query) {
+  async function run(value = query, impression = profile?.impression.text || '') {
     setBusy(true)
     setError('')
     setResult(null)
@@ -96,7 +96,7 @@ export default function Generate({ kind }: { kind: 'field-briefing' | 'summary-b
           query: value,
           source,
           category,
-          impression: profile?.impression.text || '',
+          impression,
           limit: 12,
         }),
       })
@@ -134,7 +134,7 @@ export default function Generate({ kind }: { kind: 'field-briefing' | 'summary-b
               aria-label="研究方向"
               placeholder={
                 isSummary
-                  ? '留空生成四大顶会全景，或使用研究印象'
+                  ? '留空生成会议论文全景，或使用研究印象'
                   : '输入方向，例如 LLM jailbreak；留空使用研究印象'
               }
               value={query}
@@ -151,7 +151,7 @@ export default function Generate({ kind }: { kind: 'field-briefing' | 'summary-b
                 onChange={(e) => setSource(e.target.value)}
               >
                 <option value="all">顶会 + 近期 arXiv</option>
-                <option value="top-conf">安全顶会</option>
+                <option value="top-conf">会议论文</option>
                 <option value="arxiv">近期 arXiv</option>
               </Select>
             </label>
@@ -176,7 +176,19 @@ export default function Generate({ kind }: { kind: 'field-briefing' | 'summary-b
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
-            {(isSummary ? ['四大顶会全景', ...examples] : examples).map((q) => (
+            {isSummary && (
+              <Button
+                size="xs"
+                disabled={busy}
+                onClick={() => {
+                  setQuery('')
+                  run('', '')
+                }}
+              >
+                会议论文全景
+              </Button>
+            )}
+            {examples.map((q) => (
               <Button
                 key={q}
                 size="xs"
@@ -192,7 +204,7 @@ export default function Generate({ kind }: { kind: 'field-briefing' | 'summary-b
           </div>
           {profile?.impression.text && (
             <p className="text-[var(--fastui-muted)]">
-              已结合个人研究印象：{profile.impression.text.slice(0, 120)}
+              个人研究印象：{profile.impression.text.slice(0, 120)}
             </p>
           )}
           <ErrorMessage error={error} />

@@ -1,6 +1,28 @@
 import { test, expect, type Page } from '@playwright/test'
 const route = (baseURL: string | undefined, p: string) =>
   new URL(p.replace(/^\//, ''), baseURL!.replace(/\/?$/, '/')).href
+test('conference panorama uses the full selected corpus instead of a saved personal topic', async ({
+  page,
+  baseURL,
+}) => {
+  await login(page, baseURL)
+  await page.getByRole('button', { name: '个人印象', exact: true }).click()
+  const dialog = page.getByRole('dialog', { name: '个人印象' })
+  await dialog.getByLabel('研究印象', { exact: true }).fill('Software testing and coding agents')
+  await dialog.getByRole('button', { name: '保存印象', exact: true }).click()
+  await expect(dialog).not.toBeVisible()
+  const catalog = await (await page.request.get(route(baseURL, 'api/catalog'))).json()
+  await visit(page, baseURL, 'summary-brief/')
+  const response = page.waitForResponse(
+    (item) => item.url().endsWith('/api/summary-brief') && item.request().method() === 'POST',
+  )
+  await page.getByRole('button', { name: '会议论文全景', exact: true }).click()
+  const result = await response
+  expect(result.ok()).toBeTruthy()
+  expect(result.request().postDataJSON().query).toBe('')
+  expect(result.request().postDataJSON().impression).toBe('')
+  expect((await result.json()).stats.sample_size).toBe(catalog.topPapers)
+})
 async function visit(page: Page, baseURL: string | undefined, path: string) {
   await page.goto(route(baseURL, path))
 }
