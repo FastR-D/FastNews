@@ -26,35 +26,82 @@ FASTNEWS_PUBLIC_PATH=/news make build-release
 
 数据任务仅在 main 运行，共用并发组，避免互相覆盖提交。它们只提交指定数据目录；生成失败时仍尝试保存已有检查点，失败状态保留。报告发布可重跑更新附件，无需删除原 Release 或标签。生成摘要需要仓库 secrets `OPENAI_API_KEY`，可选 `OPENAI_BASE_URL`、`LLM_MODEL`。
 
-CI 产物保留七天，`v*` 标签的包发布到 GitHub Releases。普通 main 提交和手动验证不部署。推送 `v*` 标签会调用固定 SHA 的 FastDeploy reusable workflow，通过 production Environment 与组织 SSH Secrets 上传原生包、原子切换并启动服务；健康检查失败时自动恢复前态。旧运行时对应的部署、回滚工作流已移除。
+CI 产物保留七天，`v*` 标签的包发布到 GitHub Releases。普通 main 提交和手动验证不部署。推送 `v*` 标签后，CI 通过 production Environment 用 HTTPS 上传经过验证的原生包。服务器仍由固定版本的 FastDeploy 原子切换、启动服务并进行健康检查，失败时恢复前态。
 
 ## FastDeploy 接入
 
-[Go profile](../deployments/fastdeploy-profile.json) 与 FastDeploy v2.0.3 的 FastNews 配置同步，定义原生命令、健康检查和共享目录。`ci.yml` 固定 FastDeploy 完整提交 SHA，服务启动 `{release}/bin/fastnews serve`，`FASTNEWS_WEB_DIR` 由平台指向版本内的前端。平台 Python launcher 只注入环境后 exec Go，不运行旧应用。
+[Go profile](../deployments/fastdeploy-profile.json) 与 FastDeploy v2.0.3 的 FastNews 配置同步，定义原生命令、健康检查和共享目录。接收端只用服务器上固定版本的 profile、`remote.py` 和 `launch.py`，不执行上传方提供的部署脚本，也不接收运行时密钥。`FASTNEWS_WEB_DIR` 由平台指向当前发布目录内的前端。
 
-发布命令：
+### 首次启用 HTTPS 接收端
+
+以下命令在生产机执行，使用现有运行 `fastnews.service` 的用户。先确认有可用的 Go 1.26 工具链（也可在 CI 之外交叉构建后由管理员安装接收端二进制）、FastDeploy 所需的 Python 3.12 和 `jq`。
 
 ```bash
-git tag -a v2026.11.12-deploy.1 -m "FastNews Go and React production deployment"
-git push origin v2026.11.12-deploy.1
+umask 077
+config="$HOME/.config/fastnews-deploy"
+engine="$HOME/.local/share/fastnews-deploy/FastDeploy"
+install -d -m 0700 "$config" "$(dirname "$engine")" "$HOME/.local/bin" "$HOME/.config/systemd/user"
+CGO_ENABLED=0 go build -trimpath -o "$HOME/.local/bin/fastnews-deploy" ./cmd/fastnews-deploy
+git clone --no-checkout https://github.com/FastR-D/FastDeploy.git "$engine"
+git -C "$engine" checkout --detach 30ef06dac8aa820a9550a22799b72025609b36fd
+```
+
+在 `~/.config/fastnews-deploy/runtime.json` 配置 FastNews 运行环境，格式为 JSON 字符串键值对象。若已有 FastDeploy 发布，可迁移当前版本的本地配置，不把密钥传回 GitHub：
+
+```bash
+if [ ! -e "$config/runtime.json" ]; then
+  jq -e '.env | select(type == "object") | del(.FASTNEWS_WEB_DIR)' \
+    "$HOME/ci-releases/news/current/.fastdeploy/runtime.json" > "$config/runtime.json.tmp" &&
+    mv "$config/runtime.json.tmp" "$config/runtime.json"
+fi
+```
+
+如果没有可迁移的配置，按现有生产配置填写（下方有基础示例），确认 `runtime.json` 已就绪后再启动接收端：
+
+```bash
+if [ ! -s "$config/token" ]; then
+  openssl rand -hex 32 > "$config/token"
+fi
+chmod 0600 "$config/runtime.json" "$config/token" &&
+install -m 0644 deployments/fastnews-deploy.service "$HOME/.config/systemd/user/fastnews-deploy.service" &&
+systemctl --user daemon-reload &&
+systemctl --user enable --now fastnews-deploy.service
+```
+
+将 `deployments/nginx-upload.conf` 的精确路径配置加入部署域名的 **HTTPS** server 块，执行 `nginx -t` 后再 reload。只代理该路径；不要开放 `8790` 或在 HTTP server 块暴露上传入口。入口应直接到 TLS 反代；若前置 CDN 的请求时限短于激活时间，使用不经过该 CDN 的专用 TLS 域名。不要在反代日志里记录 Authorization 请求头。
+
+在 GitHub 仓库的 `production` Environment 中添加变量 `FASTNEWS_DEPLOY_URL`（例如 `https://news.fastrd.io/__fastnews/deploy`），并把服务器 `token` 文件的值设为 Secret `FASTNEWS_DEPLOY_TOKEN`。该令牌具有生产发布权限，不提供给应用或其他仓库。FastCAS、模型等密钥只放在服务器的 `runtime.json`，轮换时更新本地文件并重启接收端。原有组织 SSH Secrets 仍可能被其他项目使用，不需要删除。
+
+打新标签前，对 HTTPS 入口发一个无令牌的空 `POST`，预期返回 401；404 表示路由未接入，502 表示接收端不可用。正式部署返回 200 才表示 FastDeploy 完成激活和本机健康检查。上传或激活失败时查看 `journalctl --user -u fastnews-deploy.service`；不要用同一个运行强行覆盖失败后保留的发布目录。
+
+```bash
+curl -sS -o /dev/null -w '%{http_code}\n' -X POST https://news.fastrd.io/__fastnews/deploy
+```
+
+确认新工作流已推送到 GitHub，再从包含这次改动的提交打新标签。例如：
+
+```bash
+git tag -a v2026.11.19.2 -m "Deploy FastNews over HTTPS"
+git push origin v2026.11.19.2
 ```
 
 每次部署使用新的版本标签，不移动或复用已发布标签。news 独立域名的根入口由浏览器规范化到 `/news/`，兼容网关 strip-prefix；API 与 FastCAS 回调同时支持原根路径。
 
-生产 runtime-env 至少设置：
+生产 `runtime.json` 的基础配置示例：
 
-```env
-FASTNEWS_HOST=127.0.0.1
-FASTNEWS_PORT=8788
-FASTNEWS_ROOT=/home/dev/FastNews
-FASTNEWS_DATA_DIR=/home/dev/FastNews/.fastnews-data
-FASTNEWS_WEB_DIR=<release>/web/dist
-FASTNEWS_PUBLIC_PATH=/news
-FASTNEWS_PUBLIC_ORIGIN=https://news.fastrd.io
-FASTNEWS_COOKIE_SECURE=true
+```json
+{
+  "FASTNEWS_HOST": "127.0.0.1",
+  "FASTNEWS_PORT": "8788",
+  "FASTNEWS_ROOT": "/home/dev/FastNews",
+  "FASTNEWS_DATA_DIR": "/home/dev/FastNews/.fastnews-data",
+  "FASTNEWS_PUBLIC_PATH": "/news",
+  "FASTNEWS_PUBLIC_ORIGIN": "https://news.fastrd.io",
+  "FASTNEWS_COOKIE_SECURE": "true"
+}
 ```
 
-`<release>` 为实际发布目录；profile 使用 `{release}` 占位。域名根路径部署时，前端构建和后端运行的 `FASTNEWS_PUBLIC_PATH` 同时设为空。`FASTNEWS_ROOT` 保留现有语料和报告，`FASTNEWS_DATA_DIR` 保留独立账号库。
+保留现有 FastCAS 的 `FASTNEWS_FASTCAS_ISSUER`、`FASTNEWS_FASTCAS_CLIENT_ID`、`FASTNEWS_FASTCAS_CLIENT_SECRET` 和 `FASTNEWS_FASTCAS_REDIRECT_URI`，以及当前服务使用的其他环境变量。不使用 FastCAS 时才显式设 `FASTNEWS_FASTCAS_ENABLED` 为 `"false"`。不要手工设置 `FASTNEWS_WEB_DIR`，FastDeploy 会按当前版本生成。域名根路径部署时，前端构建和后端运行的 `FASTNEWS_PUBLIC_PATH` 同时设为空。`FASTNEWS_ROOT` 保留现有语料和报告，`FASTNEWS_DATA_DIR` 保留独立账号库。
 
 ## systemd / nginx
 

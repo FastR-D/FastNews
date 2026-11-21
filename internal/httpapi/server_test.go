@@ -3,6 +3,7 @@ package httpapi
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -12,6 +13,7 @@ import (
 	"sync"
 	"sync/atomic"
 	"testing"
+	"time"
 
 	"github.com/FastR-D/FastNews/internal/config"
 	"github.com/FastR-D/FastNews/internal/store"
@@ -180,7 +182,7 @@ func TestLocalContentIsolationCSRFAndInbox(t *testing.T) {
 }
 func TestCatalogOldRoutesAndPrivateFiles(t *testing.T) {
 	h := fixture(t)
-	for _, p := range []string{"/", "/index.html", "/top-conf/index.html", "/field-briefing/index.html", "/summary-brief/index.html", "/inbox/index.html", "/impression/index.html", "/secnews/index.html", "/arxiv/", "/arxiv/index.html", "/login", "/top-conf/data/report/USENIX_2026_Report.html?download=1"} {
+	for _, p := range []string{"/", "/index.html", "/top-conf/index.html", "/field-briefing/index.html", "/summary-brief/index.html", "/inbox/index.html", "/impression/index.html", "/secnews/index.html", "/arxiv/", "/arxiv/index.html", "/trend/", "/trend/index.html", "/login", "/top-conf/data/report/USENIX_2026_Report.html?download=1"} {
 		resp, e := http.Get(h.http.URL + p)
 		if e != nil {
 			t.Fatal(e)
@@ -212,6 +214,44 @@ func TestCatalogOldRoutesAndPrivateFiles(t *testing.T) {
 	status, _, _ = h.request(t, "GET", "/news/api/catalog", nil, "", false)
 	if status != 200 {
 		t.Fatal("base path failed", status)
+	}
+}
+
+func TestTrendAPI(t *testing.T) {
+	h := fixture(t)
+	day := time.Now().UTC().Format(time.DateOnly)
+	var corpus bytes.Buffer
+	for index := range 3 {
+		err := json.NewEncoder(&corpus).Encode(map[string]any{
+			"source": "arxiv_cs_ai", "title": fmt.Sprintf("Study %d of LLM agents", index),
+			"link": fmt.Sprintf("https://arxiv.org/abs/2601.%05d", index),
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := os.WriteFile(filepath.Join(h.app.Config.Root, "secnews/data/articles", day+".jsonl"), corpus.Bytes(), 0600); err != nil {
+		t.Fatal(err)
+	}
+	h.app.Config.PublicPath = "/news"
+	status, body, _ := h.request(t, "GET", "/news/api/trend?days=7&scope=ai", nil, "", false)
+	if status != 200 || body["current"].(map[string]any)["end"] != day || body["comparable"] != false {
+		t.Fatal(status, body)
+	}
+	topics := body["topics"].([]any)
+	if len(topics) != 1 || topics[0].(map[string]any)["count"] != float64(3) || topics[0].(map[string]any)["change"] != nil {
+		t.Fatal(topics)
+	}
+	for _, invalid := range []string{"?days=9", "?days=abc", "?scope=other"} {
+		status, _, _ = h.request(t, "GET", "/api/trend"+invalid, nil, "", false)
+		if status != 400 {
+			t.Fatal(invalid, status)
+		}
+	}
+	h.app.Config.RequireLogin = true
+	status, _, _ = h.request(t, "GET", "/api/trend", nil, "", false)
+	if status != 401 {
+		t.Fatal(status)
 	}
 }
 func TestGeneratedEvidenceOnly(t *testing.T) {
