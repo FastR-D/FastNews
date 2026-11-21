@@ -3,14 +3,15 @@ import { useSearchParams } from 'react-router-dom'
 import { EmptyState, Select, Toolbar } from '@fastrd/ui-react'
 import { api, message } from '../api'
 import { useApp } from '../context'
-import { isArxiv } from '../news'
 import type { NewsArticle } from '../types'
 import { Busy, ErrorMessage, PageHeading, Pagination, Panel, PaperCard } from '../components/Common'
 
 export default function Arxiv() {
   const { catalog } = useApp()
   const [params, setParams] = useSearchParams()
-  const date = params.get('date') || catalog?.dates[0] || ''
+  const requestedDate = params.get('date') || ''
+  const [resolvedDate, setResolvedDate] = useState('')
+  const date = requestedDate || resolvedDate
   const category = params.get('category') || ''
   const requestedPage = Math.max(1, Math.floor(Number(params.get('page')) || 1))
   const [articles, setArticles] = useState<NewsArticle[]>([])
@@ -27,15 +28,20 @@ export default function Arxiv() {
     })
   }
   useEffect(() => {
-    if (!date) return
     const abort = new AbortController()
     setBusy(true)
     setError('')
     setArticles([])
-    api<{ articles: NewsArticle[] }>(`api/news?${new URLSearchParams({ date })}`, {
-      signal: abort.signal,
-    })
-      .then((value) => setArticles(value.articles.filter(isArxiv)))
+    api<{ date: string; articles: NewsArticle[] }>(
+      `api/news?${new URLSearchParams({ source: 'arxiv', ...(requestedDate ? { date: requestedDate } : {}) })}`,
+      {
+        signal: abort.signal,
+      },
+    )
+      .then((value) => {
+        setResolvedDate(value.date)
+        setArticles(value.articles)
+      })
       .catch((error) => {
         if (!abort.signal.aborted) setError(message(error))
       })
@@ -43,7 +49,7 @@ export default function Arxiv() {
         if (!abort.signal.aborted) setBusy(false)
       })
     return () => abort.abort()
-  }, [date])
+  }, [requestedDate])
   const categories = [...new Set(articles.flatMap((article) => article.categories || []))].sort()
   const filtered = articles.filter((article) => !category || article.categories?.includes(category))
   const page = Math.min(requestedPage, Math.max(1, Math.ceil(filtered.length / 12)))
@@ -62,6 +68,9 @@ export default function Arxiv() {
               value={date}
               onChange={(event) => filter('date', event.target.value)}
             >
+              <option value="" disabled>
+                选择采集日期
+              </option>
               {(catalog?.dates || []).map((day) => (
                 <option key={day}>{day}</option>
               ))}

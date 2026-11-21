@@ -318,6 +318,46 @@ func TestGenerationPreservesExplicitImpressionWhileDefaultingOmittedField(t *tes
 	}
 }
 
+func TestNewsScopeSelectsLatestPopulatedArchiveDate(t *testing.T) {
+	h := fixture(t)
+	directory := filepath.Join(h.app.Config.Root, "secnews/data/articles")
+	files := map[string]string{
+		"2026-11-20": `{"_id":"news","title":"Security news","source":"bleepingcomputer"}`,
+		"2026-11-18": `{"_id":"paper","title":"Research paper","source":"arxiv_cs_se"}`,
+	}
+	for day, content := range files {
+		if err := os.WriteFile(filepath.Join(directory, day+".jsonl"), []byte(content), 0600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	for _, test := range []struct {
+		query, date, id string
+		count           int
+	}{
+		{"", "2026-11-20", "news", 1},
+		{"?source=arxiv", "2026-11-18", "paper", 1},
+		{"?source=security", "2026-11-20", "news", 1},
+		{"?source=arxiv&date=2026-11-20", "2026-11-20", "", 0},
+		{"?source=security&date=2026-11-18", "2026-11-18", "", 0},
+	} {
+		status, result, _ := h.request(t, "GET", "/api/news"+test.query, nil, "", false)
+		if status != 200 || result["date"] != test.date {
+			t.Fatal(test.query, status, result)
+		}
+		articles := result["articles"].([]any)
+		if len(articles) != test.count {
+			t.Fatal(test.query, articles)
+		}
+		if test.count > 0 && articles[0].(map[string]any)["_id"] != test.id {
+			t.Fatal(test.query, articles)
+		}
+	}
+	status, _, _ := h.request(t, "GET", "/api/news?source=unknown", nil, "", false)
+	if status != 400 {
+		t.Fatal("unknown archive scope accepted", status)
+	}
+}
+
 func TestReleaseSymlinkAndReportAssets(t *testing.T) {
 	h := fixture(t)
 	link := filepath.Join(t.TempDir(), "current")

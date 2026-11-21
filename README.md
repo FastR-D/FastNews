@@ -43,6 +43,8 @@ Go 可直接提供构建后的 SPA，也可由 nginx / 静态服务器提供 `we
 | 研究印象 | `/impression/` 或顶栏 | 最长 4000 字，按当前账号保存 |
 | 账号 | `/login` | 本地登录、邀请注册、恢复、FastCAS、Research 导入及持续连接 |
 
+arXiv 导读默认打开最近有预印本的采集日。`GET /api/news?source=arxiv` 与 `source=security` 分别返回对应范围的最近非空日期及内容；指定 `date` 时保留该日期，即使该范围当天为空。不指定来源时保留总览使用的全部资讯行为。
+
 原 `/index.html`、各栏目 `/index.html`、`/auth/login`、`/auth/account` 和 `?date=YYYY-MM-DD` 继续可用。原 `top-conf/data/report/`、`secnews/data/report/` 下的 HTML/PDF 地址保持；`?download=1` 返回附件。前端已重构为 FastUI 工作台：分组导航面板、页签报告库和手机导航弹窗；旧自定义 CSS 已全部删除。视觉与控件直接使用 FastUI，宿主布局使用 UnoCSS 工具类，论文筛选条件随 URL 保存。实现约定见 [FastUI 接入说明](docs/FASTUI.md)。
 
 研究趋势使用已有 arXiv 采集档案，不请求外部模型。`GET /api/trend?scope=ai&days=30` 按 UTC 采集日比较相邻等长窗口，以档案最新论文日为统计终点。按 arXiv ID 去重，覆盖现有 AI/NLP、安全和软件工程订阅及其中的交叉分类，不代表全量 arXiv 或引用影响力。

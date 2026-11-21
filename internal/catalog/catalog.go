@@ -221,7 +221,7 @@ func (c *Catalog) Papers() ([]Paper, error) {
 			return nil, e
 		}
 		for _, r := range rows {
-			if !strings.Contains(strings.ToLower(Str(r, "source")), "arxiv") {
+			if !IsArxivSource(Str(r, "source")) {
 				continue
 			}
 			id := First(Str(r, "_id"), Str(r, "link"))
@@ -237,6 +237,10 @@ func (c *Catalog) Papers() ([]Paper, error) {
 	c.papers = out
 	c.loaded = time.Now()
 	return append([]Paper(nil), out...), nil
+}
+
+func IsArxivSource(source string) bool {
+	return strings.Contains(strings.ToLower(source), "arxiv")
 }
 
 var nonTitle = regexp.MustCompile(`[^a-z0-9]+`)

@@ -93,6 +93,8 @@ test('arXiv navigation, dated corpus, fields, pagination and reading use real AP
   if (info.project.name === 'mobile') await page.getByRole('button', { name: '打开导航' }).click()
   await page.getByRole('link', { name: 'arXiv 导读', exact: true }).click()
   await expect(page.getByRole('heading', { name: 'arXiv 最新导读', level: 1 })).toBeVisible()
+  const latestArxiv = await (await page.request.get(route(baseURL, 'api/news?source=arxiv'))).json()
+  await expect(page.getByLabel('采集日期', { exact: true })).toHaveValue(latestArxiv.date)
   await page.getByLabel('采集日期', { exact: true }).selectOption(date)
   await expect(page.getByTestId('paper-row')).toHaveCount(12)
   await expect(page.getByTestId('paper-row').first()).toContainText(papers[0].title)
@@ -193,6 +195,12 @@ test('all old entries, real catalog, downloads, calendar, theme and responsive l
   expect(response.status()).toBe(200)
   expect(response.headers()['content-disposition']).toContain('attachment')
   await visit(page, baseURL, 'secnews/')
+  const latestSecurity = await (
+    await page.request.get(route(baseURL, 'api/news?source=security'))
+  ).json()
+  await expect(
+    page.getByRole('heading', { name: `${latestSecurity.date} · 每日资讯`, exact: true }),
+  ).toBeVisible()
   await expect(page.getByTestId('news-row').first()).toBeVisible()
   await page.getByRole('button', { name: '上个月' }).click()
   await expect(page.getByTestId('calendar')).toBeVisible()

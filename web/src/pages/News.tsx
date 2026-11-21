@@ -10,7 +10,6 @@ import {
 } from '@fastrd/ui-react'
 import { ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react'
 import { api, message, safeURL } from '../api'
-import { isArxiv } from '../news'
 import { useApp } from '../context'
 import type { NewsArticle } from '../types'
 import { Busy, ErrorMessage, PageHeading, Panel, ReportList } from '../components/Common'
@@ -35,7 +34,9 @@ function score(a: NewsArticle) {
 export default function News() {
   const { catalog } = useApp()
   const [params, setParams] = useSearchParams()
-  const date = params.get('date') || catalog?.dates[0] || ''
+  const requestedDate = params.get('date') || ''
+  const [resolvedDate, setResolvedDate] = useState('')
+  const date = requestedDate || resolvedDate
   const [month, setMonth] = useState(''),
     [articles, setArticles] = useState<NewsArticle[]>([]),
     [busy, setBusy] = useState(false),
@@ -43,23 +44,28 @@ export default function News() {
     [kind, setKind] = useState('all'),
     [showAll, setShowAll] = useState(false)
   useEffect(() => {
-    if (date) {
-      setMonth(date.slice(0, 7))
-      const abort = new AbortController()
-      setBusy(true)
-      setError('')
-      setShowAll(false)
-      api<{ articles: NewsArticle[] }>(`api/news?date=${date}`, { signal: abort.signal })
-        .then((v) => setArticles(v.articles.filter((article) => !isArxiv(article))))
-        .catch((e) => {
-          if (!abort.signal.aborted) setError(message(e))
-        })
-        .finally(() => {
-          if (!abort.signal.aborted) setBusy(false)
-        })
-      return () => abort.abort()
-    }
-  }, [date])
+    const abort = new AbortController()
+    setBusy(true)
+    setError('')
+    setArticles([])
+    setShowAll(false)
+    api<{ date: string; articles: NewsArticle[] }>(
+      `api/news?${new URLSearchParams({ source: 'security', ...(requestedDate ? { date: requestedDate } : {}) })}`,
+      { signal: abort.signal },
+    )
+      .then((v) => {
+        setResolvedDate(v.date)
+        setMonth(v.date.slice(0, 7))
+        setArticles(v.articles)
+      })
+      .catch((e) => {
+        if (!abort.signal.aborted) setError(message(e))
+      })
+      .finally(() => {
+        if (!abort.signal.aborted) setBusy(false)
+      })
+    return () => abort.abort()
+  }, [requestedDate])
   const available = useMemo(() => new Set(catalog?.dates || []), [catalog])
   const first = new Date(
     `${month || date.slice(0, 7) || new Date().toISOString().slice(0, 7)}-01T00:00:00`,
@@ -122,7 +128,7 @@ export default function News() {
                     <Button
                       key={day}
                       variant={day === date ? 'primary' : 'quiet'}
-                      title={available.has(day) ? '当天有资讯' : '当天无资讯'}
+                      title={available.has(day) ? '当天有采集档案' : '当天无采集档案'}
                       aria-label={day}
                       aria-pressed={day === date}
                       disabled={!available.has(day)}
@@ -133,7 +139,7 @@ export default function News() {
                   )
                 })}
               </div>
-              <p className="text-[var(--fastui-muted)]">可选日期表示当天有资讯</p>
+              <p className="text-[var(--fastui-muted)]">可选日期为已归档的采集日</p>
             </div>
           </Panel>
           <Panel title="安全资讯周报">
