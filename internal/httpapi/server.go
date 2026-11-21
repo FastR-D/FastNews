@@ -192,15 +192,22 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request) {
 			e = store.Fail(405, "Method not allowed")
 			break
 		}
-		var req ai.Request
-		if e = decode(w, r, &req, 1<<20); e != nil {
+		var input struct {
+			ai.Request
+			Impression *string `json:"impression"`
+		}
+		if e = decode(w, r, &input, 1<<20); e != nil {
 			break
+		}
+		req := input.Request
+		if input.Impression != nil {
+			req.Impression = *input.Impression
 		}
 		if v, _ := s.session(r); v != nil {
 			if e = s.csrf(r, v.CSRF); e != nil {
 				break
 			}
-			if req.Impression == "" {
+			if input.Impression == nil {
 				var im struct {
 					Text string `json:"text"`
 				}

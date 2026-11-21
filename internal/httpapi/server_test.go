@@ -249,6 +249,35 @@ func TestOfflineBriefingAndStatisticsRemainAvailable(t *testing.T) {
 	}
 }
 
+func TestGenerationPreservesExplicitImpressionWhileDefaultingOmittedField(t *testing.T) {
+	h := fixture(t)
+	h.login(t, "generation@example.com")
+	status, _, _ := h.request(t, "PUT", "/api/content/impression", map[string]string{"text": "LLM agents"}, h.csrf, true)
+	if status != 200 {
+		t.Fatal(status)
+	}
+	for _, kind := range []string{"field-briefing", "summary-brief"} {
+		body := map[string]any{"query": "", "source": "top-conf"}
+		status, result, _ := h.request(t, "POST", "/api/"+kind, body, h.csrf, true)
+		if status != 200 || result["query"] != "LLM agents" {
+			t.Fatal("omitted impression did not use saved context", kind, status, result)
+		}
+		body["impression"] = "Privacy"
+		status, result, _ = h.request(t, "POST", "/api/"+kind, body, h.csrf, true)
+		if status != 200 || result["query"] != "Privacy" {
+			t.Fatal("explicit context was replaced", kind, status, result)
+		}
+		body["impression"] = ""
+		status, result, _ = h.request(t, "POST", "/api/"+kind, body, h.csrf, true)
+		if kind == "field-briefing" && status != 400 {
+			t.Fatal("explicit empty context inherited saved topic", status, result)
+		}
+		if kind == "summary-brief" && (status != 200 || result["query"] == "LLM agents") {
+			t.Fatal("panorama inherited personal topic", status, result)
+		}
+	}
+}
+
 func TestReleaseSymlinkAndReportAssets(t *testing.T) {
 	h := fixture(t)
 	link := filepath.Join(t.TempDir(), "current")
