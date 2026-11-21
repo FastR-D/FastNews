@@ -138,3 +138,49 @@ func TestFetchNewsRejectsNonFeedBeforePersistence(t *testing.T) {
 		t.Fatal("invalid response created corpus files", err)
 	}
 }
+
+func TestDailySummaryRequiresRecordedScoreWithinModelContract(t *testing.T) {
+	for _, test := range []struct {
+		name, score string
+		want        int
+	}{
+		{"missing", "", 0}, {"null", `,"recommendation_score":null`, 0},
+		{"zero", `,"recommendation_score":0`, 0}, {"negative", `,"recommendation_score":-1`, 0},
+		{"too-high", `,"recommendation_score":11`, 0}, {"wrong-type", `,"recommendation_score":"high"`, 0},
+		{"minimum", `,"recommendation_score":1`, 1}, {"maximum", `,"recommendation_score":10`, 10},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				if r.Method == "GET" {
+					fmt.Fprint(w, `<rss><channel><item><guid>score-contract</guid><title>Security study</title><link>https://news.example/study</link><description>Observed facts</description></item></channel></rss>`)
+					return
+				}
+				reply := `{"title_zh":"中文导读","summary_zh":"事实摘要","channel":"security"` + test.score + `}`
+				fmt.Fprintf(w, `{"choices":[{"finish_reason":"stop","message":{"content":%q}}]}`, reply)
+			}))
+			defer upstream.Close()
+			c := config.Config{Root: t.TempDir(), LLMKey: "fixture", LLMURL: upstream.URL}
+			if err := job(context.Background(), c, "fetch-news", []string{"--source", "bleepingcomputer", "--url", upstream.URL}); err != nil {
+				t.Fatal(err)
+			}
+			err := job(context.Background(), c, "daily-summary", nil)
+			file := filepath.Join(c.Root, "secnews/data/daily_summaries", time.Now().UTC().Format("2006-01-02")+".json")
+			if test.want == 0 {
+				if err == nil {
+					t.Fatal("missing or invalid score was turned into a recorded priority")
+				}
+				if _, err := os.Stat(file); !os.IsNotExist(err) {
+					t.Fatal("invalid summary was persisted", err)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			articles, err := (&catalog.Catalog{Root: c.Root}).News(time.Now().UTC().Format("2006-01-02"))
+			if err != nil || len(articles) != 1 || articles[0]["recommendation_score"] != float64(test.want) {
+				t.Fatal("valid model score was changed or lost", articles, err)
+			}
+		})
+	}
+}

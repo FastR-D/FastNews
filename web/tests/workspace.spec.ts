@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
+import type { NewsArticle } from '../src/types'
 const route = (baseURL: string | undefined, p: string) =>
   new URL(p.replace(/^\//, ''), baseURL!.replace(/\/?$/, '/')).href
 test('conference panorama uses the full selected corpus instead of a saved personal topic', async ({
@@ -462,4 +463,57 @@ test('paper filters survive reload and global search updates an already-open pap
   await expect(page.getByLabel('搜索论文', { exact: true })).toHaveValue('')
   await expect(page.getByLabel('会议', { exact: true })).toHaveValue('')
   await expect(page.getByTestId('paper-row').first()).toBeVisible()
+})
+
+test('news recommendations use stored scores and show unscored records honestly', async ({
+  page,
+  baseURL,
+}) => {
+  const catalog = await (await page.request.get(route(baseURL, 'api/catalog'))).json()
+  let date = ''
+  let articles: NewsArticle[] = []
+  const storedScore = (article: NewsArticle) =>
+    article.recommendation_score ?? article.importance ?? article.score
+  const hasScore = (article: NewsArticle) => {
+    const score = storedScore(article)
+    return typeof score === 'number' && Number.isFinite(score) && score >= 0 && score <= 10
+  }
+  for (const candidate of catalog.dates) {
+    const response = await (
+      await page.request.get(route(baseURL, `api/news?date=${candidate}`))
+    ).json()
+    const news: NewsArticle[] = response.articles.filter(
+      (article: NewsArticle) => !article.source.toLowerCase().includes('arxiv'),
+    )
+    if (news.some((article) => !hasScore(article))) {
+      date = candidate
+      articles = news
+      break
+    }
+  }
+  expect(date).not.toBe('')
+  await visit(page, baseURL, `secnews/?date=${date}`)
+  const scored = articles.filter(hasScore)
+  await expect(page.getByTestId('news-row')).toHaveCount(
+    Math.min(10, scored.length || articles.length),
+  )
+  if (scored.length) {
+    for (const row of await page.getByTestId('news-row').all()) {
+      const link = await row.locator('h3 a').getAttribute('href')
+      expect(scored.some((article) => article.link === link)).toBeTruthy()
+    }
+  }
+  await page.getByRole('button', { name: '查看全部详情', exact: true }).click()
+  await expect(page.getByTestId('news-row')).toHaveCount(articles.length)
+  for (const row of await page.getByTestId('news-row').all()) {
+    const link = await row.locator('h3 a').getAttribute('href')
+    const article = articles.find((article) => article.link === link)!
+    expect(article).toBeTruthy()
+    if (hasScore(article)) {
+      await expect(row).toContainText(`价值 ${storedScore(article)!.toFixed(1)}`)
+    } else {
+      await expect(row).toContainText('尚未评分')
+      await expect(row).not.toContainText(/价值 \d/)
+    }
+  }
 })
