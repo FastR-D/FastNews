@@ -127,8 +127,12 @@ func TestConferenceSourcesThroughCLIClassificationCatalogAndReport(t *testing.T)
 			c := config.Config{Root: t.TempDir(), LLMKey: "fixture", LLMURL: upstream.URL}
 			args := []string{"--conference", conf, "--year", "2026"}
 			ctx := context.Background()
-			for range 2 {
-				if err := job(ctx, c, "fetch-conf", args); err != nil {
+			for index := range 2 {
+				fetchArgs := append([]string{}, args...)
+				if index == 0 {
+					fetchArgs = append(fetchArgs, "--url", upstream.URL+"?access_token=fixture-secret")
+				}
+				if err := job(ctx, c, "fetch-conf", fetchArgs); err != nil {
 					t.Fatal(err)
 				}
 			}
@@ -136,6 +140,11 @@ func TestConferenceSourcesThroughCLIClassificationCatalogAndReport(t *testing.T)
 			rows, err := catalog.Rows(file)
 			if err != nil || len(rows) != 2 {
 				t.Fatalf("pagination/deduplication: %v rows, %v", len(rows), err)
+			}
+			for _, row := range rows {
+				if strings.Contains(catalog.Str(row, "source_url"), "?") {
+					t.Fatal("source provenance retained private query parameters", row["source_url"])
+				}
 			}
 			for range 2 {
 				if err := job(ctx, c, "summarize-conf", args); err != nil {

@@ -68,13 +68,21 @@ func bibliographyValues(raw json.RawMessage) ([]string, error) {
 	for _, item := range values {
 		var value string
 		if len(item) > 0 && item[0] == '"' {
-			if err := json.Unmarshal(item, &value); err != nil { return nil, err }
+			if err := json.Unmarshal(item, &value); err != nil {
+				return nil, err
+			}
 		} else {
-			var named struct { Text string `json:"text"` }
-			if err := json.Unmarshal(item, &named); err != nil { return nil, err }
+			var named struct {
+				Text string `json:"text"`
+			}
+			if err := json.Unmarshal(item, &named); err != nil {
+				return nil, err
+			}
 			value = named.Text
 		}
-		if value == "" { return nil, fmt.Errorf("empty bibliographic value") }
+		if value == "" {
+			return nil, fmt.Errorf("empty bibliographic value")
+		}
 		out = append(out, value)
 	}
 	return out, nil
@@ -86,6 +94,10 @@ func (p *Pipeline) fetchStructuredConference(ctx context.Context, conf string, y
 	if err != nil {
 		return err
 	}
+	publicEndpoint := *u
+	publicEndpoint.User = nil
+	publicEndpoint.RawQuery = ""
+	publicEndpoint.Fragment = ""
 	rows := []map[string]any{}
 	seen := map[string]bool{}
 	offset := 0
@@ -125,7 +137,7 @@ func (p *Pipeline) fetchStructuredConference(ctx context.Context, conf string, y
 				seen[link] = true
 				rows = append(rows, map[string]any{"_id": link, "title": note.Content.Title.Value, "link": link,
 					"description": note.Content.Abstract.Value, "author": strings.Join(note.Content.Authors.Value, ", "),
-					"keywords": note.Content.Keywords.Value, "presentation": note.Content.Venue.Value, "source_url": u.String()})
+					"keywords": note.Content.Keywords.Value, "presentation": note.Content.Venue.Value, "source_url": publicEndpoint.String()})
 			}
 		} else {
 			query.Set("q", fmt.Sprintf("stream:conf/%s: year:%d:", metadata.RemoteID, year))
@@ -182,7 +194,7 @@ func (p *Pipeline) fetchStructuredConference(ctx context.Context, conf string, y
 				}
 				seen[v.Key] = true
 				rows = append(rows, map[string]any{"_id": "https://dblp.org/rec/" + v.Key, "title": v.Title, "link": link,
-					"description": "", "author": strings.Join(authors, ", "), "venue": strings.Join(venues, ", "), "source_url": u.String()})
+					"description": "", "author": strings.Join(authors, ", "), "venue": strings.Join(venues, ", "), "source_url": publicEndpoint.String()})
 			}
 		}
 		if expectedTotal >= 0 && total != expectedTotal {
