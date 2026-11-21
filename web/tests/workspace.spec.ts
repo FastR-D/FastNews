@@ -195,6 +195,12 @@ test('all old entries, real catalog, downloads, calendar, theme and responsive l
   expect(response.status()).toBe(200)
   expect(response.headers()['content-disposition']).toContain('attachment')
   await visit(page, baseURL, 'secnews/')
+  const latestSecurity = await (
+    await page.request.get(route(baseURL, 'api/news?source=security'))
+  ).json()
+  await expect(
+    page.getByRole('heading', { name: `${latestSecurity.date} · 每日资讯`, exact: true }),
+  ).toBeVisible()
   await expect(page.getByTestId('news-row').first()).toBeVisible()
   await page.getByRole('button', { name: '上个月' }).click()
   await expect(page.getByTestId('calendar')).toBeVisible()
