@@ -288,7 +288,7 @@ func (p *Pipeline) Daily(ctx context.Context, day string) error {
 		var summary struct {
 			Title   string `json:"title_zh"`
 			Summary string `json:"summary_zh"`
-			Score   int    `json:"recommendation_score"`
+			Score   *int   `json:"recommendation_score"`
 			Channel string `json:"channel"`
 		}
 		if e = p.AI.Complete(ctx, `你是安全与AI资讯编辑。保留事实，勿编造。返回JSON {"title_zh":"中文标题","summary_zh":"150字以内中文导读","recommendation_score":1到10的重要性整数,"channel":"security或ai"}。`, string(b), &summary); e != nil {
@@ -297,9 +297,12 @@ func (p *Pipeline) Daily(ctx context.Context, day string) error {
 		if summary.Title == "" || summary.Summary == "" {
 			return fmt.Errorf("empty article summary")
 		}
+		if summary.Score == nil || *summary.Score < 1 || *summary.Score > 10 {
+			return fmt.Errorf("recommendation_score must be an integer from 1 to 10")
+		}
 		v["title_zh"] = summary.Title
 		v["summary_zh"] = summary.Summary
-		v["recommendation_score"] = max(1, min(10, summary.Score))
+		v["recommendation_score"] = *summary.Score
 		v["channel"] = summary.Channel
 		v["source_hash"] = hash
 		out = append(out, v)

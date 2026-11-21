@@ -25,22 +25,12 @@ function channel(a: NewsArticle) {
 }
 function score(a: NewsArticle) {
   const provided = a.recommendation_score ?? a.importance ?? a.score
-  if (provided !== undefined && Number.isFinite(provided))
-    return Math.max(0, Math.min(10, provided))
-  const text = [a.title, a.title_zh, a.summary_zh, a.description].join(' ').toLowerCase()
-  let value = channel(a) === 'bleepingcomputer' ? 4.6 : 4.2
-  for (const term of [
-    'zero-day',
-    '0-day',
-    'actively exploited',
-    'vulnerability',
-    'ransomware',
-    'prompt injection',
-    'jailbreak',
-  ])
-    if (text.includes(term))
-      value += ['zero-day', '0-day', 'actively exploited'].includes(term) ? 2 : 0.7
-  return Math.min(10, value)
+  return typeof provided === 'number' &&
+    Number.isFinite(provided) &&
+    provided >= 0 &&
+    provided <= 10
+    ? provided
+    : null
 }
 export default function News() {
   const { catalog } = useApp()
@@ -184,14 +174,20 @@ export default function News() {
                   .filter((a) =>
                     board === 'top' ? kind === 'all' || channel(a) === kind : channel(a) === board,
                   )
-                  .sort((a, b) => score(b) - score(a))
+                  .sort(
+                    (a, b) =>
+                      (score(b) ?? -1) - (score(a) ?? -1) ||
+                      (Date.parse(b.published || '') || 0) - (Date.parse(a.published || '') || 0),
+                  )
+                const scored = sorted.filter((article) => score(article) !== null)
+                const prioritised = !showAll && scored.length ? scored : sorted
                 return (
                   <InspectorSection
                     key={board}
                     open
-                    label={`${board === 'top' ? '优先推荐 · Top 10' : board === 'bleepingcomputer' ? 'BleepingComputer' : '其他来源'} · ${sorted.length} 条`}
+                    label={`${board === 'top' ? (scored.length ? '优先推荐 · Top 10' : '最新资讯 · 尚未评分') : board === 'bleepingcomputer' ? 'BleepingComputer' : '其他来源'} · ${prioritised.length} 条`}
                   >
-                    {(showAll ? sorted : sorted.slice(0, 10)).map((a, i) => (
+                    {(showAll ? prioritised : prioritised.slice(0, 10)).map((a, i) => (
                       <article
                         data-testid="news-row"
                         className="flex gap-3 p-4 border-b border-b-solid border-b-[var(--fastui-border)]"
@@ -225,16 +221,18 @@ export default function News() {
                                 ? 'BleepingComputer'
                                 : sourceLabels[a.source] || '其他来源'}
                             </Badge>
-                            <span title={a.score_reason}>价值 {score(a).toFixed(1)}</span>
+                            <span title={a.score_reason}>
+                              {score(a) === null ? '尚未评分' : `价值 ${score(a)!.toFixed(1)}`}
+                            </span>
                             <span>{a.published?.slice(0, 10)}</span>
                             {a.author && <span>{a.author}</span>}
                           </div>
                         </div>
                       </article>
                     ))}
-                    {!showAll && sorted.length > 10 && (
+                    {!showAll && prioritised.length > 10 && (
                       <Button className="m-3" onClick={() => setShowAll(true)}>
-                        展开剩余 {sorted.length - 10} 条
+                        展开全部 {sorted.length} 条资讯
                       </Button>
                     )}
                     {sorted.length === 0 && <EmptyState title="该频道当天暂无资讯" />}
