@@ -18,6 +18,8 @@ For a requested conference/year, run the stages the user requested:
 
 ```bash
 go run ./cmd/fastnews fetch-conf --conference <id> --year <year>
+# NeurIPS: enrich a bounded batch before summarizing; --all processes every missing abstract.
+go run ./cmd/fastnews enrich-abstracts --conference neurips --year <year> --limit 12
 go run ./cmd/fastnews summarize-conf --conference <id> --year <year>
 go run ./cmd/fastnews conference-report --conference <id> --year <year>
 ```
@@ -27,6 +29,8 @@ Fetching writes the local corpus. Summarization uses the configured model and re
 Inspect the records in `top-conf/data/conferences/<id>_<year>.jsonl`, the category/summary output and the rendered report. Check stable identities, original links, authors, source provenance, requested year and actual scope. Source errors, authentication challenges, unavailable proceedings and incomplete pagination remain explicit failures; do not replace them with unrelated pages or claim a successful empty collection. An override URL must expose the same provider protocol. Do not trigger release/deployment workflows merely to validate collection.
 
 PMLR overrides must also serve `assets/rss/feed.xml`; the index's canonical volume and complete link set must agree with that RSS. Official OpenReview cross-links preserve PMLR identities when available. NeurIPS proceedings use their canonical landing URLs, with no inferred equivalence to older OpenReview IDs. Summarization/reporting validate the registered conference/year independently from default source availability, so existing archives remain usable.
+
+NeurIPS abstract enrichment checkpoints each verified detail page in `top-conf/data/abstracts/<id>_<year>.jsonl`. It matches the citation PDF's paper identifier and volume; publication date can differ from conference year. Completed entries are reused. New evidence makes older summaries stale until `summarize-conf` regenerates them; unchanged evidence does not repeat model calls. Bound a manual acceptance run with `--limit`; choose `--all` explicitly for full enrichment. Do not describe a bounded sample as the full archive.
 
 ## Classification
 

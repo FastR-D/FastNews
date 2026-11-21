@@ -41,6 +41,9 @@ jobs:
       - run: go build -trimpath -o bin/fastnews ./cmd/fastnews
       - name: Fetch official paper records
         run: ./bin/fastnews fetch-conf --conference "$CONFERENCE" --year "$YEAR"
+      - name: Enrich original NeurIPS abstracts with resumable checkpoints
+        if: inputs.conference == 'neurips'
+        run: ./bin/fastnews enrich-abstracts --conference "$CONFERENCE" --year "$YEAR" --all
       - name: Generate resumable summaries
         run: ./bin/fastnews summarize-conf --conference "$CONFERENCE" --year "$YEAR"
       - uses: pnpm/action-setup@v4
