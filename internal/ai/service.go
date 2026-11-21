@@ -165,9 +165,9 @@ func (s *Service) Run(ctx context.Context, kind string, req Request) (map[string
 	if kind == "related-work" {
 		query = strings.TrimSpace(req.Topic + " " + req.Keywords + " " + req.Impression)
 	}
-	landscape := kind == "summary-brief" && (query == "" || strings.Contains(query, "四大顶会全景"))
+	landscape := kind == "summary-brief" && query == ""
 	if landscape {
-		query = "四大顶会全景"
+		query = "会议论文全景"
 	}
 	if query == "" {
 		return nil, store.Fail(400, "请输入研究方向，或先保存研究印象")

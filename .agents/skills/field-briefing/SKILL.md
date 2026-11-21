@@ -20,7 +20,7 @@ go run ./cmd/fastnews search-papers --query "<field and aliases>" --limit 16
 
 The Go command reads the existing corpus without generating content or starting a server. It uses the same vector retriever as the application. Add `--category`, `--conference`, `--year`, or `--source top-conf|arxiv` to narrow the evidence. If hits are weak, rerun with English aliases or a broader category, then inspect the JSON `items`.
 
-3. Use web search only for canonical surveys or seminal papers that FastNews does not cover (the local top-conference set is recent Big4, not a historical archive). Open a real page before citing an external paper. Skip web search when local hits already answer a narrow request.
+3. Use web search only for canonical surveys or seminal papers that FastNews does not cover. Inspect the actual local conference/year coverage; registered sources do not imply their papers have been fetched and summarized. Open a real page before citing an external paper. Skip web search when local hits already answer a narrow request.
 4. Write the briefing from the retrieved papers plus established field knowledge. Do not invent FastNews papers, venues, years, or links.
 
 ## Output

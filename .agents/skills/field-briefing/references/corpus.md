@@ -11,26 +11,13 @@ Local sources used by `go run ./cmd/fastnews search-papers`.
 | arXiv + news | `secnews/data/articles/YYYY-MM-DD.jsonl` | Filter `source` to arXiv feeds |
 | Daily Chinese blurbs | `secnews/data/daily_summaries/YYYY-MM-DD.json` | Join by `_id` / `link` when present |
 
-Conference file stems: `usenix`, `ieee-sp`, `ndss`, `ccs`. Labels: USENIX Security, IEEE S&P, NDSS, ACM CCS.
+Conference file stems are registered in `internal/catalog/catalog.go`: `usenix`, `ieee-sp`, `ndss`, `ccs`, `iclr`, `icml`, `neurips`, `icse`, `ase`.
 
-FastNews covers summarized Big4 papers from the years present in the corpus, plus the last 90 days of fetched arXiv feeds (`cs.CR`, `cs.AI+cs.CL`). Inspect the actual files for coverage; this is not a complete historical library.
+FastNews searches summarized conference papers from the years actually present in the corpus, plus the last 90 days of fetched arXiv feeds (`cs.CR`, `cs.AI+cs.CL`, `cs.SE`). Source registration does not imply that a conference/year is present. Inspect the actual files for coverage; this is not a complete historical library. The separate arXiv reading page can browse older dated files without the research index's 90-day cutoff.
 
 ## Categories
 
-Use these exact English names when passing `--category`:
-
-- Web Security
-- Network Security
-- System & OS Security
-- Hardware Security
-- Cryptography & Protocols
-- Privacy & Anonymity
-- ML/AI Security
-- Human Factors & Usable Security
-- Binary & Forensics
-- Miscellaneous
-
-A few summary rows may use `Network & System Security`; treat them as network/system papers, do not rename the files.
+Read the actual category strings from the summary records or `/api/catalog` before passing `--category`. Classification uses source evidence and the conference domain, so fine-grained categories can vary between corpora. Pass the stored value exactly; do not rename files or silently force software/ML papers into the older security taxonomy.
 
 ## Search output
 
