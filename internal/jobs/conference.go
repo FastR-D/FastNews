@@ -15,10 +15,28 @@ import (
 	"golang.org/x/net/html"
 )
 
-func ConferenceURLs(conf string, year int) ([]string, error) {
+func conferenceInfo(conf string, year int) (catalog.Conference, error) {
 	metadata, ok := catalog.Conferences[conf]
 	if !ok {
-		return nil, fmt.Errorf("unknown conference %q", conf)
+		return metadata, fmt.Errorf("unknown conference %q", conf)
+	}
+	if year < 2000 || year > 2100 {
+		return metadata, fmt.Errorf("invalid conference year")
+	}
+	return metadata, nil
+}
+
+func ConferenceURLs(conf string, year int) ([]string, error) {
+	metadata, err := conferenceInfo(conf, year)
+	if err != nil {
+		return nil, err
+	}
+	if metadata.Provider == "pmlr" || metadata.Provider == "neurips-proceedings" {
+		source, err := proceedingsURL(conf, year)
+		if err != nil {
+			return nil, err
+		}
+		return []string{source}, nil
 	}
 	if metadata.Provider == "openreview" {
 		query := url.Values{"content.venueid": {fmt.Sprintf("%s/%d/Conference", metadata.RemoteID, year)}}
@@ -167,8 +185,8 @@ func (p *Pipeline) FetchConference(ctx context.Context, conf string, year int, o
 	if err != nil {
 		return err
 	}
-	if year < 2000 || year > 2100 {
-		return fmt.Errorf("invalid conference year")
+	if provider := catalog.Conferences[conf].Provider; provider == "pmlr" || provider == "neurips-proceedings" {
+		return p.fetchProceedings(ctx, conf, year, catalog.First(override, urls[0]))
 	}
 	if catalog.Conferences[conf].Provider != "html" {
 		return p.fetchStructuredConference(ctx, conf, year, catalog.First(override, urls[0]))
@@ -239,7 +257,7 @@ func (p *Pipeline) FetchConference(ctx context.Context, conf string, year int, o
 	return appendRows(file, found)
 }
 func (p *Pipeline) SummarizeConference(ctx context.Context, conf string, year int) error {
-	if _, e := ConferenceURLs(conf, year); e != nil {
+	if _, e := conferenceInfo(conf, year); e != nil {
 		return e
 	}
 	base := fmt.Sprintf("%s_%d", conf, year)

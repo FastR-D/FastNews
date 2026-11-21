@@ -10,7 +10,8 @@ Use the production Go pipeline and the source registry in `internal/catalog/cata
 ## Existing sources
 
 - Security: `usenix`, `ieee-sp`, `ndss`, `ccs` use official conference pages.
-- Machine learning: `iclr`, `icml`, `neurips` use OpenReview API v2 and the exact accepted conference venue for the requested year.
+- ICLR uses OpenReview API v2 and the exact accepted conference venue for the requested year.
+- ICML uses the official PMLR volume index plus the same volume's RSS abstracts. NeurIPS uses the official proceedings' `conference` track, excluding other tracks and leaving unavailable abstracts unknown. These official profiles are verified for 2024 and 2025; choose the year explicitly. Unsupported years fail without switching providers.
 - Software engineering: `icse`, `ase` use DBLP conference/workshop bibliography records for the requested stream/year. Preserve the actual venue; these records do not establish main-track-only coverage or provide paper abstracts.
 
 For a requested conference/year, run the stages the user requested:
@@ -24,6 +25,8 @@ go run ./cmd/fastnews conference-report --conference <id> --year <year>
 Fetching writes the local corpus. Summarization uses the configured model and resumes existing per-paper checkpoints. HTML rendering is local; `--pdf` additionally requires Chromium. A retrieval-only request uses `search-papers` instead.
 
 Inspect the records in `top-conf/data/conferences/<id>_<year>.jsonl`, the category/summary output and the rendered report. Check stable identities, original links, authors, source provenance, requested year and actual scope. Source errors, authentication challenges, unavailable proceedings and incomplete pagination remain explicit failures; do not replace them with unrelated pages or claim a successful empty collection. An override URL must expose the same provider protocol. Do not trigger release/deployment workflows merely to validate collection.
+
+PMLR overrides must also serve `assets/rss/feed.xml`; the index's canonical volume and complete link set must agree with that RSS. Official OpenReview cross-links preserve PMLR identities when available. NeurIPS proceedings use their canonical landing URLs, with no inferred equivalence to older OpenReview IDs. Summarization/reporting validate the registered conference/year independently from default source availability, so existing archives remain usable.
 
 ## Classification
 

@@ -94,10 +94,7 @@ func (p *Pipeline) fetchStructuredConference(ctx context.Context, conf string, y
 	if err != nil {
 		return err
 	}
-	publicEndpoint := *u
-	publicEndpoint.User = nil
-	publicEndpoint.RawQuery = ""
-	publicEndpoint.Fragment = ""
+	publicEndpoint := publicConferenceEndpoint(u)
 	rows := []map[string]any{}
 	seen := map[string]bool{}
 	offset := 0
@@ -137,7 +134,7 @@ func (p *Pipeline) fetchStructuredConference(ctx context.Context, conf string, y
 				seen[link] = true
 				rows = append(rows, map[string]any{"_id": link, "title": note.Content.Title.Value, "link": link,
 					"description": note.Content.Abstract.Value, "author": strings.Join(note.Content.Authors.Value, ", "),
-					"keywords": note.Content.Keywords.Value, "presentation": note.Content.Venue.Value, "source_url": publicEndpoint.String()})
+					"keywords": note.Content.Keywords.Value, "presentation": note.Content.Venue.Value, "source_url": publicEndpoint})
 			}
 		} else {
 			query.Set("q", fmt.Sprintf("stream:conf/%s: year:%d:", metadata.RemoteID, year))
@@ -194,7 +191,7 @@ func (p *Pipeline) fetchStructuredConference(ctx context.Context, conf string, y
 				}
 				seen[v.Key] = true
 				rows = append(rows, map[string]any{"_id": "https://dblp.org/rec/" + v.Key, "title": v.Title, "link": link,
-					"description": "", "author": strings.Join(authors, ", "), "venue": strings.Join(venues, ", "), "source_url": publicEndpoint.String()})
+					"description": "", "author": strings.Join(authors, ", "), "venue": strings.Join(venues, ", "), "source_url": publicEndpoint})
 			}
 		}
 		if expectedTotal >= 0 && total != expectedTotal {
@@ -212,6 +209,16 @@ func (p *Pipeline) fetchStructuredConference(ctx context.Context, conf string, y
 	if len(rows) == 0 {
 		return fmt.Errorf("no papers returned for %s %d", conf, year)
 	}
+	return p.appendConferenceRecords(conf, year, rows)
+}
+
+func publicConferenceEndpoint(endpoint *url.URL) string {
+	public := *endpoint
+	public.User, public.RawQuery, public.Fragment = nil, "", ""
+	return public.String()
+}
+
+func (p *Pipeline) appendConferenceRecords(conf string, year int, rows []map[string]any) error {
 	file := filepath.Join(p.Config.Root, "top-conf/data/conferences", fmt.Sprintf("%s_%d.jsonl", conf, year))
 	existing, err := catalog.Rows(file)
 	if err != nil {
@@ -226,7 +233,7 @@ func (p *Pipeline) fetchStructuredConference(ctx context.Context, conf string, y
 		if known[catalog.Str(row, "_id")] {
 			continue
 		}
-		row["source"] = metadata.Name + " " + strconv.Itoa(year)
+		row["source"] = catalog.Labels[conf] + " " + strconv.Itoa(year)
 		row["fetched_at"] = time.Now().UTC().Format(time.RFC3339)
 		out = append(out, row)
 	}

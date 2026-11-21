@@ -60,7 +60,7 @@ func ParseAwards(raw []byte, source, conf string, year int) ([]map[string]any, e
 	return out, nil
 }
 func (p *Pipeline) Awards(ctx context.Context, conf string, year int, rawURL string) error {
-	if _, e := ConferenceURLs(conf, year); e != nil {
+	if _, e := conferenceInfo(conf, year); e != nil {
 		return e
 	}
 	if rawURL == "" {
@@ -105,7 +105,7 @@ func (p *Pipeline) Awards(ctx context.Context, conf string, year int, rawURL str
 	return writeJSON(file, map[string]any{"generated_at": time.Now().UTC().Format(time.RFC3339), "papers": out})
 }
 func (p *Pipeline) Metrics(ctx context.Context, conf string, year int, limit int) error {
-	if _, e := ConferenceURLs(conf, year); e != nil {
+	if _, e := conferenceInfo(conf, year); e != nil {
 		return e
 	}
 	file := filepath.Join(p.Config.Root, "top-conf/data/conferences", fmt.Sprintf("%s_%d.jsonl", conf, year))

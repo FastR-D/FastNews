@@ -22,7 +22,7 @@ import (
 )
 
 func TestConferenceSourcesThroughCLIClassificationCatalogAndReport(t *testing.T) {
-	for _, conf := range []string{"iclr", "icml", "neurips", "icse", "ase"} {
+	for _, conf := range []string{"iclr", "icse", "ase"} {
 		t.Run(conf, func(t *testing.T) {
 			var mode atomic.Int32
 			var modelCalls atomic.Int32
@@ -33,7 +33,7 @@ func TestConferenceSourcesThroughCLIClassificationCatalogAndReport(t *testing.T)
 					if !strings.Contains(string(body), "Study") {
 						t.Error("model did not receive source paper evidence")
 					}
-					if conf == "iclr" || conf == "icml" || conf == "neurips" {
+					if conf == "iclr" {
 						if !strings.Contains(string(body), "Official abstract") || !strings.Contains(string(body), "Declared keyword") {
 							t.Error("available abstract or keywords were lost before classification")
 						}
@@ -58,7 +58,7 @@ func TestConferenceSourcesThroughCLIClassificationCatalogAndReport(t *testing.T)
 					w.WriteHeader(503)
 					return
 				}
-				if conf == "iclr" || conf == "icml" || conf == "neurips" {
+				if conf == "iclr" {
 					venue := r.URL.Query().Get("content.venueid")
 					if mode.Load() == 2 {
 						venue = "Different.cc/2026/Conference"

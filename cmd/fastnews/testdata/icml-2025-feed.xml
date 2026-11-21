@@ -1,0 +1,4 @@
+<?xml version="1.0"?><rss version="2.0"><channel><title>Proceedings of Machine Learning Research</title>
+<item><title>Lightweight Protocols for Distributed Private Quantile Estimation</title><link>https://proceedings.mlr.press/v267/aamand25a.html</link><description>Distributed data analysis is a powerful approach for large-scale data processing.</description><pubDate>Mon, 06 Oct 2025 00:00:00 +0000</pubDate></item>
+<item><title>Aggregation of Dependent Expert Distributions in Multimodal Variational Autoencoders</title><link>https://proceedings.mlr.press/v267/a-mancisidor25a.html</link><description>Multimodal learning with variational autoencoders (VAEs) requires estimating joint distributions to evaluate the evidence lower bound (ELBO).</description><pubDate>Mon, 06 Oct 2025 00:00:00 +0000</pubDate></item>
+</channel></rss>
