@@ -261,14 +261,38 @@ func (s *Server) catalogHTTP(w http.ResponseWriter, r *http.Request, p string) e
 		}
 		reply(w, r, 200, map[string]any{"reports": v})
 	case "/api/news":
+		source := r.URL.Query().Get("source")
+		if source != "" && source != "all" && source != "arxiv" && source != "security" {
+			return store.Fail(400, "资讯来源范围无效")
+		}
+		selectRows := func(rows []map[string]any) []map[string]any {
+			if source == "" || source == "all" {
+				return rows
+			}
+			selected := []map[string]any{}
+			for _, row := range rows {
+				if catalog.IsArxivSource(catalog.Str(row, "source")) == (source == "arxiv") {
+					selected = append(selected, row)
+				}
+			}
+			return selected
+		}
 		day := r.URL.Query().Get("date")
 		if day == "" {
 			days, e := s.Catalog.Dates()
 			if e != nil {
 				return e
 			}
-			if len(days) > 0 {
-				day = days[0]
+			for _, candidate := range days {
+				rows, err := s.Catalog.News(candidate)
+				if err != nil {
+					return err
+				}
+				rows = selectRows(rows)
+				if source == "" || source == "all" || len(rows) > 0 {
+					reply(w, r, 200, map[string]any{"date": candidate, "articles": rows})
+					return nil
+				}
 			}
 		}
 		if day == "" {
@@ -282,7 +306,7 @@ func (s *Server) catalogHTTP(w http.ResponseWriter, r *http.Request, p string) e
 		if e != nil {
 			return e
 		}
-		reply(w, r, 200, map[string]any{"date": day, "articles": v})
+		reply(w, r, 200, map[string]any{"date": day, "articles": selectRows(v)})
 	default:
 		papers, e := s.Catalog.Papers()
 		if e != nil {

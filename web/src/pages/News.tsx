@@ -10,7 +10,6 @@ import {
 } from '@fastrd/ui-react'
 import { ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react'
 import { api, message, safeURL } from '../api'
-import { isArxiv } from '../news'
 import { useApp } from '../context'
 import type { NewsArticle } from '../types'
 import { Busy, ErrorMessage, PageHeading, Panel, ReportList } from '../components/Common'
@@ -49,8 +48,11 @@ export default function News() {
       setBusy(true)
       setError('')
       setShowAll(false)
-      api<{ articles: NewsArticle[] }>(`api/news?date=${date}`, { signal: abort.signal })
-        .then((v) => setArticles(v.articles.filter((article) => !isArxiv(article))))
+      api<{ articles: NewsArticle[] }>(
+        `api/news?${new URLSearchParams({ date, source: 'security' })}`,
+        { signal: abort.signal },
+      )
+        .then((v) => setArticles(v.articles))
         .catch((e) => {
           if (!abort.signal.aborted) setError(message(e))
         })
