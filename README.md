@@ -37,12 +37,17 @@ Go 可直接提供构建后的 SPA，也可由 nginx / 静态服务器提供 `we
 | 总结汇报 | `/summary-brief/` | 全景或主题简报、发现、统计表与条形图、问答、局限与讨论 |
 | 安全资讯 | `/secnews/` | 资讯日历、Top 10、BleepingComputer、The Hacker News、SecurityWeek、价值分、详情折叠 |
 | arXiv 导读 | `/arxiv/` | 按采集日期浏览预印本、论文领域筛选、分页、摘要与 FastRead 阅读跳转 |
+| 研究趋势 | `/trend/` | AI、安全与软件工程的 7 / 14 / 30 天热度榜、占比变化、关键词与原论文证据 |
 | 关注作者 | `/authors` | 增删改、研究标签、主页解析、解析结果与论文链接 |
 | 私信 | `/inbox/` | 上海日历日每天一篇、关注作者优先、去重、已读和历史 |
 | 研究印象 | `/impression/` 或顶栏 | 最长 4000 字，按当前账号保存 |
 | 账号 | `/login` | 本地登录、邀请注册、恢复、FastCAS、Research 导入及持续连接 |
 
 原 `/index.html`、各栏目 `/index.html`、`/auth/login`、`/auth/account` 和 `?date=YYYY-MM-DD` 继续可用。原 `top-conf/data/report/`、`secnews/data/report/` 下的 HTML/PDF 地址保持；`?download=1` 返回附件。前端已重构为 FastUI 工作台：分组导航面板、页签报告库和手机导航弹窗；旧自定义 CSS 已全部删除。视觉与控件直接使用 FastUI，宿主布局使用 UnoCSS 工具类，论文筛选条件随 URL 保存。实现约定见 [FastUI 接入说明](docs/FASTUI.md)。
+
+研究趋势使用已有 arXiv 采集档案，不请求外部模型。`GET /api/trend?scope=ai&days=30` 按 UTC 采集日比较相邻等长窗口，以档案最新论文日为统计终点。按 arXiv ID 去重，覆盖现有 AI/NLP、安全和软件工程订阅及其中的交叉分类，不代表全量 arXiv 或引用影响力。
+
+方向由原始标题和摘要主要贡献中的技术短语识别，合并同义词和有原文全称支持的缩写，不强行给未匹配论文归类。方向至少有 3 篇独立论文才上榜；同篇论文可属于多个方向。占比变化以百分点计，两期各至少 20 篇且各有至少三分之一窗口天数的记录才展示。另列跨至少 2 个采集日、由至少 3 篇论文标题和摘要共同支持的候选术语。
 
 ## 账号和身份
 
@@ -142,6 +147,6 @@ FASTNEWS_PUBLIC_PATH=/news make build
 FASTNEWS_PUBLIC_PATH=/news FASTNEWS_PORT=8788 ./bin/fastnews serve
 ```
 
-`ci.yml` 在 PR、main、`v*` 标签和手动运行时执行 Go、React 与浏览器检查并打包；推送 `v*` 标签会在检查通过后发布同一份原生包到 GitHub Releases，并调用固定版本的 FastDeploy 部署到 fastrd。其余四个工作流负责采集、日报、顶会报告和周报，统一调用 Go CLI，并串行提交生成数据。
+`ci.yml` 在 PR、main、`v*` 标签和手动运行时执行 Go、React 与浏览器检查并打包；推送 `v*` 标签会在检查通过后发布同一份原生包到 GitHub Releases，并通过 HTTPS 上传到生产接收端，由服务器上的 FastDeploy 激活。其余四个工作流负责采集、日报、顶会报告和周报，统一调用 Go CLI，并串行提交生成数据。
 
 旧 Python、serverless API、模板、静态应用页面、依赖和对应测试已删除。历史语料、报告与账号数据保留；历史报告资源 URL 由 Go 映射到当前前端资源。失效的旧部署与回滚入口已移除。普通 main 提交只验证；标签部署由 FastDeploy 原子切换版本并检查健康，失败时恢复前态。配置见 [部署说明](docs/fastdeploy.md)。

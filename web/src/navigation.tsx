@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   Mail,
   Newspaper,
+  TrendingUp,
   Users,
   UserRound,
 } from 'lucide-react'
@@ -44,6 +45,13 @@ export const navigation = [
     icon: BookOpen,
     group: '发现与研究',
     description: 'arXiv 最新导读',
+  },
+  {
+    to: '/trend/',
+    label: '研究趋势',
+    icon: TrendingUp,
+    group: '发现与研究',
+    description: 'arXiv 研究方向热度',
   },
   {
     to: '/summary-brief/',

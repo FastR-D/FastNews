@@ -27,6 +27,7 @@ import (
 	"github.com/FastR-D/FastNews/internal/identity"
 	"github.com/FastR-D/FastNews/internal/rag"
 	"github.com/FastR-D/FastNews/internal/store"
+	"github.com/FastR-D/FastNews/internal/trend"
 )
 
 type Server struct {
@@ -35,6 +36,7 @@ type Server struct {
 	Catalog      *catalog.Catalog
 	AI           *ai.Service
 	CAS          *identity.CAS
+	trends       trend.Service
 	locks        [64]sync.Mutex
 	workspaceCAS workspaceProvider
 }
@@ -45,7 +47,7 @@ func New(c config.Config, s *store.Store) (*Server, error) {
 	if e != nil {
 		return nil, e
 	}
-	return &Server{Config: c, Store: s, Catalog: cat, AI: &ai.Service{Config: c, Catalog: cat, RAG: &rag.Retriever{Config: c}}, CAS: cas}, nil
+	return &Server{Config: c, Store: s, Catalog: cat, AI: &ai.Service{Config: c, Catalog: cat, RAG: &rag.Retriever{Config: c}}, CAS: cas, trends: trend.Service{Catalog: cat}}, nil
 }
 func (w *Server) Handler() http.Handler { return http.HandlerFunc(w.serve) }
 func reply(w http.ResponseWriter, r *http.Request, status int, v any) {
@@ -180,7 +182,7 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request) {
 		e = s.auth(w, r, p)
 	case strings.HasPrefix(p, "/api/content/"):
 		e = s.content(w, r, p)
-	case p == "/api/catalog" || p == "/api/papers" || p == "/api/news" || p == "/api/reports":
+	case p == "/api/catalog" || p == "/api/papers" || p == "/api/news" || p == "/api/reports" || p == "/api/trend":
 		if e = s.viewer(r); e == nil {
 			e = s.catalogHTTP(w, r, p)
 		}
@@ -233,6 +235,18 @@ func (s *Server) catalogHTTP(w http.ResponseWriter, r *http.Request, p string) e
 		return store.Fail(405, "Method not allowed")
 	}
 	switch p {
+	case "/api/trend":
+		query := r.URL.Query()
+		scope := catalog.First(query.Get("scope"), "ai")
+		days, err := strconv.Atoi(catalog.First(query.Get("days"), "30"))
+		if err != nil || !trend.Supported(scope, days) {
+			return store.Fail(400, "研究领域或统计窗口无效")
+		}
+		report, err := s.trends.Report(scope, days, time.Now())
+		if err != nil {
+			return err
+		}
+		reply(w, r, 200, report)
 	case "/api/reports":
 		v, e := s.Catalog.Reports()
 		if e != nil {
@@ -413,7 +427,7 @@ func (s *Server) static(w http.ResponseWriter, r *http.Request, p string) error 
 
 	} else {
 		switch strings.TrimSuffix(p, "/") {
-		case "", "/index.html", "/top-conf", "/top-conf/index.html", "/field-briefing", "/field-briefing/index.html", "/summary-brief", "/summary-brief/index.html", "/inbox", "/inbox/index.html", "/impression", "/impression/index.html", "/secnews", "/secnews/index.html", "/arxiv", "/arxiv/index.html", "/authors", "/login", "/auth/login", "/auth/account":
+		case "", "/index.html", "/top-conf", "/top-conf/index.html", "/field-briefing", "/field-briefing/index.html", "/summary-brief", "/summary-brief/index.html", "/inbox", "/inbox/index.html", "/impression", "/impression/index.html", "/secnews", "/secnews/index.html", "/arxiv", "/arxiv/index.html", "/trend", "/trend/index.html", "/authors", "/login", "/auth/login", "/auth/account":
 			rel = "index.html"
 		default:
 			return store.Fail(404, "Not found")

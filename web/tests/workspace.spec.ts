@@ -12,6 +12,38 @@ async function login(page: Page, baseURL: string | undefined) {
   await page.getByRole('form', { name: '本地账号' }).locator('button[type=submit]').click()
   await expect(page.getByText('当前账号', { exact: true })).toBeVisible()
 }
+test('research trends rank the selected archive and expose original evidence', async ({
+  page,
+  baseURL,
+}, info) => {
+  const response = await page.request.get(route(baseURL, 'api/trend?scope=ai&days=30'))
+  expect(response.ok()).toBeTruthy()
+  const trend = await response.json()
+  expect(trend.topics.length).toBeGreaterThan(0)
+  await visit(page, baseURL, '/')
+  if (info.project.name === 'mobile') await page.getByRole('button', { name: '打开导航' }).click()
+  await page.getByRole('link', { name: '研究趋势', exact: true }).click()
+  await expect(page.getByRole('heading', { name: '研究趋势', level: 1 })).toBeVisible()
+  const ranking = page.getByRole('list', { name: '研究方向排名' })
+  const leader = ranking.locator('summary').first()
+  await expect(leader).toContainText(trend.topics[0].label)
+  await leader.click()
+  await expect(
+    ranking.getByRole('link', { name: trend.topics[0].evidence[0].title }),
+  ).toHaveAttribute('href', trend.topics[0].evidence[0].url)
+  if (trend.comparable) {
+    await page.getByLabel('排序').selectOption('growth')
+    const fastest = [...trend.topics].sort((left, right) => right.change - left.change)[0]
+    await expect(leader).toContainText(fastest.label)
+  }
+  await page.getByLabel('研究领域').selectOption('security')
+  await page.getByLabel('统计窗口').selectOption('14')
+  await page.reload()
+  await expect(page.getByLabel('研究领域')).toHaveValue('security')
+  await expect(page.getByLabel('统计窗口')).toHaveValue('14')
+  await expect(page.getByText('本期样本', { exact: true })).toBeVisible()
+})
+
 test('arXiv navigation, dated corpus, fields, pagination and reading use real API records', async ({
   page,
   baseURL,
