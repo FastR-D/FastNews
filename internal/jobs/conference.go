@@ -261,7 +261,7 @@ func (p *Pipeline) SummarizeConference(ctx context.Context, conf string, year in
 		return e
 	}
 	base := fmt.Sprintf("%s_%d", conf, year)
-	rows, e := catalog.Rows(filepath.Join(p.Config.Root, "top-conf/data/conferences", base+".jsonl"))
+	rows, e := p.Catalog.ConferenceRows(conf, year)
 	if e != nil {
 		return e
 	}
@@ -273,13 +273,14 @@ func (p *Pipeline) SummarizeConference(ctx context.Context, conf string, year in
 	if e != nil {
 		return e
 	}
-	done := map[string]bool{}
+	done := map[string]string{}
 	for _, r := range old {
 		v, _ := r["paper"].(map[string]any)
-		done[catalog.Str(v, "_id")] = true
+		done[catalog.Str(v, "_id")] = catalog.Str(r, "source_hash")
 	}
 	for _, paper := range rows {
-		if done[catalog.Str(paper, "_id")] {
+		sourceHash := catalog.ConferenceSourceHash(paper)
+		if cached, ok := done[catalog.Str(paper, "_id")]; ok && cached == sourceHash {
 			continue
 		}
 		b, _ := json.Marshal(paper)
@@ -300,6 +301,9 @@ func (p *Pipeline) SummarizeConference(ctx context.Context, conf string, year in
 			return fmt.Errorf("empty paper summary")
 		}
 		record := map[string]any{"category": result.Category, "paper": map[string]any{"_id": paper["_id"], "title": paper["title"], "link": paper["link"], "author": paper["author"], "summary_zh": result.Summary}}
+		if sourceHash != "" {
+			record["source_hash"] = sourceHash
+		}
 		if e = appendRows(file, []map[string]any{record}); e != nil {
 			return e
 		}

@@ -102,6 +102,8 @@ FastRead 保留现有授权边界：Research 会话申请 `fast-read` 一次性�
 ./bin/fastnews fetch-conf --conference usenix --year 2026
 ./bin/fastnews fetch-conf --conference icml --year 2025     # PMLR 索引 + 同卷 RSS 完整摘要
 ./bin/fastnews fetch-conf --conference neurips --year 2025  # 官方卷中 conference 主会轨道
+./bin/fastnews enrich-abstracts --conference neurips --year 2025 --limit 12
+./bin/fastnews enrich-abstracts --conference neurips --year 2025 --all # 逐篇补全，已完成文章不再请求
 ./bin/fastnews summarize-conf --conference usenix --year 2026
 ./bin/fastnews conference-report --conference usenix --year 2026 --pdf
 ./bin/fastnews update-range --since 2023 --until 2026
@@ -115,6 +117,8 @@ FastRead 保留现有授权边界：Research 会话申请 `fast-read` 一次性�
 采集地址可通过 `--url` 指定同协议、同年份格式的来源，PMLR 来源同时需要可访问的 `assets/rss/feed.xml`。来源要求登录、返回验证页、分页或论文集合不完整、会议/年份不符时返回错误并保留已有文件。新闻以 ID / URL 去重，结构化会议记录和论文摘要按稳定 ID 续跑：PMLR 有官方 OpenReview 交叉链接时复用该身份，否则使用论文页面 URL；NeurIPS 使用官方论文页面 URL，不按标题猜测旧 OpenReview 记录是否等价。日报保持原 `source_hash` 检查点算法。`update-range` 仍按原安全四会运行，其他会议按 `fetch-conf → summarize-conf → conference-report` 单独选择年份；手动报告工作流支持全部已接入会议，ICML/NeurIPS 请显式选择已验证年份。`enrich-metrics` 使用 OpenAlex 并要求标题规范化后完全匹配。
 
 HTML 报告由 Go 模板生成。PDF 使用 Chromium，通过 `FASTNEWS_CHROME` 指定可执行文件；不请求 PDF 时不需要浏览器。周报同时输出到 `output/` 及 `secnews/data/report/`。CI 的采集、摘要与报告工作流已改为 Go CLI。
+
+NeurIPS 原始摘要补全读取官方论文详情页，按 PDF 路径中的论文 ID 和卷号核对身份，不用出版日期推断会议年份。每篇成功结果追加到 `top-conf/data/abstracts/<conf>_<year>.jsonl` 并同步落盘；后续运行只请求缺少摘要的文章，失败保留此前进度。默认每次补全 12 篇，`--limit 0` 或 `--all` 处理全部缺失文章。摘要来源与正文合并后提供给分类器；已有总结若对应旧材料则不会作为当前总结进入目录/报告，重新执行 `summarize-conf` 只更新材料发生变化的记录。未补全语料的既有断点保持原行为；这里的摘要补全不调用 LLM。
 
 ## 验证
 

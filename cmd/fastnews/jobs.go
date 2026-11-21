@@ -27,11 +27,11 @@ func job(ctx context.Context, c config.Config, command string, args []string) er
 	year := fs.Int("year", 2026, "conference year")
 	rawURL := fs.String("url", "", "override official source URL")
 	days := fs.Int("days", 7, "weekly report window")
-	all := fs.Bool("all", false, "process every article date")
+	all := fs.Bool("all", false, "process every available record/date")
 	pdf := fs.Bool("pdf", false, "also export PDF using Chromium")
 	format := fs.String("format", "json", "output: json or text")
 	query := fs.String("query", "", "research direction")
-	limit := fs.Int("limit", 12, "recommended paper count")
+	limit := fs.Int("limit", 12, "paper count for recommendations/enrichment (0 means all enrichment)")
 	since := fs.Int("since", 2023, "first conference year")
 	until := fs.Int("until", 2026, "last conference year")
 	if e := fs.Parse(args); e != nil {
@@ -56,6 +56,12 @@ func job(ctx context.Context, c config.Config, command string, args []string) er
 		return p.Weekly(*days, *pdf)
 	case "fetch-conf":
 		return p.FetchConference(ctx, *conf, *year, *rawURL)
+	case "enrich-abstracts":
+		count := *limit
+		if *all {
+			count = 0
+		}
+		return p.EnrichConferenceAbstracts(ctx, *conf, *year, count)
 	case "summarize-conf":
 		return p.SummarizeConference(ctx, *conf, *year)
 	case "conference-report":

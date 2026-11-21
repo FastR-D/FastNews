@@ -46,7 +46,7 @@ func run() error {
 	if command == "help" || command == "--help" || command == "-h" {
 		fmt.Println("FastNews: Go API + React workspace")
 		fmt.Println("Commands: serve, create, invite, recovery, version, index")
-		fmt.Println("Data jobs: fetch-news, daily-summary, newspaper, weekly-report, fetch-conf, summarize-conf, conference-report, fetch-awards, enrich-metrics, update-range")
+		fmt.Println("Data jobs: fetch-news, daily-summary, newspaper, weekly-report, fetch-conf, enrich-abstracts, summarize-conf, conference-report, fetch-awards, enrich-metrics, update-range")
 		fmt.Println("Research: search-papers, field-briefing, summary-brief")
 		fmt.Println("Use fastnews <command> --help for options.")
 		return nil

@@ -169,7 +169,7 @@ func (c *Catalog) Papers() ([]Paper, error) {
 			continue
 		}
 		year, _ := strconv.Atoi(m[2])
-		src, e := Rows(filepath.Join(c.Root, "top-conf/data/conferences", m[1]+"_"+m[2]+".jsonl"))
+		src, e := c.ConferenceRows(m[1], year)
 		if e != nil {
 			return nil, e
 		}
@@ -188,6 +188,9 @@ func (c *Catalog) Papers() ([]Paper, error) {
 			}
 			id := First(Str(p, "_id"), Str(p, "link"))
 			s := sources[id]
+			if ConferenceSourceHash(s) != Str(r, "source_hash") {
+				continue
+			}
 			title := First(Str(p, "title"), Str(s, "title"))
 			if id == "" || title == "" {
 				continue

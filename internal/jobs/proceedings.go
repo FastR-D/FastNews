@@ -13,17 +13,17 @@ import (
 
 // These publisher volumes were checked against the official 2024/2025 indexes.
 var pmlrVolumes = map[int]string{2024: "235", 2025: "267"}
-var neuripsVolumes = map[int]string{
-	2024: "https://papers.nips.cc/paper_files/paper/2024",
-	2025: "https://papers.nips.cc/paper_files/paper/2025/vol38-main-conference",
+var neuripsVolumes = map[int]struct{ URL, CitationVolume string }{
+	2024: {"https://papers.nips.cc/paper_files/paper/2024", "37"},
+	2025: {"https://papers.nips.cc/paper_files/paper/2025/vol38-main-conference", "38"},
 }
 
 func proceedingsURL(conf string, year int) (string, error) {
 	if conf == "icml" && pmlrVolumes[year] != "" {
 		return "https://proceedings.mlr.press/v" + pmlrVolumes[year] + "/", nil
 	}
-	if conf == "neurips" && neuripsVolumes[year] != "" {
-		return neuripsVolumes[year], nil
+	if conf == "neurips" && neuripsVolumes[year].URL != "" {
+		return neuripsVolumes[year].URL, nil
 	}
 	return "", fmt.Errorf("official %s proceedings profile is not verified for %d; supported years: 2024, 2025", conf, year)
 }
@@ -175,8 +175,6 @@ func neuripsRecords(doc *html.Node, canonical string, year int) ([]map[string]an
 	rows := []map[string]any{}
 	seen := map[string]bool{}
 	var invalid error
-	base, _ := url.Parse(canonical)
-	prefix := fmt.Sprintf("/paper_files/paper/%d/hash/", year)
 	walk(doc, func(n *html.Node) {
 		if invalid != nil || n.Type != html.ElementNode {
 			return
@@ -210,8 +208,8 @@ func neuripsRecords(doc *html.Node, canonical string, year int) ([]map[string]an
 				link = absolute(canonical, attr(child, "href"))
 			}
 		})
-		u, err := url.Parse(link)
-		if err != nil || u.User != nil || u.Scheme != "https" || u.Host != base.Host || !strings.HasPrefix(u.Path, prefix) || !strings.HasSuffix(u.Path, "-Abstract-Conference.html") || title == "" || authors == "" || seen[link] {
+		_, err := neuripsPaperURL(link, year)
+		if err != nil || title == "" || authors == "" || seen[link] {
 			invalid = fmt.Errorf("NeurIPS paper lacks valid main-track identity/title/authors for %d", year)
 			return
 		}
