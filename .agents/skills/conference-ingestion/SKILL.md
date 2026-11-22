@@ -11,7 +11,7 @@ Use the production Go pipeline and the source registry in `internal/catalog/cata
 
 - Security: `usenix`, `ieee-sp`, `ndss`, `ccs` use official conference pages.
 - ICLR uses OpenReview API v2 and the exact accepted conference venue for the requested year.
-- ICML uses the official PMLR volume index plus the same volume's RSS abstracts. NeurIPS uses the official proceedings' `conference` track, excluding other tracks and leaving unavailable abstracts unknown. These official profiles are verified for 2024 and 2025; choose the year explicitly. Unsupported years fail without switching providers.
+- ICML uses the official PMLR volume index plus the same volume's RSS abstracts. NeurIPS uses the official proceedings' `conference` track, excluding other tracks and leaving unavailable abstracts unknown. Official profiles cover the checked 2022–2025 volumes; choose the year explicitly. Unsupported years fail without switching providers.
 - Software engineering: `icse`, `ase` use DBLP conference/workshop bibliography records for the requested stream/year. Preserve the actual venue; these records do not establish main-track-only coverage or provide paper abstracts.
 
 For a requested conference/year, run the stages the user requested:

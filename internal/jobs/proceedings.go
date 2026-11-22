@@ -11,9 +11,11 @@ import (
 	"golang.org/x/net/html"
 )
 
-// These publisher volumes were checked against the official 2024/2025 indexes.
-var pmlrVolumes = map[int]string{2024: "235", 2025: "267"}
+// These publisher volumes were checked against the official indexes.
+var pmlrVolumes = map[int]string{2022: "162", 2023: "202", 2024: "235", 2025: "267"}
 var neuripsVolumes = map[int]struct{ URL, CitationVolume string }{
+	2022: {"https://papers.nips.cc/paper_files/paper/2022", "35"},
+	2023: {"https://papers.nips.cc/paper_files/paper/2023", "36"},
 	2024: {"https://papers.nips.cc/paper_files/paper/2024", "37"},
 	2025: {"https://papers.nips.cc/paper_files/paper/2025/vol38-main-conference", "38"},
 }
@@ -25,7 +27,7 @@ func proceedingsURL(conf string, year int) (string, error) {
 	if conf == "neurips" && neuripsVolumes[year].URL != "" {
 		return neuripsVolumes[year].URL, nil
 	}
-	return "", fmt.Errorf("official %s proceedings profile is not verified for %d; supported years: 2024, 2025", conf, year)
+	return "", fmt.Errorf("official %s proceedings profile is not verified for %d; select a verified year from the source documentation", conf, year)
 }
 
 func hasClass(n *html.Node, class string) bool {
