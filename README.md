@@ -112,7 +112,7 @@ FastRead 保留现有授权边界：Research 会话申请 `fast-read` 一次性�
 ./bin/fastnews index
 ```
 
-会议支持安全四会 `usenix / ieee-sp / ndss / ccs`、机器学习 `iclr / icml / neurips` 以及软件工程 `icse / ase`。安全会议读取官方页面；ICLR 读取 OpenReview API v2 指定年份的正式会议 venue。ICML 直接读取 PMLR 官方索引及同卷 RSS，以论文链接核对完整集合并保留原始摘要；NeurIPS 直接读取官方卷中声明为 `conference` 的主会轨道，排除其他轨道，索引不提供摘要时保持未知。ICML/NeurIPS 官方格式目前实测支持 2024、2025 年，未验证的年份明确报错，不自动切换其他来源。ICSE/ASE 读取 DBLP 中对应年份、会议流的会议及研讨会论文记录，并保留原始 venue。没有摘要时，生成结果必须说明仅依据标题，不补造实验。分类参考会议领域，支持 Coding Agents 等细分方向，不通过标题关键词自动判定类别。
+会议支持安全四会 `usenix / ieee-sp / ndss / ccs`、机器学习 `iclr / icml / neurips` 以及软件工程 `icse / ase`。安全会议读取官方页面；ICLR 读取 OpenReview API v2 指定年份的正式会议 venue。ICML 直接读取 PMLR 官方索引及同卷 RSS，以论文链接核对完整集合并保留原始摘要；NeurIPS 直接读取官方卷中声明为 `conference` 的主会轨道，排除其他轨道，索引不提供摘要时保持未知。ICML/NeurIPS 官方格式目前支持已核对的 2022–2025 年，未验证的年份明确报错，不自动切换其他来源。ICSE/ASE 读取 DBLP 中对应年份、会议流的会议及研讨会论文记录，并保留原始 venue。没有摘要时，生成结果必须说明仅依据标题，不补造实验。分类参考会议领域，支持 Coding Agents 等细分方向，不通过标题关键词自动判定类别。
 
 采集地址可通过 `--url` 指定同协议、同年份格式的来源，PMLR 来源同时需要可访问的 `assets/rss/feed.xml`。来源要求登录、返回验证页、分页或论文集合不完整、会议/年份不符时返回错误并保留已有文件。新闻以 ID / URL 去重，结构化会议记录和论文摘要按稳定 ID 续跑：PMLR 有官方 OpenReview 交叉链接时复用该身份，否则使用论文页面 URL；NeurIPS 使用官方论文页面 URL，不按标题猜测旧 OpenReview 记录是否等价。日报保持原 `source_hash` 检查点算法。`update-range` 仍按原安全四会运行，其他会议按 `fetch-conf → summarize-conf → conference-report` 单独选择年份；手动报告工作流支持全部已接入会议，ICML/NeurIPS 请显式选择已验证年份。`enrich-metrics` 使用 OpenAlex 并要求标题规范化后完全匹配。
 
