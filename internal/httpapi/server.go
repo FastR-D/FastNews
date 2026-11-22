@@ -182,7 +182,7 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request) {
 		e = s.auth(w, r, p)
 	case strings.HasPrefix(p, "/api/content/"):
 		e = s.content(w, r, p)
-	case p == "/api/catalog" || p == "/api/papers" || p == "/api/news" || p == "/api/reports" || p == "/api/trend":
+	case p == "/api/catalog" || p == "/api/papers" || p == "/api/news" || p == "/api/reports" || p == "/api/trend" || p == "/api/coverage":
 		if e = s.viewer(r); e == nil {
 			e = s.catalogHTTP(w, r, p)
 		}
@@ -242,6 +242,12 @@ func (s *Server) catalogHTTP(w http.ResponseWriter, r *http.Request, p string) e
 		return store.Fail(405, "Method not allowed")
 	}
 	switch p {
+	case "/api/coverage":
+		coverage, err := s.Catalog.Coverage()
+		if err != nil {
+			return err
+		}
+		reply(w, r, 200, map[string]any{"conferences": coverage})
 	case "/api/trend":
 		query := r.URL.Query()
 		scope := catalog.First(query.Get("scope"), "ai")
@@ -458,7 +464,7 @@ func (s *Server) static(w http.ResponseWriter, r *http.Request, p string) error 
 
 	} else {
 		switch strings.TrimSuffix(p, "/") {
-		case "", "/index.html", "/top-conf", "/top-conf/index.html", "/field-briefing", "/field-briefing/index.html", "/summary-brief", "/summary-brief/index.html", "/inbox", "/inbox/index.html", "/impression", "/impression/index.html", "/secnews", "/secnews/index.html", "/arxiv", "/arxiv/index.html", "/trend", "/trend/index.html", "/authors", "/login", "/auth/login", "/auth/account":
+		case "", "/index.html", "/top-conf", "/top-conf/index.html", "/coverage", "/coverage/index.html", "/field-briefing", "/field-briefing/index.html", "/summary-brief", "/summary-brief/index.html", "/inbox", "/inbox/index.html", "/impression", "/impression/index.html", "/secnews", "/secnews/index.html", "/arxiv", "/arxiv/index.html", "/trend", "/trend/index.html", "/authors", "/login", "/auth/login", "/auth/account":
 			rel = "index.html"
 		default:
 			return store.Fail(404, "Not found")

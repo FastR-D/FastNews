@@ -55,15 +55,15 @@ func job(ctx context.Context, c config.Config, command string, args []string) er
 	case "weekly-report":
 		return p.Weekly(*days, *pdf)
 	case "fetch-conf":
-		return p.FetchConference(ctx, *conf, *year, *rawURL)
+		return p.RunConferenceJob(ctx, command, *conf, *year, *limit, *rawURL)
 	case "enrich-abstracts":
 		count := *limit
 		if *all {
 			count = 0
 		}
-		return p.EnrichConferenceAbstracts(ctx, *conf, *year, count)
+		return p.RunConferenceJob(ctx, command, *conf, *year, count, "")
 	case "summarize-conf":
-		return p.SummarizeConference(ctx, *conf, *year)
+		return p.RunConferenceJob(ctx, command, *conf, *year, *limit, "")
 	case "conference-report":
 		return p.ConferenceReport(*conf, *year, *pdf)
 	case "update-range":
@@ -73,10 +73,10 @@ func job(ctx context.Context, c config.Config, command string, args []string) er
 		for y := *since; y <= *until; y++ {
 			for _, conference := range []string{"usenix", "ieee-sp", "ndss", "ccs"} {
 				fmt.Fprintln(os.Stderr, conference, strconv.Itoa(y))
-				if e := p.FetchConference(ctx, conference, y, ""); e != nil {
+				if e := p.RunConferenceJob(ctx, "fetch-conf", conference, y, *limit, ""); e != nil {
 					return e
 				}
-				if e := p.SummarizeConference(ctx, conference, y); e != nil {
+				if e := p.RunConferenceJob(ctx, "summarize-conf", conference, y, *limit, ""); e != nil {
 					return e
 				}
 				p.Catalog.Invalidate()

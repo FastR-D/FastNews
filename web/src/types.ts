@@ -83,6 +83,25 @@ export interface NewsArticle {
   importance?: number
   score?: number
 }
+export interface ConferenceCoverage {
+  conference: string
+  name: string
+  year: number
+  papers: number
+  abstracts: number
+  summaries: number
+  staleSummaries: number
+  updatedAt?: string
+  job?: {
+    stage: string
+    state: string
+    startedAt: string
+    endedAt?: string
+    lastSuccessAt?: string
+    errorKind?: string
+    httpStatus?: number
+  }
+}
 export interface Count {
   label: string
   count: number
