@@ -60,7 +60,7 @@ func get(ctx context.Context, raw string) ([]byte, error) {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("source returned HTTP %d", resp.StatusCode)
+		return nil, &sourceHTTPError{Status: resp.StatusCode}
 	}
 	b, e := io.ReadAll(io.LimitReader(resp.Body, (16<<20)+1))
 	if len(b) > 16<<20 {

@@ -26,6 +26,13 @@ export const navigation = [
     description: '顶会论文总结',
   },
   {
+    to: '/coverage/',
+    label: '数据覆盖',
+    icon: ChartNoAxesCombined,
+    group: '发现与研究',
+    description: '论文与摘要采集覆盖',
+  },
+  {
     to: '/secnews/',
     label: '安全资讯',
     icon: Newspaper,

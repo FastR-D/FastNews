@@ -182,7 +182,7 @@ func TestLocalContentIsolationCSRFAndInbox(t *testing.T) {
 }
 func TestCatalogOldRoutesAndPrivateFiles(t *testing.T) {
 	h := fixture(t)
-	for _, p := range []string{"/", "/index.html", "/top-conf/index.html", "/field-briefing/index.html", "/summary-brief/index.html", "/inbox/index.html", "/impression/index.html", "/secnews/index.html", "/arxiv/", "/arxiv/index.html", "/trend/", "/trend/index.html", "/login", "/top-conf/data/report/USENIX_2026_Report.html?download=1"} {
+	for _, p := range []string{"/", "/index.html", "/top-conf/index.html", "/coverage/", "/coverage/index.html", "/field-briefing/index.html", "/summary-brief/index.html", "/inbox/index.html", "/impression/index.html", "/secnews/index.html", "/arxiv/", "/arxiv/index.html", "/trend/", "/trend/index.html", "/login", "/top-conf/data/report/USENIX_2026_Report.html?download=1"} {
 		resp, e := http.Get(h.http.URL + p)
 		if e != nil {
 			t.Fatal(e)
@@ -355,6 +355,20 @@ func TestNewsScopeSelectsLatestPopulatedArchiveDate(t *testing.T) {
 	status, _, _ := h.request(t, "GET", "/api/news?source=unknown", nil, "", false)
 	if status != 400 {
 		t.Fatal("unknown archive scope accepted", status)
+	}
+}
+
+func TestCoverageFollowsReportVisibility(t *testing.T) {
+	h := fixture(t)
+	h.app.Config.RequireLogin = true
+	status, _, _ := h.request(t, "GET", "/api/coverage", nil, "", false)
+	if status != 401 {
+		t.Fatal("private coverage exposed", status)
+	}
+	h.login(t, "coverage@example.com")
+	status, result, _ := h.request(t, "GET", "/api/coverage", nil, "", true)
+	if status != 200 || len(result["conferences"].([]any)) != 1 {
+		t.Fatal("authenticated coverage unavailable", status, result)
 	}
 }
 

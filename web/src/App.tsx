@@ -24,6 +24,7 @@ import { navigation, currentPage } from './navigation'
 import { theme } from './theme'
 const Home = lazy(() => import('./pages/Home'))
 const Papers = lazy(() => import('./pages/Papers'))
+const Coverage = lazy(() => import('./pages/Coverage'))
 const News = lazy(() => import('./pages/News'))
 const Arxiv = lazy(() => import('./pages/Arxiv'))
 const Trend = lazy(() => import('./pages/Trend'))
@@ -270,6 +271,7 @@ function Workspace() {
                 <Route path="/" element={<Home />} />
                 <Route path="/index.html" element={<Navigate to="/" replace />} />
                 <Route path="/top-conf/*" element={<Papers />} />
+                <Route path="/coverage/*" element={<Coverage />} />
                 <Route
                   path="/field-briefing/*"
                   element={<Generate key="field-briefing" kind="field-briefing" />}

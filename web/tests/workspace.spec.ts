@@ -1,5 +1,39 @@
 import { test, expect, type Page } from '@playwright/test'
 import type { NewsArticle } from '../src/types'
+test('coverage navigation and filters show actual local evidence counts', async ({
+  page,
+  baseURL,
+}, info) => {
+  const response = await page.request.get(route(baseURL, 'api/coverage'))
+  expect(response.ok()).toBeTruthy()
+  const { conferences } = await response.json()
+  expect(conferences.length).toBeGreaterThan(0)
+  await visit(page, baseURL, '')
+  if (info.project.name === 'mobile') await page.getByRole('button', { name: '打开导航' }).click()
+  await page.getByRole('link', { name: '数据覆盖', exact: true }).click()
+  await expect(page.getByRole('heading', { name: '数据覆盖', level: 1 })).toBeVisible()
+  await expect(page.getByTestId('coverage-row')).toHaveCount(conferences.length)
+  const first = conferences[0]
+  await expect(
+    page.getByRole('progressbar', { name: `${first.name} ${first.year} 原始摘要`, exact: true }),
+  ).toHaveAttribute('value', String(first.abstracts))
+  await expect(
+    page.getByRole('progressbar', { name: `${first.name} ${first.year} 有效总结`, exact: true }),
+  ).toHaveAttribute('value', String(first.summaries))
+  await page.getByLabel('覆盖会议', { exact: true }).selectOption(first.conference)
+  await expect(page.getByTestId('coverage-row')).toHaveCount(
+    conferences.filter((row: { conference: string }) => row.conference === first.conference).length,
+  )
+  await page.reload()
+  await expect(page.getByLabel('覆盖会议', { exact: true })).toHaveValue(first.conference)
+  await page.getByRole('button', { name: '刷新覆盖率', exact: true }).click()
+  await expect(
+    page.getByRole('progressbar', { name: `${first.name} ${first.year} 原始摘要`, exact: true }),
+  ).toHaveAttribute('max', String(Math.max(first.papers, 1)))
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1),
+  ).toBeTruthy()
+})
 const route = (baseURL: string | undefined, p: string) =>
   new URL(p.replace(/^\//, ''), baseURL!.replace(/\/?$/, '/')).href
 test('conference panorama uses the full selected corpus instead of a saved personal topic', async ({

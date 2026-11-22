@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -14,6 +15,8 @@ import (
 
 	"github.com/FastR-D/FastNews/internal/catalog"
 	"github.com/FastR-D/FastNews/internal/config"
+	"github.com/FastR-D/FastNews/internal/httpapi"
+	"github.com/FastR-D/FastNews/internal/store"
 )
 
 func TestNeuripsAbstractsResumeAndRefreshSourceBoundSummaries(t *testing.T) {
@@ -59,6 +62,33 @@ func TestNeuripsAbstractsResumeAndRefreshSourceBoundSummaries(t *testing.T) {
 	}))
 	defer model.Close()
 	c := config.Config{Root: t.TempDir(), LLMKey: "fixture", LLMURL: model.URL}
+	db, err := store.Open(filepath.Join(c.Root, "accounts"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
+	app, err := httpapi.New(c, db)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertCoverage := func(abstracts, summaries, stale int, state string) {
+		t.Helper()
+		recorder := httptest.NewRecorder()
+		app.Handler().ServeHTTP(recorder, httptest.NewRequest("GET", "/api/coverage", nil))
+		var result struct {
+			Conferences []catalog.ConferenceCoverage `json:"conferences"`
+		}
+		if err := json.Unmarshal(recorder.Body.Bytes(), &result); err != nil || recorder.Code != 200 || len(result.Conferences) != 1 {
+			t.Fatal("coverage response", recorder.Code, recorder.Body.String(), err)
+		}
+		row := result.Conferences[0]
+		if row.Papers != 2 || row.Abstracts != abstracts || row.Summaries != summaries || row.StaleSummaries != stale || row.Job == nil || row.Job.State != state || row.Job.LastSuccessAt == nil {
+			t.Fatal("coverage did not follow persisted evidence", row)
+		}
+		if state == "failed" && (row.Job.ErrorKind != "source_http" || row.Job.HTTPStatus != 503) {
+			t.Fatal("failure reason was lost", row.Job)
+		}
+	}
 	args := []string{"--conference", "neurips", "--year", "2025"}
 	ctx := context.Background()
 	for _, command := range []string{"fetch-conf", "summarize-conf"} {
@@ -69,6 +99,7 @@ func TestNeuripsAbstractsResumeAndRefreshSourceBoundSummaries(t *testing.T) {
 	if models.Load() != 2 {
 		t.Fatal(models.Load())
 	}
+	assertCoverage(0, 2, 0, "completed")
 	if err := job(ctx, c, "enrich-abstracts", append(append([]string{}, args...), "--limit", "1")); err != nil {
 		t.Fatal(err)
 	}
@@ -79,6 +110,7 @@ func TestNeuripsAbstractsResumeAndRefreshSourceBoundSummaries(t *testing.T) {
 	if err := job(ctx, c, "enrich-abstracts", enrichArgs); err == nil {
 		t.Fatal("interrupted enrichment succeeded")
 	}
+	assertCoverage(1, 1, 1, "failed")
 	file := filepath.Join(c.Root, "top-conf/data/abstracts/neurips_2025.jsonl")
 	checkpoints, err := catalog.Rows(file)
 	if err != nil || len(checkpoints) != 1 {
@@ -93,6 +125,7 @@ func TestNeuripsAbstractsResumeAndRefreshSourceBoundSummaries(t *testing.T) {
 	if first.Load() != 1 || second.Load() != 2 {
 		t.Fatal("completed papers were fetched again", first.Load(), second.Load())
 	}
+	assertCoverage(2, 0, 2, "completed")
 	checkpoints, err = catalog.Rows(file)
 	if err != nil || len(checkpoints) != 2 {
 		t.Fatal("resume duplicated or lost abstracts", checkpoints, err)
@@ -118,6 +151,7 @@ func TestNeuripsAbstractsResumeAndRefreshSourceBoundSummaries(t *testing.T) {
 	if models.Load() != 4 {
 		t.Fatal("source update did not refresh exactly the changed summaries", models.Load())
 	}
+	assertCoverage(2, 2, 0, "completed")
 	cat.Invalidate()
 	papers, err = cat.Papers()
 	if err != nil || len(papers) != 2 {
