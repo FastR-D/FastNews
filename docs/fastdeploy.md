@@ -68,7 +68,7 @@ systemctl --user daemon-reload &&
 systemctl --user enable --now fastnews-deploy.service
 ```
 
-将 `deployments/nginx-upload.conf` 的精确路径配置加入部署域名的 **HTTPS** server 块，执行 `nginx -t` 后再 reload。只代理该路径；不要开放 `8790` 或在 HTTP server 块暴露上传入口。入口应直接到 TLS 反代；若前置 CDN 的请求时限短于激活时间，使用不经过该 CDN 的专用 TLS 域名。不要在反代日志里记录 Authorization 请求头。
+将 `deployments/nginx-upload.conf` 的精确路径配置加入部署域名的 **HTTPS** server 块，执行 `nginx -t` 后再 reload。接收器默认监听 `127.0.0.1:8790`，可以用 `--listen` 指定反代或 SSH relay 对应的回环地址和端口。只代理该路径，保持接收端口仅限回环。入口应直接到 TLS 反代，前置 CDN 的请求时限短于激活时间时可使用专用 TLS 域名。反代日志应排除 Authorization 请求头。
 
 在 GitHub 仓库的 `production` Environment 中添加变量 `FASTNEWS_DEPLOY_URL`（例如 `https://news.fastrd.io/__fastnews/deploy`），并把服务器 `token` 文件的值设为 Secret `FASTNEWS_DEPLOY_TOKEN`。该令牌具有生产发布权限，不提供给应用或其他仓库。FastCAS、模型等密钥只放在服务器的 `runtime.json`，轮换时更新本地文件并重启接收端。原有组织 SSH Secrets 仍可能被其他项目使用，不需要删除。
 

@@ -7,7 +7,9 @@ import (
 	"flag"
 	"fmt"
 	"log/slog"
+	"net"
 	"net/http"
+	"net/netip"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -20,16 +22,21 @@ import (
 func main() {
 	configDir := flag.String("config-dir", "", "directory containing token and runtime.json")
 	fastDeploy := flag.String("fastdeploy-dir", "", "trusted FastDeploy checkout on the server")
+	listen := flag.String("listen", "127.0.0.1:8790", "loopback listen address")
 	flag.Parse()
-	if err := serve(*configDir, *fastDeploy); err != nil {
+	if err := serve(*configDir, *fastDeploy, *listen); err != nil {
 		slog.Error("deployment receiver stopped", "error", err)
 		os.Exit(1)
 	}
 }
 
-func serve(configDir, fastDeploy string) error {
+func serve(configDir, fastDeploy, listen string) error {
 	if !filepath.IsAbs(configDir) || !filepath.IsAbs(fastDeploy) {
 		return errors.New("config-dir and fastdeploy-dir must be absolute paths")
+	}
+	address, err := netip.ParseAddrPort(listen)
+	if err != nil || !address.Addr().IsLoopback() || address.Port() == 0 {
+		return errors.New("listen must specify a loopback address and port")
 	}
 	tokenBytes, err := os.ReadFile(filepath.Join(configDir, "token"))
 	if err != nil {
@@ -110,7 +117,7 @@ func serve(configDir, fastDeploy string) error {
 		busy: make(chan struct{}, 1),
 	}
 	server := &http.Server{
-		Addr:              "127.0.0.1:8790",
+		Addr:              listen,
 		Handler:           receiver,
 		ReadHeaderTimeout: 5 * time.Second,
 		ReadTimeout:       5 * time.Minute,
@@ -118,11 +125,15 @@ func serve(configDir, fastDeploy string) error {
 		IdleTimeout:       15 * time.Second,
 		MaxHeaderBytes:    8 << 10,
 	}
-	slog.Info("deployment receiver listening", "address", server.Addr)
+	listener, err := net.Listen("tcp", listen)
+	if err != nil {
+		return err
+	}
+	slog.Info("deployment receiver listening", "address", listener.Addr())
 	stop, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
 	started := make(chan error, 1)
-	go func() { started <- server.ListenAndServe() }()
+	go func() { started <- server.Serve(listener) }()
 	select {
 	case err := <-started:
 		return err
