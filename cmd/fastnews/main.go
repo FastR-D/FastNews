@@ -51,7 +51,7 @@ func run() error {
 		fmt.Println("Use fastnews <command> --help for options.")
 		return nil
 	}
-	if command != "serve" && command != "create" && command != "invite" && command != "recovery" {
+	if command != "serve" && command != "create" && command != "invite" && command != "recovery" && command != "migrate-postgres" {
 		return job(context.Background(), c, command, args)
 	}
 	fs := flag.NewFlagSet(command, flag.ContinueOnError)
@@ -61,12 +61,22 @@ func run() error {
 	if e = fs.Parse(args); e != nil {
 		return e
 	}
-	s, e := store.Open(*root)
+	var s *store.Store
+	dsn := os.Getenv("FASTNEWS_DATABASE_URL")
+	if dsn != "" {
+		s, e = store.OpenPostgres(dsn)
+	} else if command == "migrate-postgres" {
+		return errors.New("FASTNEWS_DATABASE_URL is required")
+	} else {
+		s, e = store.Open(*root)
+	}
 	if e != nil {
 		return e
 	}
 	defer s.Close()
 	switch command {
+	case "migrate-postgres":
+		return nil
 	case "create":
 		password := os.Getenv("FASTNEWS_INITIAL_PASSWORD")
 		if password == "" {

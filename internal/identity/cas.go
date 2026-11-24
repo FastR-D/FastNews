@@ -133,7 +133,7 @@ func (c *CAS) Accept(link *fastcas.Link) error {
 		return e
 	}
 	if link.State == "revoked" {
-		_, e = tx.Exec(`DELETE FROM sessions WHERE source='fastcas' AND json_extract(provider,'$.issuer')=? AND json_extract(provider,'$.link_id')=? AND json_extract(provider,'$.link_version')<=?`, c.Config.CASIssuer, link.ID, link.Version)
+		_, e = tx.Exec(`DELETE FROM sessions WHERE source='fastcas' AND (provider ->> 'issuer')=? AND (provider ->> 'link_id')=? AND CAST(provider ->> 'link_version' AS BIGINT)<=?`, c.Config.CASIssuer, link.ID, link.Version)
 		if e != nil {
 			return e
 		}
@@ -374,7 +374,7 @@ func (c *CAS) Notification(ctx context.Context, event fastcas.Notification) erro
 			if e := c.save(tx, event.Link); e != nil {
 				return e
 			}
-			_, e := tx.Exec(`DELETE FROM sessions WHERE source='fastcas' AND json_extract(provider,'$.issuer')=? AND json_extract(provider,'$.link_id')=? AND json_extract(provider,'$.link_version')<=?`, c.Config.CASIssuer, event.Link.ID, event.Link.Version)
+			_, e := tx.Exec(`DELETE FROM sessions WHERE source='fastcas' AND (provider ->> 'issuer')=? AND (provider ->> 'link_id')=? AND CAST(provider ->> 'link_version' AS BIGINT)<=?`, c.Config.CASIssuer, event.Link.ID, event.Link.Version)
 			return e
 		}
 		if event.Status == "disabled" {
@@ -387,7 +387,7 @@ func (c *CAS) Logout(n *fastcas.LogoutNotice) error {
 	return c.apply(n.ID, func(tx *sql.Tx) error { return c.deleteSubject(tx, n.Subject, n.SessionID) })
 }
 func (c *CAS) deleteSubject(tx *sql.Tx, subject, sid string) error {
-	_, e := tx.Exec(`DELETE FROM sessions WHERE source='fastcas' AND json_extract(provider,'$.issuer')=? AND json_extract(provider,'$.link_id') IN (SELECT id FROM cas_links WHERE issuer=? AND client_id=? AND subject=?) AND (?='' OR json_extract(provider,'$.sid')=?)`, c.Config.CASIssuer, c.Config.CASIssuer, c.Config.CASClientID, subject, sid, sid)
+	_, e := tx.Exec(`DELETE FROM sessions WHERE source='fastcas' AND (provider ->> 'issuer')=? AND (provider ->> 'link_id') IN (SELECT id FROM cas_links WHERE issuer=? AND client_id=? AND subject=?) AND (?='' OR (provider ->> 'sid')=?)`, c.Config.CASIssuer, c.Config.CASIssuer, c.Config.CASClientID, subject, sid, sid)
 	return e
 }
 func (c *CAS) apply(id string, fn func(*sql.Tx) error) error {

@@ -76,7 +76,7 @@ func (c *CAS) promptRegistration(ctx context.Context, binding string, result *fa
 	if _, err = c.Store.DB.Exec(`DELETE FROM cas_signups WHERE expires<=?`, store.Now()); err != nil {
 		return err
 	}
-	_, err = c.Store.DB.Exec(`INSERT OR REPLACE INTO cas_signups VALUES(?,?,?,?,?,?,NULL)`, store.Digest(binding), c.Config.CASIssuer, result.Identity.Subject, email, result.Identity.Name, store.Now()+300)
+	_, err = c.Store.DB.Exec(`INSERT INTO cas_signups VALUES(?,?,?,?,?,?,NULL) ON CONFLICT(binding) DO UPDATE SET issuer=excluded.issuer,subject=excluded.subject,email=excluded.email,name=excluded.name,expires=excluded.expires,prepared=NULL`, store.Digest(binding), c.Config.CASIssuer, result.Identity.Subject, email, result.Identity.Name, store.Now()+300)
 	if err != nil {
 		return err
 	}

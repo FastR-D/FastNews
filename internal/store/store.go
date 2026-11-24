@@ -19,6 +19,7 @@ import (
 	"time"
 	"unicode/utf8"
 
+	"github.com/FastR-D/FastDeploy/pgstore"
 	"github.com/google/uuid"
 	_ "github.com/mattn/go-sqlite3"
 	"golang.org/x/crypto/scrypt"
@@ -33,6 +34,36 @@ func (e *Error) Error() string              { return e.Message }
 func Fail(status int, message string) error { return &Error{status, message} }
 
 type Store struct{ DB *sql.DB }
+
+const accountSchema = `CREATE TABLE IF NOT EXISTS users(id TEXT PRIMARY KEY,email TEXT UNIQUE NOT NULL,password TEXT NOT NULL,name TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'active');
+ CREATE TABLE IF NOT EXISTS sessions(hash TEXT PRIMARY KEY,user_id TEXT NOT NULL REFERENCES users(id),csrf TEXT NOT NULL,expires REAL NOT NULL,source TEXT NOT NULL,authenticated REAL NOT NULL,provider TEXT NOT NULL DEFAULT '{}');
+ CREATE TABLE IF NOT EXISTS credentials(hash TEXT PRIMARY KEY,kind TEXT NOT NULL,email TEXT NOT NULL,user_id TEXT REFERENCES users(id),expires REAL NOT NULL,consumed REAL);
+ CREATE TABLE IF NOT EXISTS limits(id TEXT PRIMARY KEY,attempts INTEGER NOT NULL,expires REAL NOT NULL);
+ CREATE TABLE IF NOT EXISTS personal(user_id TEXT NOT NULL REFERENCES users(id),kind TEXT NOT NULL,content TEXT NOT NULL,PRIMARY KEY(user_id,kind));
+ CREATE TABLE IF NOT EXISTS research_connections(user_id TEXT PRIMARY KEY REFERENCES users(id),research_account_id TEXT NOT NULL UNIQUE,key_id TEXT NOT NULL,imported REAL NOT NULL,snapshot_hash TEXT NOT NULL,counts TEXT NOT NULL);
+ CREATE TABLE IF NOT EXISTS audit(id TEXT PRIMARY KEY,user_id TEXT,action TEXT NOT NULL,created REAL NOT NULL);
+ CREATE TABLE IF NOT EXISTS fastread_connections(user_id TEXT PRIMARY KEY REFERENCES users(id),token_hash TEXT UNIQUE NOT NULL,created REAL NOT NULL);
+ CREATE TABLE IF NOT EXISTS cas_transactions(state TEXT PRIMARY KEY,payload TEXT NOT NULL,expires REAL NOT NULL);
+ CREATE TABLE IF NOT EXISTS cas_links(issuer TEXT NOT NULL,id TEXT NOT NULL,client_id TEXT NOT NULL,user_id TEXT NOT NULL REFERENCES users(id),subject TEXT NOT NULL,state TEXT NOT NULL CHECK(state IN ('prepared','active','revoked')),version INTEGER NOT NULL,payload TEXT NOT NULL,PRIMARY KEY(issuer,id));
+ CREATE UNIQUE INDEX IF NOT EXISTS cas_local_live ON cas_links(issuer,client_id,user_id) WHERE state!='revoked';
+ CREATE UNIQUE INDEX IF NOT EXISTS cas_subject_live ON cas_links(issuer,client_id,subject) WHERE state!='revoked';
+ CREATE TABLE IF NOT EXISTS cas_events(issuer TEXT NOT NULL,id TEXT NOT NULL,created REAL NOT NULL,PRIMARY KEY(issuer,id));`
+
+func OpenPostgres(dsn string) (*Store, error) {
+	db, err := pgstore.Open(dsn)
+	if err != nil {
+		return nil, err
+	}
+	schema := strings.NewReplacer(" REAL", " DOUBLE PRECISION", " INTEGER", " BIGINT", "provider TEXT", "provider JSONB").Replace(accountSchema)
+	if _, err = db.Exec(schema + `
+ ALTER TABLE users ADD COLUMN IF NOT EXISTS role TEXT NOT NULL DEFAULT 'user';
+ CREATE TABLE IF NOT EXISTS cas_signups(binding TEXT PRIMARY KEY, issuer TEXT NOT NULL, subject TEXT NOT NULL, email TEXT NOT NULL, name TEXT NOT NULL, expires DOUBLE PRECISION NOT NULL, prepared TEXT);`); err != nil {
+		_ = db.Close()
+		return nil, err
+	}
+	return &Store{db}, nil
+}
+
 type Session struct {
 	Hash     string `json:"-"`
 	UserID   string `json:"user_id"`
@@ -72,19 +103,7 @@ func Open(root string) (*Store, error) {
 	}
 	db.SetMaxOpenConns(1)
 	s := &Store{db}
-	_, e = db.Exec(`CREATE TABLE IF NOT EXISTS users(id TEXT PRIMARY KEY,email TEXT UNIQUE NOT NULL,password TEXT NOT NULL,name TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'active');
- CREATE TABLE IF NOT EXISTS sessions(hash TEXT PRIMARY KEY,user_id TEXT NOT NULL REFERENCES users(id),csrf TEXT NOT NULL,expires REAL NOT NULL,source TEXT NOT NULL,authenticated REAL NOT NULL,provider TEXT NOT NULL DEFAULT '{}');
- CREATE TABLE IF NOT EXISTS credentials(hash TEXT PRIMARY KEY,kind TEXT NOT NULL,email TEXT NOT NULL,user_id TEXT REFERENCES users(id),expires REAL NOT NULL,consumed REAL);
- CREATE TABLE IF NOT EXISTS limits(id TEXT PRIMARY KEY,attempts INTEGER NOT NULL,expires REAL NOT NULL);
- CREATE TABLE IF NOT EXISTS personal(user_id TEXT NOT NULL REFERENCES users(id),kind TEXT NOT NULL,content TEXT NOT NULL,PRIMARY KEY(user_id,kind));
- CREATE TABLE IF NOT EXISTS research_connections(user_id TEXT PRIMARY KEY REFERENCES users(id),research_account_id TEXT NOT NULL UNIQUE,key_id TEXT NOT NULL,imported REAL NOT NULL,snapshot_hash TEXT NOT NULL,counts TEXT NOT NULL);
- CREATE TABLE IF NOT EXISTS audit(id TEXT PRIMARY KEY,user_id TEXT,action TEXT NOT NULL,created REAL NOT NULL);
- CREATE TABLE IF NOT EXISTS fastread_connections(user_id TEXT PRIMARY KEY REFERENCES users(id),token_hash TEXT UNIQUE NOT NULL,created REAL NOT NULL);
- CREATE TABLE IF NOT EXISTS cas_transactions(state TEXT PRIMARY KEY,payload TEXT NOT NULL,expires REAL NOT NULL);
- CREATE TABLE IF NOT EXISTS cas_links(issuer TEXT NOT NULL,id TEXT NOT NULL,client_id TEXT NOT NULL,user_id TEXT NOT NULL REFERENCES users(id),subject TEXT NOT NULL,state TEXT NOT NULL CHECK(state IN ('prepared','active','revoked')),version INTEGER NOT NULL,payload TEXT NOT NULL,PRIMARY KEY(issuer,id));
- CREATE UNIQUE INDEX IF NOT EXISTS cas_local_live ON cas_links(issuer,client_id,user_id) WHERE state!='revoked';
- CREATE UNIQUE INDEX IF NOT EXISTS cas_subject_live ON cas_links(issuer,client_id,subject) WHERE state!='revoked';
- CREATE TABLE IF NOT EXISTS cas_events(issuer TEXT NOT NULL,id TEXT NOT NULL,created REAL NOT NULL,PRIMARY KEY(issuer,id));`)
+	_, e = db.Exec(accountSchema)
 	if e != nil {
 		db.Close()
 		return nil, e

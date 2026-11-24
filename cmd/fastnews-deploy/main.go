@@ -50,6 +50,7 @@ func serve(configDir, fastDeploy string) error {
 		LegacyApp  string            `json:"legacy_app"`
 		Required   []string          `json:"required_env"`
 		Fixed      map[string]string `json:"fixed_env"`
+		Postgres   string            `json:"postgres_env"`
 	}
 	if err := json.Unmarshal(profile, &rules); err != nil || rules.Repository != repository || rules.Unit != "fastnews.service" || rules.LegacyApp != "news" {
 		return errors.New("FastDeploy checkout does not contain the expected FastNews profile")
@@ -58,8 +59,11 @@ func serve(configDir, fastDeploy string) error {
 	if err := readJSON(filepath.Join(configDir, "runtime.json"), &runtime); err != nil {
 		return err
 	}
+	if rules.Postgres != "" && runtime[rules.Postgres] != "" {
+		return errors.New("PostgreSQL credentials belong in the FastDeploy server credential directory")
+	}
 	for _, name := range rules.Required {
-		if runtime[name] == "" {
+		if name != rules.Postgres && runtime[name] == "" {
 			return fmt.Errorf("missing runtime variable %s", name)
 		}
 	}
