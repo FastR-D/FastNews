@@ -11,6 +11,7 @@ export FASTNEWS_PORT="${1:-4189}"
 export FASTNEWS_PUBLIC_PATH="${2:-}"
 export FASTNEWS_WEB_DIR="${3:-web/dist}"
 export FASTNEWS_FASTCAS_ENABLED=false
+export FASTREAD_URL=http://127.0.0.1:3015
 export OPENAI_API_KEY=''
 export FASTNEWS_INITIAL_PASSWORD='browser-test-password-123'
 export FASTNEWS_REQUIRE_LOGIN="${FASTNEWS_TEST_REQUIRE_LOGIN:-false}"

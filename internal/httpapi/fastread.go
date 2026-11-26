@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -13,6 +14,16 @@ import (
 )
 
 func (s *Server) fastreadIntegration(w http.ResponseWriter, r *http.Request, path string) error {
+	if path == "/api/integrations/fastread/cas-connect" {
+		return s.connectReadCAS(w, r)
+	}
+	if path == "/api/integrations/fastread/token" && r.Method == http.MethodGet && r.Header.Get("Authorization") != "" {
+		if _, err := s.fastreadUser(r); err != nil {
+			return err
+		}
+		reply(w, r, 200, map[string]bool{"connected": true})
+		return nil
+	}
 	if path == "/api/integrations/fastread/token" {
 		session, err := s.require(r)
 		if err != nil {
@@ -25,7 +36,23 @@ func (s *Server) fastreadIntegration(w http.ResponseWriter, r *http.Request, pat
 			if err != nil && !errors.Is(err, sql.ErrNoRows) {
 				return err
 			}
-			reply(w, r, http.StatusOK, map[string]any{"connected": err == nil, "created": created})
+			target, parseErr := url.Parse(s.Config.FastReadURL + "/")
+			if parseErr != nil {
+				return parseErr
+			}
+			query := target.Query()
+			query.Set("section", "settings")
+			query.Set("auth", "cas")
+			target.RawQuery = query.Encode()
+			var cas int
+			if e := s.Store.DB.QueryRowContext(r.Context(), "SELECT count(*) FROM fastread_cas_credentials m JOIN fastread_connections c ON c.token_hash=m.token_hash WHERE c.user_id=?", session.UserID).Scan(&cas); e != nil {
+				return e
+			}
+			mode := "manual"
+			if cas > 0 {
+				mode = "cas"
+			}
+			reply(w, r, http.StatusOK, map[string]any{"connected": err == nil, "created": created, "mode": mode, "connect_url": target.String()})
 			return nil
 		case http.MethodPost, http.MethodDelete:
 			if err = s.csrf(r, session.CSRF); err != nil {
@@ -56,15 +83,7 @@ func (s *Server) fastreadIntegration(w http.ResponseWriter, r *http.Request, pat
 	if r.Method != http.MethodGet && r.Method != http.MethodPut {
 		return store.Fail(405, "Method not allowed")
 	}
-	authorization := strings.Fields(r.Header.Get("Authorization"))
-	if len(authorization) != 2 || !strings.EqualFold(authorization[0], "Bearer") {
-		return store.Fail(401, "需要 FastRead 连接码")
-	}
-	var user string
-	err := s.Store.DB.QueryRowContext(r.Context(), "SELECT c.user_id FROM fastread_connections c JOIN users u ON u.id=c.user_id WHERE c.token_hash=? AND u.status='active'", store.Digest(authorization[1])).Scan(&user)
-	if errors.Is(err, sql.ErrNoRows) {
-		return store.Fail(401, "FastRead 连接码已失效")
-	}
+	user, err := s.fastreadUser(r)
 	if err != nil {
 		return err
 	}

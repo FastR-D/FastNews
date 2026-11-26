@@ -153,8 +153,14 @@ test('arXiv navigation, dated corpus, fields, pagination and reading use real AP
     (response) =>
       response.url().endsWith('/api/fastread') && response.request().method() === 'POST',
   )
+  await page.route('http://127.0.0.1:3015/**', (request) => request.fulfill({ status: 204 }))
   await page.getByTestId('paper-row').first().getByRole('button', { name: '跳转 FastRead' }).click()
-  expect((await handoff).status()).toBe(409)
+  const handed = await handoff
+  expect(handed.status()).toBe(200)
+  const destination = await handed.json()
+  expect(destination.redirect).toContain('#fastnews=')
+  expect(destination.redirect).not.toContain('sso=')
+  expect(destination.paper.title).toBe(matching[0].title)
   const nextDate = catalog.dates[1]
   await page.getByLabel('采集日期', { exact: true }).selectOption(nextDate)
   expect(new URL(page.url()).searchParams.get('category')).toBeNull()

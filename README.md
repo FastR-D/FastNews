@@ -68,7 +68,7 @@ FastCAS 使用正式 Go SDK **v0.1.2**，需要同时配置 issuer / client ID /
 
 Research Key 导入为显式快照复制，不保存 Key 或临时 Research 会话；默认拒绝覆盖已有本地内容。可选委托读取需要 FastCAS consent、`research:read` / `offline_access` 和独立的 32 字节 AES-GCM vault key。详见 [迁移与验收](docs/go-react-migration.md) 和 [账号与 FastCAS](docs/fastcas-integration.md)。
 
-FastRead 保留现有授权边界：Research 会话申请 `fast-read` 一次性票据；本地账号未具备相应跨产品授权时明确返回 409，不转发本地会话、不把个人 Key 放进 URL。
+FastRead 入口支持本地账号交接论文元数据和 CAS 登录跳转；旧 Research 会话继续申请 `fast-read` 一次性票据。账户页可直达 CAS 联动设置，研究方向同步沿用账号隔离。配置与验证见 [FastRead 联动](docs/fastread-integration.md)。
 
 ## 向量检索与生成
 

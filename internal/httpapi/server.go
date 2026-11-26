@@ -503,20 +503,36 @@ func (s *Server) fastread(w http.ResponseWriter, r *http.Request) error {
 	if title == "" {
 		return store.Fail(400, "title required")
 	}
+	query := ""
 	if cookie(r, "fastnews_session") != "" {
-		return store.Fail(409, "本地账号暂不具备 FastRead 会话授权，请显式连接 Research 后从门户进入")
-	}
-	token := cookie(r, s.researchCookie())
-	if token == "" {
-		return store.Fail(401, "请从 FastResearch 进入 FastNews 后再跳转 FastRead")
-	}
-	proof, _, e := identity.Research(r.Context(), s.Config.ResearchURL, "POST", "/api/sso/ticket", token, map[string]string{"audience": "fast-read"})
-	if e != nil {
-		return e
-	}
-	ticket, _ := proof["ticket"].(string)
-	if ticket == "" || len(ticket) > 256 {
-		return store.Fail(502, "FastRead 登录票据申请失败")
+		session, err := s.require(r)
+		if err != nil {
+			return err
+		}
+		if err = s.csrf(r, session.CSRF); err != nil {
+			return err
+		}
+		var linked int
+		if err = s.Store.DB.QueryRowContext(r.Context(), "SELECT count(*) FROM cas_links WHERE issuer=? AND client_id=? AND user_id=? AND state='active'", s.Config.CASIssuer, s.Config.CASClientID, session.UserID).Scan(&linked); err != nil {
+			return err
+		}
+		if linked > 0 {
+			query = "auth=cas"
+		}
+	} else {
+		token := cookie(r, s.researchCookie())
+		if token == "" {
+			return store.Fail(401, "请先登录 FastNews")
+		}
+		proof, _, err := identity.Research(r.Context(), s.Config.ResearchURL, "POST", "/api/sso/ticket", token, map[string]string{"audience": "fast-read"})
+		if err != nil {
+			return err
+		}
+		ticket, _ := proof["ticket"].(string)
+		if ticket == "" || len(ticket) > 256 {
+			return store.Fail(502, "FastRead 登录票据申请失败")
+		}
+		query = "sso=" + url.QueryEscape(ticket)
 	}
 	paper := map[string]string{"title": title, "source": "fastnews"}
 	for key, keys := range map[string][]string{"authors": {"authors", "author"}, "abstract": {"abstract", "summary"}, "venue": {"venue", "conference_label", "conference"}, "year": {"year"}, "id": {"id", "paperId"}, "doi": {"doi", "identifier"}} {
@@ -540,7 +556,7 @@ func (s *Server) fastread(w http.ResponseWriter, r *http.Request) error {
 			paper["abstract"] = catalog.Clip(paper["abstract"], n)
 		}
 		b, _ := json.Marshal(paper)
-		redirect = s.Config.FastReadURL + "/?sso=" + url.QueryEscape(ticket) + "#fastnews=" + url.PathEscape(string(b))
+		redirect = s.Config.FastReadURL + "/?" + query + "#fastnews=" + url.PathEscape(string(b))
 		if len(redirect) <= 7000 {
 			break
 		}

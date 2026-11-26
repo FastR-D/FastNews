@@ -5,13 +5,21 @@ import { ErrorMessage, Panel } from './Common'
 
 export default function FastReadConnection() {
   const [connected, setConnected] = useState(false)
+  const [connectURL, setConnectURL] = useState('')
+  const [connectionMode, setConnectionMode] = useState('')
   const [token, setToken] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
   useEffect(() => {
-    api<{ connected: boolean }>('api/integrations/fastread/token')
-      .then((value) => setConnected(value.connected))
+    api<{ connected: boolean; mode?: string; connect_url?: string }>(
+      'api/integrations/fastread/token',
+    )
+      .then((value) => {
+        setConnected(value.connected)
+        setConnectionMode(value.mode || 'manual')
+        setConnectURL(value.connect_url || '')
+      })
       .catch((e) => setError(message(e)))
   }, [])
   async function update(method: 'POST' | 'DELETE') {
@@ -24,6 +32,7 @@ export default function FastReadConnection() {
       )
       setConnected(value.connected)
       setToken(value.token || '')
+      setConnectionMode('manual')
       setCopied(false)
     } catch (e) {
       setError(message(e))
@@ -32,16 +41,27 @@ export default function FastReadConnection() {
     }
   }
   return (
-    <Panel title="FastRead 联动" action={<Badge>{connected ? '已授权连接' : '尚未连接'}</Badge>}>
+    <Panel
+      title="FastRead 联动"
+      action={
+        <Badge>
+          {connected ? (connectionMode === 'cas' ? 'CAS 已连接' : '已授权连接') : '尚未连接'}
+        </Badge>
+      }
+    >
       <div className="grid gap-4 p-4 sm:p-6">
         <p>
           将 FastRead
           中所选论文提炼出的研究方向同步到当前账号的个人印象，供领域导读和相关工作检索使用。
         </p>
         <p className="text-[var(--fastui-muted)]">
-          生成连接码后，复制到 FastRead 设置中的 FastNews
-          连接。连接码只在生成时显示；重新生成会替换旧连接码。
+          两端认证同一 CAS 账号后，在 FastRead 设置中一键连接。也可使用手动连接码。
         </p>
+        {connectURL && (
+          <a className="fastui-link" href={connectURL} target="_blank" rel="noreferrer">
+            通过 CAS 连接 FastRead
+          </a>
+        )}
         <ErrorMessage error={error} />
         {token && (
           <label className="fastui-field">

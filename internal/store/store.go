@@ -42,6 +42,7 @@ const accountSchema = `CREATE TABLE IF NOT EXISTS users(id TEXT PRIMARY KEY,emai
  CREATE TABLE IF NOT EXISTS personal(user_id TEXT NOT NULL REFERENCES users(id),kind TEXT NOT NULL,content TEXT NOT NULL,PRIMARY KEY(user_id,kind));
  CREATE TABLE IF NOT EXISTS research_connections(user_id TEXT PRIMARY KEY REFERENCES users(id),research_account_id TEXT NOT NULL UNIQUE,key_id TEXT NOT NULL,imported REAL NOT NULL,snapshot_hash TEXT NOT NULL,counts TEXT NOT NULL);
  CREATE TABLE IF NOT EXISTS audit(id TEXT PRIMARY KEY,user_id TEXT,action TEXT NOT NULL,created REAL NOT NULL);
+ CREATE TABLE IF NOT EXISTS fastread_cas_credentials(token_hash TEXT PRIMARY KEY,issuer TEXT NOT NULL,subject TEXT NOT NULL,link_id TEXT NOT NULL,version INTEGER NOT NULL);
  CREATE TABLE IF NOT EXISTS fastread_connections(user_id TEXT PRIMARY KEY REFERENCES users(id),token_hash TEXT UNIQUE NOT NULL,created REAL NOT NULL);
  CREATE TABLE IF NOT EXISTS cas_transactions(state TEXT PRIMARY KEY,payload TEXT NOT NULL,expires REAL NOT NULL);
  CREATE TABLE IF NOT EXISTS cas_links(issuer TEXT NOT NULL,id TEXT NOT NULL,client_id TEXT NOT NULL,user_id TEXT NOT NULL REFERENCES users(id),subject TEXT NOT NULL,state TEXT NOT NULL CHECK(state IN ('prepared','active','revoked')),version INTEGER NOT NULL,payload TEXT NOT NULL,PRIMARY KEY(issuer,id));

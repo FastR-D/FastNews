@@ -176,8 +176,8 @@ func TestLocalContentIsolationCSRFAndInbox(t *testing.T) {
 		t.Fatal("mark read failed", status, v)
 	}
 	status, _, _ = h.request(t, "POST", "/api/fastread", map[string]string{"title": "Paper"}, h.csrf, true)
-	if status != 409 {
-		t.Fatal("local account forwarded to Research", status)
+	if status != 200 {
+		t.Fatal("local account metadata handoff failed", status)
 	}
 }
 func TestCatalogOldRoutesAndPrivateFiles(t *testing.T) {
