@@ -216,14 +216,38 @@ function Workspace() {
               <UserRound size={14} />
               <span className="hidden sm:inline">个人印象</span>
             </Button>
-            {profile ? <AccountMenu name={profile.person} detail={profile.email} actions={[
-              { label: 'CAS 认证', onSelect: () => navigate('/login#fastcas') },
-              { label: '账号设置', onSelect: () => navigate('/login') },
-              { label: '退出登录', danger: true, onSelect: () => {
-                void api(profile.source === 'research' ? 'api/content/logout' : 'api/auth/logout', { method: 'POST', body: '{}' })
-                  .then(() => refresh()).then(() => navigate('/login')).catch(error => notify(message(error)))
-              } },
-            ]} /> : <Link to="/login" className="fastui-button fastui-button--quiet no-underline" aria-label="登录"><LogIn size={14} />登录</Link>}
+            {profile ? (
+              <AccountMenu
+                name={profile.person}
+                detail={profile.email}
+                actions={[
+                  { label: 'CAS 认证', onSelect: () => navigate('/login#fastcas') },
+                  { label: '账号设置', onSelect: () => navigate('/login') },
+                  {
+                    label: '退出登录',
+                    danger: true,
+                    onSelect: () => {
+                      void api(
+                        profile.source === 'research' ? 'api/content/logout' : 'api/auth/logout',
+                        { method: 'POST', body: '{}' },
+                      )
+                        .then(() => refresh())
+                        .then(() => navigate('/login'))
+                        .catch((error) => notify(message(error)))
+                    },
+                  },
+                ]}
+              />
+            ) : (
+              <Link
+                to="/login"
+                className="fastui-button fastui-button--quiet no-underline"
+                aria-label="登录"
+              >
+                <LogIn size={14} />
+                登录
+              </Link>
+            )}
             <Button
               variant="icon"
               aria-label={mode === 'dark' ? '切换浅色模式' : '切换深色模式'}
