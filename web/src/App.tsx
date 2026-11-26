@@ -1,3 +1,5 @@
+import { AccountMenu } from './components/AccountMenu'
+import { api, message } from './api'
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { Link, NavLink, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { Alert, Button, Dialog, EmptyState, StatusBar, TextField } from '@fastrd/ui-react'
@@ -35,7 +37,7 @@ const Account = lazy(() => import('./pages/Account'))
 const UsersPage = lazy(() => import('./pages/Users'))
 
 function Workspace() {
-  const { catalog, profile, notice, notify, catalogError, retryCatalog } = useApp()
+  const { catalog, profile, notice, notify, catalogError, retryCatalog, refresh } = useApp()
   const location = useLocation()
   const navigate = useNavigate()
   const current = currentPage(location.pathname)
@@ -214,16 +216,14 @@ function Workspace() {
               <UserRound size={14} />
               <span className="hidden sm:inline">个人印象</span>
             </Button>
-            <Link
-              to="/login"
-              className="fastui-button fastui-button--quiet no-underline"
-              aria-label={profile?.person || '登录'}
-            >
-              <LogIn size={14} />
-              <span className="hidden sm:inline max-w-28 truncate">
-                {profile?.person || '登录'}
-              </span>
-            </Link>
+            {profile ? <AccountMenu name={profile.person} detail={profile.email} actions={[
+              { label: 'CAS 认证', onSelect: () => navigate('/login#fastcas') },
+              { label: '账号设置', onSelect: () => navigate('/login') },
+              { label: '退出登录', danger: true, onSelect: () => {
+                void api(profile.source === 'research' ? 'api/content/logout' : 'api/auth/logout', { method: 'POST', body: '{}' })
+                  .then(() => refresh()).then(() => navigate('/login')).catch(error => notify(message(error)))
+              } },
+            ]} /> : <Link to="/login" className="fastui-button fastui-button--quiet no-underline" aria-label="登录"><LogIn size={14} />登录</Link>}
             <Button
               variant="icon"
               aria-label={mode === 'dark' ? '切换浅色模式' : '切换深色模式'}

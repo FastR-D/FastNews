@@ -303,61 +303,24 @@ export default function Account() {
         )}
         {profile && profile.source !== 'research' && <FastReadConnection key={profile.userId} />}
         {profile && profile.source !== 'research' && (
-          <Panel title="FastCAS 认证">
-            <div className="grid gap-4 p-4 sm:p-6">
-              {cas?.enabled ? (
-                <>
-                  <p>{link ? `绑定状态：${link.state}` : '尚未绑定 FastCAS 身份'}</p>
-                  <p className="text-[var(--fastui-muted)]">
-                    同邮箱或同名不会自动合并。绑定与解绑需要验证当前账号的本地密码。
-                  </p>
-                  <label className="fastui-field">
-                    本地密码
-                    <TextField
-                      type="password"
-                      autoComplete="current-password"
-                      value={proof}
-                      onChange={(e) => setProof(e.target.value)}
-                    />
-                  </label>
+          <Panel title="账号认证" className="account-cas-panel">
+            <div id="fastcas" className="p-4 sm:p-6">
+              <div className="rd-account-section">
+                <h2>FastCAS 认证</h2>
+                {cas?.enabled ? <p className={link ? 'rd-account-banner' : undefined} role="status">{link?.state === 'active' ? '已通过 FastCAS 认证' : link ? '认证待完成' : '尚未绑定 FastCAS 身份'}</p> : <p>此实例未启用 FastCAS，本地登录照常可用。</p>}
+              </div>
+              <div className="rd-account-section">
+                <h2>修改信息</h2>
+                {cas?.enabled && <>
+                  <label className="fastui-field">本地密码<TextField type="password" autoComplete="current-password" value={proof} onChange={e => setProof(e.target.value)} /></label>
                   <div className="flex flex-wrap items-center gap-2">
-                    {!link && cas.link_enabled && (
-                      <Button
-                        variant="primary"
-                        loading={busy}
-                        disabled={!proof}
-                        onClick={() => action(() => casAction('link'))}
-                      >
-                        认证已有账号
-                      </Button>
-                    )}
-                    {link && (
-                      <Button
-                        variant="danger"
-                        loading={busy}
-                        disabled={!proof}
-                        onClick={() => action(() => casAction('revoke'))}
-                      >
-                        解除认证
-                      </Button>
-                    )}
-                    {link?.state === 'prepared' && cas.link_enabled && (
-                      <Button loading={busy} onClick={() => action(() => casAction('reconcile'))}>
-                        重试待完成认证
-                      </Button>
-                    )}
+                    {!link && cas.link_enabled && <Button variant="primary" loading={busy} disabled={!proof} onClick={() => action(() => casAction('link'))}>认证已有账号</Button>}
+                    {link && <Button variant="danger" loading={busy} disabled={!proof} onClick={() => action(() => casAction('revoke'))}>解除认证</Button>}
+                    {link?.state === 'prepared' && cas.link_enabled && <Button loading={busy} onClick={() => action(() => casAction('reconcile'))}>重试待完成认证</Button>}
                   </div>
-                  {cas.login_enabled && (
-                    <a className="fastui-link" href={asset('api/auth/fastcas/login')}>
-                      使用 FastCAS 重新登录
-                    </a>
-                  )}
-                </>
-              ) : (
-                <p className="text-[var(--fastui-muted)]">
-                  此实例未启用 FastCAS，本地登录照常可用。
-                </p>
-              )}
+                  {cas.login_enabled && <a className="fastui-link" href={asset('api/auth/fastcas/login')}>使用 FastCAS 重新登录</a>}
+                </>}
+              </div>
             </div>
           </Panel>
         )}
