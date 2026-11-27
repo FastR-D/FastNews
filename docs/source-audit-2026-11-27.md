@@ -25,7 +25,7 @@
 | 奇安信 XLab | RSS / Atom / RDF | 直连 | 90 天 |
 | OpenAI News | RSS / Atom / RDF | 直连 | 14 天 |
 | Hugging Face Blog | RSS / Atom / RDF | 新加坡 | 14 天 |
-| Google DeepMind Research | RSS / Atom / RDF | 直连 | 90 天 |
+| Google DeepMind Research | RSS / Atom / RDF | 新加坡 | 90 天 |
 | Transformer Circuits | RSS / Atom / RDF | 直连 | 90 天 |
 | MIT AI News | RSS / Atom / RDF | 直连 | 14 天 |
 | Berkeley AI Research | RSS / Atom / RDF | 新加坡 | 90 天 |
@@ -102,8 +102,18 @@ CISA 使用新增入库日期；NVD 只保留 HIGH/CRITICAL，评级与在野利
 
 ## 专用采集账号
 
-`fastnews-fetch` 仅允许读取 FastDeploy 白名单中的 6 个 HTTPS 端点，禁止交互终端、任意命令和端口转发。应用机固定主机公钥，密钥持久化到私有目录；GitHub `production` Environment 已配置 5 项 `FASTNEWS_RELAY_SSH_*` Secrets，用于恢复，值不进入仓库、日志、发布包或前端。
+`fastnews-fetch` 仅允许读取 FastDeploy 白名单中的 7 个 HTTPS 端点，禁止交互终端、任意命令和端口转发。应用机固定主机公钥，密钥持久化到私有目录；GitHub `production` Environment 已配置 5 项 `FASTNEWS_RELAY_SSH_*` Secrets，用于恢复，值不进入仓库、日志、发布包或前端。
 
 FastDeploy：`5ad81d7d0ceae560fcd0825ebee1dae18a9942e4`。自动采集继续沿用服务器现有 6 小时计划，另安排一次手动补采验证。
 
 首轮线上补采新增 2,284 条记录；SecurityWeek 返回 403，已按要求删除。The Hacker News 直连 FeedBurner 超时，新加坡实测返回 50 条订阅记录，改为经跳板机采集。
+
+第二轮补采新增 50 条 The Hacker News 记录，6 条新加坡路线全部成功。Google DeepMind 发生一次直连 TLS 超时，也切换到新加坡，单独重试该来源。
+
+## 线上验收结果
+
+FastNews `v2026.11.27.7` 已激活。最终目录 65 项，启用 36 个信源，其中 7 个经新加坡采集。根据完整补采与失败项定向重试的最新结果，36 个来源均已成功，累计新增 2,334 条，当前无未处理失败来源。DeepMind 定向重试读取 100 条并完成去重保存。
+
+已删除的 16 个来源不在目录、服务器信源配置或待执行队列中；历史文章保留。每 6 小时采集计划保持启用，下次执行为北京时间 2026-11-28 02:00。FastDeploy relay allowlist 更新至 `3eb2a3d`，应用机与 GitHub production Secrets 配置均已核验。
+
+部署包只包含程序与前端；本次最后的 DeepMind 路由调整是持久信源配置变更，无需重新构建二进制。当前生产配置与仓库 `config/news-sources.json` 一致。

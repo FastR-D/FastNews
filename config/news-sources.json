@@ -116,7 +116,7 @@
     "url": "https://deepmind.google/blog/rss.xml",
     "channel": "ai",
     "max_age_days": 90,
-    "transport": "direct"
+    "transport": "relay"
   },
   {
     "id": "source_43",
