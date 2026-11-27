@@ -21,9 +21,9 @@ func job(ctx context.Context, c config.Config, command string, args []string) er
 		return searchPapers(ctx, c, args)
 	}
 	fs := flag.NewFlagSet(command, flag.ContinueOnError)
-	defaultSource := "bleepingcomputer"
-	if command == "fetch-news" {
-		defaultSource = "all"
+	defaultSource := "all"
+	if command == "summary-brief" {
+		defaultSource = "top-conf"
 	}
 	source := fs.String("source", defaultSource, "feed ID, all/news/security/ai/arxiv, or RAG source")
 	sourcesFile := fs.String("sources-file", "", "RSS source overrides JSON (default: config/news-sources.json if present)")
@@ -115,12 +115,6 @@ func job(ctx context.Context, c config.Config, command string, args []string) er
 		cat := &catalog.Catalog{Root: c.Root}
 		svc := &ai.Service{Config: c, Catalog: cat, RAG: &rag.Retriever{Config: c}}
 		src := *source
-		if src == "bleepingcomputer" {
-			src = "all"
-			if command == "summary-brief" {
-				src = "top-conf"
-			}
-		}
 		v, e := svc.Run(ctx, command, ai.Request{Query: *query, Source: src, Limit: *limit})
 		if e != nil {
 			return e

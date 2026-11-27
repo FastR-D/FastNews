@@ -88,26 +88,21 @@ func (s *Server) enqueueCollection(w http.ResponseWriter, r *http.Request, actor
 			return nil
 		}
 	}
-	for _, run := range m.runs {
-		if run.Status == "running" || run.Status == "stopping" {
-			for _, source := range run.Sources {
-				if source.Source == input.Source && (source.State == "running" || source.State == "queued") {
-					reply(w, r, 202, collectionQueueItem{ID: run.ID, Source: input.Source, Name: found.Name, State: "running"})
-					return nil
-				}
-			}
-		}
-	}
 	if len(m.queue) >= 100 {
 		return store.Fail(409, "采集队列已满，请先处理现有任务")
 	}
 	// Existing disabled feeds have vetted configuration; enabling them preserves
 	// their URL and settings. An unconfigured research candidate is never fetched
 	// as if its homepage were an RSS feed.
-	if found.Configured && found.Disabled {
+	preset, available := catalog.NewsSourcePreset(input.Source)
+	if (found.Configured && found.Disabled) || (!found.Configured && available) {
 		sources, err := catalog.LoadNewsSources(s.Config.Root, "")
 		if err != nil {
 			return err
+		}
+		if !found.Configured {
+			preset.Disabled = false
+			sources = append(sources, preset)
 		}
 		for i := range sources {
 			if sources[i].ID == input.Source {
@@ -116,6 +111,17 @@ func (s *Server) enqueueCollection(w http.ResponseWriter, r *http.Request, actor
 		}
 		if err = saveCollectionJSON(filepath.Join(s.Config.Root, "config/news-sources.json"), sources); err != nil {
 			return err
+		}
+		found.Configured = true
+	}
+	for _, run := range m.runs {
+		if run.Status == "running" || run.Status == "stopping" {
+			for _, source := range run.Sources {
+				if source.Source == input.Source && (source.State == "running" || source.State == "queued") {
+					reply(w, r, 202, collectionQueueItem{ID: run.ID, Source: input.Source, Name: found.Name, State: "running"})
+					return nil
+				}
+			}
 		}
 	}
 	state := "queued"
@@ -198,4 +204,49 @@ func (s *Server) startQueuedCollectionLocked() bool {
 		return true
 	}
 	return false
+}
+
+// Removing a subscription disables future scheduled/manual selection and drops
+// its pending queue item. An already-running HTTP request may finish normally.
+func (s *Server) disableCollectionSource(w http.ResponseWriter, r *http.Request) error {
+	var input struct {
+		Source string `json:"source"`
+	}
+	if err := decode(w, r, &input, 1024); err != nil {
+		return err
+	}
+	m := s.collection
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	sources, err := catalog.LoadNewsSources(s.Config.Root, "")
+	if err != nil {
+		return err
+	}
+	found := false
+	for i := range sources {
+		if sources[i].ID == input.Source {
+			sources[i].Disabled = true
+			found = true
+		}
+	}
+	next := []collectionQueueItem{}
+	for _, item := range m.queue {
+		if item.Source == input.Source {
+			found = true
+		} else {
+			next = append(next, item)
+		}
+	}
+	if !found {
+		return store.Fail(404, "信源未纳入采集")
+	}
+	if err = saveCollectionJSON(filepath.Join(s.Config.Root, "config/news-sources.json"), sources); err != nil {
+		return err
+	}
+	if err = saveCollectionJSON(m.queueFile(), next); err != nil {
+		return err
+	}
+	m.queue = next
+	reply(w, r, 200, map[string]bool{"disabled": true})
+	return nil
 }

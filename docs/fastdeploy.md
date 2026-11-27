@@ -39,7 +39,7 @@ engine="$HOME/.local/share/fastnews-deploy/FastDeploy"
 install -d -m 0700 "$config" "$(dirname "$engine")" "$HOME/.local/bin" "$HOME/.config/systemd/user"
 CGO_ENABLED=0 go build -trimpath -o "$HOME/.local/bin/fastnews-deploy" ./cmd/fastnews-deploy
 git clone --no-checkout https://github.com/FastR-D/FastDeploy.git "$engine"
-git -C "$engine" checkout --detach 30ef06dac8aa820a9550a22799b72025609b36fd
+git -C "$engine" checkout --detach 5ad81d7d0ceae560fcd0825ebee1dae18a9942e4
 ```
 
 在 `~/.config/fastnews-deploy/runtime.json` 配置 FastNews 运行环境，格式为 JSON 字符串键值对象。若已有 FastDeploy 发布，可迁移当前版本的本地配置，不把密钥传回 GitHub：
@@ -120,3 +120,10 @@ Go 默认同时提供 SPA。前后端独立部署时，nginx 提供 `web/dist`�
 生产 `FASTNEWS_ROOT=/home/dev/.local/share/fastnews/corpus`，与代码 checkout、不可变发布目录分离。首次迁移复制现有 `top-conf/data/`、`secnews/data/` 和 `config/`，核对文件内容后更新 FastDeploy 的固定 ROOT 与接收端运行配置。账号数据目录和 PostgreSQL 保持原位置。旧目录留作回滚备份，后续发布只替换二进制与静态资源，不清理或同步采集目录。
 
 新服务器从空目录启动即可，由采集任务创建数据子目录。信源覆盖配置单独部署至 `$FASTNEWS_ROOT/config/news-sources.json`。建议对语料目录和账号状态做定期备份；Git 不再作为语料备份。浏览器测试用 `seed-test-corpus.py` 在临时目录生成合成数据，不依赖生产语料。
+
+
+## 新加坡采集通道
+
+选定信源通过 FastDeploy 的 `scripts/provision_fetch_relay.py` 配置专用 `fastnews-fetch` SSH 账号。应用只保存 `FASTNEWS_FETCH_RELAY_SSH_CONFIG=/home/dev/.config/fastnews-fetch/ssh_config`，密钥与已核验的 known_hosts 在同目录下以 0600 保存。profile 固定此路径，凭据和语料都独立于发布目录。当前接收端使用 FastDeploy `5ad81d7d0ceae560fcd0825ebee1dae18a9942e4`。
+
+GitHub FastNews `production` Environment 的 `FASTNEWS_RELAY_SSH_{HOST,PORT,USER,PRIVATE_KEY,KNOWN_HOSTS}` 用于恢复专用账号连接。常规发布仍只上传已验证的二进制/前端，运行时凭据不进入 artifact、仓库或浏览器。跳板机程序和公开 HTTPS 端点白名单由 root 管理；普通管理员操作只改变信源订阅，不改变 SSH 授权范围。

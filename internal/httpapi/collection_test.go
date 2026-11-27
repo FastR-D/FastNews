@@ -361,3 +361,72 @@ func TestQueuedFeedWaitsForActiveRunAndDrainsAfterCompletion(t *testing.T) {
 	}
 	t.Fatal("queued source never completed")
 }
+
+func TestDisableSourcePersistsAndRemovesPendingQueue(t *testing.T) {
+	h := collectionAdmin(t)
+	configureCollection(t, h, catalog.NewsSource{ID: "custom", Name: "Custom", URL: "https://example.org/feed", Channel: "ai"})
+	path := "/api/admin/collection/sources/disable"
+	input := map[string]string{"source": "custom"}
+	if status, _, _ := h.request(t, "POST", path, input, "", true); status != 403 {
+		t.Fatal(status)
+	}
+	if status, _, _ := h.request(t, "POST", path, input, h.csrf, true); status != 200 {
+		t.Fatal(status)
+	}
+	sources, err := catalog.LoadNewsSources(h.app.Config.Root, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, source := range sources {
+		if source.ID == "custom" && !source.Disabled {
+			t.Fatal("subscription still enabled")
+		}
+	}
+	h.request(t, "POST", "/api/admin/collection/queue", map[string]string{"source": "source_1"}, h.csrf, true)
+	if status, _, _ := h.request(t, "POST", path, map[string]string{"source": "source_1"}, h.csrf, true); status != 200 {
+		t.Fatal(status)
+	}
+	recovered, err := newCollectionManager(filepath.Dir(h.app.collection.file))
+	if err != nil || len(recovered.queue) != 0 {
+		t.Fatal("queue survived removal", err)
+	}
+	current, _ := h.app.Store.Session(h.cookie.Value)
+	h.app.Store.DB.Exec(`UPDATE users SET role='user' WHERE id=?`, current.UserID)
+	if status, _, _ := h.request(t, "POST", path, input, h.csrf, true); status != 403 {
+		t.Fatal(status)
+	}
+}
+
+func TestReenableDuringActiveRequestRestoresSubscription(t *testing.T) {
+	h := collectionAdmin(t)
+	release := make(chan struct{})
+	started := make(chan struct{}, 1)
+	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		started <- struct{}{}
+		<-release
+		fmt.Fprint(w, `<rss><channel></channel></rss>`)
+	}))
+	defer upstream.Close()
+	defer close(release)
+	configureCollection(t, h, catalog.NewsSource{ID: "active_source", URL: upstream.URL, Channel: "ai"})
+	input := map[string]string{"source": "active_source"}
+	if status, _, _ := h.request(t, "POST", "/api/admin/collection/queue", input, h.csrf, true); status != 202 {
+		t.Fatal(status)
+	}
+	<-started
+	if status, _, _ := h.request(t, "POST", "/api/admin/collection/sources/disable", input, h.csrf, true); status != 200 {
+		t.Fatal(status)
+	}
+	if status, _, _ := h.request(t, "POST", "/api/admin/collection/queue", input, h.csrf, true); status != 202 {
+		t.Fatal(status)
+	}
+	sources, err := catalog.LoadNewsSources(h.app.Config.Root, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, source := range sources {
+		if source.ID == "active_source" && source.Disabled {
+			t.Fatal("active request prevented reenabling subscription")
+		}
+	}
+}

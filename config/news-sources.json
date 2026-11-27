@@ -1,35 +1,241 @@
 [
   {
-    "id": "stanford_sail",
-    "name": "Stanford AI Lab",
-    "url": "https://ai.stanford.edu/blog/feed.xml",
-    "channel": "ai",
-    "max_age_days": 90
-  },
-  {
     "id": "berkeley_bair",
     "name": "Berkeley AI Research",
     "url": "https://bair.berkeley.edu/blog/feed.xml",
     "channel": "ai",
-    "max_age_days": 90
+    "max_age_days": 90,
+    "transport": "relay"
   },
   {
     "id": "mit_ai",
     "name": "MIT News — Artificial Intelligence",
     "url": "https://news.mit.edu/topic/mitartificial-intelligence2-rss.xml",
-    "channel": "ai"
+    "channel": "ai",
+    "transport": "direct"
   },
   {
     "id": "trailofbits",
     "name": "Trail of Bits",
     "url": "https://blog.trailofbits.com/index.xml",
     "channel": "security",
-    "max_age_days": 90
+    "max_age_days": 90,
+    "transport": "direct"
   },
   {
     "id": "cisco_talos",
     "name": "Cisco Talos",
     "url": "https://blog.talosintelligence.com/rss/",
-    "channel": "security"
+    "channel": "security",
+    "transport": "direct"
+  },
+  {
+    "id": "source_3",
+    "name": "CISA KEV",
+    "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
+    "channel": "security",
+    "max_age_days": 30,
+    "transport": "direct",
+    "format": "cisa-kev"
+  },
+  {
+    "id": "source_5",
+    "name": "JVN",
+    "url": "https://jvn.jp/rss/jvn.rdf",
+    "channel": "security",
+    "max_age_days": 90,
+    "transport": "direct"
+  },
+  {
+    "id": "source_6",
+    "name": "GitHub Security Advisories",
+    "url": "https://github.com/security-advisories.atom",
+    "channel": "security",
+    "max_age_days": 7,
+    "transport": "relay"
+  },
+  {
+    "id": "source_11",
+    "name": "JPCERT/CC Incident",
+    "url": "https://blogs.jpcert.or.jp/en/atom.xml",
+    "channel": "security",
+    "max_age_days": 90,
+    "transport": "direct"
+  },
+  {
+    "id": "source_27",
+    "name": "Unit 42",
+    "url": "https://unit42.paloaltonetworks.com/feed/",
+    "channel": "security",
+    "max_age_days": 90,
+    "transport": "direct"
+  },
+  {
+    "id": "source_28",
+    "name": "Quarkslab",
+    "url": "https://blog.quarkslab.com/feeds/all.atom.xml",
+    "channel": "security",
+    "max_age_days": 90,
+    "transport": "relay"
+  },
+  {
+    "id": "source_30",
+    "name": "PortSwigger Research",
+    "url": "https://portswigger.net/research/rss",
+    "channel": "security",
+    "max_age_days": 90,
+    "transport": "direct"
+  },
+  {
+    "id": "source_33",
+    "name": "Citizen Lab",
+    "url": "https://citizenlab.ca/feed/",
+    "channel": "security",
+    "max_age_days": 90,
+    "transport": "relay"
+  },
+  {
+    "id": "source_34",
+    "name": "腾讯科恩实验室",
+    "url": "https://keenlab.tencent.com/zh/atom.xml",
+    "channel": "security",
+    "max_age_days": 365,
+    "transport": "direct"
+  },
+  {
+    "id": "source_35",
+    "name": "奇安信 XLab",
+    "url": "https://blog.xlab.qianxin.com/rss/",
+    "channel": "security",
+    "max_age_days": 90,
+    "transport": "direct"
+  },
+  {
+    "id": "source_42",
+    "name": "Google DeepMind Research",
+    "url": "https://deepmind.google/blog/rss.xml",
+    "channel": "ai",
+    "max_age_days": 90,
+    "transport": "direct"
+  },
+  {
+    "id": "source_43",
+    "name": "Transformer Circuits",
+    "url": "https://transformer-circuits.pub/feed.xml",
+    "channel": "ai",
+    "max_age_days": 90,
+    "transport": "direct"
+  },
+  {
+    "id": "source_48",
+    "name": "Lil’Log",
+    "url": "https://lilianweng.github.io/index.xml",
+    "channel": "ai",
+    "max_age_days": 365,
+    "transport": "direct"
+  },
+  {
+    "id": "source_49",
+    "name": "科学空间",
+    "url": "https://spaces.ac.cn/feed",
+    "channel": "ai",
+    "max_age_days": 90,
+    "transport": "direct"
+  },
+  {
+    "id": "source_53",
+    "name": "Raschka",
+    "url": "https://magazine.sebastianraschka.com/feed",
+    "channel": "ai",
+    "max_age_days": 90,
+    "transport": "direct"
+  },
+  {
+    "id": "source_56",
+    "name": "Import AI",
+    "url": "https://jack-clark.net/feed/",
+    "channel": "ai",
+    "max_age_days": 90,
+    "transport": "direct"
+  },
+  {
+    "id": "source_57",
+    "name": "Interconnects",
+    "url": "https://www.interconnects.ai/feed",
+    "channel": "ai",
+    "max_age_days": 90,
+    "transport": "direct"
+  },
+  {
+    "id": "source_58",
+    "name": "Latent Space AI News",
+    "url": "https://latent.space/feeds/all.xml",
+    "channel": "ai",
+    "max_age_days": 90,
+    "transport": "direct"
+  },
+  {
+    "id": "source_65",
+    "name": "Alignment Forum",
+    "url": "https://www.alignmentforum.org/feed.xml",
+    "channel": "ai",
+    "max_age_days": 90,
+    "transport": "direct"
+  },
+  {
+    "id": "source_67",
+    "name": "The Gradient",
+    "url": "https://thegradient.pub/rss/",
+    "channel": "ai",
+    "max_age_days": 365,
+    "transport": "direct"
+  },
+  {
+    "id": "source_2",
+    "name": "NVD",
+    "url": "https://nvd.nist.gov/feeds/json/cve/2.0/nvdcve-2.0-recent.json.gz",
+    "channel": "security",
+    "format": "nvd",
+    "transport": "direct",
+    "max_age_days": 14
+  },
+  {
+    "id": "source_4",
+    "name": "OSV",
+    "url": "https://osv.dev/blog/index.xml",
+    "channel": "security",
+    "transport": "direct",
+    "max_age_days": 365
+  },
+  {
+    "id": "source_61",
+    "name": "PyTorch Blog",
+    "url": "https://pytorch.org/feed/",
+    "channel": "ai",
+    "transport": "direct",
+    "max_age_days": 90
+  },
+  {
+    "id": "source_9",
+    "name": "FIRST",
+    "url": "https://www.first.org/newsroom/news/rss.xml",
+    "channel": "security",
+    "transport": "direct",
+    "max_age_days": 90
+  },
+  {
+    "id": "source_59",
+    "name": "AlphaSignal",
+    "url": "https://alphasignal.ai/feed.xml",
+    "channel": "ai",
+    "transport": "direct",
+    "max_age_days": 30
+  },
+  {
+    "id": "huggingface",
+    "name": "Hugging Face Blog",
+    "url": "https://huggingface.co/blog/feed.xml",
+    "channel": "ai",
+    "transport": "relay"
   }
 ]

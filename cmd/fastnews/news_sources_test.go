@@ -24,12 +24,12 @@ func (f newsTransport) RoundTrip(r *http.Request) (*http.Response, error) { retu
 func TestNewsSourcesThroughCLIAndWeeklyReport(t *testing.T) {
 	// Real CLI dispatch, fetch/parser, persistence, catalog, newspaper and HTML report.
 	// Only the public HTTP transport is redirected to recorded RSS/Atom protocols.
-	want := []string{"bleepingcomputer", "thehackernews", "securityweek", "arxiv_cs_cr", "arxiv_cs_ai", "arxiv_cs_se", "krebs", "openai", "huggingface"}
-	var failBleeping atomic.Bool
-	failBleeping.Store(true)
+	want := []string{"thehackernews", "securityweek", "arxiv_cs_cr", "arxiv_cs_ai", "arxiv_cs_se", "krebs", "openai", "huggingface"}
+	var failKrebs atomic.Bool
+	failKrebs.Store(true)
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		source := r.Header.Get("X-Fixture-Source")
-		if source == "bleepingcomputer" && failBleeping.Load() {
+		if source == "krebs" && failKrebs.Load() {
 			w.WriteHeader(http.StatusServiceUnavailable)
 			return
 		}
@@ -64,7 +64,7 @@ func TestNewsSourcesThroughCLIAndWeeklyReport(t *testing.T) {
 	if err != nil || len(rows) != len(want)-1 {
 		t.Fatalf("other feeds must survive a source failure: %d rows, %v", len(rows), err)
 	}
-	failBleeping.Store(false)
+	failKrebs.Store(false)
 	for range 2 {
 		if err := job(ctx, c, "fetch-news", []string{"--source", "all"}); err != nil {
 			t.Fatal(err)
@@ -119,7 +119,7 @@ func TestFetchNewsRejectsNonFeedBeforePersistence(t *testing.T) {
 	}))
 	defer upstream.Close()
 	c := config.Config{Root: t.TempDir()}
-	if err := job(context.Background(), c, "fetch-news", []string{"--source", "bleepingcomputer", "--url", upstream.URL}); err == nil {
+	if err := job(context.Background(), c, "fetch-news", []string{"--source", "krebs", "--url", upstream.URL}); err == nil {
 		t.Fatal("HTML response must not be reported as a successful empty feed")
 	}
 	if _, err := os.Stat(filepath.Join(c.Root, "secnews")); !os.IsNotExist(err) {
@@ -148,7 +148,7 @@ func TestDailySummaryRequiresRecordedScoreWithinModelContract(t *testing.T) {
 			}))
 			defer upstream.Close()
 			c := config.Config{Root: t.TempDir(), LLMKey: "fixture", LLMURL: upstream.URL}
-			if err := job(context.Background(), c, "fetch-news", []string{"--source", "bleepingcomputer", "--url", upstream.URL}); err != nil {
+			if err := job(context.Background(), c, "fetch-news", []string{"--source", "krebs", "--url", upstream.URL}); err != nil {
 				t.Fatal(err)
 			}
 			err := job(context.Background(), c, "daily-summary", nil)

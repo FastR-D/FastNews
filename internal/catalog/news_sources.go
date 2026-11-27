@@ -2,6 +2,8 @@ package catalog
 
 // NewsSource describes a publisher feed, independent of model-generated labels.
 type NewsSource struct {
+	Format     string `json:"format,omitempty"`
+	Transport  string `json:"transport,omitempty"`
 	ID         string `json:"id"`
 	Name       string `json:"name"`
 	URL        string `json:"url"`
@@ -11,7 +13,6 @@ type NewsSource struct {
 }
 
 var NewsSources = []NewsSource{
-	{ID: "bleepingcomputer", Name: "BleepingComputer", URL: "https://www.bleepingcomputer.com/feed/", Channel: "security"},
 	{ID: "thehackernews", Name: "The Hacker News", URL: "https://feeds.feedburner.com/TheHackersNews", Channel: "security"},
 	{ID: "securityweek", Name: "SecurityWeek", URL: "https://www.securityweek.com/feed/", Channel: "security"},
 	{ID: "krebs", Name: "Krebs on Security", URL: "https://krebsonsecurity.com/feed/", Channel: "security"},
@@ -36,6 +37,10 @@ func ValidNewsChannel(channel string) bool {
 }
 
 func NewsChannel(row map[string]any) string {
+	// Preserve the classification of archived records from retired subscriptions.
+	if source := Str(row, "source"); source == "bleepingcomputer" || source == "https://www.bleepingcomputer.com/feed/" {
+		return "security"
+	}
 	if IsArxivSource(Str(row, "source")) {
 		return "arxiv"
 	}

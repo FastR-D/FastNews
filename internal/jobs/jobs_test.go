@@ -17,8 +17,8 @@ import (
 
 func TestFeedRSSAndAtomNewAnnouncements(t *testing.T) {
 	rss := `<rss><channel><item><guid>story-1</guid><title>Security news</title><link>https://example.org/news</link><description>A report</description><pubDate>Wed, 11 Nov 2026 12:00:00 GMT</pubDate></item></channel></rss>`
-	rows, e := ParseFeed([]byte(rss), "bleepingcomputer")
-	if e != nil || len(rows) != 1 || rows[0]["source"] != "bleepingcomputer" {
+	rows, e := ParseFeed([]byte(rss), "securityweek")
+	if e != nil || len(rows) != 1 || rows[0]["source"] != "securityweek" {
 		t.Fatal(rows, e)
 	}
 	atom := `<feed xmlns="http://www.w3.org/2005/Atom" xmlns:arxiv="http://arxiv.org/schemas/atom"><entry><id>paper-1</id><title>New paper</title><link rel="alternate" href="https://arxiv.org/abs/1"/><summary>Evidence</summary><author><name>Alice</name></author><arxiv:announce_type>new</arxiv:announce_type></entry><entry><id>paper-2</id><title>Revision</title><link href="https://arxiv.org/abs/2"/><arxiv:announce_type>replace</arxiv:announce_type></entry></feed>`

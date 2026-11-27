@@ -15,12 +15,13 @@ import (
 
 // NewsProgress reports committed rows and per-source failures to a task monitor.
 type NewsProgress struct {
-	Source  string `json:"source"`
-	State   string `json:"state"`
-	Fetched int    `json:"fetched"`
-	Added   int    `json:"added"`
-	Stale   int    `json:"stale"`
-	Error   string `json:"error,omitempty"`
+	Transport string `json:"transport,omitempty"`
+	Source    string `json:"source"`
+	State     string `json:"state"`
+	Fetched   int    `json:"fetched"`
+	Added     int    `json:"added"`
+	Stale     int    `json:"stale"`
+	Error     string `json:"error,omitempty"`
 }
 
 func (p *Pipeline) newsProgress(event NewsProgress) {
@@ -51,7 +52,7 @@ func newsLinkKey(raw string) string {
 }
 
 func feedPublished(raw string) time.Time {
-	for _, layout := range []string{time.RFC3339Nano, time.RFC1123Z, time.RFC1123, time.RFC822Z, time.RFC822, time.RFC850, time.ANSIC, "2006-01-02T15:04:05-0700", "2006-01-02"} {
+	for _, layout := range []string{time.RFC3339Nano, time.RFC1123Z, time.RFC1123, time.RFC822Z, time.RFC822, time.RFC850, time.ANSIC, "2006-01-02T15:04:05-0700", "2006-01-02T15:04:05.999999999", "2006-01-02"} {
 		if parsed, err := time.Parse(layout, strings.TrimSpace(raw)); err == nil {
 			return parsed
 		}
@@ -116,17 +117,17 @@ func (p *Pipeline) FetchNewsSources(ctx context.Context, selected []catalog.News
 			return errors.Join(append(failures, err)...)
 		}
 		p.newsProgress(NewsProgress{Source: source.ID, State: "running"})
-		raw, err := get(ctx, source.URL)
+		raw, transport, err := p.fetchSource(ctx, source)
 		var rows []map[string]any
 		if err == nil {
-			rows, err = parseFeed(raw, source)
+			rows, err = parseNewsSource(raw, source)
 		}
 		if err != nil {
 			if errors.Is(ctx.Err(), context.Canceled) {
 				p.newsProgress(NewsProgress{Source: source.ID, State: "cancelled"})
 				return errors.Join(append(failures, ctx.Err())...)
 			}
-			p.newsProgress(NewsProgress{Source: source.ID, State: "failed", Error: err.Error()})
+			p.newsProgress(NewsProgress{Source: source.ID, Transport: transport, State: "failed", Error: err.Error()})
 			failures = append(failures, fmt.Errorf("%s: %w", source.ID, err))
 			continue
 		}
@@ -153,14 +154,14 @@ func (p *Pipeline) FetchNewsSources(ctx context.Context, selected []catalog.News
 		}
 		if len(out) > 0 {
 			if err := appendRows(filepath.Join(p.Config.Root, "secnews/data/articles", day+".jsonl"), out); err != nil {
-				p.newsProgress(NewsProgress{Source: source.ID, State: "failed", Error: err.Error()})
+				p.newsProgress(NewsProgress{Source: source.ID, Transport: transport, State: "failed", Error: err.Error()})
 				return errors.Join(append(failures, err)...)
 			}
 			for key := range pending {
 				seen[key] = true
 			}
 		}
-		p.newsProgress(NewsProgress{Source: source.ID, State: "completed", Fetched: len(rows), Added: len(out), Stale: stale})
+		p.newsProgress(NewsProgress{Source: source.ID, Transport: transport, State: "completed", Fetched: len(rows), Added: len(out), Stale: stale})
 		fmt.Fprintf(os.Stderr, "%s [%s]: fetched=%d stale=%d added=%d\n", source.ID, source.Channel, len(rows), stale, len(out))
 	}
 	return errors.Join(failures...)

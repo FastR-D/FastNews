@@ -9,7 +9,7 @@ import {
   ReadingHeader,
   SourceMark,
 } from '../components/ReadingLayout'
-import { ArrowLeft, ArrowUpRight, Search, ListPlus } from 'lucide-react'
+import { ArrowLeft, ArrowUpRight, Search, ListPlus, ListMinus } from 'lucide-react'
 import { useApp } from '../context'
 import { api, message, safeURL } from '../api'
 import { Busy, ErrorMessage } from '../components/Common'
@@ -88,15 +88,41 @@ export default function Sources() {
         body: JSON.stringify({ source: source.id }),
       })
       setQueue((previous) => ({ ...previous, [source.id]: item.state }))
-      if (source.configured)
+      if (item.state !== 'needs_configuration')
         setSources((previous) =>
-          previous.map((item) => (item.id === source.id ? { ...item, disabled: false } : item)),
+          previous.map((item) =>
+            item.id === source.id ? { ...item, configured: true, disabled: false } : item,
+          ),
         )
       notify(
         item.state === 'needs_configuration'
           ? '已加入待接入队列，可在进程管理中查看'
           : '已加入采集队列',
       )
+    } catch (e) {
+      setError(message(e))
+    } finally {
+      setAdding('')
+    }
+  }
+  async function remove(source: DirectorySource) {
+    setAdding(source.id)
+    setError('')
+    try {
+      await api('api/admin/collection/sources/disable', {
+        method: 'POST',
+        body: JSON.stringify({ source: source.id }),
+      })
+      setSources((previous) =>
+        previous.map((item) => (item.id === source.id ? { ...item, disabled: true } : item)),
+      )
+      setQueue((previous) => {
+        const next = { ...previous }
+        delete next[source.id]
+        return next
+      })
+      notify('已移除采集，已收录内容保留')
+      setRetry((value) => value + 1)
     } catch (e) {
       setError(message(e))
     } finally {
@@ -257,25 +283,29 @@ export default function Sources() {
                             <Button
                               className="source-queue-button"
                               variant="quiet"
-                              disabled={!!adding || !!queue[source.id]}
-                              aria-label={`将${source.name}纳入采集队列`}
+                              disabled={!!adding}
+                              aria-label={`${(source.configured ? !source.disabled : !!queue[source.id]) ? '将' + source.name + '移除采集' : '将' + source.name + '纳入采集队列'}`}
                               title={
-                                queue[source.id] === 'needs_configuration'
-                                  ? '尚未配置可用采集接口，可在进程管理中查看'
-                                  : '纳入采集队列'
+                                (source.configured ? !source.disabled : !!queue[source.id])
+                                  ? '停止后续采集，保留已收录内容'
+                                  : '启用定时采集并加入本次队列'
                               }
-                              onClick={() => void enqueue(source)}
+                              onClick={() =>
+                                void ((source.configured ? !source.disabled : !!queue[source.id])
+                                  ? remove(source)
+                                  : enqueue(source))
+                              }
                             >
-                              <ListPlus size={15} />
+                              {(source.configured ? !source.disabled : !!queue[source.id]) ? (
+                                <ListMinus size={15} />
+                              ) : (
+                                <ListPlus size={15} />
+                              )}
                               {adding === source.id
-                                ? '加入中…'
-                                : queue[source.id] === 'needs_configuration'
-                                  ? '待接入'
-                                  : queue[source.id] === 'running'
-                                    ? '采集中'
-                                    : queue[source.id]
-                                      ? '已排队'
-                                      : '纳入采集'}
+                                ? '保存中…'
+                                : (source.configured ? !source.disabled : !!queue[source.id])
+                                  ? '移除采集'
+                                  : '纳入采集'}
                             </Button>
                           )}
                           <div className="source-card-meta">

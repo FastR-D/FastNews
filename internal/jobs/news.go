@@ -2,6 +2,8 @@
 package jobs
 
 import (
+	"bytes"
+	"compress/gzip"
 	"context"
 	"encoding/json"
 	"encoding/xml"
@@ -41,6 +43,10 @@ func get(ctx context.Context, raw string) ([]byte, error) {
 }
 
 func getWithTimeout(ctx context.Context, raw string, timeout time.Duration) ([]byte, error) {
+	return getWithLimit(ctx, raw, timeout, 16<<20)
+}
+
+func getWithLimit(ctx context.Context, raw string, timeout time.Duration, limit int64) ([]byte, error) {
 	u, e := url.Parse(raw)
 	if e != nil || u.Host == "" || (u.Scheme != "http" && u.Scheme != "https") {
 		return nil, fmt.Errorf("invalid source URL")
@@ -58,9 +64,20 @@ func getWithTimeout(ctx context.Context, raw string, timeout time.Duration) ([]b
 	if resp.StatusCode != 200 {
 		return nil, &sourceHTTPError{Status: resp.StatusCode}
 	}
-	b, e := io.ReadAll(io.LimitReader(resp.Body, (16<<20)+1))
-	if len(b) > 16<<20 {
+	b, e := io.ReadAll(io.LimitReader(resp.Body, limit+1))
+	if int64(len(b)) > limit {
 		return nil, fmt.Errorf("source too large")
+	}
+	if e == nil && bytes.HasPrefix(b, []byte{0x1f, 0x8b}) {
+		gz, err := gzip.NewReader(bytes.NewReader(b))
+		if err != nil {
+			return nil, err
+		}
+		defer gz.Close()
+		b, e = io.ReadAll(io.LimitReader(gz, limit+1))
+		if int64(len(b)) > limit {
+			return nil, fmt.Errorf("source too large")
+		}
 	}
 	return b, e
 }
@@ -121,6 +138,7 @@ type Feed struct {
 		Items []FeedItem `xml:"item"`
 	} `xml:"channel"`
 	Entries []FeedItem `xml:"entry"`
+	Items   []FeedItem `xml:"item"`
 }
 type FeedItem struct {
 	Title       string `xml:"title"`
@@ -133,6 +151,7 @@ type FeedItem struct {
 	Published   string `xml:"published"`
 	Updated     string `xml:"updated"`
 	PubDate     string `xml:"pubDate"`
+	Date        string `xml:"date"`
 	Creator     string `xml:"creator"`
 	Announce    string `xml:"announce_type"`
 	Authors     []struct {
@@ -163,10 +182,10 @@ func parseFeed(raw []byte, source catalog.NewsSource) ([]map[string]any, error) 
 	if e := xml.Unmarshal(raw, &feed); e != nil {
 		return nil, e
 	}
-	if feed.XMLName.Local != "rss" && feed.XMLName.Local != "feed" {
+	if feed.XMLName.Local != "rss" && feed.XMLName.Local != "feed" && feed.XMLName.Local != "RDF" {
 		return nil, fmt.Errorf("source is not an RSS or Atom feed: %s", feed.XMLName.Local)
 	}
-	items := append(feed.Channel.Items, feed.Entries...)
+	items := append(append(feed.Channel.Items, feed.Entries...), feed.Items...)
 	rows := []map[string]any{}
 	for _, item := range items {
 		if item.Announce != "" && item.Announce != "new" {
@@ -195,7 +214,7 @@ func parseFeed(raw []byte, source catalog.NewsSource) ([]map[string]any, error) 
 		if doc, err := html.Parse(strings.NewReader(description)); err == nil {
 			description = text(doc)
 		}
-		rows = append(rows, map[string]any{"_id": source.URL + "/" + id, "title": strings.Join(strings.Fields(item.Title), " "), "link": link, "description": description, "author": catalog.First(strings.Join(authors, ", "), item.Creator), "published": catalog.First(item.Published, item.PubDate, item.Updated), "source": source.ID, "source_name": source.Name, "channel": source.Channel, "categories": tags, "fetched_at": time.Now().UTC().Format(time.RFC3339)})
+		rows = append(rows, map[string]any{"_id": source.URL + "/" + id, "title": strings.Join(strings.Fields(item.Title), " "), "link": link, "description": description, "author": catalog.First(strings.Join(authors, ", "), item.Creator), "published": catalog.First(item.Published, item.PubDate, item.Updated, item.Date), "source": source.ID, "source_name": source.Name, "channel": source.Channel, "categories": tags, "fetched_at": time.Now().UTC().Format(time.RFC3339)})
 	}
 	return rows, nil
 }

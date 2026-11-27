@@ -190,6 +190,9 @@ func (s *Server) adminCollection(w http.ResponseWriter, r *http.Request, p strin
 	if p == "/api/admin/collection/queue" {
 		return s.enqueueCollection(w, r, current.UserID)
 	}
+	if p == "/api/admin/collection/sources/disable" {
+		return s.disableCollectionSource(w, r)
+	}
 	if p == "/api/admin/collection/queue/remove" {
 		return s.removeQueuedCollection(w, r)
 	}
@@ -302,6 +305,22 @@ func (s *Server) runCollection(ctx context.Context, cancel context.CancelFunc, s
 			break
 		}
 		if target.Paper == nil {
+			current, configErr := catalog.LoadNewsSources(s.Config.Root, "")
+			if configErr != nil {
+				err = errors.Join(err, configErr)
+				break
+			}
+			disabled := false
+			for _, source := range current {
+				if source.ID == target.ID && source.Disabled {
+					disabled = true
+					break
+				}
+			}
+			if disabled {
+				pipeline.NewsProgress(jobs.NewsProgress{Source: target.ID, State: "skipped"})
+				continue
+			}
 			err = errors.Join(err, pipeline.FetchNewsSources(ctx, []catalog.NewsSource{target.NewsSource}))
 			continue
 		}

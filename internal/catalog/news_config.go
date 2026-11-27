@@ -45,16 +45,27 @@ func LoadNewsSources(root, file string) ([]NewsSource, error) {
 				return nil, fmt.Errorf("news sources: invalid or duplicate id %q", source.ID)
 			}
 			seen[source.ID] = true
-			previous := sources[source.ID]
+			previous, exists := sources[source.ID]
+			if !exists {
+				previous, _ = NewsSourcePreset(source.ID)
+			}
 			source.Name = First(source.Name, previous.Name, source.ID)
 			source.URL = First(source.URL, previous.URL)
 			source.Channel = First(source.Channel, previous.Channel)
+			source.Format = First(source.Format, previous.Format)
+			source.Transport = First(source.Transport, previous.Transport)
 			u, err := url.Parse(source.URL)
 			if err != nil || u.Host == "" || (u.Scheme != "https" && u.Scheme != "http") || u.User != nil {
 				return nil, fmt.Errorf("news sources: %s requires an HTTP(S) feed URL without credentials", source.ID)
 			}
 			if !ValidNewsChannel(source.Channel) || (source.Channel == "arxiv") != strings.HasPrefix(source.ID, "arxiv_") {
 				return nil, fmt.Errorf("news sources: invalid channel for %s", source.ID)
+			}
+			if source.Format != "" && source.Format != "rss" && source.Format != "cisa-kev" && source.Format != "nvd" {
+				return nil, fmt.Errorf("news sources: invalid format for %s", source.ID)
+			}
+			if source.Transport != "" && source.Transport != "direct" && source.Transport != "relay" && source.Transport != "auto" {
+				return nil, fmt.Errorf("news sources: invalid transport for %s", source.ID)
 			}
 			if source.MaxAgeDays < -1 || source.MaxAgeDays > 36500 {
 				return nil, fmt.Errorf("news sources: invalid max_age_days for %s", source.ID)

@@ -18,6 +18,7 @@ type SourceReference struct {
 }
 
 type DirectorySource struct {
+	Transport    string            `json:"transport,omitempty"`
 	ID           string            `json:"id"`
 	Name         string            `json:"name"`
 	URL          string            `json:"url"`
@@ -65,6 +66,7 @@ func (c *Catalog) SourceDirectory() (SourceDirectory, error) {
 			result.Sources = append(result.Sources, DirectorySource{ID: source.ID, Name: source.Name, URL: website, Category: source.Channel, Description: "采集配置中的订阅来源。", Verification: "unreviewed", References: []SourceReference{}})
 			i = len(result.Sources) - 1
 		}
+		result.Sources[i].Transport = First(source.Transport, "direct")
 		result.Sources[i].Configured = true
 		result.Sources[i].Disabled = source.Disabled
 		result.Sources[i].Channel = source.Channel

@@ -14,6 +14,7 @@ type Source = {
   added: number
   stale: number
   error?: string
+  transport?: string
 }
 type Run = {
   id: string
@@ -50,6 +51,7 @@ const labels: Record<string, string> = {
   failed: '失败',
   cancelled: '已停止',
   interrupted: '已中断',
+  skipped: '已停用',
 }
 const groups: Record<string, string> = {
   all: '全部资讯信源',
@@ -100,6 +102,7 @@ function SourceResults({ run }: { run: Run }) {
             <tr>
               <th>信源</th>
               <th>状态</th>
+              <th>网络</th>
               <th>读取</th>
               <th>过期</th>
               <th>新增</th>
@@ -114,6 +117,13 @@ function SourceResults({ run }: { run: Run }) {
                 </td>
                 <td>
                   <Status value={entry.state} />
+                </td>
+                <td>
+                  {entry.transport === 'relay'
+                    ? '新加坡'
+                    : entry.transport === 'direct'
+                      ? '直连'
+                      : '—'}
                 </td>
                 <td>{entry.fetched}</td>
                 <td>{entry.stale}</td>

@@ -253,13 +253,31 @@ test('administrator queues directory candidates and removes them from the persis
     .getByTestId('source-card')
     .filter({ has: page.getByRole('heading', { name: 'CVE Program' }) })
   await card.getByRole('button', { name: '将CVE Program纳入采集队列' }).click()
-  await expect(card.getByRole('button', { name: '将CVE Program纳入采集队列' })).toHaveText('待接入')
+  await expect(card.getByRole('button', { name: '将CVE Program移除采集' })).toHaveText('移除采集')
   await page.reload()
-  await expect(card.getByRole('button', { name: '将CVE Program纳入采集队列' })).toBeDisabled()
+  await expect(card.getByRole('button', { name: '将CVE Program移除采集' })).toBeEnabled()
   await page.getByRole('link', { name: '进程管理', exact: true }).click()
   const table = page.getByRole('table', { name: '采集队列', exact: true })
   await expect(table).toContainText('CVE Program')
   await expect(table).toContainText('待接入采集接口')
   await table.getByRole('button', { name: '移出队列' }).click()
   await expect(table).toHaveCount(0)
+})
+
+test('administrator can disable a configured subscription and preserve the change after reload', async ({
+  page,
+}) => {
+  await page.goto('/login')
+  await page.getByLabel('邮箱', { exact: true }).fill('browser-admin@example.com')
+  await page.getByLabel('密码', { exact: true }).fill('browser-test-password-123')
+  await page.getByRole('form', { name: '本地账号' }).locator('button[type=submit]').click()
+  await page.getByRole('link', { name: '信源目录', exact: true }).click()
+  const card = page
+    .getByTestId('source-card')
+    .filter({ has: page.getByRole('heading', { name: 'Hugging Face Blog', exact: true }) })
+  await card.getByRole('button', { name: '将Hugging Face Blog移除采集' }).click()
+  await expect(card.getByRole('button', { name: '将Hugging Face Blog纳入采集队列' })).toBeEnabled()
+  await page.reload()
+  await expect(card).toContainText('已停用')
+  await expect(card.getByRole('button', { name: '将Hugging Face Blog纳入采集队列' })).toBeEnabled()
 })
