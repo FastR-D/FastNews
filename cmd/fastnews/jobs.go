@@ -30,6 +30,8 @@ func job(ctx context.Context, c config.Config, command string, args []string) er
 	day := fs.String("date", "", "article date")
 	conf := fs.String("conference", "usenix", "conference identifier")
 	year := fs.Int("year", 2026, "conference year")
+	provider := fs.String("provider", "", "paper source adapter (researchr/dblp/openreview/pmlr/neurips-proceedings/html)")
+	topic := fs.String("topic", "", "topic to report after collection (full corpus is retained)")
 	rawURL := fs.String("url", "", "override official source URL")
 	days := fs.Int("days", 7, "weekly report window")
 	all := fs.Bool("all", false, "process every available record/date")
@@ -43,6 +45,8 @@ func job(ctx context.Context, c config.Config, command string, args []string) er
 		return e
 	}
 	p := jobs.New(c)
+	p.Provider = *provider
+	p.Topic = *topic
 	switch command {
 	case "fetch-awards":
 		return p.Awards(ctx, *conf, *year, *rawURL)
@@ -60,7 +64,23 @@ func job(ctx context.Context, c config.Config, command string, args []string) er
 	case "weekly-report":
 		return p.Weekly(*days, *pdf)
 	case "fetch-conf":
-		return p.RunConferenceJob(ctx, command, *conf, *year, *limit, *rawURL)
+		if err := p.RunConferenceJob(ctx, command, *conf, *year, *limit, *rawURL); err != nil {
+			return err
+		}
+		if *topic != "" {
+			papers, err := p.Catalog.Papers()
+			if err != nil {
+				return err
+			}
+			count := 0
+			for _, paper := range papers {
+				if paper.Conference == *conf && paper.Year == *year && catalog.HasTopic(paper, *topic) {
+					count++
+				}
+			}
+			fmt.Fprintf(os.Stdout, "%d papers match %s (including title-only candidates); full corpus retained\n", count, *topic)
+		}
+		return nil
 	case "enrich-abstracts":
 		count := *limit
 		if *all {

@@ -209,7 +209,7 @@ test('all old entries, real catalog, downloads, calendar, theme and responsive l
   await expect(page.locator('html')).toHaveAttribute('data-fastui-theme', 'dark')
   await page.getByRole('button', { name: '切换浅色模式' }).click()
   for (const [path, title] of [
-    ['top-conf/', '顶会论文总结'],
+    ['top-conf/', '顶会论文'],
     ['field-briefing/', '领域导读'],
     ['summary-brief/', '总结汇报'],
     ['secnews/', '研究资讯'],
@@ -387,7 +387,7 @@ test('reports read inside the workspace without legacy HTML or scripts', async (
   await page.route('**/api/fastread', async (r) =>
     r.fulfill({ status: 409, json: { error: '阅读授权需要连接 Research' } }),
   )
-  await doc.getByRole('button', { name: '阅读论文', exact: true }).first().click()
+  await doc.getByRole('button', { name: '跳转 FastRead', exact: true }).first().click()
   await expect(doc.getByRole('alert')).toHaveText('阅读授权需要连接 Research')
   await page.screenshot({ path: `test-results/${info.project.name}-report.png` })
   await page.reload()
@@ -743,4 +743,56 @@ test('paper cards place reading actions above the abstract and align briefing fi
   expect(Math.abs(direction!.x - source!.x)).toBeLessThan(1)
   await visit(page, baseURL, 'arxiv/')
   await expect(page.getByLabel('采集日期', { exact: true })).toHaveAttribute('type', 'date')
+})
+
+test('topic filters, author and institution pages, following and back-to-top work together', async ({
+  page,
+  baseURL,
+  isMobile,
+}) => {
+  await login(page, baseURL)
+  await visit(page, baseURL, 'top-conf/?topic=coding-agents&domain=security&track=main')
+  await expect(page.getByRole('combobox', { name: '细分方向', exact: true })).toHaveValue(
+    'coding-agents',
+  )
+  const card = page.getByTestId('paper-row').first()
+  const author = card.getByRole('link', { name: 'Alice Example', exact: true })
+  await expect(author).toBeVisible()
+  if (!isMobile) {
+    await author.hover()
+    const popover = page.getByRole('group', { name: 'Alice Example简介' })
+    await expect(popover).toContainText('Example University')
+    await popover.getByRole('button', { name: '关注', exact: true }).click()
+    await expect(popover.getByRole('button', { name: '取消关注', exact: true })).toBeVisible()
+  }
+  await author.click()
+  await expect(page.getByRole('heading', { name: 'Alice Example', level: 1 })).toBeVisible()
+  await expect(page.getByRole('heading', { name: '收录论文 · 16', exact: true })).toBeVisible()
+  await page.locator('aside').getByRole('link', { name: 'Example University', exact: true }).click()
+  await expect(page.getByRole('heading', { name: 'Example University', level: 1 })).toBeVisible()
+  await page.route('**/api/authors/preview', (r) =>
+    r.fulfill({
+      json: {
+        title: 'Example University',
+        description: '研究软件工程与智能体的示例机构。',
+        source: 'https://example.org',
+        fetchedAt: '2026-11-27T00:00:00Z',
+        profiles: [],
+        papers: [],
+      },
+    }),
+  )
+  await page.getByLabel('公开资料链接').fill('https://example.org')
+  await page.getByRole('button', { name: '读取简介', exact: true }).click()
+  await expect(page.getByText('研究软件工程与智能体的示例机构。', { exact: true })).toBeVisible()
+  await page.getByRole('button', { name: /^(关注并)?保存资料$/ }).click()
+  await expect(page.getByRole('button', { name: '取消关注', exact: true })).toBeVisible()
+  await page.reload()
+  await expect(page.getByText('研究软件工程与智能体的示例机构。', { exact: true })).toBeVisible()
+  await page.evaluate(() => window.scrollTo(0, 1800))
+  await page.getByRole('button', { name: '回到顶部', exact: true }).click()
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThan(5)
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1),
+  ).toBeTruthy()
 })

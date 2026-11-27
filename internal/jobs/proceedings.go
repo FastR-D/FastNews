@@ -39,18 +39,18 @@ func hasClass(n *html.Node, class string) bool {
 	return false
 }
 
-func (p *Pipeline) fetchProceedings(ctx context.Context, conf string, year int, source string) error {
+func fetchProceedings(ctx context.Context, conf string, year int, source string) ([]map[string]any, error) {
 	canonical, err := proceedingsURL(conf, year)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	raw, err := get(ctx, source)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	doc, err := html.Parse(strings.NewReader(string(raw)))
 	if err != nil {
-		return err
+		return nil, err
 	}
 	var rows []map[string]any
 	if conf == "icml" {
@@ -59,19 +59,22 @@ func (p *Pipeline) fetchProceedings(ctx context.Context, conf string, year int, 
 		rows, err = neuripsRecords(doc, canonical, year)
 	}
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if len(rows) == 0 {
-		return fmt.Errorf("no papers parsed from official %s proceedings", conf)
+		return nil, fmt.Errorf("no papers parsed from official %s proceedings", conf)
 	}
 	u, err := url.Parse(source)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	for _, row := range rows {
 		row["source_url"] = publicConferenceEndpoint(u)
+		if row["track"] == nil {
+			row["track"] = "conference"
+		}
 	}
-	return p.appendConferenceRecords(conf, year, rows)
+	return rows, nil
 }
 
 func pmlrRecords(ctx context.Context, doc *html.Node, source, canonical string) ([]map[string]any, error) {
@@ -172,6 +175,10 @@ func pmlrRecords(ctx context.Context, doc *html.Node, source, canonical string) 
 }
 
 func neuripsRecords(doc *html.Node, canonical string, year int) ([]map[string]any, error) {
+	return indexedProceedingsRecords(doc, canonical, year, neuripsPaperURL)
+}
+
+func indexedProceedingsRecords(doc *html.Node, canonical string, year int, validate func(string, int) (*url.URL, error)) ([]map[string]any, error) {
 	declared := -1
 	listed := 0
 	rows := []map[string]any{}
@@ -210,7 +217,7 @@ func neuripsRecords(doc *html.Node, canonical string, year int) ([]map[string]an
 				link = absolute(canonical, attr(child, "href"))
 			}
 		})
-		_, err := neuripsPaperURL(link, year)
+		_, err := validate(link, year)
 		if err != nil || title == "" || authors == "" || seen[link] {
 			invalid = fmt.Errorf("NeurIPS paper lacks valid main-track identity/title/authors for %d", year)
 			return

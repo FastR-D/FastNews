@@ -11,12 +11,13 @@ import (
 // ReportNode is a presentation-independent allowlisted document tree. Archived
 // scripts, styles, event handlers and embedded documents never reach the app.
 type ReportNode struct {
-	Paper    map[string]string `json:"paper,omitempty"`
-	Tag      string            `json:"tag,omitempty"`
-	Text     string            `json:"text,omitempty"`
-	ID       string            `json:"id,omitempty"`
-	Href     string            `json:"href,omitempty"`
-	Children []ReportNode      `json:"children,omitempty"`
+	CatalogPaper *Paper            `json:"catalogPaper,omitempty"`
+	Paper        map[string]string `json:"paper,omitempty"`
+	Tag          string            `json:"tag,omitempty"`
+	Text         string            `json:"text,omitempty"`
+	ID           string            `json:"id,omitempty"`
+	Href         string            `json:"href,omitempty"`
+	Children     []ReportNode      `json:"children,omitempty"`
 }
 type ReportContent struct {
 	Report  Report       `json:"report"`
@@ -51,5 +52,37 @@ func (c *Catalog) ReadReport(path string) (ReportContent, error) {
 	}
 	defer f.Close()
 	err = json.NewDecoder(io.LimitReader(f, 32<<20)).Decode(&out.Content)
-	return out, err
+	if err != nil {
+		return out, err
+	}
+	papers, err := c.Papers()
+	if err != nil {
+		return out, err
+	}
+	byID := map[string]Paper{}
+	for _, paper := range papers {
+		byID[paper.ID] = paper
+		byID[paper.Link] = paper
+	}
+	var decorate func([]ReportNode)
+	decorate = func(nodes []ReportNode) {
+		for i := range nodes {
+			node := &nodes[i]
+			if node.Paper != nil {
+				meta := node.Paper
+				paper, ok := byID[First(meta["id"], meta["url"])]
+				if !ok {
+					paper = Paper{ID: meta["id"], Title: meta["title"], Author: meta["authors"], Link: meta["url"], Summary: meta["summary"], Venue: meta["venue"]}
+					DecoratePaper(&paper, nil)
+				}
+				if meta["summary"] != "" {
+					paper.Summary = meta["summary"]
+				}
+				node.CatalogPaper = &paper
+			}
+			decorate(node.Children)
+		}
+	}
+	decorate(out.Content)
+	return out, nil
 }

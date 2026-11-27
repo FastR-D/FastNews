@@ -1,4 +1,23 @@
+export interface Entity {
+  name: string
+  url?: string
+  orcid?: string
+  ror?: string
+  affiliations?: Entity[]
+}
+export interface TopicMatch {
+  id: string
+  label: string
+  basis: string
+  evidence: string
+}
 export interface Paper {
+  topics?: TopicMatch[]
+  track?: string
+  presentation?: string
+  authors_list?: Entity[]
+  institutions?: Entity[]
+  summary_status?: string
   id: string
   source: string
   title: string
@@ -21,6 +40,7 @@ export interface Paper {
   paperId?: string
 }
 export interface Author {
+  kind?: string
   id: string
   name: string
   homepage: string
@@ -63,6 +83,7 @@ export interface Catalog {
   dates: string[]
   categories: string[]
   years: number[]
+  topics?: Record<string, string>
   conferences: Record<string, string>
   publicReports: boolean
 }

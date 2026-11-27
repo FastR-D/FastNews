@@ -50,7 +50,11 @@ const labels: Record<string, string> = {
   interrupted: '已中断',
 }
 const groups: Record<string, string> = {
-  all: '全部已启用信源',
+  all: '全部资讯信源',
+  'all-research': '资讯与论文',
+  papers: '全部论文会议',
+  'papers-software': '软工会议 · Coding Agent',
+  'papers-ml': 'AI 三大会',
   security: '安全研究',
   ai: 'AI 研究',
   arxiv: 'arXiv 论文',
@@ -64,6 +68,61 @@ function duration(start: string, end?: string) {
 }
 function Status({ value }: { value: string }) {
   return <span className={`task-status ${value}`}>{labels[value] || value}</span>
+}
+function SourceResults({ run }: { run: Run }) {
+  const [showCompleted, setShowCompleted] = useState(false)
+  const completed = run.sources.filter((entry) => entry.state === 'completed')
+  const visible = run.sources.filter((entry) => entry.state !== 'completed')
+  if (showCompleted) visible.push(...completed)
+  return (
+    <Panel
+      title="信源结果"
+      className="admin-panel"
+      action={
+        completed.length > 0 && (
+          <Button
+            variant="quiet"
+            aria-expanded={showCompleted}
+            aria-controls="collection-source-results"
+            onClick={() => setShowCompleted((value) => !value)}
+          >
+            {showCompleted ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            {showCompleted ? '折叠' : '展开'}已完成（{completed.length}）
+          </Button>
+        )
+      }
+    >
+      <div className="fastui-table-scroll" id="collection-source-results">
+        <table className="fastui-table admin-table" aria-label="信源结果">
+          <thead>
+            <tr>
+              <th>信源</th>
+              <th>状态</th>
+              <th>读取</th>
+              <th>过期</th>
+              <th>新增</th>
+            </tr>
+          </thead>
+          <tbody>
+            {visible.map((entry) => (
+              <tr key={entry.source}>
+                <td>
+                  <strong>{entry.name}</strong>
+                  {entry.error && <p className="source-error">{entry.error}</p>}
+                </td>
+                <td>
+                  <Status value={entry.state} />
+                </td>
+                <td>{entry.fetched}</td>
+                <td>{entry.stale}</td>
+                <td>{entry.added}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </Panel>
+  )
 }
 function SchedulePanel({ data, reload }: { data: Snapshot; reload: () => Promise<void> }) {
   const { notify } = useApp()
@@ -447,40 +506,7 @@ export default function Processes() {
           </div>
         )}
       </Panel>
-      {detail && (
-        <Panel title="信源结果" className="admin-panel">
-          <ErrorMessage error={detail.error || ''} />
-          <div className="fastui-table-scroll">
-            <table className="fastui-table admin-table" aria-label="信源结果">
-              <thead>
-                <tr>
-                  <th>信源</th>
-                  <th>状态</th>
-                  <th>读取</th>
-                  <th>过期</th>
-                  <th>新增</th>
-                </tr>
-              </thead>
-              <tbody>
-                {detail.sources.map((entry) => (
-                  <tr key={entry.source}>
-                    <td>
-                      <strong>{entry.name}</strong>
-                      {entry.error && <p className="source-error">{entry.error}</p>}
-                    </td>
-                    <td>
-                      <Status value={entry.state} />
-                    </td>
-                    <td>{entry.fetched}</td>
-                    <td>{entry.stale}</td>
-                    <td>{entry.added}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Panel>
-      )}
+      {detail && <SourceResults key={detail.id} run={detail} />}
     </>
   )
 }

@@ -20,24 +20,30 @@ import (
 )
 
 type Paper struct {
-	ID            string  `json:"id"`
-	Source        string  `json:"source"`
-	Title         string  `json:"title"`
-	TitleZH       string  `json:"title_zh"`
-	Author        string  `json:"author"`
-	Year          int     `json:"year"`
-	Venue         string  `json:"venue"`
-	Conference    string  `json:"conference"`
-	Category      string  `json:"category"`
-	Link          string  `json:"link"`
-	Summary       string  `json:"summary"`
-	SearchSummary string  `json:"search_summary,omitempty"`
-	DOI           string  `json:"doi,omitempty"`
-	Award         string  `json:"award,omitempty"`
-	CitedBy       *int    `json:"cited_by,omitempty"`
-	Reason        string  `json:"reason,omitempty"`
-	Score         float64 `json:"retrieval_score,omitempty"`
-	Date          string  `json:"date,omitempty"`
+	Topics        []TopicMatch `json:"topics,omitempty"`
+	Track         string       `json:"track,omitempty"`
+	Presentation  string       `json:"presentation,omitempty"`
+	AuthorsList   []Scholar    `json:"authors_list,omitempty"`
+	Institutions  []Entity     `json:"institutions,omitempty"`
+	SummaryStatus string       `json:"summary_status,omitempty"`
+	ID            string       `json:"id"`
+	Source        string       `json:"source"`
+	Title         string       `json:"title"`
+	TitleZH       string       `json:"title_zh"`
+	Author        string       `json:"author"`
+	Year          int          `json:"year"`
+	Venue         string       `json:"venue"`
+	Conference    string       `json:"conference"`
+	Category      string       `json:"category"`
+	Link          string       `json:"link"`
+	Summary       string       `json:"summary"`
+	SearchSummary string       `json:"search_summary,omitempty"`
+	DOI           string       `json:"doi,omitempty"`
+	Award         string       `json:"award,omitempty"`
+	CitedBy       *int         `json:"cited_by,omitempty"`
+	Reason        string       `json:"reason,omitempty"`
+	Score         float64      `json:"retrieval_score,omitempty"`
+	Date          string       `json:"date,omitempty"`
 }
 type Report struct {
 	Title   string `json:"title"`
@@ -68,6 +74,8 @@ var Conferences = map[string]Conference{
 	"neurips": {"NeurIPS", "ml", "neurips-proceedings", ""},
 	"icse":    {"ICSE", "software", "dblp", "icse"},
 	"ase":     {"ASE", "software", "dblp", "kbse"},
+	"issta":   {"ISSTA", "software", "dblp", "issta"},
+	"fse":     {"ACM FSE", "software", "researchr", ""},
 }
 
 var Labels = func() map[string]string {
@@ -206,6 +214,40 @@ func (c *Catalog) Papers() ([]Paper, error) {
 			}
 			v.CitedBy = ParseCited(raw)
 
+			DecoratePaper(&v, s)
+			out = append(out, v)
+		}
+	}
+	// Papers are readable as soon as collection succeeds, even before model summaries.
+	known := map[string]bool{}
+	for _, p := range out {
+		known[p.ID] = true
+	}
+	rawFiles, err := filepath.Glob(filepath.Join(c.Root, "top-conf/data/conferences/*.jsonl"))
+	if err != nil {
+		return nil, err
+	}
+	for _, file := range rawFiles {
+		m := confRE.FindStringSubmatch(strings.TrimSuffix(filepath.Base(file), ".jsonl") + "_summary.jsonl")
+		if m == nil {
+			continue
+		}
+		if _, ok := Conferences[m[1]]; !ok {
+			continue
+		}
+		year, _ := strconv.Atoi(m[2])
+		rows, err := c.ConferenceRows(m[1], year)
+		if err != nil {
+			return nil, err
+		}
+		for _, row := range rows {
+			id := First(Str(row, "_id"), Str(row, "link"))
+			if id == "" || known[id] {
+				continue
+			}
+			known[id] = true
+			v := Paper{ID: id, Source: "top-conf", Title: Str(row, "title"), Author: Str(row, "author"), Year: year, Conference: m[1], Venue: First(Str(row, "venue"), Labels[m[1]]), Category: "Uncategorized", Link: First(Str(row, "link"), id), Summary: Clip(Str(row, "description"), 1200), SearchSummary: Str(row, "description"), SummaryStatus: "source"}
+			DecoratePaper(&v, row)
 			out = append(out, v)
 		}
 	}

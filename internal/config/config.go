@@ -12,6 +12,7 @@ import (
 )
 
 type Config struct {
+	ORCIDToken                                                                            string
 	Root, WebDir, DataDir, Host, Port, PublicPath, PublicOrigin, ResearchURL, FastReadURL string
 	ResearchCookie                                                                        string
 	DisableCollectionScheduler                                                            bool
@@ -34,6 +35,7 @@ func Load() (Config, error) {
 		return Config{}, err
 	}
 	c := Config{
+		ORCIDToken:                 Env("FASTNEWS_ORCID_TOKEN", ""),
 		DisableCollectionScheduler: Env("FASTNEWS_COLLECTION_DISABLED", "false") == "true",
 		ResearchCookie:             Env("FASTRESEARCH_COOKIE_NAME", "fr_session"),
 		Root:                       root,

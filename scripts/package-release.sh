@@ -9,7 +9,14 @@ STAGE="$(mktemp -d)"
 trap 'rm -rf "$STAGE"' EXIT
 cd "$ROOT"
 test -x bin/fastnews
-test -f web/dist/index.html
+python3 - <<'PYPROFILE'
+import json
+from pathlib import Path
+profile = json.loads(Path('deployments/fastdeploy-profile.json').read_text())
+for name in profile['required_files']:
+    if not Path(name).is_file():
+        raise SystemExit(f'Release is missing required file: {name}')
+PYPROFILE
 mkdir -p "$STAGE/bin" "$STAGE/web"
 cp bin/fastnews "$STAGE/bin/fastnews"
 cp -R web/dist "$STAGE/web/dist"

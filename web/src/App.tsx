@@ -1,3 +1,4 @@
+import BackToTop from './components/BackToTop'
 import './components/Reading.css'
 import { AccountMenu } from './components/AccountMenu'
 import { api, message } from './api'
@@ -24,6 +25,7 @@ import { Busy } from './components/Common'
 import ImpressionDialog from './components/ImpressionDialog'
 import { navigation, currentPage } from './navigation'
 import { theme } from './theme'
+const EntityPage = lazy(() => import('./pages/Entity'))
 const ReportReader = lazy(() => import('./pages/ReportReader'))
 const Home = lazy(() => import('./pages/Home'))
 const Papers = lazy(() => import('./pages/Papers'))
@@ -294,6 +296,7 @@ function Workspace() {
             )}
             <Suspense fallback={<Busy />}>
               <Routes>
+                <Route path="/entity/" element={<EntityPage />} />
                 <Route path="/" element={<Home />} />
                 <Route path="/top-conf/" element={<Papers />} />
                 <Route path="/coverage/" element={<Coverage />} />
@@ -332,6 +335,7 @@ function Workspace() {
                   }
                 />
               </Routes>
+              <BackToTop />
             </Suspense>
           </div>
         </main>

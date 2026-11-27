@@ -90,6 +90,9 @@ func (s *Server) authorPreview(w http.ResponseWriter, r *http.Request) error {
 		}
 		return nil
 	}}
+	if handled, err := s.registryProfile(w, r, u, client); handled {
+		return err
+	}
 	req, e := http.NewRequestWithContext(r.Context(), "GET", body.URL, nil)
 	if e != nil {
 		return e
@@ -115,6 +118,8 @@ func (s *Server) authorPreview(w http.ResponseWriter, r *http.Request) error {
 	}
 	title, description := "", ""
 	links := []map[string]string{}
+	profiles := []map[string]string{}
+	biography := ""
 	var walk func(*html.Node)
 	walk = func(n *html.Node) {
 		if n.Type == html.ElementNode {
@@ -131,8 +136,27 @@ func (s *Server) authorPreview(w http.ResponseWriter, r *http.Request) error {
 				if attrs["name"] == "description" || attrs["property"] == "og:description" {
 					description = attrs["content"]
 				}
+			case "h2", "h3", "h4":
+				label := strings.ToLower(textContent(n))
+				if label == "biography" || label == "bio" || label == "about me" || label == "个人简介" {
+					for next := n.NextSibling; next != nil; next = next.NextSibling {
+						if next.Type == html.ElementNode {
+							biography = textContent(next)
+							break
+						}
+					}
+				}
 			case "a":
 				href := attrs["href"]
+				label := strings.TrimSpace(textContent(n))
+				if strings.Contains(href, "orcid.org/") || strings.Contains(href, "ror.org/") || strings.Contains(href, "dblp.org/") || strings.Contains(href, "scholar.google.") || strings.EqualFold(label, "Homepage") || strings.EqualFold(label, "Website") || strings.EqualFold(label, "Personal website") {
+					if ref, err := url.Parse(href); err == nil {
+						absolute := resp.Request.URL.ResolveReference(ref)
+						if absolute.Scheme == "https" || absolute.Scheme == "http" {
+							profiles = append(profiles, map[string]string{"url": absolute.String(), "title": catalog.First(label, absolute.Hostname())})
+						}
+					}
+				}
 				if strings.Contains(href, ".pdf") || strings.Contains(href, "arxiv.org/abs/") {
 					if ref, e := url.Parse(href); e == nil {
 						absolute := resp.Request.URL.ResolveReference(ref)
@@ -148,7 +172,7 @@ func (s *Server) authorPreview(w http.ResponseWriter, r *http.Request) error {
 		}
 	}
 	walk(doc)
-	reply(w, r, 200, map[string]any{"title": title, "description": description, "papers": links[:min(30, len(links))]})
+	reply(w, r, 200, map[string]any{"title": title, "description": catalog.Clip(catalog.First(biography, description), 2400), "papers": links[:min(30, len(links))], "profiles": profiles[:min(15, len(profiles))], "source": resp.Request.URL.String(), "fetchedAt": time.Now().UTC().Format(time.RFC3339)})
 	return nil
 }
 func textContent(n *html.Node) string {

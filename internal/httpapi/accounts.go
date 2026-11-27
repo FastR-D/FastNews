@@ -518,8 +518,30 @@ func (s *Server) pick(r *http.Request, im string, a map[string]any, items []map[
 		eligible = append(eligible, p)
 		for _, author := range authors {
 			name := strings.ToLower(catalog.Str(author, "name"))
-			if name != "" && strings.Contains(strings.ToLower(p.Author), name) {
-				p.Reason = "关注作者 " + catalog.Str(author, "name") + " 的论文"
+			matched := false
+			kind := catalog.First(catalog.Str(author, "kind"), "author")
+			if kind == "institution" {
+				for _, org := range p.Institutions {
+					if strings.EqualFold(org.Name, name) {
+						matched = true
+					}
+				}
+			} else {
+				for _, person := range p.AuthorsList {
+					if strings.EqualFold(person.Name, name) {
+						matched = true
+					}
+				}
+				if len(p.AuthorsList) == 0 && name != "" {
+					matched = strings.Contains(strings.ToLower(p.Author), name)
+				}
+			}
+			if matched {
+				label := "作者"
+				if kind == "institution" {
+					label = "机构"
+				}
+				p.Reason = "关注" + label + " " + catalog.Str(author, "name") + " 的论文"
 				followed = append(followed, p)
 				break
 			}

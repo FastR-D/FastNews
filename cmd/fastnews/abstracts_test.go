@@ -140,8 +140,13 @@ func TestNeuripsAbstractsResumeAndRefreshSourceBoundSummaries(t *testing.T) {
 	}
 	cat := &catalog.Catalog{Root: c.Root}
 	papers, err := cat.Papers()
-	if err != nil || len(papers) != 0 {
-		t.Fatal("stale title-only summaries were treated as current", papers, err)
+	if err != nil || len(papers) != 2 {
+		t.Fatal("enriched sources should remain readable", papers, err)
+	}
+	for _, paper := range papers {
+		if paper.SummaryStatus != "source" || paper.Summary != "We examine model efficiency with measured evidence." {
+			t.Fatal("stale model summary exposed", paper)
+		}
 	}
 	for range 2 {
 		if err := job(ctx, c, "summarize-conf", args); err != nil {

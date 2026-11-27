@@ -22,24 +22,24 @@
   ],
   "required_files": [
     "bin/fastnews",
-    "web/dist/index.html",
-    "web/dist/reports/handoff.js",
-    "web/dist/reports/report.css"
+    "web/dist/index.html"
   ],
   "required_env": [
     "FASTNEWS_HOST",
     "FASTNEWS_PORT",
     "FASTNEWS_ROOT",
-    "FASTNEWS_DATA_DIR"
+    "FASTNEWS_DATA_DIR",
+    "FASTNEWS_DATABASE_URL"
   ],
   "fixed_env": {
     "FASTNEWS_HOST": "127.0.0.1",
     "FASTNEWS_PORT": "8788",
-    "FASTNEWS_ROOT": "/home/dev/FastNews",
+    "FASTNEWS_ROOT": "/home/dev/.local/share/fastnews/corpus",
     "FASTNEWS_DATA_DIR": "/home/dev/FastNews/.fastnews-data"
   },
   "shared_paths": [
-    "/home/dev/FastNews"
+    "/home/dev/FastNews",
+    "/home/dev/.local/share/fastnews/corpus"
   ],
   "release_env": {
     "FASTNEWS_WEB_DIR": "{release}/web/dist"
@@ -48,5 +48,6 @@
     "/usr/bin/python3",
     "-c",
     "import sys; assert sys.version_info >= (3,12)"
-  ]
+  ],
+  "postgres_env": "FASTNEWS_DATABASE_URL"
 }

@@ -27,8 +27,8 @@ func (p *Pipeline) EnrichConferenceAbstracts(ctx context.Context, conf string, y
 	if err != nil {
 		return err
 	}
-	if metadata.Provider != "neurips-proceedings" {
-		return fmt.Errorf("abstract enrichment is supported for official NeurIPS proceedings")
+	if metadata.Provider != "neurips-proceedings" && conf != "iclr" {
+		return fmt.Errorf("abstract enrichment is supported for official NeurIPS and ICLR proceedings")
 	}
 	if limit < 0 {
 		return fmt.Errorf("abstract limit must be nonnegative")
@@ -45,10 +45,23 @@ func (p *Pipeline) EnrichConferenceAbstracts(ctx context.Context, conf string, y
 		if catalog.Str(paper, "description") != "" {
 			continue
 		}
+		if p.Topic != "" {
+			candidate := catalog.Paper{Title: catalog.Str(paper, "title")}
+			catalog.DecoratePaper(&candidate, paper)
+			if !catalog.HasTopic(candidate, p.Topic) {
+				continue
+			}
+		}
 		if limit > 0 && completed >= limit {
 			break
 		}
-		link, err := neuripsPaperURL(catalog.Str(paper, "link"), year)
+		validate := neuripsPaperURL
+		parse := neuripsAbstract
+		if conf == "iclr" {
+			validate = iclrPaperURL
+			parse = iclrAbstract
+		}
+		link, err := validate(catalog.Str(paper, "link"), year)
 		if err != nil {
 			return err
 		}
@@ -59,7 +72,7 @@ func (p *Pipeline) EnrichConferenceAbstracts(ctx context.Context, conf string, y
 		if err != nil {
 			return err
 		}
-		abstract, err := neuripsAbstract(body, link, year)
+		abstract, err := parse(body, link, year)
 		if err != nil {
 			return err
 		}

@@ -4,12 +4,14 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 TASK_DATA="$(mktemp -d)"
 trap 'rm -rf "$TASK_DATA"' EXIT
-export FASTNEWS_DATA_DIR="$TASK_DATA"
+export FASTNEWS_DATA_DIR="$TASK_DATA/accounts"
+export FASTNEWS_ROOT="$TASK_DATA/corpus"
+python3 "$ROOT/scripts/seed-test-corpus.py" "$FASTNEWS_ROOT"
 export FASTNEWS_COOKIE_SECURE=false
 export FASTNEWS_HOST=127.0.0.1
 export FASTNEWS_PORT="${1:-4189}"
 export FASTNEWS_PUBLIC_PATH="${2:-}"
-export FASTNEWS_WEB_DIR="${3:-web/dist}"
+export FASTNEWS_WEB_DIR="$ROOT/${3:-web/dist}"
 export FASTNEWS_FASTCAS_ENABLED=false
 export FASTREAD_URL=http://127.0.0.1:3015
 export OPENAI_API_KEY=''

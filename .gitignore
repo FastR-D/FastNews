@@ -27,3 +27,7 @@ __pycache__/
 .idea/
 .vscode/
 .DS_Store
+
+# Server-owned collected corpus, enrichment checkpoints and generated reports
+/top-conf/data/
+/secnews/data/

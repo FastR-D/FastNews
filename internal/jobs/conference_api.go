@@ -17,6 +17,9 @@ type reviewNote struct {
 	ID      string `json:"id"`
 	Forum   string `json:"forum"`
 	Content struct {
+		AuthorIDs struct {
+			Value []string `json:"value"`
+		} `json:"authorids"`
 		Title struct {
 			Value string `json:"value"`
 		} `json:"title"`
@@ -88,11 +91,11 @@ func bibliographyValues(raw json.RawMessage) ([]string, error) {
 	return out, nil
 }
 
-func (p *Pipeline) fetchStructuredConference(ctx context.Context, conf string, year int, endpoint string) error {
+func fetchStructuredConference(ctx context.Context, conf string, year int, endpoint string) ([]map[string]any, error) {
 	metadata := catalog.Conferences[conf]
 	u, err := url.Parse(endpoint)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	publicEndpoint := publicConferenceEndpoint(u)
 	rows := []map[string]any{}
@@ -110,31 +113,31 @@ func (p *Pipeline) fetchStructuredConference(ctx context.Context, conf string, y
 			u.RawQuery = query.Encode()
 			body, err := get(ctx, u.String())
 			if err != nil {
-				return err
+				return nil, err
 			}
 			var page struct {
 				Notes []reviewNote `json:"notes"`
 				Count *int         `json:"count"`
 			}
 			if err := json.Unmarshal(body, &page); err != nil {
-				return fmt.Errorf("OpenReview response: %w", err)
+				return nil, fmt.Errorf("OpenReview response: %w", err)
 			}
 			if page.Count == nil {
-				return fmt.Errorf("OpenReview response missing count")
+				return nil, fmt.Errorf("OpenReview response missing count")
 			}
 			total, count = *page.Count, len(page.Notes)
 			for _, note := range page.Notes {
 				if note.ID == "" || note.Content.Title.Value == "" || note.Content.VenueID.Value != venue {
-					return fmt.Errorf("OpenReview note lacks identity/title or accepted venue %s", venue)
+					return nil, fmt.Errorf("OpenReview note lacks identity/title or accepted venue %s", venue)
 				}
 				link := "https://openreview.net/forum?" + url.Values{"id": {catalog.First(note.Forum, note.ID)}}.Encode()
 				if seen[link] {
-					return fmt.Errorf("source repeated a paper across pages: %s", link)
+					return nil, fmt.Errorf("source repeated a paper across pages: %s", link)
 				}
 				seen[link] = true
 				rows = append(rows, map[string]any{"_id": link, "title": note.Content.Title.Value, "link": link,
 					"description": note.Content.Abstract.Value, "author": strings.Join(note.Content.Authors.Value, ", "),
-					"keywords": note.Content.Keywords.Value, "presentation": note.Content.Venue.Value, "source_url": publicEndpoint})
+					"track": "conference", "authors_list": reviewAuthors(note), "keywords": note.Content.Keywords.Value, "presentation": note.Content.Venue.Value, "source_url": publicEndpoint})
 			}
 		} else {
 			query.Set("q", fmt.Sprintf("stream:conf/%s: year:%d:", metadata.RemoteID, year))
@@ -144,7 +147,7 @@ func (p *Pipeline) fetchStructuredConference(ctx context.Context, conf string, y
 			u.RawQuery = query.Encode()
 			body, err := get(ctx, u.String())
 			if err != nil {
-				return err
+				return nil, err
 			}
 			var page struct {
 				Result struct {
@@ -155,11 +158,11 @@ func (p *Pipeline) fetchStructuredConference(ctx context.Context, conf string, y
 				} `json:"result"`
 			}
 			if err := json.Unmarshal(body, &page); err != nil {
-				return fmt.Errorf("DBLP response: %w", err)
+				return nil, fmt.Errorf("DBLP response: %w", err)
 			}
 			total, err = strconv.Atoi(page.Result.Hits.Total)
 			if err != nil {
-				return fmt.Errorf("DBLP response missing valid total")
+				return nil, fmt.Errorf("DBLP response missing valid total")
 			}
 			count = len(page.Result.Hits.Hits)
 			for _, hit := range page.Result.Hits.Hits {
@@ -168,38 +171,38 @@ func (p *Pipeline) fetchStructuredConference(ctx context.Context, conf string, y
 					continue
 				}
 				if v.Year != strconv.Itoa(year) || !strings.HasPrefix(v.Key, "conf/"+metadata.RemoteID+"/") || v.Title == "" {
-					return fmt.Errorf("DBLP record is outside the requested conference/year or lacks a title")
+					return nil, fmt.Errorf("DBLP record is outside the requested conference/year or lacks a title")
 				}
 				authors, err := bibliographyValues(v.Authors.Author)
 				if err != nil {
-					return err
+					return nil, err
 				}
 				links, err := bibliographyValues(v.EE)
 				if err != nil {
-					return err
+					return nil, err
 				}
 				venues, err := bibliographyValues(v.Venue)
 				if err != nil {
-					return err
+					return nil, err
 				}
 				link := v.URL
 				if len(links) > 0 {
 					link = links[0]
 				}
 				if link == "" || seen[v.Key] {
-					return fmt.Errorf("DBLP record has no URL or repeats identity: %s", v.Key)
+					return nil, fmt.Errorf("DBLP record has no URL or repeats identity: %s", v.Key)
 				}
 				seen[v.Key] = true
 				rows = append(rows, map[string]any{"_id": "https://dblp.org/rec/" + v.Key, "title": v.Title, "link": link,
-					"description": "", "author": strings.Join(authors, ", "), "venue": strings.Join(venues, ", "), "source_url": publicEndpoint})
+					"description": "", "author": strings.Join(authors, ", "), "track": bibliographyTrack(venues, metadata.Name), "venue": strings.Join(venues, ", "), "source_url": publicEndpoint})
 			}
 		}
 		if expectedTotal >= 0 && total != expectedTotal {
-			return fmt.Errorf("source total changed during pagination: %d to %d", expectedTotal, total)
+			return nil, fmt.Errorf("source total changed during pagination: %d to %d", expectedTotal, total)
 		}
 		expectedTotal = total
 		if total < 0 || offset+count > total || (count == 0 && offset < total) {
-			return fmt.Errorf("incomplete source pagination at %d of %d", offset, total)
+			return nil, fmt.Errorf("incomplete source pagination at %d of %d", offset, total)
 		}
 		offset += count
 		if offset == total {
@@ -207,9 +210,9 @@ func (p *Pipeline) fetchStructuredConference(ctx context.Context, conf string, y
 		}
 	}
 	if len(rows) == 0 {
-		return fmt.Errorf("no papers returned for %s %d", conf, year)
+		return nil, fmt.Errorf("no papers returned for %s %d", conf, year)
 	}
-	return p.appendConferenceRecords(conf, year, rows)
+	return rows, nil
 }
 
 func publicConferenceEndpoint(endpoint *url.URL) string {
@@ -224,18 +227,89 @@ func (p *Pipeline) appendConferenceRecords(conf string, year int, rows []map[str
 	if err != nil {
 		return err
 	}
-	known := map[string]bool{}
-	for _, row := range existing {
-		known[catalog.Str(row, "_id")] = true
+	known, titles := map[string]int{}, map[string]int{}
+	for i, row := range existing {
+		known[catalog.Str(row, "_id")] = i
+		titles[catalog.NormalizeTitle(catalog.Str(row, "title"))] = i
 	}
-	out := []map[string]any{}
 	for _, row := range rows {
-		if known[catalog.Str(row, "_id")] {
+		id, title := catalog.Str(row, "_id"), catalog.NormalizeTitle(catalog.Str(row, "title"))
+		index, ok := known[id]
+		if !ok {
+			if candidate, exists := titles[title]; exists {
+				old := existing[candidate]
+				crossProvider := catalog.Str(old, "provider") != "" && catalog.Str(old, "provider") != catalog.Str(row, "provider")
+				detail := strings.HasPrefix(catalog.Str(old, "_id"), "researchr:") && catalog.Str(row, "description_source") != ""
+				if (crossProvider || detail) && catalog.Str(old, "author") == catalog.Str(row, "author") {
+					index, ok = candidate, true
+				}
+			}
+		}
+		if ok {
+			old := existing[index]
+			// Keep stable identity and retain richer evidence when the new snapshot lacks it.
+			for key, value := range row {
+				if catalog.Str(row, "provider") == "researchr" && catalog.Str(old, "description_source") != "" && catalog.Str(row, "description") == "" && (key == "link" || key == "source_url") {
+					continue
+				}
+				if key == "_id" || key == "fetched_at" {
+					continue
+				}
+				if value == nil || catalog.Str(row, key) == "" {
+					continue
+				}
+				if key == "authors_list" {
+					b, _ := json.Marshal(value)
+					if string(b) == "[]" || string(b) == "null" {
+						continue
+					}
+				}
+				old[key] = value
+			}
 			continue
 		}
 		row["source"] = catalog.Labels[conf] + " " + strconv.Itoa(year)
 		row["fetched_at"] = time.Now().UTC().Format(time.RFC3339)
-		out = append(out, row)
+		known[id], titles[title] = len(existing), len(existing)
+		existing = append(existing, row)
 	}
-	return appendRows(file, out)
+	var data []byte
+	for _, row := range existing {
+		b, err := json.Marshal(row)
+		if err != nil {
+			return err
+		}
+		data = append(data, append(b, '\n')...)
+	}
+	return atomic(file, data)
+}
+
+func reviewAuthors(note reviewNote) []catalog.Scholar {
+	out := []catalog.Scholar{}
+	for i, name := range note.Content.Authors.Value {
+		person := catalog.Scholar{Entity: catalog.Entity{Name: name}}
+		if i < len(note.Content.AuthorIDs.Value) {
+			id := note.Content.AuthorIDs.Value[i]
+			if strings.HasPrefix(id, "~") {
+				person.URL = "https://openreview.net/profile?id=" + url.QueryEscape(id)
+			}
+		}
+		out = append(out, person)
+	}
+	return out
+}
+func bibliographyTrack(venues []string, name string) string {
+	for _, venue := range venues {
+		if strings.EqualFold(venue, name) {
+			return "conference"
+		}
+		v := strings.ToLower(venue)
+		if strings.Contains(v, "companion") {
+			return "companion"
+		}
+		if strings.Contains(v, "workshop") {
+			return "workshop"
+		}
+	}
+	return "unknown"
 }

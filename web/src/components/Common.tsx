@@ -1,3 +1,4 @@
+import { PaperPeople } from './EntityLink'
 import { ReadingSurface } from './ReadingLayout'
 import { useId, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
@@ -133,7 +134,13 @@ export function PaperCard({ paper }: { paper: Paper }) {
     <article data-testid="paper-row" className="paper-card">
       <div className="paper-card-top">
         <div className="paper-meta">
-          <Badge>{paper.category || paper.source}</Badge>
+          <Badge>
+            {paper.category && paper.category !== 'Uncategorized'
+              ? paper.category
+              : paper.track === 'main'
+                ? '主会论文'
+                : '论文'}
+          </Badge>
           <span>{[paper.year, paper.venue].filter(Boolean).join(' · ')}</span>
           {paper.cited_by !== undefined && <span>引用 {paper.cited_by}</span>}
           {paper.award && <Badge tone="warning">杰出论文</Badge>}
@@ -165,12 +172,23 @@ export function PaperCard({ paper }: { paper: Paper }) {
         )}
       </h3>
       {paper.title_zh && <p className="paper-translation">{paper.title_zh}</p>}
-      {(paper.author || paper.authors) && (
-        <p className="paper-authors">{paper.author || paper.authors}</p>
+      <PaperPeople paper={paper} />
+      {!!paper.topics?.length && (
+        <div className="paper-topics" aria-label="细分方向">
+          {paper.topics.map((topic) => (
+            <span
+              key={topic.id}
+              title={`${topic.basis === 'title' ? '标题候选' : '摘要/关键词识别'}：${topic.evidence}`}
+            >
+              {topic.label}
+              {topic.basis === 'title' && <span aria-label="标题候选"> · 候选</span>}
+            </span>
+          ))}
+        </div>
       )}
       {paper.summary && (
         <section className="paper-abstract" aria-label="摘要">
-          <h4>摘要</h4>
+          <h4>{paper.summary_status === 'source' ? '原文摘要' : '摘要'}</h4>
           <p>{paper.summary}</p>
         </section>
       )}

@@ -26,7 +26,7 @@ func conferenceInfo(conf string, year int) (catalog.Conference, error) {
 	return metadata, nil
 }
 
-func ConferenceURLs(conf string, year int) ([]string, error) {
+func defaultConferenceURLs(conf string, year int) ([]string, error) {
 	metadata, err := conferenceInfo(conf, year)
 	if err != nil {
 		return nil, err
@@ -180,29 +180,8 @@ func ParseConference(raw []byte, base, conf string, year int) ([]map[string]any,
 	})
 	return out, nil
 }
-func (p *Pipeline) FetchConference(ctx context.Context, conf string, year int, override string) error {
-	urls, err := ConferenceURLs(conf, year)
-	if err != nil {
-		return err
-	}
-	if provider := catalog.Conferences[conf].Provider; provider == "pmlr" || provider == "neurips-proceedings" {
-		return p.fetchProceedings(ctx, conf, year, catalog.First(override, urls[0]))
-	}
-	if catalog.Conferences[conf].Provider != "html" {
-		return p.fetchStructuredConference(ctx, conf, year, catalog.First(override, urls[0]))
-	}
-	if override != "" {
-		urls = []string{override}
-	}
-	file := filepath.Join(p.Config.Root, "top-conf/data/conferences", fmt.Sprintf("%s_%d.jsonl", conf, year))
-	existing, err := catalog.Rows(file)
-	if err != nil {
-		return err
-	}
+func fetchHTMLConference(ctx context.Context, conf string, year int, urls []string) ([]map[string]any, error) {
 	seen := map[string]bool{}
-	for _, row := range existing {
-		seen[catalog.NormalizeTitle(catalog.Str(row, "title"))] = true
-	}
 	found := []map[string]any{}
 	var last error
 	parsed := false
@@ -252,9 +231,9 @@ func (p *Pipeline) FetchConference(ctx context.Context, conf string, year int, o
 		}
 	}
 	if !parsed {
-		return fmt.Errorf("no papers parsed from official pages; supply --url (last error: %v)", last)
+		return nil, fmt.Errorf("no papers parsed from official pages; supply --url (last error: %v)", last)
 	}
-	return appendRows(file, found)
+	return found, nil
 }
 func (p *Pipeline) SummarizeConference(ctx context.Context, conf string, year int) error {
 	if _, e := conferenceInfo(conf, year); e != nil {

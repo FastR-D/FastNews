@@ -32,7 +32,7 @@ Go 可直接提供构建后的 SPA，也可由 nginx / 静态服务器提供 `we
 | 功能 | React 路由 | 行为 |
 | --- | --- | --- |
 | 总览 | `/` | 最新快讯、统计、研究入口、报告与下载、作者列表 |
-| 顶会报告 | `/top-conf/` | 会议/年份/类别筛选、向量搜索、分页、related work、报告打开与下载 |
+| 顶会报告 | `/top-conf/` | 领域/会议/年份/轨道/细分方向筛选、向量搜索、分页、related work、报告打开与下载 |
 | 数据覆盖 | `/coverage/` | 论文数、原始摘要和有效/过期总结计数、最近落盘与任务成功时间、任务失败类别 |
 | 领域导读 | `/field-briefing/` | 印象补全方向、向量召回、分类综述、综述/SoK、论文推荐 |
 | 总结汇报 | `/summary-brief/` | 全景或主题简报、发现、统计表与条形图、问答、局限与讨论 |
@@ -43,7 +43,7 @@ Go 可直接提供构建后的 SPA，也可由 nginx / 静态服务器提供 `we
 | 关注作者 | `/authors` | 增删改、研究标签、主页解析、解析结果与论文链接 |
 | 私信 | `/inbox/` | 上海日历日每天一篇、关注作者优先、去重、已读和历史 |
 | 研究印象 | `/impression/` 或顶栏 | 最长 4000 字，按当前账号保存 |
-| 账号 | `/login` | 本地登录、邀请注册、恢复、FastCAS、Research 导入及持续连接 |
+| 账号 | `/login` | 账号信息修改与 FastCAS 认证 |
 
 arXiv 导读默认打开最近有预印本的采集日。`GET /api/news?source=arxiv|news|security|ai|articles` 分别返回对应范围的最近非空日期及内容，其中 `articles` 为全部非 arXiv 资讯；指定 `date` 时保留该日期，即使该范围当天为空。不指定来源时保留总览使用的全部资讯行为。旧调用若需要全部非 arXiv 内容，应从 `source=security` 改为 `source=articles`。
 
@@ -83,9 +83,13 @@ FastCAS 使用正式 Go SDK **v0.1.2**，需要同时配置 issuer / client ID /
 ./bin/fastnews summary-brief                         # 会议论文全景
 ```
 
+## 论文采集与人物资料
+
+采集适配器、轨道校验、Coding Agent 与 AI 三大会细分方向见 [论文采集接口](docs/paper-collection.md)。卡片与报告中的作者、机构支持悬浮简介、关注和站内论文汇总；个人官网、ORCID 和 ROR 公开资料可在资料页读取，未确认的同名记录不自动合并。
+
 ## Go 数据任务
 
-现有 JSON/JSONL 无需转换，CLI 按原目录与命名写入。任务可从仓库根目录运行，或设置 `FASTNEWS_ROOT` 指向语料目录。服务首次启动时自动采集一次 RSS/Atom，随后默认每 6 小时采集。管理员从侧栏「进程管理」查看定时计划、下次执行时间、逐信源进度和历史，调整或暂停计划，也可手动补采、停止当前任务。其他数据任务仍使用 CLI。
+采集语料、摘要检查点与生成报告不进入 Git，服务器负责持久保存。现有 JSON/JSONL 无需转换，CLI 按原目录与命名写入。任务可从仓库根目录运行，或设置 `FASTNEWS_ROOT` 指向语料目录。服务首次启动时自动采集一次 RSS/Atom，随后默认每 6 小时采集。管理员从侧栏「进程管理」查看定时计划、下次执行时间、逐信源进度和历史，调整或暂停计划，也可手动补采、停止当前任务。论文会议也可选择定时或手动采集，已发布年份通过内置计划维护；摘要生成与报告导出可用 CLI。
 
 ```bash
 ./bin/fastnews fetch-news --source bleepingcomputer
@@ -165,6 +169,6 @@ FASTNEWS_PUBLIC_PATH=/news make build
 FASTNEWS_PUBLIC_PATH=/news FASTNEWS_PORT=8788 ./bin/fastnews serve
 ```
 
-`ci.yml` 在 PR、main、`v*` 标签和手动运行时执行 Go、React 与浏览器检查并打包；推送 `v*` 标签会在检查通过后发布同一份原生包到 GitHub Releases，并通过 HTTPS 上传到生产接收端，由服务器上的 FastDeploy 激活。其余四个工作流负责采集、日报、顶会报告和周报，统一调用 Go CLI，并串行提交生成数据。
+`ci.yml` 在 PR、main、`v*` 标签和手动运行时执行 Go、React 与浏览器检查并打包；推送 `v*` 标签会在检查通过后发布同一份原生包到 GitHub Releases，并通过 HTTPS 上传到生产接收端，由服务器上的 FastDeploy 激活。采集与报告生成由服务器执行，结果保存在独立语料目录；不再通过 Actions 提交数据。
 
 旧 Python、serverless API、模板、静态应用页面、依赖和对应测试已删除。历史语料、报告与账号数据保留；历史报告资源 URL 由 Go 映射到当前前端资源。失效的旧部署与回滚入口已移除。普通 main 提交只验证；标签部署由 FastDeploy 原子切换版本并检查健康，失败时恢复前态。配置见 [部署说明](docs/fastdeploy.md)。

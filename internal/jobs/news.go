@@ -23,6 +23,9 @@ import (
 )
 
 type Pipeline struct {
+	Sources      map[string]PaperSource
+	Provider     string
+	Topic        string
 	Config       config.Config
 	AI           *ai.Service
 	Catalog      *catalog.Catalog

@@ -193,7 +193,7 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request) {
 		e = s.auth(w, r, p)
 	case strings.HasPrefix(p, "/api/content/"):
 		e = s.content(w, r, p)
-	case p == "/api/catalog" || p == "/api/papers" || p == "/api/news" || p == "/api/report" || p == "/api/reports" || p == "/api/trend" || p == "/api/coverage" || p == "/api/sources":
+	case p == "/api/entities" || p == "/api/catalog" || p == "/api/papers" || p == "/api/news" || p == "/api/report" || p == "/api/reports" || p == "/api/trend" || p == "/api/coverage" || p == "/api/sources":
 		if e = s.viewer(r); e == nil {
 			e = s.catalogHTTP(w, r, p)
 		}
@@ -277,6 +277,8 @@ func (s *Server) catalogHTTP(w http.ResponseWriter, r *http.Request, p string) e
 			return err
 		}
 		reply(w, r, 200, report)
+	case "/api/entities":
+		return s.entity(w, r)
 	case "/api/report":
 		v, err := s.Catalog.ReadReport(r.URL.Query().Get("path"))
 		if err != nil {
@@ -371,12 +373,21 @@ func (s *Server) catalogHTTP(w http.ResponseWriter, r *http.Request, p string) e
 				ys = append(ys, y)
 			}
 			sort.Sort(sort.Reverse(sort.IntSlice(ys)))
-			reply(w, r, 200, map[string]any{"papers": len(papers), "topPapers": top, "reports": reports, "dates": dates, "categories": categories, "years": ys, "conferences": catalog.Labels, "publicReports": !s.Config.RequireLogin})
+			reply(w, r, 200, map[string]any{"papers": len(papers), "topPapers": top, "reports": reports, "dates": dates, "categories": categories, "years": ys, "conferences": catalog.Labels, "topics": catalog.TopicLabels(), "publicReports": !s.Config.RequireLogin})
 			return nil
 		}
 		q := r.URL.Query()
 		pool := []catalog.Paper{}
 		for _, v := range papers {
+			if topic := q.Get("topic"); topic != "" && !catalog.HasTopic(v, topic) {
+				continue
+			}
+			if domain := q.Get("domain"); domain != "" && catalog.Conferences[v.Conference].Domain != domain {
+				continue
+			}
+			if track := q.Get("track"); track != "" && v.Track != track {
+				continue
+			}
 			if q.Get("source") != "" && q.Get("source") != "all" && q.Get("source") != v.Source {
 				continue
 			}
@@ -487,7 +498,7 @@ func (s *Server) static(w http.ResponseWriter, r *http.Request, p string) error 
 
 	} else {
 		switch strings.TrimSuffix(p, "/") {
-		case "", "/report", "/admin/users", "/admin/processes", "/sources", "/top-conf", "/coverage", "/field-briefing", "/summary-brief", "/inbox", "/impression", "/secnews", "/arxiv", "/trend", "/authors", "/login":
+		case "", "/entity", "/report", "/admin/users", "/admin/processes", "/sources", "/top-conf", "/coverage", "/field-briefing", "/summary-brief", "/inbox", "/impression", "/secnews", "/arxiv", "/trend", "/authors", "/login":
 			rel = "index.html"
 		default:
 			return store.Fail(404, "Not found")

@@ -3,9 +3,10 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, Download, BookOpen } from 'lucide-react'
 import { api, asset, message, safeURL } from '../api'
 import { ReadingButton } from '../components/ReadingLayout'
-import type { Report } from '../types'
-import { Busy, ErrorMessage, PageHeading } from '../components/Common'
+import type { Report, Paper } from '../types'
+import { Busy, ErrorMessage, PageHeading, PaperCard } from '../components/Common'
 type DocumentNode = {
+  catalogPaper?: Paper
   paper?: Record<string, string>
   tag?: string
   text?: string
@@ -19,6 +20,8 @@ const allowed = new Set(
   ),
 )
 function renderNode(node: DocumentNode, index: number): ReactNode {
+  if (node.catalogPaper && node.tag === 'article')
+    return <PaperCard key={index} paper={node.catalogPaper} />
   if (!node.tag) return node.text || ''
   if (!allowed.has(node.tag)) return null
   const href = node.href?.startsWith('#report-') ? node.href : safeURL(node.href)

@@ -25,11 +25,13 @@ func (p *Pipeline) RunConferenceJob(ctx context.Context, stage, conf string, yea
 	}
 	switch stage {
 	case "fetch-conf":
-		if _, err := ConferenceURLs(conf, year); err != nil {
-			return err
+		if p.Provider == "" {
+			if _, err := ConferenceURLs(conf, year); err != nil {
+				return err
+			}
 		}
 	case "enrich-abstracts":
-		if metadata.Provider != "neurips-proceedings" || limit < 0 {
+		if (metadata.Provider != "neurips-proceedings" && conf != "iclr") || limit < 0 {
 			return fmt.Errorf("unsupported abstract source or limit")
 		}
 	case "summarize-conf":

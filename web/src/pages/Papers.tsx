@@ -22,6 +22,9 @@ export default function Papers() {
   const conference = params.get('conference') || ''
   const year = params.get('year') || ''
   const category = params.get('category') || ''
+  const topic = params.get('topic') || ''
+  const domain = params.get('domain') || ''
+  const track = params.get('track') || ''
   const page = Math.max(1, Number(params.get('page')) || 1)
   const [query, setQuery] = useState(q)
   const setFilter = (key: string, value: string) => {
@@ -54,6 +57,9 @@ export default function Papers() {
       conference,
       year,
       category,
+      topic,
+      domain,
+      track,
       page: String(page),
       pageSize: '12',
     })
@@ -69,7 +75,7 @@ export default function Papers() {
         if (!abort.signal.aborted) setBusy(false)
       })
     return () => abort.abort()
-  }, [q, conference, year, category, page])
+  }, [q, conference, year, category, topic, domain, track, page])
   async function findRelated() {
     setRanking(true)
     setError('')
@@ -80,6 +86,9 @@ export default function Papers() {
         conference,
         year,
         category,
+        topic,
+        domain,
+        track,
         pageSize: '40',
       })
       const pool = await api<{ papers: Paper[] }>(`api/papers?${params}`)
@@ -106,10 +115,10 @@ export default function Papers() {
   }
   return (
     <>
-      <PageHeading title="顶会论文总结" action={<Badge>多领域会议</Badge>} />
+      <PageHeading title="顶会论文" action={<Badge>多领域会议</Badge>} />
       <Metrics
         items={[
-          { label: '已总结论文', value: catalog?.topPapers || '—', detail: '中文摘要与原文链接' },
+          { label: '收录论文', value: catalog?.topPapers || '—', detail: '中文摘要与原文链接' },
           {
             label: '已接入会议',
             value: Object.keys(catalog?.conferences || {}).length,
@@ -166,6 +175,49 @@ export default function Papers() {
             </Button>
           </Toolbar>
           <div className="grid sm:grid-cols-3 gap-3 p-3">
+            <label className="fastui-field">
+              领域
+              <Select
+                aria-label="领域"
+                value={domain}
+                onChange={(e) => setFilter('domain', e.target.value)}
+              >
+                <option value="">全部领域</option>
+                <option value="software">软件工程</option>
+                <option value="ml">机器学习 · AI</option>
+                <option value="security">安全</option>
+              </Select>
+            </label>
+            <label className="fastui-field">
+              细分方向
+              <Select
+                aria-label="细分方向"
+                value={topic}
+                onChange={(e) => setFilter('topic', e.target.value)}
+              >
+                <option value="">全部方向</option>
+                {Object.entries(catalog?.topics || {}).map(([id, label]) => (
+                  <option key={id} value={id}>
+                    {label}
+                  </option>
+                ))}
+              </Select>
+            </label>
+            <label className="fastui-field">
+              会议轨道
+              <Select
+                aria-label="会议轨道"
+                value={track}
+                onChange={(e) => setFilter('track', e.target.value)}
+              >
+                <option value="">全部轨道</option>
+                <option value="main">主会研究论文</option>
+                <option value="companion">Companion</option>
+                <option value="workshop">Workshop</option>
+                <option value="unknown">尚未识别</option>
+              </Select>
+            </label>
+
             <label className="fastui-field">
               会议
               <Select
