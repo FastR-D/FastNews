@@ -14,7 +14,6 @@ type NewsSource struct {
 
 var NewsSources = []NewsSource{
 	{ID: "thehackernews", Name: "The Hacker News", URL: "https://feeds.feedburner.com/TheHackersNews", Channel: "security"},
-	{ID: "securityweek", Name: "SecurityWeek", URL: "https://www.securityweek.com/feed/", Channel: "security"},
 	{ID: "krebs", Name: "Krebs on Security", URL: "https://krebsonsecurity.com/feed/", Channel: "security"},
 	{ID: "openai", Name: "OpenAI News", URL: "https://openai.com/news/rss.xml", Channel: "ai"},
 	{ID: "huggingface", Name: "Hugging Face Blog", URL: "https://huggingface.co/blog/feed.xml", Channel: "ai"},
@@ -38,7 +37,7 @@ func ValidNewsChannel(channel string) bool {
 
 func NewsChannel(row map[string]any) string {
 	// Preserve the classification of archived records from retired subscriptions.
-	if source := Str(row, "source"); source == "bleepingcomputer" || source == "https://www.bleepingcomputer.com/feed/" {
+	if source := Str(row, "source"); source == "bleepingcomputer" || source == "https://www.bleepingcomputer.com/feed/" || source == "securityweek" || source == "https://www.securityweek.com/feed/" {
 		return "security"
 	}
 	if IsArxivSource(Str(row, "source")) {

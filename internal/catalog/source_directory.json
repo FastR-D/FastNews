@@ -269,7 +269,7 @@
     "description": "安全新闻；与 Y Combinator Hacker News 不是同一站",
     "verification": "primary",
     "reviewedAt": "2026-11-27",
-    "note": "已采集；现有 FeedBurner feed",
+    "note": "2026-11-27 主服务器访问 FeedBurner 超时，新加坡 RSS 实测 50 条，使用专用采集账号。",
     "references": [
       {
         "id": "Z2",
@@ -280,23 +280,6 @@
         "id": "R2",
         "title": "r/cybersecurity：可靠资讯源与付费意愿",
         "url": "https://www.reddit.com/r/cybersecurity/comments/1xzmlp9/what_are_your_favorite_and_most_reliable_new/"
-      }
-    ]
-  },
-  {
-    "id": "securityweek",
-    "name": "SecurityWeek",
-    "url": "https://www.securityweek.com/",
-    "category": "security",
-    "description": "安全行业与事件报道",
-    "verification": "primary",
-    "reviewedAt": "2026-11-27",
-    "note": "已采集；/feed/",
-    "references": [
-      {
-        "id": "Z2",
-        "title": "十个获取海外网络安全资讯的最佳网站",
-        "url": "https://zhuanlan.zhihu.com/p/718174636"
       }
     ]
   },

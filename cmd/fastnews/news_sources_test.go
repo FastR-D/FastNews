@@ -24,7 +24,7 @@ func (f newsTransport) RoundTrip(r *http.Request) (*http.Response, error) { retu
 func TestNewsSourcesThroughCLIAndWeeklyReport(t *testing.T) {
 	// Real CLI dispatch, fetch/parser, persistence, catalog, newspaper and HTML report.
 	// Only the public HTTP transport is redirected to recorded RSS/Atom protocols.
-	want := []string{"thehackernews", "securityweek", "arxiv_cs_cr", "arxiv_cs_ai", "arxiv_cs_se", "krebs", "openai", "huggingface"}
+	want := []string{"thehackernews", "arxiv_cs_cr", "arxiv_cs_ai", "arxiv_cs_se", "krebs", "openai", "huggingface"}
 	var failKrebs atomic.Bool
 	failKrebs.Store(true)
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

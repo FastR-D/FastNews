@@ -237,5 +237,12 @@
     "url": "https://huggingface.co/blog/feed.xml",
     "channel": "ai",
     "transport": "relay"
+  },
+  {
+    "id": "thehackernews",
+    "name": "The Hacker News",
+    "url": "https://feeds.feedburner.com/TheHackersNews",
+    "channel": "security",
+    "transport": "relay"
   }
 ]

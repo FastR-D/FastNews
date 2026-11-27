@@ -1,6 +1,6 @@
 # 信源核验与启用记录（2026-11-27）
 
-核验覆盖目录原有 78 个条目及 3 条 arXiv 实际订阅；同时比较主服务器与新加坡出口，检查响应是否可被采集器解析。网页可访问不等于已接入。依用户要求删除 15 个停更、受限、失效或重复条目；保留 66 个目录条目，其中计划启用 37 个采集来源。
+核验覆盖目录原有 78 个条目及 3 条 arXiv 实际订阅；同时比较主服务器与新加坡出口，检查响应是否可被采集器解析。网页可访问不等于已接入。依用户要求删除 16 个停更、受限、失效或重复条目；保留 65 个目录条目，其中启用 36 个采集来源。
 
 ## 启用来源
 
@@ -14,8 +14,7 @@
 | FIRST | RSS / Atom / RDF | 直连 | 90 天 |
 | JPCERT/CC Incident | RSS / Atom / RDF | 直连 | 90 天 |
 | Krebs on Security | RSS / Atom / RDF | 直连 | 14 天 |
-| The Hacker News | RSS / Atom / RDF | 直连 | 14 天 |
-| SecurityWeek | RSS / Atom / RDF | 直连 | 14 天 |
+| The Hacker News | RSS / Atom / RDF | 新加坡 | 14 天 |
 | Trail of Bits | RSS / Atom / RDF | 直连 | 90 天 |
 | Cisco Talos | RSS / Atom / RDF | 直连 | 14 天 |
 | Unit 42 | RSS / Atom / RDF | 直连 | 90 天 |
@@ -49,6 +48,7 @@ CISA 使用新增入库日期；NVD 只保留 HIGH/CRITICAL，评级与在野利
 | 信源 | 删除原因 |
 | --- | --- |
 | 360 CERT | 证书已过期，入口不可用 |
+| SecurityWeek | 正式采集返回 HTTP 403 |
 | BleepingComputer | 两地 RSS 均返回 HTTP 403 |
 | Security Boulevard | 入口返回 HTTP 403 |
 | Threatpost | 停止常规更新 |
@@ -102,6 +102,8 @@ CISA 使用新增入库日期；NVD 只保留 HIGH/CRITICAL，评级与在野利
 
 ## 专用采集账号
 
-`fastnews-fetch` 仅允许读取 FastDeploy 白名单中的 5 个 HTTPS 端点，禁止交互终端、任意命令和端口转发。应用机固定主机公钥，密钥持久化到私有目录；GitHub `production` Environment 已配置 5 项 `FASTNEWS_RELAY_SSH_*` Secrets，用于恢复，值不进入仓库、日志、发布包或前端。
+`fastnews-fetch` 仅允许读取 FastDeploy 白名单中的 6 个 HTTPS 端点，禁止交互终端、任意命令和端口转发。应用机固定主机公钥，密钥持久化到私有目录；GitHub `production` Environment 已配置 5 项 `FASTNEWS_RELAY_SSH_*` Secrets，用于恢复，值不进入仓库、日志、发布包或前端。
 
 FastDeploy：`5ad81d7d0ceae560fcd0825ebee1dae18a9942e4`。自动采集继续沿用服务器现有 6 小时计划，另安排一次手动补采验证。
+
+首轮线上补采新增 2,284 条记录；SecurityWeek 返回 403，已按要求删除。The Hacker News 直连 FeedBurner 超时，新加坡实测返回 50 条订阅记录，改为经跳板机采集。
