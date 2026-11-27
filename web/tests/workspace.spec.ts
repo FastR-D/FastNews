@@ -712,7 +712,7 @@ test('paper cards place reading actions above the abstract and align briefing fi
   page,
   baseURL,
 }, info) => {
-  await visit(page, baseURL, 'top-conf/')
+  await visit(page, baseURL, 'top-conf/?conference=usenix')
   const card = page.getByTestId('paper-row').first()
   await expect(card).toBeVisible()
   await expect(card).toHaveCSS('border-top-style', 'solid')
@@ -742,7 +742,7 @@ test('paper cards place reading actions above the abstract and align briefing fi
   const source = await page.getByLabel('语料来源', { exact: true }).boundingBox()
   expect(Math.abs(direction!.x - source!.x)).toBeLessThan(1)
   await visit(page, baseURL, 'arxiv/')
-  await expect(page.getByLabel('采集日期', { exact: true })).toHaveAttribute('type', 'date')
+  await expect(page.getByLabel('采集日期', { exact: true })).toHaveAttribute('type', 'text')
 })
 
 test('topic filters, author and institution pages, following and back-to-top work together', async ({
@@ -794,5 +794,112 @@ test('topic filters, author and institution pages, following and back-to-top wor
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThan(5)
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1),
+  ).toBeTruthy()
+})
+
+test('collection calendar supports month navigation, keyboard selection and dismissal', async ({
+  page,
+  baseURL,
+}) => {
+  await login(page, baseURL)
+  await visit(page, baseURL, 'arxiv/')
+  const input = page.getByLabel('采集日期', { exact: true })
+  await expect(input).not.toHaveValue('')
+  const value = await input.inputValue()
+  const [year, month, day] = value.split('-').map(Number)
+  const previous = new Date(year, month - 1, day - 1, 12)
+  const previousKey = `${previous.getFullYear()}-${String(previous.getMonth() + 1).padStart(2, '0')}-${String(previous.getDate()).padStart(2, '0')}`
+  await page.getByRole('button', { name: '打开采集日历' }).click()
+  const calendar = page.getByRole('dialog', { name: '选择采集日期' })
+  await expect(calendar).toBeVisible()
+  const cell = calendar.getByRole('button', { name: value, exact: true })
+  await expect(cell).toBeFocused()
+  await cell.press('ArrowLeft')
+  await expect(calendar.getByRole('button', { name: previousKey, exact: true })).toBeFocused()
+  await page.keyboard.press('Enter')
+  await expect(calendar).not.toBeVisible()
+  await expect(input).toHaveValue(previousKey)
+  await page.getByRole('button', { name: '打开采集日历' }).click()
+  await calendar.getByRole('button', { name: '上个月', exact: true }).click()
+  await calendar.getByRole('button', { name: '下个月', exact: true }).click()
+  await expect(calendar.getByRole('button', { name: previousKey, exact: true })).toBeFocused()
+  await page.keyboard.press('Escape')
+  await expect(calendar).not.toBeVisible()
+  await expect(page.getByRole('button', { name: '打开采集日历' })).toBeFocused()
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
+  ).toBeTruthy()
+})
+
+test('expired session redirects once and restores the requested page after login', async ({
+  page,
+  baseURL,
+  context,
+}) => {
+  await login(page, baseURL)
+  await visit(page, baseURL, 'top-conf/?conference=usenix')
+  await expect(page.getByTestId('paper-row').first()).toBeVisible()
+  await context.clearCookies()
+  await page.getByRole('button', { name: '个人印象', exact: true }).click()
+  const impression = page.getByRole('dialog', { name: '个人印象' })
+  await impression.getByLabel('研究印象', { exact: true }).fill('Session expiry test')
+  await impression.getByRole('button', { name: '保存印象', exact: true }).click()
+  await expect(page.getByRole('heading', { name: '登录 FastNews', exact: true })).toBeVisible()
+  expect(new URL(page.url()).searchParams.get('next')).toContain('/top-conf/')
+  await expect(page.getByRole('alert')).toHaveCount(0)
+  await page.getByLabel('邮箱', { exact: true }).fill('browser-test@example.com')
+  await page.getByLabel('密码', { exact: true }).fill('wrong-password')
+  await page.getByRole('form', { name: '本地账号' }).locator('button[type=submit]').click()
+  await expect(page.getByRole('alert')).toBeVisible()
+  await page.getByLabel('密码', { exact: true }).fill('browser-test-password-123')
+  await page.getByRole('form', { name: '本地账号' }).locator('button[type=submit]').click()
+  await expect(page).toHaveURL(/top-conf/)
+  await expect(page.getByTestId('paper-row').first()).toBeVisible()
+  await expect(page.getByRole('alert')).toHaveCount(0)
+})
+
+test('publisher authors and affiliations have independent links and old institution routes recover', async ({
+  page,
+  baseURL,
+}) => {
+  await login(page, baseURL)
+  await visit(page, baseURL, 'top-conf/?conference=ccs&year=2026')
+  const card = page.getByTestId('paper-row').filter({
+    has: page.getByRole('heading', {
+      name: 'Exploring the Exposure of IPv6 End-Host Networks',
+      exact: true,
+    }),
+  })
+  const person = card
+    .locator('.paper-person')
+    .filter({ has: page.getByRole('link', { name: 'Hugo Hue', exact: true }) })
+  const name = person.getByRole('link', { name: 'Hugo Hue', exact: true })
+  const unit = person.getByRole('link', { name: 'Georgia Institute of Technology', exact: true })
+  await expect(name).toHaveCSS('text-decoration-line', 'underline')
+  await expect(unit).toHaveCSS('text-decoration-line', 'underline')
+  await expect(name).toHaveAttribute('href', /kind=author&name=Hugo\+Hue$/)
+  await expect(unit).toHaveAttribute(
+    'href',
+    /kind=institution&name=Georgia\+Institute\+of\+Technology$/,
+  )
+  await expect(card.locator('.paper-person')).toHaveCount(5)
+  await expect(
+    card.getByRole('link', { name: 'University of California, Irvine', exact: true }),
+  ).toBeVisible()
+  const dns = page.getByTestId('paper-row').filter({ hasText: 'DNS Task Queue Scheduling' })
+  await expect(dns.locator('.paper-person')).toHaveCount(8)
+  await expect(dns.getByRole('link', { name: 'Shiming Liu', exact: true })).toBeVisible()
+  await expect(
+    dns.getByRole('link', { name: 'Tsinghua University, BNRist', exact: true }),
+  ).toBeVisible()
+  await name.click()
+  await expect(page.getByRole('heading', { name: '收录论文 · 1', exact: true })).toBeVisible()
+  await visit(page, baseURL, 'entity/?kind=author&name=Ruhr+University+Bochum')
+  await expect(page).toHaveURL(/kind=institution/)
+  await expect(page.getByRole('heading', { name: '机构资料', exact: true })).toBeVisible()
+  await expect(page.getByRole('heading', { name: '收录论文 · 1', exact: true })).toBeVisible()
+  await expect(page.getByRole('link', { name: 'ROR 机构检索' })).toBeVisible()
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
   ).toBeTruthy()
 })

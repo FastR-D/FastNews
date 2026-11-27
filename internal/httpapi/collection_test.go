@@ -259,3 +259,105 @@ func TestCollectionSchedulePermissionsPauseAndValidation(t *testing.T) {
 		t.Fatal(status)
 	}
 }
+
+func TestDirectoryQueuePersistsCandidatesAndRequiresAdmin(t *testing.T) {
+	h := collectionAdmin(t)
+	if status, _, _ := h.request(t, "POST", "/api/admin/collection/queue", map[string]string{"source": "source_1"}, "", true); status != 403 {
+		t.Fatal(status)
+	}
+	status, v, _ := h.request(t, "POST", "/api/admin/collection/queue", map[string]string{"source": "source_1"}, h.csrf, true)
+	if status != 202 || v["state"] != "needs_configuration" {
+		t.Fatal(status, v)
+	}
+	id := v["id"].(string)
+	_, v, _ = h.request(t, "POST", "/api/admin/collection/queue", map[string]string{"source": "source_1"}, h.csrf, true)
+	if v["id"] != id {
+		t.Fatal("duplicate queue item", v)
+	}
+	recovered, err := newCollectionManager(filepath.Dir(h.app.collection.file))
+	if err != nil || len(recovered.queue) != 1 || recovered.queue[0].ID != id {
+		t.Fatal(recovered, err)
+	}
+	if status, _, _ := h.request(t, "POST", "/api/admin/collection/queue/remove", map[string]string{"id": id}, h.csrf, true); status != 200 {
+		t.Fatal(status)
+	}
+	if status, _, _ := h.request(t, "POST", "/api/admin/collection/queue", map[string]string{"source": "https://arbitrary.example"}, h.csrf, true); status != 400 {
+		t.Fatal(status)
+	}
+}
+func TestDirectoryQueueRunsConfiguredFeedAndDoesNotReplayClaim(t *testing.T) {
+	h := collectionAdmin(t)
+	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, `<rss><channel><item><guid>queued-example</guid><title>Queued research</title><link>https://example.org/queue</link></item></channel></rss>`)
+	}))
+	defer upstream.Close()
+	configureCollection(t, h, catalog.NewsSource{ID: "queued_source", Name: "Queued source", URL: upstream.URL, Channel: "ai", Disabled: true, MaxAgeDays: -1})
+	status, v, _ := h.request(t, "POST", "/api/admin/collection/queue", map[string]string{"source": "queued_source"}, h.csrf, true)
+	if status != 202 || v["state"] != "running" {
+		t.Fatal(status, v)
+	}
+	run := awaitCollection(t, h)
+	if run["status"] != "completed" || run["queueId"] != v["id"] {
+		t.Fatal(run, v)
+	}
+	sources, err := catalog.LoadNewsSources(h.app.Config.Root, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, source := range sources {
+		if source.ID == "queued_source" && source.Disabled {
+			t.Fatal("source still disabled")
+		}
+	}
+	item := collectionQueueItem{ID: v["id"].(string), Source: "queued_source", State: "queued"}
+	if err := saveCollectionJSON(h.app.collection.queueFile(), []collectionQueueItem{item}); err != nil {
+		t.Fatal(err)
+	}
+	recovered, err := newCollectionManager(filepath.Dir(h.app.collection.file))
+	if err != nil || len(recovered.queue) != 0 {
+		t.Fatal("claimed item replayed", err)
+	}
+}
+
+func TestQueuedFeedWaitsForActiveRunAndDrainsAfterCompletion(t *testing.T) {
+	h := collectionAdmin(t)
+	release := make(chan struct{})
+	started := make(chan struct{}, 1)
+	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/first" {
+			started <- struct{}{}
+			select {
+			case <-release:
+			case <-r.Context().Done():
+				return
+			}
+		}
+		fmt.Fprint(w, `<rss><channel><item><title>Research</title><link>https://example.org/queued</link></item></channel></rss>`)
+	}))
+	defer upstream.Close()
+	configureCollection(t, h, catalog.NewsSource{ID: "queue_first", Name: "First", URL: upstream.URL + "/first", Channel: "ai"}, catalog.NewsSource{ID: "queue_second", Name: "Second", URL: upstream.URL + "/second", Channel: "ai"})
+	status, _, _ := h.request(t, "POST", "/api/admin/collection", map[string]string{"source": "queue_first"}, h.csrf, true)
+	if status != 202 {
+		close(release)
+		t.Fatal(status)
+	}
+	<-started
+	status, item, _ := h.request(t, "POST", "/api/admin/collection/queue", map[string]string{"source": "queue_second"}, h.csrf, true)
+	close(release)
+	if status != 202 || item["state"] != "queued" {
+		t.Fatal(status, item)
+	}
+	deadline := time.Now().Add(5 * time.Second)
+	for time.Now().Before(deadline) {
+		_, v, _ := h.request(t, "GET", "/api/admin/collection", nil, "", true)
+		runs := v["runs"].([]any)
+		if len(runs) == 2 && runs[0].(map[string]any)["status"] == "completed" {
+			if runs[0].(map[string]any)["selection"] != "queue_second" || len(v["queue"].([]any)) != 0 {
+				t.Fatal(v)
+			}
+			return
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
+	t.Fatal("queued source never completed")
+}

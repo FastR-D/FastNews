@@ -25,10 +25,10 @@ type Preview = {
   papers: { title: string; url: string }[]
 }
 export default function EntityPage() {
-  const [params] = useSearchParams()
+  const [params, setParams] = useSearchParams()
   const { profile, refresh, notify } = useApp()
   const name = params.get('name') || '',
-    kind = params.get('kind') || 'author',
+    requestedKind = params.get('kind') || 'author',
     ref = params.get('ref') || ''
   const [data, setData] = useState<Result | null>(null),
     [error, setError] = useState(''),
@@ -45,7 +45,7 @@ export default function EntityPage() {
     setPreview(null)
     setURL(ref)
     setPreviewError('')
-    api<Result>(`api/entities?${new URLSearchParams({ name, kind, ref })}`, {
+    api<Result>(`api/entities?${new URLSearchParams({ name, kind: requestedKind, ref })}`, {
       signal: abort.signal,
     })
       .then(setData)
@@ -53,8 +53,22 @@ export default function EntityPage() {
         if (!abort.signal.aborted) setError(message(e))
       })
     return () => abort.abort()
-  }, [name, kind, ref])
+  }, [name, requestedKind, ref])
+  const kind = data?.kind || requestedKind
   useEffect(() => {
+    if (data && data.kind !== requestedKind) {
+      setParams(
+        (previous) => {
+          const next = new URLSearchParams(previous)
+          next.set('kind', data.kind)
+          return next
+        },
+        { replace: true },
+      )
+    }
+  }, [data, requestedKind, setParams])
+  useEffect(() => {
+    setFetching(false)
     if (!ref || !safeURL(ref)) return
     const abort = new AbortController()
     setFetching(true)
@@ -149,7 +163,7 @@ export default function EntityPage() {
           <aside>
             <Panel title={kind === 'institution' ? '机构资料' : '作者资料'}>
               <div className="entity-profile-body">
-                {data.match === 'name' && (
+                {data.match === 'name' && kind === 'author' && (
                   <p className="entity-match-note">按姓名收录，可能包含同名记录。</p>
                 )}
                 {!!data.affiliations.length && (
@@ -192,7 +206,7 @@ export default function EntityPage() {
                     </a>
                   )}
                   {preview?.profiles
-                    .filter((link) => safeURL(link.url))
+                    ?.filter((link) => safeURL(link.url))
                     .map((link, i) => (
                       <a key={i} href={safeURL(link.url)} target="_blank" rel="noreferrer">
                         {link.title} <ArrowUpRight size={14} />

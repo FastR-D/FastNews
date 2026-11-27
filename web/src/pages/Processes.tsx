@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Button, Dialog, EmptyState, Select } from '@fastrd/ui-react'
 import { Play, RefreshCw, Square, ChevronDown, ChevronUp, Settings2, X } from 'lucide-react'
 import { api, message } from '../api'
+import { Link } from 'react-router-dom'
 import { useApp } from '../context'
 import { Busy, ErrorMessage, PageHeading, Panel } from '../components/Common'
 
@@ -33,6 +34,7 @@ type Schedule = {
   error?: string
 }
 type Snapshot = {
+  queue?: { id: string; source: string; name: string; state: string; requestedAt: string }[]
   schedule: Schedule
   schedulerRunning: boolean
   runs: Run[]
@@ -449,6 +451,56 @@ export default function Processes() {
           </div>
         )}
       </Panel>
+      {!!data?.queue?.length && (
+        <Panel title="采集队列" className="admin-panel">
+          <div className="fastui-table-scroll">
+            <table className="fastui-table admin-table" aria-label="采集队列">
+              <thead>
+                <tr>
+                  <th>信源</th>
+                  <th>状态</th>
+                  <th>加入时间</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.queue.map((item) => (
+                  <tr key={item.id}>
+                    <td>
+                      <Link
+                        className="fastui-link"
+                        to={`/sources/?q=${encodeURIComponent(item.name)}`}
+                      >
+                        {item.name}
+                      </Link>
+                    </td>
+                    <td>{item.state === 'needs_configuration' ? '待接入采集接口' : '等待采集'}</td>
+                    <td>{new Date(item.requestedAt).toLocaleString('zh-CN', { hour12: false })}</td>
+                    <td>
+                      <Button
+                        variant="quiet"
+                        onClick={async () => {
+                          try {
+                            await api('api/admin/collection/queue/remove', {
+                              method: 'POST',
+                              body: JSON.stringify({ id: item.id }),
+                            })
+                            await load()
+                          } catch (e) {
+                            setError(message(e))
+                          }
+                        }}
+                      >
+                        移出队列
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Panel>
+      )}
       <Panel title="采集任务" className="admin-panel">
         {!data ? (
           <Busy />

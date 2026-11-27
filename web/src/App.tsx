@@ -369,7 +369,7 @@ function AccessGate() {
     if (location.pathname !== '/login')
       return (
         <Navigate
-          to={`/login?next=${encodeURIComponent(location.pathname + location.search)}`}
+          to={`/login?next=${encodeURIComponent(location.pathname + location.search + location.hash)}`}
           replace
         />
       )

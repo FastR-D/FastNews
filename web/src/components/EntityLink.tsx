@@ -146,24 +146,40 @@ export default function EntityLink({ entity, kind = 'author' }: { entity: Entity
   )
 }
 export function PaperPeople({ paper }: { paper: Paper }) {
-  const people = paper.authors_list?.length
-    ? paper.authors_list
-    : (paper.author || paper.authors || '')
-        .split(/\s*(?:;|；|,|，|\band\b)\s*/)
-        .filter(Boolean)
-        .map((name) => ({ name }))
+  const people = paper.authors_list || []
+  const associated = new Set(
+    people.flatMap((person) => person.affiliations?.map((org) => org.name) || []),
+  )
+  const extraInstitutions = paper.institutions?.filter((org) => !associated.has(org.name)) || []
   return (
     <div className="paper-people">
       {!!people.length && (
         <div className="paper-authors">
           {people.map((person, i) => (
-            <EntityLink key={`${person.name}-${i}`} entity={person} />
+            <span className="paper-person" key={`${person.name}-${i}`}>
+              <EntityLink entity={person} />
+              {!!person.affiliations?.length && (
+                <span className="paper-person-affiliations">
+                  {' ('}
+                  {person.affiliations.map((org, j) => (
+                    <span key={`${org.name}-${j}`}>
+                      {j > 0 && '; '}
+                      <EntityLink entity={org} kind="institution" />
+                    </span>
+                  ))}
+                  {')'}
+                </span>
+              )}
+            </span>
           ))}
         </div>
       )}
-      {!!paper.institutions?.length && (
+      {!people.length && (paper.author || paper.authors) && (
+        <div className="paper-authors">{paper.author || paper.authors}</div>
+      )}
+      {!!extraInstitutions.length && (
         <div className="paper-institutions">
-          {paper.institutions.map((org, i) => (
+          {extraInstitutions.map((org, i) => (
             <EntityLink key={`${org.name}-${i}`} entity={org} kind="institution" />
           ))}
         </div>

@@ -27,6 +27,7 @@ type collectionSource struct {
 	Name string `json:"name"`
 }
 type collectionRun struct {
+	QueueID    string             `json:"queueId,omitempty"`
 	ID         string             `json:"id"`
 	Selection  string             `json:"selection"`
 	Status     string             `json:"status"`
@@ -38,6 +39,7 @@ type collectionRun struct {
 	Error      string             `json:"error,omitempty"`
 }
 type collectionManager struct {
+	queue            []collectionQueueItem
 	mu               sync.Mutex
 	runs             []collectionRun
 	cancel           context.CancelFunc
@@ -82,6 +84,9 @@ func newCollectionManager(dir string) (*collectionManager, error) {
 		}
 	}
 	if err := m.loadSchedule(); err != nil {
+		return nil, err
+	}
+	if err := m.loadQueue(); err != nil {
 		return nil, err
 	}
 	return m, nil
@@ -170,7 +175,7 @@ func (s *Server) adminCollection(w http.ResponseWriter, r *http.Request, p strin
 		}
 		m.mu.Lock()
 		defer m.mu.Unlock()
-		reply(w, r, 200, map[string]any{"runs": m.runs, "sources": enabled, "warning": catalog.First(sourceWarning, m.persistenceError, m.scheduleError), "schedule": m.schedule, "schedulerRunning": m.schedulerCancel != nil && !m.closed})
+		reply(w, r, 200, map[string]any{"runs": m.runs, "queue": m.queue, "sources": enabled, "warning": catalog.First(sourceWarning, m.persistenceError, m.scheduleError), "schedule": m.schedule, "schedulerRunning": m.schedulerCancel != nil && !m.closed})
 		return nil
 	}
 	if r.Method != http.MethodPost {
@@ -181,6 +186,12 @@ func (s *Server) adminCollection(w http.ResponseWriter, r *http.Request, p strin
 	}
 	if p == "/api/admin/collection/schedule" {
 		return s.updateCollectionSchedule(w, r)
+	}
+	if p == "/api/admin/collection/queue" {
+		return s.enqueueCollection(w, r, current.UserID)
+	}
+	if p == "/api/admin/collection/queue/remove" {
+		return s.removeQueuedCollection(w, r)
 	}
 	if strings.HasSuffix(p, "/cancel") {
 		id := strings.TrimSuffix(strings.TrimPrefix(p, "/api/admin/collection/"), "/cancel")
@@ -241,7 +252,7 @@ func (s *Server) selectedCollectionSources(selection string) ([]collectionTarget
 }
 
 // beginCollection is called with the manager lock held by either trigger.
-func (s *Server) beginCollection(selection, trigger, actor string, selected []collectionTarget) (collectionRun, error) {
+func (s *Server) beginCollection(selection, trigger, actor string, selected []collectionTarget, queueIDs ...string) (collectionRun, error) {
 	m := s.collection
 	if m.closed {
 		return collectionRun{}, store.Fail(503, "服务正在关闭")
@@ -250,6 +261,9 @@ func (s *Server) beginCollection(selection, trigger, actor string, selected []co
 		return collectionRun{}, store.Fail(409, "已有采集任务运行中")
 	}
 	run := collectionRun{ID: store.Random(), Selection: selection, Trigger: trigger, Status: "running", StartedAt: time.Now().UTC(), StartedBy: actor, Sources: []collectionSource{}}
+	if len(queueIDs) > 0 {
+		run.QueueID = queueIDs[0]
+	}
 	for _, source := range selected {
 		run.Sources = append(run.Sources, collectionSource{NewsProgress: jobs.NewsProgress{Source: source.ID, State: "queued"}, Name: source.Name})
 	}
@@ -342,4 +356,5 @@ func (s *Server) runCollection(ctx context.Context, cancel context.CancelFunc, s
 	cancel()
 	m.cancel = nil
 	close(m.done)
+	go s.drainCollectionQueue()
 }

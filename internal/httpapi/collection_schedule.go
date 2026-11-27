@@ -122,7 +122,13 @@ func (s *Server) collectIfDue(now time.Time) {
 	m := s.collection
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	if m.closed || !m.schedule.Enabled || m.schedule.NextRunAt.After(now) || m.cancel != nil {
+	if m.closed || m.cancel != nil {
+		return
+	}
+	if s.startQueuedCollectionLocked() {
+		return
+	}
+	if !m.schedule.Enabled || m.schedule.NextRunAt.After(now) {
 		return
 	}
 	sources, err := s.selectedCollectionSources(m.schedule.Source)

@@ -47,3 +47,10 @@ for days in (0, 1, 8, 31):
                          published=date + "T00:00:00Z"))
     write(f"secnews/data/articles/{date}.jsonl", news, True)
 write("secnews/data/report/Weekly_Example.json", [dict(tag="h2", children=[dict(text="Synthetic weekly report")])])
+
+# Author parsing regressions: publisher-style parentheses and shared units.
+write("top-conf/data/conferences/ccs_2026.jsonl", [
+    dict(_id="author-regression-1",title="Exploring the Exposure of IPv6 End-Host Networks",link="https://example.org/ipv6",author="Hugo Hue (Georgia Institute of Technology), Abhishek Bhaskar (Georgia Institute of Technology), Amanda Hsu (Georgia Institute of Technology), Paul Pearce (University of California, Irvine), Frank Li (Georgia Institute of Technology)",track="conference"),
+    dict(_id="author-regression-2",title="The Trade-off Between Performance and Security: Exploring Vulnerabilities in DNS Task Queue Scheduling",link="https://example.org/dns",author="Shiming Liu (Tsinghua University, BNRist), Yunyi Zhang (Tsinghua University), Ruixuan Li (Tsinghua University), Shiyao Guo (Tsinghua University), Baojun Liu (Tsinghua University), Donghong Sun (Tsinghua University), Yong Ma (Alibaba Cloud), Linjian Song (Alibaba Cloud)",track="conference"),
+    dict(_id="author-regression-3",title="Shared institution regression",link="https://example.org/ruhr",author="Nurullah Erinola, Marcel Maehren, Marcus Brinkmann, and Jörg Schwenk, Ruhr University Bochum",track="conference"),
+],True)

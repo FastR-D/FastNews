@@ -19,6 +19,22 @@ func (s *Server) entity(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
+	// Repair old links that classified a known affiliation as a person. Only
+	// switch when no actual scholar matches; don't guess identities by keywords.
+	if kind == "author" && ref == "" {
+		hasAuthor, hasInstitution := false, false
+		for _, paper := range papers {
+			for _, author := range paper.AuthorsList {
+				hasAuthor = hasAuthor || strings.EqualFold(author.Name, name)
+			}
+			for _, org := range paper.Institutions {
+				hasInstitution = hasInstitution || strings.EqualFold(org.Name, name)
+			}
+		}
+		if !hasAuthor && hasInstitution {
+			kind = "institution"
+		}
+	}
 	out := []catalog.Paper{}
 	entity := catalog.Entity{Name: name}
 	affiliations := []catalog.Entity{}

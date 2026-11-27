@@ -39,3 +39,20 @@ func TestResearchNewsExcludesGeneralPublishers(t *testing.T) {
 		t.Fatal(rows, err)
 	}
 }
+
+func TestArchivedReportSeparatesAuthorAndInstitution(t *testing.T) {
+	root := t.TempDir()
+	dir := filepath.Join(root, "top-conf/data/report")
+	os.MkdirAll(dir, 0755)
+	content := []ReportNode{{Tag: "article", Paper: map[string]string{"id": "ipv6-example", "title": "IPv6 example", "authors": "Hugo Hue (Georgia Institute of Technology), Paul Pearce (University of California, Irvine)", "url": "https://example.org/ipv6"}}}
+	raw, _ := json.Marshal(content)
+	os.WriteFile(filepath.Join(dir, "CCS_2026_Report.json"), raw, 0600)
+	report, err := (&Catalog{Root: root}).ReadReport("top-conf/data/report/CCS_2026_Report.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	paper := report.Content[0].CatalogPaper
+	if paper == nil || len(paper.AuthorsList) != 2 || paper.AuthorsList[0].Name != "Hugo Hue" || paper.AuthorsList[1].Affiliations[0].Name != "University of California, Irvine" {
+		t.Fatal(paper)
+	}
+}

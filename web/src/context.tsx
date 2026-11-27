@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
-import { api, APIError, message, setCSRF } from './api'
+import { api, APIError, message, setCSRF, SessionExpiredError, sessionExpiredEvent } from './api'
 import type { Catalog, Profile } from './types'
 
 const AppContext = createContext<{
@@ -36,13 +36,28 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [catalogLoading, setCatalogLoading] = useState(true)
   const [notice, notify] = useState('')
   const [attempt, setAttempt] = useState(0)
+  useEffect(() => {
+    const expire = () => {
+      setProfile(null)
+      setCatalog(null)
+      setCatalogError('')
+      notify('')
+      setRequireLogin(true)
+      setAuthReady(true)
+    }
+    window.addEventListener(sessionExpiredEvent, expire)
+    return () => window.removeEventListener(sessionExpiredEvent, expire)
+  }, [])
   const refresh = useCallback(async () => {
     try {
       const value = await api<Profile>('api/content/me')
       setCSRF(value.csrf)
       setProfile(value)
     } catch (error) {
-      if (error instanceof APIError && error.status === 401) {
+      if (
+        error instanceof SessionExpiredError ||
+        (error instanceof APIError && error.status === 401)
+      ) {
         setCSRF('')
         setProfile(null)
       } else throw error

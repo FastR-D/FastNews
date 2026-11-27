@@ -9,7 +9,8 @@ import {
   ReadingHeader,
   SourceMark,
 } from '../components/ReadingLayout'
-import { ArrowLeft, ArrowUpRight, Search } from 'lucide-react'
+import { ArrowLeft, ArrowUpRight, Search, ListPlus } from 'lucide-react'
+import { useApp } from '../context'
 import { api, message, safeURL } from '../api'
 import { Busy, ErrorMessage } from '../components/Common'
 import type { DirectorySource } from '../types'
@@ -23,6 +24,9 @@ const categories: Record<string, string> = {
   arxiv: '预印本',
 }
 export default function Sources() {
+  const { profile, notify } = useApp()
+  const [queue, setQueue] = useState<Record<string, string>>({})
+  const [adding, setAdding] = useState('')
   const [params, setParams] = useSearchParams()
   const pendingFilters = useRef(params)
   useEffect(() => {
@@ -46,6 +50,59 @@ export default function Sources() {
   const [busy, setBusy] = useState(true)
   const [error, setError] = useState('')
   const [retry, setRetry] = useState(0)
+  useEffect(() => {
+    if (profile?.role !== 'admin') return
+    const abort = new AbortController()
+    let timer: ReturnType<typeof setTimeout>
+    async function poll() {
+      try {
+        const data = await api<{
+          queue?: { source: string; state: string }[]
+          runs: { status: string; sources: { source: string; state: string }[] }[]
+        }>('api/admin/collection', { signal: abort.signal })
+        if (abort.signal.aborted) return
+        const states: Record<string, string> = {}
+        for (const item of data.queue || []) states[item.source] = item.state
+        for (const run of data.runs)
+          if (['running', 'stopping'].includes(run.status))
+            for (const item of run.sources)
+              if (['queued', 'running'].includes(item.state)) states[item.source] = item.state
+        setQueue(states)
+      } catch (e) {
+        if (!abort.signal.aborted) setError(message(e))
+      }
+      if (!abort.signal.aborted) timer = setTimeout(poll, 5000)
+    }
+    void poll()
+    return () => {
+      abort.abort()
+      clearTimeout(timer)
+    }
+  }, [profile?.role, retry])
+  async function enqueue(source: DirectorySource) {
+    setAdding(source.id)
+    setError('')
+    try {
+      const item = await api<{ state: string }>('api/admin/collection/queue', {
+        method: 'POST',
+        body: JSON.stringify({ source: source.id }),
+      })
+      setQueue((previous) => ({ ...previous, [source.id]: item.state }))
+      if (source.configured)
+        setSources((previous) =>
+          previous.map((item) => (item.id === source.id ? { ...item, disabled: false } : item)),
+        )
+      notify(
+        item.state === 'needs_configuration'
+          ? '已加入待接入队列，可在进程管理中查看'
+          : '已加入采集队列',
+      )
+    } catch (e) {
+      setError(message(e))
+    } finally {
+      setAdding('')
+    }
+  }
   useEffect(() => setQuery(q), [q])
   useEffect(() => {
     const abort = new AbortController()
@@ -196,18 +253,45 @@ export default function Sources() {
                       >
                         <div className="flex flex-wrap items-center gap-2 mb-4 text-xs text-[var(--fastui-muted)]">
                           <SourceMark category={source.category} size="large" />
-                          <span
-                            className={`source-pill ${source.configured && !source.disabled ? 'source-pill--active' : source.verification === 'candidate' ? 'source-pill--candidate' : ''}`}
-                          >
-                            {source.configured
-                              ? source.disabled
-                                ? '已停用'
-                                : '已配置采集'
-                              : source.verification === 'primary'
-                                ? '已核验上游'
-                                : '待验证候选'}
-                          </span>
-                          <span>{categories[source.category] || source.category}</span>
+                          {profile?.role === 'admin' && (
+                            <Button
+                              className="source-queue-button"
+                              variant="quiet"
+                              disabled={!!adding || !!queue[source.id]}
+                              aria-label={`将${source.name}纳入采集队列`}
+                              title={
+                                queue[source.id] === 'needs_configuration'
+                                  ? '尚未配置可用采集接口，可在进程管理中查看'
+                                  : '纳入采集队列'
+                              }
+                              onClick={() => void enqueue(source)}
+                            >
+                              <ListPlus size={15} />
+                              {adding === source.id
+                                ? '加入中…'
+                                : queue[source.id] === 'needs_configuration'
+                                  ? '待接入'
+                                  : queue[source.id] === 'running'
+                                    ? '采集中'
+                                    : queue[source.id]
+                                      ? '已排队'
+                                      : '纳入采集'}
+                            </Button>
+                          )}
+                          <div className="source-card-meta">
+                            <span
+                              className={`source-pill ${source.configured && !source.disabled ? 'source-pill--active' : source.verification === 'candidate' ? 'source-pill--candidate' : ''}`}
+                            >
+                              {source.configured
+                                ? source.disabled
+                                  ? '已停用'
+                                  : '已配置采集'
+                                : source.verification === 'primary'
+                                  ? '已核验上游'
+                                  : '待验证候选'}
+                            </span>
+                            <span>{categories[source.category] || source.category}</span>
+                          </div>
                         </div>
                         <h2 className="text-base font-semibold leading-snug m-0 break-words">
                           <a
