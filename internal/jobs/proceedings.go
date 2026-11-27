@@ -7,9 +7,17 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
 
 	"golang.org/x/net/html"
 )
+
+// Full proceedings indexes and abstract feeds can be several megabytes. Allow
+// slow publisher connections while retaining the shared size cap and caller's
+// cancellation/deadline (including the scheduler's overall 30-minute budget).
+func getProceedingsIndex(ctx context.Context, source string) ([]byte, error) {
+	return getWithTimeout(ctx, source, 10*time.Minute)
+}
 
 // These publisher volumes were checked against the official indexes.
 var pmlrVolumes = map[int]string{2022: "162", 2023: "202", 2024: "235", 2025: "267"}
@@ -44,7 +52,7 @@ func fetchProceedings(ctx context.Context, conf string, year int, source string)
 	if err != nil {
 		return nil, err
 	}
-	raw, err := get(ctx, source)
+	raw, err := getProceedingsIndex(ctx, source)
 	if err != nil {
 		return nil, err
 	}
@@ -141,7 +149,7 @@ func pmlrRecords(ctx context.Context, doc *html.Node, source, canonical string) 
 		return nil, err
 	}
 	feedURL := u.ResolveReference(&url.URL{Path: "assets/rss/feed.xml"}).String()
-	raw, err := get(ctx, feedURL)
+	raw, err := getProceedingsIndex(ctx, feedURL)
 	if err != nil {
 		return nil, err
 	}

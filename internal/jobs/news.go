@@ -37,6 +37,10 @@ func New(c config.Config) *Pipeline {
 	return &Pipeline{Config: c, AI: &ai.Service{Config: c, Catalog: cat}, Catalog: cat}
 }
 func get(ctx context.Context, raw string) ([]byte, error) {
+	return getWithTimeout(ctx, raw, 45*time.Second)
+}
+
+func getWithTimeout(ctx context.Context, raw string, timeout time.Duration) ([]byte, error) {
 	u, e := url.Parse(raw)
 	if e != nil || u.Host == "" || (u.Scheme != "http" && u.Scheme != "https") {
 		return nil, fmt.Errorf("invalid source URL")
@@ -46,7 +50,7 @@ func get(ctx context.Context, raw string) ([]byte, error) {
 		return nil, e
 	}
 	req.Header.Set("User-Agent", "FastNewsBot/1.0 (+https://github.com/FastR-D/FastNews)")
-	resp, e := (&http.Client{Timeout: 45 * time.Second}).Do(req)
+	resp, e := (&http.Client{Timeout: timeout}).Do(req)
 	if e != nil {
 		return nil, e
 	}

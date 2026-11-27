@@ -29,7 +29,7 @@ func fetchICLRProceedings(ctx context.Context, r PaperRequest) ([]map[string]any
 	if err != nil {
 		return nil, err
 	}
-	raw, err := get(ctx, r.URLs[0])
+	raw, err := getProceedingsIndex(ctx, r.URLs[0])
 	if err != nil {
 		return nil, err
 	}
