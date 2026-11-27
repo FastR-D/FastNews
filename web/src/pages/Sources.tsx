@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { EmptyState } from '@fastrd/ui-react'
+import { Dialog, EmptyState } from '@fastrd/ui-react'
 import {
   ReadingButton as Button,
   ReadingSurface as Section,
@@ -27,6 +27,9 @@ export default function Sources() {
   const { profile, notify } = useApp()
   const [queue, setQueue] = useState<Record<string, string>>({})
   const [adding, setAdding] = useState('')
+  const [selectedSource, setSelectedSource] = useState<DirectorySource | null>(null)
+  const [transport, setTransport] = useState<'direct' | 'relay' | ''>('')
+  const [dialogError, setDialogError] = useState('')
   const [params, setParams] = useSearchParams()
   const pendingFilters = useRef(params)
   useEffect(() => {
@@ -81,26 +84,29 @@ export default function Sources() {
   }, [profile?.role, retry])
   async function enqueue(source: DirectorySource) {
     setAdding(source.id)
-    setError('')
+    setDialogError('')
     try {
       const item = await api<{ state: string }>('api/admin/collection/queue', {
         method: 'POST',
-        body: JSON.stringify({ source: source.id }),
+        body: JSON.stringify({ source: source.id, transport }),
       })
       setQueue((previous) => ({ ...previous, [source.id]: item.state }))
       if (item.state !== 'needs_configuration')
         setSources((previous) =>
           previous.map((item) =>
-            item.id === source.id ? { ...item, configured: true, disabled: false } : item,
+            item.id === source.id
+              ? { ...item, configured: true, disabled: false, transport: transport || undefined }
+              : item,
           ),
         )
+      setSelectedSource(null)
       notify(
         item.state === 'needs_configuration'
           ? '已加入待接入队列，可在进程管理中查看'
           : '已加入采集队列',
       )
     } catch (e) {
-      setError(message(e))
+      setDialogError(message(e))
     } finally {
       setAdding('')
     }
@@ -182,6 +188,58 @@ export default function Sources() {
   )
   return (
     <div className="page-content">
+      <Dialog
+        open={!!selectedSource}
+        onClose={() => {
+          if (!adding) setSelectedSource(null)
+        }}
+        label="纳入采集"
+        dismissible={!adding}
+      >
+        <form
+          className="fastui-modal-body"
+          onSubmit={(event) => {
+            event.preventDefault()
+            if (selectedSource && transport && !adding) void enqueue(selectedSource)
+          }}
+        >
+          <h2 className="fastui-heading my-2">纳入采集</h2>
+          <p className="m-0 text-[var(--fastui-secondary)]">{selectedSource?.name}</p>
+          <fieldset className="source-route-options" disabled={!!adding}>
+            <legend>选择采集方式</legend>
+            {(
+              [
+                ['direct', '直连', '由主服务器访问'],
+                ['relay', '新加坡', '通过新加坡跳板机访问'],
+              ] as const
+            ).map(([value, label, description]) => (
+              <label key={value} className="source-route-option">
+                <input
+                  type="radio"
+                  name="transport"
+                  value={value}
+                  required
+                  checked={transport === value}
+                  onChange={() => setTransport(value)}
+                />
+                <span>
+                  <strong>{label}</strong>
+                  <span>{description}</span>
+                </span>
+              </label>
+            ))}
+          </fieldset>
+          <ErrorMessage error={dialogError} />
+          <div className="flex justify-end gap-2">
+            <Button disabled={!!adding} onClick={() => setSelectedSource(null)}>
+              取消
+            </Button>
+            <Button variant="primary" type="submit" disabled={!transport || !!adding}>
+              {adding ? '保存中…' : '确认纳入'}
+            </Button>
+          </div>
+        </form>
+      </Dialog>
       <ReadingHeader
         title="信源目录"
         action={
@@ -281,7 +339,7 @@ export default function Sources() {
                           <SourceMark category={source.category} size="large" />
                           {profile?.role === 'admin' && (
                             <Button
-                              className="source-queue-button"
+                              className={`source-queue-button ${(source.configured ? !source.disabled : !!queue[source.id]) ? 'source-queue-button--remove' : 'source-queue-button--add'}`}
                               variant="quiet"
                               disabled={!!adding}
                               aria-label={`${(source.configured ? !source.disabled : !!queue[source.id]) ? '将' + source.name + '移除采集' : '将' + source.name + '纳入采集队列'}`}
@@ -290,11 +348,15 @@ export default function Sources() {
                                   ? '停止后续采集，保留已收录内容'
                                   : '启用定时采集并加入本次队列'
                               }
-                              onClick={() =>
-                                void ((source.configured ? !source.disabled : !!queue[source.id])
-                                  ? remove(source)
-                                  : enqueue(source))
-                              }
+                              onClick={() => {
+                                if (source.configured ? !source.disabled : !!queue[source.id])
+                                  void remove(source)
+                                else {
+                                  setTransport('')
+                                  setDialogError('')
+                                  setSelectedSource(source)
+                                }
+                              }}
                             >
                               {(source.configured ? !source.disabled : !!queue[source.id]) ? (
                                 <ListMinus size={15} />

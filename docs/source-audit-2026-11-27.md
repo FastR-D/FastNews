@@ -102,7 +102,7 @@ CISA 使用新增入库日期；NVD 只保留 HIGH/CRITICAL，评级与在野利
 
 ## 专用采集账号
 
-`fastnews-fetch` 仅允许读取 FastDeploy 白名单中的 7 个 HTTPS 端点，禁止交互终端、任意命令和端口转发。应用机固定主机公钥，密钥持久化到私有目录；GitHub `production` Environment 已配置 5 项 `FASTNEWS_RELAY_SSH_*` Secrets，用于恢复，值不进入仓库、日志、发布包或前端。
+`fastnews-fetch` 仅允许读取 FastDeploy 白名单中的公开 HTTPS 端点，禁止交互终端、任意命令和端口转发。应用机固定主机公钥，密钥持久化到私有目录；GitHub `production` Environment 已配置 5 项 `FASTNEWS_RELAY_SSH_*` Secrets，用于恢复，值不进入仓库、日志、发布包或前端。
 
 FastDeploy：`5ad81d7d0ceae560fcd0825ebee1dae18a9942e4`。自动采集继续沿用服务器现有 6 小时计划，另安排一次手动补采验证。
 
@@ -117,3 +117,10 @@ FastNews `v2026.11.27.7` 已激活。最终目录 65 项，启用 36 个信源�
 已删除的 16 个来源不在目录、服务器信源配置或待执行队列中；历史文章保留。每 6 小时采集计划保持启用，下次执行为北京时间 2026-11-28 02:00。FastDeploy relay allowlist 更新至 `3eb2a3d`，应用机与 GitHub production Secrets 配置均已核验。
 
 部署包只包含程序与前端；本次最后的 DeepMind 路由调整是持久信源配置变更，无需重新构建二进制。当前生产配置与仓库 `config/news-sources.json` 一致。
+
+
+## 管理员选择采集线路
+
+信源目录的“纳入采集”弹窗要求明确选择直连或新加坡。选项持久化到该来源的 `transport` 配置，手动与定时采集共用；待接入候选的选择保存到持久队列，接口就绪后再应用。未配置跳板机的环境返回可重试错误，不会静默切换线路。
+
+FastDeploy 许可列表已覆盖当前全部 36 个已核验采集端点（按主机和路径限制），支持管理员自行选择出口；默认仍保持此前核验的 7 个新加坡来源和 29 个直连来源。已在主机经专用账号验证新增许可端点 Krebs 的读取。新增自定义端点仍需同步更新许可列表。

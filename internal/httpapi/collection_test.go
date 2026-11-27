@@ -430,3 +430,59 @@ func TestReenableDuringActiveRequestRestoresSubscription(t *testing.T) {
 		}
 	}
 }
+
+func TestDirectoryQueueTransportValidationAndPersistence(t *testing.T) {
+	h := collectionAdmin(t)
+	path := "/api/admin/collection/queue"
+	for _, transport := range []string{"auto", "ssh", "invalid"} {
+		status, _, _ := h.request(t, "POST", path, map[string]string{"source": "source_1", "transport": transport}, h.csrf, true)
+		if status != 400 {
+			t.Fatalf("transport %s: %d", transport, status)
+		}
+	}
+	status, _, _ := h.request(t, "POST", path, map[string]string{"source": "source_1", "transport": "relay"}, h.csrf, true)
+	if status != 409 {
+		t.Fatal(status)
+	}
+	h.app.Config.FetchRelaySSHConfig = "/not-used-for-pending-candidates"
+	status, value, _ := h.request(t, "POST", path, map[string]string{"source": "source_1", "transport": "relay"}, h.csrf, true)
+	if status != 202 || value["state"] != "needs_configuration" || value["transport"] != "relay" {
+		t.Fatal(status, value)
+	}
+	restored, err := newCollectionManager(filepath.Dir(h.app.collection.file))
+	if err != nil || len(restored.queue) != 1 || restored.queue[0].Transport != "relay" {
+		t.Fatal(restored, err)
+	}
+}
+
+func TestDirectoryQueueSavesSelectedTransportForScheduledCollection(t *testing.T) {
+	for _, transport := range []string{"direct", "relay"} {
+		t.Run(transport, func(t *testing.T) {
+			h := collectionAdmin(t)
+			h.app.Config.FetchRelaySSHConfig = "/unused-while-worker-busy"
+			configureCollection(t, h, catalog.NewsSource{ID: "route_test", Name: "Route test", URL: "https://example.org/feed", Channel: "ai", Disabled: true, Transport: "auto"})
+			// Keep the worker occupied so this verifies durable configuration without network access.
+			h.app.collection.mu.Lock()
+			h.app.collection.cancel = func() {}
+			h.app.collection.mu.Unlock()
+			defer func() { h.app.collection.mu.Lock(); h.app.collection.cancel = nil; h.app.collection.mu.Unlock() }()
+			status, value, _ := h.request(t, "POST", "/api/admin/collection/queue", map[string]string{"source": "route_test", "transport": transport}, h.csrf, true)
+			if status != 202 || value["state"] != "queued" {
+				t.Fatal(status, value)
+			}
+			targets, err := h.app.selectedCollectionSources("route_test")
+			if err != nil || len(targets) != 1 || targets[0].Transport != transport || targets[0].Disabled {
+				t.Fatal(targets, err)
+			}
+			directory, err := h.app.Catalog.SourceDirectory()
+			if err != nil {
+				t.Fatal(err)
+			}
+			for _, source := range directory.Sources {
+				if source.ID == "route_test" && source.Transport != transport {
+					t.Fatal(source)
+				}
+			}
+		})
+	}
+}

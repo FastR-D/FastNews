@@ -106,6 +106,7 @@ export interface NewsArticle {
   score?: number
 }
 export interface DirectorySource {
+  transport?: 'direct' | 'relay' | 'auto'
   id: string
   name: string
   url: string

@@ -57,9 +57,9 @@ export default function Home() {
   if (!catalog) return <CatalogState />
   const top = catalog.reports.filter((report) => report.kind === 'top-conf')
   const weekly = catalog.reports.filter((report) => report.kind === 'secnews')
-  const reports = (
-    tab === 'conference' ? top : tab === 'weekly' ? weekly : catalog.reports.filter((r) => r.pdf)
-  ).filter((report) => report.title.toLowerCase().includes(search.toLowerCase()))
+  const reports = (tab === 'conference' ? top : weekly).filter((report) =>
+    report.title.toLowerCase().includes(search.toLowerCase()),
+  )
   return (
     <>
       <PageHeading title="研究工作台" />
@@ -115,7 +115,6 @@ export default function Home() {
                     label: `资讯周报 · ${weekly.length}`,
                     controls: 'report-results',
                   },
-                  { id: 'downloads', label: 'PDF 报告', controls: 'report-results' },
                 ]}
                 activeId={tab}
                 onSelect={setTab}

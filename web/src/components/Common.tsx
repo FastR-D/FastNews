@@ -3,8 +3,8 @@ import { ReadingSurface } from './ReadingLayout'
 import { useId, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { Alert, Badge, Button, EmptyState, Loading, ListRow, Toolbar } from '@fastrd/ui-react'
-import { ArrowUpRight, BookOpen, Download, ChevronLeft, ChevronRight, FileText } from 'lucide-react'
-import { api, asset, message, safeURL } from '../api'
+import { ArrowUpRight, BookOpen, ChevronLeft, ChevronRight, FileText } from 'lucide-react'
+import { api, message, safeURL } from '../api'
 import type { Paper, Report } from '../types'
 import { useApp } from '../context'
 
@@ -197,7 +197,7 @@ export function PaperCard({ paper }: { paper: Paper }) {
     </article>
   )
 }
-export function ReportList({ reports }: { reports: Report[]; download?: boolean }) {
+export function ReportList({ reports }: { reports: Report[] }) {
   return (
     <div>
       {reports.length === 0 ? (
@@ -215,19 +215,6 @@ export function ReportList({ reports }: { reports: Report[]; download?: boolean 
                   {report.title}
                 </Link>
               </h3>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              {report.pdf && (
-                <a
-                  className="fastui-button fastui-button--xs no-underline"
-                  href={asset(report.pdf) + '?download=1'}
-                  download
-                  aria-label={`下载 ${report.title} PDF`}
-                >
-                  <Download size={12} />
-                  PDF
-                </a>
-              )}
             </div>
           </ListRow>
         ))

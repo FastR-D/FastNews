@@ -180,7 +180,7 @@ test('arXiv navigation, dated corpus, fields, pagination and reading use real AP
   )
   await expect(page.getByRole('button', { name: 'arXiv', exact: true })).toHaveCount(0)
 })
-test('all old entries, real catalog, downloads, calendar, theme and responsive layout', async ({
+test('all old entries, real catalog, report links, calendar, theme and responsive layout', async ({
   page,
   baseURL,
 }, info) => {
@@ -232,13 +232,11 @@ test('all old entries, real catalog, downloads, calendar, theme and responsive l
     'aria-current',
     'page',
   )
-  const download = page
-    .getByTestId('report-row')
-    .getByRole('link', { name: /下载.*PDF/ })
-    .first()
-  const response = await page.request.get((await download.getAttribute('href')) || '')
-  expect(response.status()).toBe(200)
-  expect(response.headers()['content-disposition']).toContain('attachment')
+  await expect(page.getByTestId('report-row').first().getByRole('link')).toHaveAttribute(
+    'href',
+    /report\/\?path=/,
+  )
+  await expect(page.getByRole('link', { name: /下载.*PDF/ })).toHaveCount(0)
   await visit(page, baseURL, 'secnews/')
   const latestSecurity = await (
     await page.request.get(route(baseURL, 'api/news?source=articles'))
@@ -357,7 +355,7 @@ test('author UI shows pending and saved homepage results and survives report tab
   await expect(row.getByRole('status')).toContainText('正在抓取并解析')
   release()
   await expect(row.getByRole('status')).toContainText('主页解析完成，已保存 1 个论文链接')
-  for (const tab of ['资讯周报', 'PDF 报告', '顶会报告']) {
+  for (const tab of ['资讯周报', '顶会报告']) {
     await page.getByRole('tab', { name: new RegExp(tab) }).click()
     await expect(row).toBeVisible()
   }
@@ -414,27 +412,24 @@ test('subpath application accepts independent-domain root and login entries', as
   await expect(page.getByLabel('邮箱', { exact: true })).toBeVisible()
 })
 
-test('FastUI report tabs support keyboard selection, filtering and downloads', async ({
+test('FastUI report tabs support keyboard selection and filtering without PDF entries', async ({
   page,
   baseURL,
 }) => {
   await visit(page, baseURL, '')
   const tabs = page.getByRole('tab')
-  await expect(tabs).toHaveCount(3)
+  await expect(tabs).toHaveCount(2)
   await tabs.nth(0).focus()
   await page.keyboard.press('ArrowRight')
   await expect(tabs.nth(1)).toHaveAttribute('aria-selected', 'true')
   await expect(page.getByRole('tabpanel')).toHaveAttribute('aria-labelledby', 'weekly')
-  await page.keyboard.press('End')
-  await expect(tabs.nth(2)).toHaveAttribute('aria-selected', 'true')
+  await page.keyboard.press('Home')
+  await expect(tabs.nth(0)).toHaveAttribute('aria-selected', 'true')
   const search = page.getByLabel('搜索报告', { exact: true })
   await search.fill('USENIX')
   const reports = page.getByRole('tabpanel').getByTestId('report-row')
   await expect(reports.first()).toContainText('USENIX')
-  await expect(reports.first().getByRole('link', { name: /下载.*PDF/ })).toHaveAttribute(
-    'href',
-    /\?download=1$/,
-  )
+  await expect(page.getByRole('link', { name: /PDF/ })).toHaveCount(0)
   await search.fill('no-matching-report-xyz')
   await expect(page.getByRole('tabpanel').getByText('暂无报告')).toBeVisible()
   await search.clear()
@@ -902,4 +897,33 @@ test('publisher authors and affiliations have independent links and old institut
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
   ).toBeTruthy()
+})
+
+test('report search filters content and directory, with stable deep links', async ({
+  page,
+  baseURL,
+  isMobile,
+}) => {
+  await visit(page, baseURL, 'report/?path=top-conf%2Fdata%2Freport%2FUSENIX_2025_Report.json')
+  const doc = page.getByTestId('report-document')
+  await expect(doc.locator('.paper-card')).toHaveCount(16)
+  await expect(doc.locator('.paper-card').first()).toHaveCSS('border-top-width', '0px')
+  const search = page.getByRole('textbox', { name: '搜索报告内容', exact: true })
+  await search.fill('Example 13:')
+  await expect(doc.locator('.paper-card')).toHaveCount(1)
+  if (isMobile) await page.getByRole('button', { name: '目录', exact: true }).click()
+  const toc = page.getByRole('navigation', { name: '报告目录' })
+  await expect(toc.getByRole('link')).toHaveCount(1)
+  await toc.getByRole('link').click()
+  await expect(page).toHaveURL(/#report-13$/)
+  await page.reload()
+  await expect(doc.locator('.paper-card')).toHaveCount(1)
+  await expect(search).toHaveValue('Example 13:')
+  await search.fill('no-such-report-content')
+  await expect(doc.getByRole('heading', { name: '没有匹配的内容' })).toBeVisible()
+  await page.getByRole('button', { name: '清除报告搜索' }).click()
+  await expect(doc.locator('.paper-card')).toHaveCount(16)
+  await search.fill('Example University')
+  await expect(doc.locator('.paper-card')).toHaveCount(16)
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
 })

@@ -12,6 +12,7 @@ import (
 )
 
 type collectionQueueItem struct {
+	Transport   string    `json:"transport,omitempty"`
 	ID          string    `json:"id"`
 	Source      string    `json:"source"`
 	Name        string    `json:"name"`
@@ -56,10 +57,17 @@ func (m *collectionManager) queueClaimed(id string) bool {
 }
 func (s *Server) enqueueCollection(w http.ResponseWriter, r *http.Request, actor string) error {
 	var input struct {
-		Source string `json:"source"`
+		Source    string `json:"source"`
+		Transport string `json:"transport"`
 	}
 	if err := decode(w, r, &input, 1024); err != nil {
 		return err
+	}
+	if input.Transport != "" && input.Transport != "direct" && input.Transport != "relay" {
+		return store.Fail(400, "请选择直连或新加坡采集")
+	}
+	if input.Transport == "relay" && s.Config.FetchRelaySSHConfig == "" {
+		return store.Fail(409, "新加坡采集尚未配置，请选择直连或联系管理员")
 	}
 	directory, err := s.Catalog.SourceDirectory()
 	if err != nil {
@@ -95,7 +103,7 @@ func (s *Server) enqueueCollection(w http.ResponseWriter, r *http.Request, actor
 	// their URL and settings. An unconfigured research candidate is never fetched
 	// as if its homepage were an RSS feed.
 	preset, available := catalog.NewsSourcePreset(input.Source)
-	if (found.Configured && found.Disabled) || (!found.Configured && available) {
+	if (found.Configured && (found.Disabled || input.Transport != "")) || (!found.Configured && available) {
 		sources, err := catalog.LoadNewsSources(s.Config.Root, "")
 		if err != nil {
 			return err
@@ -107,6 +115,9 @@ func (s *Server) enqueueCollection(w http.ResponseWriter, r *http.Request, actor
 		for i := range sources {
 			if sources[i].ID == input.Source {
 				sources[i].Disabled = false
+				if input.Transport != "" {
+					sources[i].Transport = input.Transport
+				}
 			}
 		}
 		if err = saveCollectionJSON(filepath.Join(s.Config.Root, "config/news-sources.json"), sources); err != nil {
@@ -128,7 +139,7 @@ func (s *Server) enqueueCollection(w http.ResponseWriter, r *http.Request, actor
 	if !found.Configured {
 		state = "needs_configuration"
 	}
-	item := collectionQueueItem{ID: store.Random(), Source: input.Source, Name: found.Name, State: state, RequestedAt: time.Now().UTC(), RequestedBy: actor}
+	item := collectionQueueItem{Transport: input.Transport, ID: store.Random(), Source: input.Source, Name: found.Name, State: state, RequestedAt: time.Now().UTC(), RequestedBy: actor}
 	previous := m.queue
 	m.queue = append(append([]collectionQueueItem{}, previous...), item)
 	if err = saveCollectionJSON(m.queueFile(), m.queue); err != nil {
@@ -192,6 +203,23 @@ func (s *Server) startQueuedCollectionLocked() bool {
 		targets, err := s.selectedCollectionSources(item.Source)
 		if err != nil {
 			continue
+		}
+		if item.Transport != "" {
+			sources, loadErr := catalog.LoadNewsSources(s.Config.Root, "")
+			if loadErr != nil {
+				continue
+			}
+			for j := range sources {
+				if sources[j].ID == item.Source {
+					sources[j].Transport = item.Transport
+				}
+			}
+			if saveCollectionJSON(filepath.Join(s.Config.Root, "config/news-sources.json"), sources) != nil {
+				continue
+			}
+			for j := range targets {
+				targets[j].Transport = item.Transport
+			}
 		}
 		if _, err = s.beginCollection(item.Source, "manual", item.RequestedBy, targets, item.ID); err != nil {
 			m.persistenceError = "队列启动失败，请重试。"

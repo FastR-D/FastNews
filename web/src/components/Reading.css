@@ -1638,3 +1638,178 @@ textarea {
   flex-basis: 100%;
   margin-top: 4px;
 }
+
+/* Reading reports: a quiet document with a persistent search and chapter index. */
+.report-tools {
+  position: sticky;
+  top: 56px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  margin-bottom: 24px;
+  border-radius: 12px;
+  background: var(--fastui-surface);
+  box-shadow: 0 4px 20px rgb(20 25 40 / 5%);
+  color: var(--fastui-muted);
+}
+.report-tools input {
+  flex: 1;
+  min-width: 0;
+}
+.report-layout {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+.report-toc {
+  position: sticky;
+  top: 140px;
+  max-height: calc(100dvh - 160px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.report-toc h2 {
+  margin: 0 12px 12px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.report-toc nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.report-toc a {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: var(--fastui-secondary);
+  text-decoration: none;
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.report-toc a:hover {
+  background: var(--fastui-raised);
+  color: var(--fastui-text);
+}
+.report-toc a[aria-current] {
+  background: var(--fastui-selected);
+  color: var(--fastui-focus);
+  font-weight: 600;
+}
+.report-tools .report-toc-toggle {
+  display: none;
+}
+.report-reader .report-document {
+  min-width: 0;
+  border: 0;
+  border-radius: 16px;
+  padding: 24px clamp(20px, 3vw, 44px);
+}
+.report-document [id] {
+  scroll-margin-top: 145px;
+}
+.report-document .paper-card {
+  margin: 0;
+  padding: 28px 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+}
+.report-document .report-paper-anchor + .report-paper-anchor {
+  border-top: 1px solid var(--fastui-border);
+}
+.report-document section > h2 {
+  margin-bottom: 8px;
+}
+.report-document .report-paper-anchor {
+  min-width: 0;
+}
+.report-empty {
+  padding: 40px 12px;
+  text-align: center;
+}
+.source-queue-button.source-queue-button--add {
+  color: var(--fastui-focus);
+}
+.source-queue-button.source-queue-button--remove {
+  color: var(--fastui-danger, #c6444c);
+}
+.source-route-options {
+  display: grid;
+  gap: 10px;
+  margin: 12px 0;
+  padding: 0;
+  border: 0;
+}
+.source-route-options legend {
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+.source-route-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--fastui-border);
+  border-radius: 12px;
+  cursor: pointer;
+}
+.source-route-option:has(input:checked) {
+  border-color: var(--fastui-focus);
+  background: var(--fastui-selected);
+}
+.source-route-option:focus-within {
+  outline: 2px solid var(--fastui-focus);
+  outline-offset: 2px;
+}
+.source-route-option input {
+  accent-color: var(--fastui-focus);
+  width: 18px;
+  height: 18px;
+}
+.source-route-option strong {
+  display: block;
+  margin-bottom: 4px;
+}
+.source-route-option span span {
+  color: var(--fastui-secondary);
+  font-size: 13px;
+}
+@media (max-width: 1100px) {
+  .report-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  .report-tools .report-toc-toggle {
+    display: inline-flex;
+  }
+  .report-toc {
+    display: none;
+    position: static;
+    max-height: 320px;
+    background: var(--fastui-surface);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .report-toc.is-open {
+    display: block;
+  }
+}
+@media (max-width: 639px) {
+  .report-tools {
+    gap: 6px;
+    padding: 10px 8px;
+    margin-bottom: 16px;
+  }
+  .report-tools > svg {
+    display: none;
+  }
+  .report-reader .report-document {
+    padding: 16px;
+  }
+}
