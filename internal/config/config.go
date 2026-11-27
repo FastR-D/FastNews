@@ -14,6 +14,7 @@ import (
 type Config struct {
 	Root, WebDir, DataDir, Host, Port, PublicPath, PublicOrigin, ResearchURL, FastReadURL string
 	ResearchCookie                                                                        string
+	DisableCollectionScheduler                                                            bool
 	CookieSecure, RequireLogin                                                            bool
 	CASIssuer, CASClientID, CASSecret, CASRedirect, VaultKey                              string
 	CASEnabled, CASLogin, CASLink, CASLoopback, ResearchConnect                           bool
@@ -33,33 +34,34 @@ func Load() (Config, error) {
 		return Config{}, err
 	}
 	c := Config{
-		ResearchCookie:    Env("FASTRESEARCH_COOKIE_NAME", "fr_session"),
-		Root:              root,
-		WebDir:            Env("FASTNEWS_WEB_DIR", "web/dist"),
-		DataDir:           Env("FASTNEWS_DATA_DIR", ".fastnews-data"),
-		Host:              Env("FASTNEWS_HOST", "127.0.0.1"),
-		Port:              Env("FASTNEWS_PORT", "4173"),
-		PublicPath:        strings.TrimRight(Env("FASTNEWS_PUBLIC_PATH", ""), "/"),
-		PublicOrigin:      strings.TrimRight(Env("FASTNEWS_PUBLIC_ORIGIN", ""), "/"),
-		ResearchURL:       strings.TrimRight(Env("FASTRESEARCH_API_URL", "http://127.0.0.1:8787"), "/"),
-		FastReadURL:       strings.TrimRight(Env("FASTREAD_URL", "http://127.0.0.1:3015"), "/"),
-		CookieSecure:      Env("FASTNEWS_COOKIE_SECURE", "true") == "true",
-		RequireLogin:      Env("FASTNEWS_REQUIRE_LOGIN", "false") == "true",
-		CASIssuer:         Env("FASTNEWS_FASTCAS_ISSUER", ""),
-		CASClientID:       Env("FASTNEWS_FASTCAS_CLIENT_ID", ""),
-		CASSecret:         Env("FASTNEWS_FASTCAS_CLIENT_SECRET", ""),
-		CASRedirect:       Env("FASTNEWS_FASTCAS_REDIRECT_URI", ""),
-		VaultKey:          Env("FASTNEWS_FASTCAS_VAULT_KEY", ""),
-		CASLogin:          Env("FASTNEWS_FASTCAS_LOGIN_ENABLED", "true") != "false",
-		CASLink:           Env("FASTNEWS_FASTCAS_LINK_ENABLED", "true") != "false",
-		CASLoopback:       Env("FASTNEWS_FASTCAS_ALLOW_LOOPBACK_HTTP", "false") == "true",
-		ResearchConnect:   Env("FASTNEWS_FASTCAS_RESEARCH_CONNECT", "false") == "true",
-		LLMKey:            Env("OPENAI_API_KEY", ""),
-		LLMURL:            strings.TrimRight(Env("OPENAI_BASE_URL", "https://api.openai.com/v1"), "/"),
-		LLMModel:          Env("LLM_MODEL", "gemini-3-flash-preview"),
-		EmbeddingURL:      Env("RAG_EMBEDDING_URL", ""),
-		EmbeddingModel:    Env("EMBEDDING_MODEL", "text-embedding-3-small"),
-		EmbeddingProvider: Env("RAG_EMBEDDING_PROVIDER", "auto"),
+		DisableCollectionScheduler: Env("FASTNEWS_COLLECTION_DISABLED", "false") == "true",
+		ResearchCookie:             Env("FASTRESEARCH_COOKIE_NAME", "fr_session"),
+		Root:                       root,
+		WebDir:                     Env("FASTNEWS_WEB_DIR", "web/dist"),
+		DataDir:                    Env("FASTNEWS_DATA_DIR", ".fastnews-data"),
+		Host:                       Env("FASTNEWS_HOST", "127.0.0.1"),
+		Port:                       Env("FASTNEWS_PORT", "4173"),
+		PublicPath:                 strings.TrimRight(Env("FASTNEWS_PUBLIC_PATH", ""), "/"),
+		PublicOrigin:               strings.TrimRight(Env("FASTNEWS_PUBLIC_ORIGIN", ""), "/"),
+		ResearchURL:                strings.TrimRight(Env("FASTRESEARCH_API_URL", "http://127.0.0.1:8787"), "/"),
+		FastReadURL:                strings.TrimRight(Env("FASTREAD_URL", "http://127.0.0.1:3015"), "/"),
+		CookieSecure:               Env("FASTNEWS_COOKIE_SECURE", "true") == "true",
+		RequireLogin:               Env("FASTNEWS_REQUIRE_LOGIN", "true") == "true",
+		CASIssuer:                  Env("FASTNEWS_FASTCAS_ISSUER", ""),
+		CASClientID:                Env("FASTNEWS_FASTCAS_CLIENT_ID", ""),
+		CASSecret:                  Env("FASTNEWS_FASTCAS_CLIENT_SECRET", ""),
+		CASRedirect:                Env("FASTNEWS_FASTCAS_REDIRECT_URI", ""),
+		VaultKey:                   Env("FASTNEWS_FASTCAS_VAULT_KEY", ""),
+		CASLogin:                   Env("FASTNEWS_FASTCAS_LOGIN_ENABLED", "true") != "false",
+		CASLink:                    Env("FASTNEWS_FASTCAS_LINK_ENABLED", "true") != "false",
+		CASLoopback:                Env("FASTNEWS_FASTCAS_ALLOW_LOOPBACK_HTTP", "false") == "true",
+		ResearchConnect:            Env("FASTNEWS_FASTCAS_RESEARCH_CONNECT", "false") == "true",
+		LLMKey:                     Env("OPENAI_API_KEY", ""),
+		LLMURL:                     strings.TrimRight(Env("OPENAI_BASE_URL", "https://api.openai.com/v1"), "/"),
+		LLMModel:                   Env("LLM_MODEL", "gemini-3-flash-preview"),
+		EmbeddingURL:               Env("RAG_EMBEDDING_URL", ""),
+		EmbeddingModel:             Env("EMBEDDING_MODEL", "text-embedding-3-small"),
+		EmbeddingProvider:          Env("RAG_EMBEDDING_PROVIDER", "auto"),
 	}
 	if c.PublicPath != "" && !strings.HasPrefix(c.PublicPath, "/") {
 		c.PublicPath = "/" + c.PublicPath

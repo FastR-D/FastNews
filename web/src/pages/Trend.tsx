@@ -127,7 +127,7 @@ export default function Trend() {
 
   return (
     <>
-      <PageHeading title="研究趋势" description="arXiv 预印本 · 热度与方向占比" />
+      <PageHeading title="研究趋势" />
       <Panel title="研究方向榜">
         <Toolbar label="趋势筛选" className="flex-wrap">
           <label className="fastui-field">

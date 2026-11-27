@@ -121,7 +121,7 @@ func TestOfficialProceedingsThroughCollectionClassificationAndReport(t *testing.
 			if err := job(context.Background(), c, "conference-report", args); err != nil {
 				t.Fatal(err)
 			}
-			data, err := os.ReadFile(filepath.Join(c.Root, "top-conf/data/report", strings.ToUpper(conf)+"_2025_Report.html"))
+			data, err := os.ReadFile(filepath.Join(c.Root, "top-conf/data/report", strings.ToUpper(conf)+"_2025_Report.json"))
 			if err != nil || !strings.Contains(string(data), catalog.Str(rows[0], "title")) {
 				t.Fatal("report artifact missing", err)
 			}

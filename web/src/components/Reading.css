@@ -1,0 +1,893 @@
+/* Reading surfaces inspired by Feishu's workspace hierarchy.
+   Uses FastUI semantic colors, without changing FastUI component selectors. */
+.reading-surface {
+  min-width: 0;
+  background: var(--fastui-surface);
+  color: var(--fastui-text);
+  border: 1px solid var(--fastui-border);
+  border-radius: 12px;
+}
+.reading-field {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 36px;
+  padding: 7px 11px;
+  border: 1px solid var(--fastui-border);
+  border-radius: 7px;
+  color: var(--fastui-text);
+  background: var(--fastui-surface);
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.reading-field::placeholder {
+  color: var(--fastui-muted);
+}
+.reading-field:hover {
+  border-color: var(--fastui-border-strong);
+}
+:where(.reading-action) {
+  display: inline-flex;
+  text-decoration: none;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  box-sizing: border-box;
+  min-height: 36px;
+  max-width: 100%;
+  padding: 7px 12px;
+  border: 1px solid var(--fastui-border);
+  border-radius: 7px;
+  background: var(--fastui-surface);
+  color: var(--fastui-secondary);
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.5;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.reading-action {
+  text-decoration: none;
+}
+.reading-action:hover {
+  background: var(--fastui-hover);
+}
+.reading-action--quiet,
+.reading-action--icon {
+  background: transparent;
+  border-color: transparent;
+}
+.reading-action--icon {
+  padding: 7px;
+}
+.reading-action--primary {
+  background: var(--fastui-primary);
+  color: var(--fastui-on-primary);
+  border-color: transparent;
+}
+.reading-action--primary:hover {
+  background: var(--fastui-primary-hover);
+}
+.reading-action[aria-pressed='true'] {
+  color: var(--fastui-focus);
+  background: var(--fastui-selected);
+  border-color: transparent;
+}
+.reading-action:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.reading-field:focus-visible,
+.reading-action:focus-visible,
+.reading-tabs button:focus-visible,
+.workspace-navlink:focus-visible,
+.news-title:focus-visible {
+  outline: 2px solid var(--fastui-focus);
+  outline-offset: 3px;
+}
+.reading-tabs {
+  display: flex;
+  gap: 24px;
+  overflow: auto;
+  scrollbar-width: thin;
+}
+.reading-tabs button {
+  flex-shrink: 0;
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--fastui-secondary);
+  padding: 0 1px 13px;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+.reading-tabs button:hover {
+  color: var(--fastui-focus);
+}
+.reading-tabs button[aria-pressed='true'] {
+  color: var(--fastui-focus);
+  font-weight: 600;
+  border-bottom-color: var(--fastui-focus);
+}
+.workspace-navlink {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: 7px;
+  color: var(--fastui-secondary);
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  transition: background 0.12s;
+}
+.workspace-navlink:hover {
+  background: var(--fastui-hover);
+}
+.workspace-navlink[aria-pressed='true'] {
+  background: var(--fastui-selected);
+  color: var(--fastui-focus);
+  font-weight: 500;
+}
+.source-mark {
+  display: inline-grid;
+  place-items: center;
+  border-radius: 7px;
+  flex-shrink: 0;
+}
+.source-mark--small {
+  width: 26px;
+  height: 26px;
+}
+.source-mark--large {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+}
+.source-mark--news {
+  color: var(--fastui-focus);
+  background: var(--fastui-selected);
+}
+.source-mark--security {
+  color: var(--fastui-success);
+  background: var(--fastui-success-soft);
+}
+.source-mark--ai {
+  color: var(--fastui-ai);
+  background: var(--fastui-ai-soft);
+}
+.source-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  line-height: 20px;
+  padding: 1px 7px;
+  border-radius: 4px;
+  background: var(--fastui-chrome);
+  color: var(--fastui-muted);
+}
+.source-pill--active {
+  color: var(--fastui-success);
+  background: var(--fastui-success-soft);
+}
+.source-pill--candidate {
+  color: var(--fastui-warning);
+  background: var(--fastui-warning-soft);
+}
+.source-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr));
+  gap: 16px;
+}
+.news-title {
+  color: var(--fastui-text);
+  text-decoration: none;
+  transition: color 0.12s;
+}
+.news-title:hover {
+  color: var(--fastui-focus);
+}
+.reading-source-card {
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+.reading-source-card:hover {
+  border-color: var(--fastui-border-strong);
+  box-shadow: 0 4px 16px rgb(var(--fastui-text-rgb) / 0.04);
+}
+@media (pointer: coarse) {
+  .reading-action,
+  .reading-field {
+    min-height: 44px;
+    font-size: 14px;
+  }
+  .reading-tabs button {
+    min-height: 44px;
+  }
+}
+@media (max-width: 639px) {
+  .reading-tabs {
+    gap: 20px;
+  }
+  .reading-tabs button {
+    font-size: 13px;
+    padding-bottom: 10px;
+  }
+}
+
+/* Workspace theme: shared geometry and semantic surfaces across every route. */
+:root {
+  --fastui-font:
+    'HarmonyOS Sans SC', 'HarmonyOS Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --fastui-font-size: 14px;
+  --fastui-font-weight: 400;
+  --fastui-radius-control: 10px;
+  --fastui-radius-panel: 16px;
+  --fastui-radius-overlay: 18px;
+  --fastui-height-xs: 32px;
+  --fastui-height-sm: 36px;
+  --fastui-height-md: 40px;
+  --fastui-height-comfortable: 44px;
+  --fastui-tab-height: 40px;
+}
+:root,
+[data-fastui-theme='light'] {
+  --fastui-page: #f7f8fa;
+  --fastui-chrome: #f7f8fa;
+  --fastui-surface: #fff;
+  --fastui-raised: #f2f3f5;
+  --fastui-border: #e8e9ed;
+  --fastui-border-strong: #d3d6de;
+  --fastui-text: #202127;
+  --fastui-secondary: #565964;
+  --fastui-muted: #737784;
+  --fastui-hover: #eef0f4;
+  --fastui-selected: #e8edff;
+  --fastui-focus: #4c63d9;
+  --fastui-primary: #4c63d9;
+  --fastui-primary-hover: #3d51bc;
+}
+[data-fastui-theme='dark'] {
+  --fastui-page: #111215;
+  --fastui-chrome: #111215;
+  --fastui-surface: #1b1d22;
+  --fastui-raised: #24262d;
+  --fastui-border: #2d3038;
+  --fastui-border-strong: #414652;
+  --fastui-text: #f2f3f7;
+  --fastui-secondary: #c2c6d1;
+  --fastui-muted: #a0a6b6;
+  --fastui-hover: #292c35;
+  --fastui-selected: #2a3456;
+  --fastui-focus: #b5c3ff;
+  --fastui-primary: #5266d4;
+  --fastui-primary-hover: #4658b8;
+}
+body {
+  font-family: var(--fastui-font);
+  font-size: 14px;
+  font-weight: 400;
+}
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+.workspace-content {
+  box-sizing: border-box;
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 32px;
+}
+.page-content {
+  width: 100%;
+  min-width: 0;
+}
+.page-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 0 28px;
+  min-height: 40px;
+}
+.page-heading h1 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.5px;
+}
+.reading-surface,
+.fastui-section {
+  border-radius: 16px;
+  border: 1px solid var(--fastui-border);
+  background: var(--fastui-surface);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.015);
+}
+.fastui-button,
+.reading-action {
+  min-height: 38px;
+  border-radius: 10px;
+  padding: 8px 13px;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  text-decoration: none;
+}
+.fastui-button--icon,
+.reading-action--icon {
+  padding: 8px;
+}
+.fastui-button--xs {
+  min-height: 32px;
+  font-size: 13px;
+  padding: 5px 10px;
+}
+.fastui-input,
+.fastui-select,
+.fastui-textarea,
+.reading-field {
+  min-height: 40px;
+  border: 1px solid var(--fastui-border);
+  border-radius: 10px;
+  padding: 9px 12px;
+  background: var(--fastui-raised);
+  color: var(--fastui-text);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+}
+.fastui-input:focus,
+.fastui-select:focus,
+.fastui-textarea:focus,
+.reading-field:focus {
+  background: var(--fastui-surface);
+  outline: 2px solid var(--fastui-focus);
+  outline-offset: 2px;
+}
+.fastui-field {
+  font-size: 14px;
+  gap: 8px;
+}
+.fastui-toolbar {
+  border: 0;
+  background: transparent;
+  padding: 12px 20px;
+  gap: 12px;
+  font-size: 14px;
+  flex-wrap: wrap;
+}
+.fastui-panel-header {
+  border: 0;
+  background: transparent;
+  padding: 20px;
+}
+.fastui-list-row {
+  font-size: 14px;
+  padding: 18px 20px;
+  line-height: 1.7;
+  gap: 14px;
+}
+.fastui-inspector-section {
+  border: 0;
+  font-size: 14px;
+}
+.fastui-inspector-section > summary {
+  font-size: 14px;
+  padding: 14px 20px;
+}
+.fastui-segmented-control {
+  background: var(--fastui-raised);
+  border: 0;
+  padding: 4px;
+  border-radius: 12px;
+}
+.fastui-tab-bar {
+  border: 0;
+  background: var(--fastui-raised);
+  border-radius: 12px;
+  padding: 4px;
+  gap: 4px;
+}
+.fastui-tab-bar [role='tab'] {
+  font-size: 14px;
+  border: 0;
+  border-radius: 9px;
+  padding: 8px 14px;
+}
+.fastui-tab-bar [aria-selected='true'] {
+  color: var(--fastui-text);
+  background: var(--fastui-surface);
+  box-shadow: 0 2px 5px rgb(0 0 0 / 0.06);
+}
+.workspace-navlink {
+  padding: 11px 14px;
+  gap: 10px;
+  border-radius: 11px;
+  font-size: 14px;
+  color: var(--fastui-secondary);
+}
+.workspace-navlink[aria-pressed='true'] {
+  background: var(--fastui-selected);
+  color: var(--fastui-focus);
+  font-weight: 600;
+}
+[data-fastui-theme='dark'] .workspace-navlink[aria-pressed='true'] {
+  color: #d9e2ff;
+}
+.fastui-link {
+  color: var(--fastui-focus);
+  text-underline-offset: 3px;
+}
+.fastui-badge {
+  border: 0;
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 12px;
+  font-weight: 400;
+  background: var(--fastui-raised);
+}
+.source-grid {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr));
+  gap: 18px;
+}
+.reading-source-card {
+  box-shadow: none;
+}
+.reading-source-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.04);
+}
+.source-pill {
+  font-size: 12px;
+}
+.news-title {
+  line-height: 1.6;
+}
+.login-shell {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  box-sizing: border-box;
+  background: var(--fastui-page);
+}
+.login-card {
+  width: 100%;
+  max-width: 460px;
+}
+.login-card .page-heading {
+  justify-content: center;
+  margin-bottom: 28px;
+}
+.login-card .reading-surface {
+  padding: 8px;
+}
+.report-document {
+  background: var(--fastui-surface);
+  border: 1px solid var(--fastui-border);
+  border-radius: 16px;
+  padding: 32px clamp(20px, 4vw, 64px);
+  font-size: 16px;
+  line-height: 1.9;
+  overflow-wrap: anywhere;
+}
+.report-document h2 {
+  font-size: 22px;
+  padding-top: 24px;
+  margin: 0 0 20px;
+  scroll-margin-top: 80px;
+}
+.report-document h3 {
+  font-size: 18px;
+  margin: 0 0 12px;
+}
+.report-document a {
+  color: var(--fastui-focus);
+  text-decoration: none;
+}
+.report-document article {
+  padding: 24px 0;
+  border-bottom: 1px solid var(--fastui-border);
+}
+.report-document p {
+  margin: 10px 0;
+}
+.report-document section {
+  margin-bottom: 24px;
+}
+.report-document ul,
+.report-document ol {
+  padding-left: 24px;
+}
+.report-document table {
+  display: block;
+  overflow: auto;
+  border-collapse: collapse;
+  max-width: 100%;
+}
+.report-document th,
+.report-document td {
+  padding: 10px;
+  border: 1px solid var(--fastui-border);
+}
+.report-document pre {
+  overflow: auto;
+  padding: 20px;
+  background: var(--fastui-raised);
+  border-radius: 12px;
+}
+@media (max-width: 900px) {
+  .workspace-content {
+    padding: 24px;
+  }
+}
+@media (max-width: 639px) {
+  .workspace-content {
+    padding: 20px 16px;
+  }
+  .page-heading {
+    margin-bottom: 20px;
+  }
+  .page-heading h1 {
+    font-size: 23px;
+  }
+  .fastui-button,
+  .reading-action {
+    min-height: 44px;
+  }
+  .fastui-input,
+  .fastui-select,
+  .reading-field {
+    min-height: 44px;
+  }
+  .report-document {
+    padding: 20px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reading-source-card {
+    transition: none;
+  }
+}
+
+.report-document h3 a,
+.report-document article > p:first-child a {
+  color: var(--fastui-text);
+}
+.report-document h3 a:hover,
+.report-document article > p:first-child a:hover {
+  color: var(--fastui-focus);
+}
+.report-document article > h3 + p {
+  color: var(--fastui-secondary);
+  font-size: 14px;
+}
+
+.fastui-alert {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+/* Paper cards keep metadata, actions and prose on distinct reading lines. */
+.paper-card {
+  min-width: 0;
+  margin: 16px 20px;
+  padding: 24px;
+  border: 1px solid var(--fastui-border);
+  border-radius: 16px;
+  background: var(--fastui-surface);
+  box-shadow: 0 2px 6px rgb(20 25 40 / 3%);
+}
+.paper-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.paper-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  color: var(--fastui-muted);
+  font-size: 12px;
+  min-width: 0;
+}
+.paper-meta .fastui-badge {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.paper-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.paper-actions a {
+  text-decoration: none;
+}
+.paper-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  letter-spacing: -0.015em;
+}
+.paper-title a {
+  color: var(--fastui-text);
+  text-decoration: none;
+}
+.paper-title a:hover {
+  color: var(--fastui-primary);
+}
+.paper-translation {
+  margin: 8px 0 0;
+  color: var(--fastui-secondary);
+  line-height: 1.7;
+  font-size: 15px;
+}
+.paper-authors {
+  margin: 10px 0 0;
+  color: var(--fastui-muted);
+  font-size: 12px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.paper-abstract {
+  margin-top: 20px;
+  padding: 18px 20px;
+  background: var(--fastui-chrome);
+  border-radius: 12px;
+}
+.paper-abstract h4 {
+  color: var(--fastui-muted);
+  font-size: 12px;
+  font-weight: 500;
+  margin: 0 0 8px;
+  letter-spacing: 0.06em;
+}
+.paper-abstract p {
+  margin: 0;
+  color: var(--fastui-secondary);
+  line-height: 1.95;
+  font-size: 14px;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+.paper-card > .fastui-alert {
+  margin-top: 16px;
+}
+.collection-date {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  max-width: 100%;
+}
+.collection-date input {
+  width: 164px;
+  min-width: 0;
+  font: inherit;
+  color-scheme: light;
+}
+[data-fastui-theme='dark'] .collection-date input {
+  color-scheme: dark;
+}
+.admin-toolbar {
+  padding: 18px 20px;
+  justify-content: space-between;
+}
+.admin-toolbar > input {
+  max-width: 360px;
+  flex: 1;
+  min-width: 0;
+}
+.admin-table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+  text-align: left;
+}
+.admin-table th {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fastui-muted);
+  background: var(--fastui-chrome);
+  white-space: nowrap;
+}
+.admin-table :is(th, td) {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--fastui-border);
+}
+.admin-table td {
+  vertical-align: middle;
+  font-size: 13px;
+}
+.admin-table tr:last-child td {
+  border-bottom: 0;
+}
+.admin-table tbody tr:hover,
+.admin-table tr[aria-selected='true'] {
+  background: var(--fastui-chrome);
+}
+.admin-person {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.admin-person > div {
+  min-width: 0;
+}
+.admin-avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--fastui-chrome);
+  color: var(--fastui-text);
+  font-weight: 600;
+}
+.admin-email {
+  display: block;
+  margin-top: 4px;
+  color: var(--fastui-muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.admin-role {
+  display: inline-flex;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--fastui-chrome);
+}
+.task-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  font-size: 12px;
+  color: var(--fastui-muted);
+}
+.task-status::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.task-status.completed {
+  color: #168357;
+}
+.task-status.running,
+.task-status.stopping {
+  color: #5266d4;
+}
+.task-status.failed,
+.task-status.partial {
+  color: #bd4d36;
+}
+[data-fastui-theme='dark'] .task-status.completed {
+  color: #6fd5a5;
+}
+[data-fastui-theme='dark'] .task-status.running,
+[data-fastui-theme='dark'] .task-status.stopping {
+  color: #b5c3ff;
+}
+[data-fastui-theme='dark'] .task-status.failed,
+[data-fastui-theme='dark'] .task-status.partial {
+  color: #f5a38e;
+}
+.admin-dialog-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.admin-dialog-heading h2 {
+  font-size: 18px;
+  margin: 0;
+}
+.collection-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 8px 20px 20px;
+}
+.collection-controls label {
+  flex: 1;
+  min-width: 200px;
+  max-width: 400px;
+}
+.collection-progress {
+  margin: 0 20px 20px;
+}
+.collection-progress > div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.collection-progress progress {
+  width: 100%;
+  height: 6px;
+  accent-color: var(--fastui-primary);
+}
+.source-error {
+  margin: 6px 0 0;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  max-width: 560px;
+  color: var(--fastui-secondary);
+}
+@media (max-width: 700px) {
+  .paper-card {
+    margin: 12px;
+    padding: 18px;
+    border-radius: 14px;
+  }
+  .paper-card-top {
+    flex-direction: column-reverse;
+    gap: 12px;
+  }
+  .paper-actions {
+    align-self: flex-end;
+    gap: 4px;
+  }
+  .paper-title {
+    font-size: 16px;
+  }
+  .paper-abstract {
+    padding: 14px;
+    margin-top: 16px;
+  }
+  .admin-toolbar {
+    padding: 16px;
+  }
+}
+
+.admin-user-form {
+  padding: 0 24px 24px;
+}
+
+.schedule-overview {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 24px;
+  padding: 8px 20px 24px;
+}
+.schedule-overview > div {
+  display: grid;
+  gap: 10px;
+  flex: 1;
+  min-width: 220px;
+}
+.schedule-overview > div > span {
+  color: var(--fastui-muted);
+  font-size: 12px;
+}
+.schedule-overview strong {
+  font-size: 17px;
+  font-weight: 600;
+}

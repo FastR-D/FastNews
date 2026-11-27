@@ -1,0 +1,4 @@
+[
+  {"id": "cibsecurity", "peer": "cibsecurity", "enabled": false},
+  {"id": "cyber_security_channel", "peer": "cyber_security_channel", "enabled": false}
+]

@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import {
-  AssetCard,
   Badge,
   EmptyState,
   InspectorSection,
@@ -14,12 +13,9 @@ import {
   ArrowRight,
   ArrowUpRight,
   BookOpen,
-  ChartNoAxesCombined,
   FileText,
   GraduationCap,
-  Mail,
   Search,
-  Sparkles,
   Users,
 } from 'lucide-react'
 import { useApp } from '../context'
@@ -38,7 +34,6 @@ import Authors from './Authors'
 
 export default function Home() {
   const { catalog, profile } = useApp()
-  const navigate = useNavigate()
   const [news, setNews] = useState<NewsArticle[]>([])
   const [newsError, setNewsError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -62,21 +57,12 @@ export default function Home() {
   if (!catalog) return <CatalogState />
   const top = catalog.reports.filter((report) => report.kind === 'top-conf')
   const weekly = catalog.reports.filter((report) => report.kind === 'secnews')
-  const reports = (tab === 'conference' ? top : tab === 'weekly' ? weekly : catalog.reports).filter(
-    (report) => report.title.toLowerCase().includes(search.toLowerCase()),
-  )
+  const reports = (
+    tab === 'conference' ? top : tab === 'weekly' ? weekly : catalog.reports.filter((r) => r.pdf)
+  ).filter((report) => report.title.toLowerCase().includes(search.toLowerCase()))
   return (
     <>
-      <PageHeading
-        title="安全研究报告工作台"
-        description="跟进安全动态，发现研究线索，让每一次阅读有所积累。"
-        action={
-          <Link className="fastui-button fastui-button--primary no-underline" to="/field-briefing/">
-            <Sparkles size={14} />
-            探索研究方向
-          </Link>
-        }
-      />
+      <PageHeading title="研究工作台" />
       <Metrics
         items={[
           {
@@ -107,24 +93,6 @@ export default function Home() {
       />
       <div className="grid min-[1200px]:grid-cols-[minmax(0,1fr)_300px] gap-5 items-start">
         <div className="min-w-0">
-          <div className="flex flex-wrap items-center justify-between gap-2 mb-3 text-[var(--fastui-muted)]">
-            <h2 className="fastui-heading m-0 text-sm">开始你的研究</h2>
-            <span>从问题出发，连接证据与洞见</span>
-          </div>
-          <div className="grid sm:grid-cols-2 gap-3 mb-5">
-            <AssetCard
-              label="领域导读"
-              description="梳理研究脉络、关键进展与开放问题，推荐高相关论文。"
-              preview={<BookOpen size={28} />}
-              onClick={() => navigate('/field-briefing/')}
-            />
-            <AssetCard
-              label="总结汇报"
-              description="从顶会摘要中提炼发现，生成有论文证据支撑的实证简报。"
-              preview={<ChartNoAxesCombined size={28} />}
-              onClick={() => navigate('/summary-brief/')}
-            />
-          </div>
           <Panel
             title="顶会报告"
             action={
@@ -133,7 +101,7 @@ export default function Home() {
               </Link>
             }
           >
-            <InspectorSection label="浏览报告与下载" open>
+            <div className="p-4">
               <TabBar
                 label="报告分类"
                 tabs={[
@@ -144,10 +112,10 @@ export default function Home() {
                   },
                   {
                     id: 'weekly',
-                    label: `安全资讯周报 · ${weekly.length}`,
+                    label: `资讯周报 · ${weekly.length}`,
                     controls: 'report-results',
                   },
-                  { id: 'downloads', label: '全部下载', controls: 'report-results' },
+                  { id: 'downloads', label: 'PDF 报告', controls: 'report-results' },
                 ]}
                 activeId={tab}
                 onSelect={setTab}
@@ -164,9 +132,9 @@ export default function Home() {
                 <span className="text-[var(--fastui-muted)]">{reports.length} 份报告</span>
               </Toolbar>
               <div id="report-results" role="tabpanel" aria-labelledby={tab}>
-                <ReportList reports={reports} download={tab === 'downloads'} />
+                <ReportList reports={reports} />
               </div>
-            </InspectorSection>
+            </div>
           </Panel>
           <Authors embedded />
         </div>
@@ -195,7 +163,7 @@ export default function Home() {
                         {article.title_zh || article.title}
                       </a>
                       <small className="block mt-2 text-[var(--fastui-muted)]">
-                        {article.source}
+                        {article.source_name || article.source}
                       </small>
                     </div>
                   </ListRow>
@@ -213,34 +181,17 @@ export default function Home() {
           </Panel>
           <Panel title="我的研究">
             <div className="p-4 grid gap-3">
-              <span className="text-[var(--fastui-focus)]">
-                <Mail size={18} />
-              </span>
-              <h3 className="fastui-heading m-0 text-sm">每天一篇，保持研究节奏</h3>
-              <p className="m-0 text-[var(--fastui-secondary)]">
-                结合关注作者与研究印象，发现值得阅读的论文。
-              </p>
               <Link className="fastui-link inline-flex items-center gap-1" to="/inbox/">
                 查看今日私信 <ArrowRight size={12} />
               </Link>
             </div>
             <InspectorSection label="研究印象" open>
-              <p className="m-0 break-words">
-                {profile?.impression.text || '记录研究方向和关注问题，让论文推荐更贴近你。'}
-              </p>
+              <p className="m-0 break-words">{profile?.impression.text}</p>
               <Link className="fastui-link" to={profile ? '/impression/' : '/login'}>
                 {profile ? '编辑研究印象' : '登录并完善印象'} <ArrowUpRight size={12} />
               </Link>
             </InspectorSection>
           </Panel>
-          <div className="flex gap-3 items-center p-4 text-[var(--fastui-muted)]">
-            <BookOpen size={15} />
-            <p>
-              以论文证据为起点，
-              <br />
-              持续连接你的研究兴趣。
-            </p>
-          </div>
         </aside>
       </div>
     </>

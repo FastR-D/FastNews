@@ -157,7 +157,7 @@ func TestConferenceSourcesThroughCLIClassificationCatalogAndReport(t *testing.T)
 			if err := job(ctx, c, "conference-report", args); err != nil {
 				t.Fatal(err)
 			}
-			report, err := os.ReadFile(filepath.Join(c.Root, "top-conf/data/report", strings.ToUpper(conf)+"_2026_Report.html"))
+			report, err := os.ReadFile(filepath.Join(c.Root, "top-conf/data/report", strings.ToUpper(conf)+"_2026_Report.json"))
 			if err != nil || !strings.Contains(string(report), catalog.Str(rows[0], "link")) || !strings.Contains(string(report), catalog.Str(rows[1], "link")) {
 				t.Fatalf("report lost papers: %v", err)
 			}

@@ -8,6 +8,6 @@
 
 签名通知经 SDK 验证后在 SQLite 事务内去重、更新关系、撤销对应 CAS 来源会话。解绑、停用或后端退出不会删除本地用户、个人内容与本地密码会话。会话有效性每五分钟复核关系；refresh token 使用 AES-GCM 并绑定来源会话。
 
-Research 内容只有在账号页显式验证 Key 并导入，或启用委托连接并得到用户同意后才会读取。快照默认拒绝覆盖本地内容。持续连接需要 `FASTNEWS_FASTCAS_RESEARCH_CONNECT=true`、独立 vault key 以及中心的相应 scope 和 token exchange 策略。
+账号页只展示账号资料与 FastCAS 认证，已移除 Research Key 与快照导入控件。Research 工作台通过同一 FastCAS 身份及服务令牌读取个人摘要，不要求用户手动配对。旧的委托读取接口仍须明确授权，启用它需要 `FASTNEWS_FASTCAS_RESEARCH_CONNECT=true`、独立 vault key 以及中心的相应 scope 和 token exchange 策略。
 
 迁移和本地验收范围见 [Go / React 重构](go-react-migration.md)，接口与 CSRF 使用见 [API 说明](api.md)。正式上线前需与实际身份提供方完成环境验收。

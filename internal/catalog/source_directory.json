@@ -1,0 +1,1352 @@
+[
+  {
+    "id": "source_1",
+    "name": "CVE Program",
+    "url": "https://www.cve.org/Downloads",
+    "category": "cve",
+    "description": "页面核验。旧 CSV/XML 等格式已于 2024-06-30 结束支持；需独立适配器",
+    "verification": "primary",
+    "reviewedAt": "2026-11-27",
+    "note": "[cvelistV5](https://github.com/CVEProject/cvelistV5) JSON V5；每日基线、小时增量",
+    "references": []
+  },
+  {
+    "id": "source_2",
+    "name": "NVD",
+    "url": "https://nvd.nist.gov/developers/vulnerabilities",
+    "category": "cve",
+    "description": "页面核验。CVSS/CWE/CPE 等评估不等于已实际被利用；限流/key 策略接入前再按官方要求配置",
+    "verification": "primary",
+    "reviewedAt": "2026-11-27",
+    "note": "https://services.nvd.nist.gov/rest/json/cves/2.0，分页与修改记录",
+    "references": []
+  },
+  {
+    "id": "source_3",
+    "name": "CISA KEV",
+    "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+    "category": "cve",
+    "description": "页面核验。确认在野利用的优先级输入；不在 KEV 中不代表不存在利用",
+    "verification": "primary",
+    "reviewedAt": "2026-11-27",
+    "note": "[官方 JSON](https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json) / CSV",
+    "references": [
+      {
+        "id": "Z3",
+        "title": "网络安全开源情报源（书签收藏夹）",
+        "url": "https://zhuanlan.zhihu.com/p/16541522067"
+      }
+    ]
+  },
+  {
+    "id": "source_4",
+    "name": "OSV",
+    "url": "https://osv.dev/",
+    "category": "cve",
+    "description": "页面核验。适合依赖漏洞，与泛新闻分库；支持生态来源与别名关联",
+    "verification": "primary",
+    "reviewedAt": "2026-11-27",
+    "note": "https://api.osv.dev/v1/query，按包版本/commit 查受影响范围",
+    "references": []
+  },
+  {
+    "id": "source_5",
+    "name": "JVN",
+    "url": "https://jvn.jp/",
+    "category": "cve",
+    "description": "候选；待验证 feed、语言和更新频率",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "日本漏洞通报",
+    "references": [
+      {
+        "id": "Z3",
+        "title": "网络安全开源情报源（书签收藏夹）",
+        "url": "https://zhuanlan.zhihu.com/p/16541522067"
+      }
+    ]
+  },
+  {
+    "id": "source_6",
+    "name": "GitHub Security Advisories",
+    "url": "https://securitylab.github.com/advisories/",
+    "category": "cve",
+    "description": "候选；与 GHSA 全量数据库是相关但不同入口",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "Security Lab 公告",
+    "references": [
+      {
+        "id": "Z3",
+        "title": "网络安全开源情报源（书签收藏夹）",
+        "url": "https://zhuanlan.zhihu.com/p/16541522067"
+      }
+    ]
+  },
+  {
+    "id": "source_7",
+    "name": "Snyk Vulnerability DB",
+    "url": "https://security.snyk.io/vuln",
+    "category": "cve",
+    "description": "候选；核对服务条款与 API 后接入",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "包/漏洞库",
+    "references": [
+      {
+        "id": "Z3",
+        "title": "网络安全开源情报源（书签收藏夹）",
+        "url": "https://zhuanlan.zhihu.com/p/16541522067"
+      }
+    ]
+  },
+  {
+    "id": "source_8",
+    "name": "huntr",
+    "url": "https://huntr.com/",
+    "category": "cve",
+    "description": "候选；需要区分披露、赏金、修复与厂商确认",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "AI/ML 等软件漏洞披露",
+    "references": [
+      {
+        "id": "Z3",
+        "title": "网络安全开源情报源（书签收藏夹）",
+        "url": "https://zhuanlan.zhihu.com/p/16541522067"
+      }
+    ]
+  },
+  {
+    "id": "source_9",
+    "name": "FIRST",
+    "url": "https://www.first.org/",
+    "category": "cve",
+    "description": "候选；本轮未实现 EPSS 接口",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "标准、事件响应社区，可进一步核验 EPSS",
+    "references": [
+      {
+        "id": "Z3",
+        "title": "网络安全开源情报源（书签收藏夹）",
+        "url": "https://zhuanlan.zhihu.com/p/16541522067"
+      }
+    ]
+  },
+  {
+    "id": "source_10",
+    "name": "360 CERT",
+    "url": "https://cert.360.cn/",
+    "category": "cve",
+    "description": "候选；需核验稳定订阅入口",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "中文预警与分析",
+    "references": [
+      {
+        "id": "Z3",
+        "title": "网络安全开源情报源（书签收藏夹）",
+        "url": "https://zhuanlan.zhihu.com/p/16541522067"
+      }
+    ]
+  },
+  {
+    "id": "source_11",
+    "name": "JPCERT/CC Incident",
+    "url": "https://blogs.jpcert.or.jp/en/incident/",
+    "category": "cve",
+    "description": "候选；优先于无出处中文转载",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "官方事件分析博客",
+    "references": [
+      {
+        "id": "Z3",
+        "title": "网络安全开源情报源（书签收藏夹）",
+        "url": "https://zhuanlan.zhihu.com/p/16541522067"
+      }
+    ]
+  },
+  {
+    "id": "source_12",
+    "name": "Inthewild",
+    "url": "https://inthewild.io/feed",
+    "category": "cve",
+    "description": "候选；不与 CVE/NVD/CISA 官方记录同等级使用",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "社区聚合/漏洞发现线索",
+    "references": [
+      {
+        "id": "Z3",
+        "title": "网络安全开源情报源（书签收藏夹）",
+        "url": "https://zhuanlan.zhihu.com/p/16541522067"
+      }
+    ]
+  },
+  {
+    "id": "source_13",
+    "name": "CVECrowd",
+    "url": "https://cvecrowd.com/",
+    "category": "cve",
+    "description": "候选；不与 CVE/NVD/CISA 官方记录同等级使用",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "社区聚合/漏洞发现线索",
+    "references": [
+      {
+        "id": "Z3",
+        "title": "网络安全开源情报源（书签收藏夹）",
+        "url": "https://zhuanlan.zhihu.com/p/16541522067"
+      }
+    ]
+  },
+  {
+    "id": "source_14",
+    "name": "CVEShield",
+    "url": "https://www.cveshield.com/",
+    "category": "cve",
+    "description": "候选；不与 CVE/NVD/CISA 官方记录同等级使用",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "社区聚合/漏洞发现线索",
+    "references": [
+      {
+        "id": "Z3",
+        "title": "网络安全开源情报源（书签收藏夹）",
+        "url": "https://zhuanlan.zhihu.com/p/16541522067"
+      }
+    ]
+  },
+  {
+    "id": "krebs",
+    "name": "Krebs on Security",
+    "url": "https://krebsonsecurity.com/",
+    "category": "security",
+    "description": "原创调查与评论，更新未必每日",
+    "verification": "primary",
+    "reviewedAt": "2026-11-27",
+    "note": "已采集；/feed/",
+    "references": [
+      {
+        "id": "Z2",
+        "title": "十个获取海外网络安全资讯的最佳网站",
+        "url": "https://zhuanlan.zhihu.com/p/718174636"
+      },
+      {
+        "id": "R2",
+        "title": "r/cybersecurity：可靠资讯源与付费意愿",
+        "url": "https://www.reddit.com/r/cybersecurity/comments/1xzmlp9/what_are_your_favorite_and_most_reliable_new/"
+      }
+    ]
+  },
+  {
+    "id": "thehackernews",
+    "name": "The Hacker News",
+    "url": "https://thehackernews.com/",
+    "category": "security",
+    "description": "安全新闻；与 Y Combinator Hacker News 不是同一站",
+    "verification": "primary",
+    "reviewedAt": "2026-11-27",
+    "note": "已采集；现有 FeedBurner feed",
+    "references": [
+      {
+        "id": "Z2",
+        "title": "十个获取海外网络安全资讯的最佳网站",
+        "url": "https://zhuanlan.zhihu.com/p/718174636"
+      },
+      {
+        "id": "R2",
+        "title": "r/cybersecurity：可靠资讯源与付费意愿",
+        "url": "https://www.reddit.com/r/cybersecurity/comments/1xzmlp9/what_are_your_favorite_and_most_reliable_new/"
+      }
+    ]
+  },
+  {
+    "id": "securityweek",
+    "name": "SecurityWeek",
+    "url": "https://www.securityweek.com/",
+    "category": "security",
+    "description": "安全行业与事件报道",
+    "verification": "primary",
+    "reviewedAt": "2026-11-27",
+    "note": "已采集；/feed/",
+    "references": [
+      {
+        "id": "Z2",
+        "title": "十个获取海外网络安全资讯的最佳网站",
+        "url": "https://zhuanlan.zhihu.com/p/718174636"
+      }
+    ]
+  },
+  {
+    "id": "bleepingcomputer",
+    "name": "BleepingComputer",
+    "url": "https://www.bleepingcomputer.com/",
+    "category": "security",
+    "description": "返回错误而非绕过访问限制；其他源继续落盘",
+    "verification": "primary",
+    "reviewedAt": "2026-11-27",
+    "note": "已配置；本次 HTTP 403，无新增",
+    "references": [
+      {
+        "id": "Z2",
+        "title": "十个获取海外网络安全资讯的最佳网站",
+        "url": "https://zhuanlan.zhihu.com/p/718174636"
+      },
+      {
+        "id": "R1",
+        "title": "r/cybersecurity：Best News Sources",
+        "url": "https://www.reddit.com/r/cybersecurity/comments/1oiy7ik/best_news_sources/"
+      }
+    ]
+  },
+  {
+    "id": "source_19",
+    "name": "Dark Reading",
+    "url": "https://www.darkreading.com/",
+    "category": "security",
+    "description": "研究/企业安全媒体，需筛分广告与编辑报道",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选",
+    "references": [
+      {
+        "id": "Z2",
+        "title": "十个获取海外网络安全资讯的最佳网站",
+        "url": "https://zhuanlan.zhihu.com/p/718174636"
+      }
+    ]
+  },
+  {
+    "id": "source_20",
+    "name": "SC Media",
+    "url": "https://www.scmagazine.com/",
+    "category": "security",
+    "description": "行业新闻，待核验稳定订阅",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选",
+    "references": [
+      {
+        "id": "Z2",
+        "title": "十个获取海外网络安全资讯的最佳网站",
+        "url": "https://zhuanlan.zhihu.com/p/718174636"
+      }
+    ]
+  },
+  {
+    "id": "source_21",
+    "name": "CSO",
+    "url": "https://www.csoonline.com/",
+    "category": "security",
+    "description": "管理与产业视角，部分内容可能有访问限制",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选",
+    "references": [
+      {
+        "id": "Z2",
+        "title": "十个获取海外网络安全资讯的最佳网站",
+        "url": "https://zhuanlan.zhihu.com/p/718174636"
+      }
+    ]
+  },
+  {
+    "id": "source_22",
+    "name": "Security Boulevard",
+    "url": "https://securityboulevard.com/",
+    "category": "security",
+    "description": "含联合发布，必须保留原作者并跨站去重",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选",
+    "references": [
+      {
+        "id": "Z2",
+        "title": "十个获取海外网络安全资讯的最佳网站",
+        "url": "https://zhuanlan.zhihu.com/p/718174636"
+      }
+    ]
+  },
+  {
+    "id": "source_23",
+    "name": "Infosecurity Magazine",
+    "url": "https://www.infosecurity-magazine.com/",
+    "category": "security",
+    "description": "安全新闻，待 feed 实测",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选",
+    "references": [
+      {
+        "id": "Z2",
+        "title": "十个获取海外网络安全资讯的最佳网站",
+        "url": "https://zhuanlan.zhihu.com/p/718174636"
+      }
+    ]
+  },
+  {
+    "id": "source_24",
+    "name": "Threatpost",
+    "url": "https://threatpost.com/",
+    "category": "security",
+    "description": "不因旧清单“最佳”就直接默认启用",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "历史清单候选，未确认当前时效",
+    "references": [
+      {
+        "id": "Z2",
+        "title": "十个获取海外网络安全资讯的最佳网站",
+        "url": "https://zhuanlan.zhihu.com/p/718174636"
+      }
+    ]
+  },
+  {
+    "id": "trailofbits",
+    "name": "Trail of Bits",
+    "url": "https://blog.trailofbits.com/",
+    "category": "security",
+    "description": "软件安全、审计、密码学、供应链与 AI 工程；低频深度源",
+    "verification": "primary",
+    "reviewedAt": "2026-11-27",
+    "note": "官网核验且已采集；/index.xml，90 天窗口",
+    "references": [
+      {
+        "id": "Z3",
+        "title": "网络安全开源情报源（书签收藏夹）",
+        "url": "https://zhuanlan.zhihu.com/p/16541522067"
+      }
+    ]
+  },
+  {
+    "id": "cisco_talos",
+    "name": "Cisco Talos",
+    "url": "https://blog.talosintelligence.com/",
+    "category": "security",
+    "description": "威胁研究、漏洞和研究组通讯；含不同内容栏目",
+    "verification": "primary",
+    "reviewedAt": "2026-11-27",
+    "note": "官网核验且已采集；/rss/",
+    "references": [
+      {
+        "id": "Z3",
+        "title": "网络安全开源情报源（书签收藏夹）",
+        "url": "https://zhuanlan.zhihu.com/p/16541522067"
+      }
+    ]
+  },
+  {
+    "id": "source_27",
+    "name": "Unit 42",
+    "url": "https://unit42.paloaltonetworks.com/",
+    "category": "security",
+    "description": "威胁研究团队；与厂商产品宣传分开",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选",
+    "references": [
+      {
+        "id": "Z3",
+        "title": "网络安全开源情报源（书签收藏夹）",
+        "url": "https://zhuanlan.zhihu.com/p/16541522067"
+      }
+    ]
+  },
+  {
+    "id": "source_28",
+    "name": "Quarkslab",
+    "url": "https://blog.quarkslab.com/",
+    "category": "security",
+    "description": "逆向、密码学、漏洞研究",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选",
+    "references": [
+      {
+        "id": "Z3",
+        "title": "网络安全开源情报源（书签收藏夹）",
+        "url": "https://zhuanlan.zhihu.com/p/16541522067"
+      }
+    ]
+  },
+  {
+    "id": "source_29",
+    "name": "Mandiant",
+    "url": "https://www.mandiant.com/resources/blog",
+    "category": "security",
+    "description": "威胁情报与事件响应研究",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选；需核验迁移后的规范 URL",
+    "references": [
+      {
+        "id": "Z3",
+        "title": "网络安全开源情报源（书签收藏夹）",
+        "url": "https://zhuanlan.zhihu.com/p/16541522067"
+      }
+    ]
+  },
+  {
+    "id": "source_30",
+    "name": "PortSwigger Research",
+    "url": "https://portswigger.net/research/articles",
+    "category": "security",
+    "description": "Web 安全一手技术研究",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选",
+    "references": [
+      {
+        "id": "Z3",
+        "title": "网络安全开源情报源（书签收藏夹）",
+        "url": "https://zhuanlan.zhihu.com/p/16541522067"
+      }
+    ]
+  },
+  {
+    "id": "source_31",
+    "name": "DEVCORE",
+    "url": "https://devco.re/en/blog/",
+    "category": "security",
+    "description": "漏洞与攻防研究，有中英文重复内容需去重",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选",
+    "references": [
+      {
+        "id": "Z3",
+        "title": "网络安全开源情报源（书签收藏夹）",
+        "url": "https://zhuanlan.zhihu.com/p/16541522067"
+      }
+    ]
+  },
+  {
+    "id": "source_32",
+    "name": "NCC Group",
+    "url": "https://research.nccgroup.com/category/public-reports/",
+    "category": "security",
+    "description": "公开安全研究报告",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选",
+    "references": [
+      {
+        "id": "Z3",
+        "title": "网络安全开源情报源（书签收藏夹）",
+        "url": "https://zhuanlan.zhihu.com/p/16541522067"
+      }
+    ]
+  },
+  {
+    "id": "source_33",
+    "name": "Citizen Lab",
+    "url": "https://citizenlab.ca/",
+    "category": "security",
+    "description": "学术研究团队，数字威胁与公民社会议题",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选",
+    "references": [
+      {
+        "id": "Z3",
+        "title": "网络安全开源情报源（书签收藏夹）",
+        "url": "https://zhuanlan.zhihu.com/p/16541522067"
+      }
+    ]
+  },
+  {
+    "id": "source_34",
+    "name": "腾讯科恩实验室",
+    "url": "https://keenlab.tencent.com/zh/",
+    "category": "security",
+    "description": "安全研究组，注意历史内容与最新动态区别",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选",
+    "references": [
+      {
+        "id": "Z3",
+        "title": "网络安全开源情报源（书签收藏夹）",
+        "url": "https://zhuanlan.zhihu.com/p/16541522067"
+      }
+    ]
+  },
+  {
+    "id": "source_35",
+    "name": "奇安信 XLab",
+    "url": "https://blog.xlab.qianxin.com/",
+    "category": "security",
+    "description": "恶意软件、僵尸网络等研究",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选",
+    "references": [
+      {
+        "id": "Z3",
+        "title": "网络安全开源情报源（书签收藏夹）",
+        "url": "https://zhuanlan.zhihu.com/p/16541522067"
+      }
+    ]
+  },
+  {
+    "id": "source_36",
+    "name": "inforsec",
+    "url": "https://www.inforsec.org/wp/",
+    "category": "security",
+    "description": "中文学术安全社区线索，保留候选不宣称可用",
+    "verification": "primary",
+    "reviewedAt": "2026-11-27",
+    "note": "本次导航超时，未完成官网核验",
+    "references": [
+      {
+        "id": "Z3",
+        "title": "网络安全开源情报源（书签收藏夹）",
+        "url": "https://zhuanlan.zhihu.com/p/16541522067"
+      }
+    ]
+  },
+  {
+    "id": "source_37",
+    "name": "腾讯安全每日资讯",
+    "url": "https://sectoday.tencent.com/info-today",
+    "category": "security",
+    "description": "二次编辑摘要，需要追原文",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选",
+    "references": [
+      {
+        "id": "Z3",
+        "title": "网络安全开源情报源（书签收藏夹）",
+        "url": "https://zhuanlan.zhihu.com/p/16541522067"
+      }
+    ]
+  },
+  {
+    "id": "source_38",
+    "name": "sec.today",
+    "url": "https://sec.today/pulses/",
+    "category": "security",
+    "description": "二次编辑摘要，需要追原文",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选",
+    "references": [
+      {
+        "id": "Z3",
+        "title": "网络安全开源情报源（书签收藏夹）",
+        "url": "https://zhuanlan.zhihu.com/p/16541522067"
+      }
+    ]
+  },
+  {
+    "id": "source_39",
+    "name": "ufofly/yarb",
+    "url": "https://github.com/ufofly/yarb/blob/main/today.md",
+    "category": "security",
+    "description": "不把简短 README 推断成完整可复用采集系统",
+    "verification": "primary",
+    "reviewedAt": "2026-11-27",
+    "note": "仓库入口核验；仅确认“每日安全资讯”定位",
+    "references": [
+      {
+        "id": "Z3",
+        "title": "网络安全开源情报源（书签收藏夹）",
+        "url": "https://zhuanlan.zhihu.com/p/16541522067"
+      }
+    ]
+  },
+  {
+    "id": "openai",
+    "name": "OpenAI News",
+    "url": "https://openai.com/news/",
+    "category": "ai",
+    "description": "模型、产品与研究官方发布",
+    "verification": "primary",
+    "reviewedAt": "2026-11-27",
+    "note": "已采集；/news/rss.xml",
+    "references": [
+      {
+        "id": "Z4",
+        "title": "高质量的 AI 技术网站、社区、博客",
+        "url": "https://zhuanlan.zhihu.com/p/1889713359533889288"
+      }
+    ]
+  },
+  {
+    "id": "huggingface",
+    "name": "Hugging Face Blog",
+    "url": "https://huggingface.co/blog",
+    "category": "ai",
+    "description": "模型、数据集、工程实践；作者可能为社区贡献者",
+    "verification": "primary",
+    "reviewedAt": "2026-11-27",
+    "note": "已采集；/blog/feed.xml",
+    "references": [
+      {
+        "id": "Z4",
+        "title": "高质量的 AI 技术网站、社区、博客",
+        "url": "https://zhuanlan.zhihu.com/p/1889713359533889288"
+      }
+    ]
+  },
+  {
+    "id": "source_42",
+    "name": "Google DeepMind Research",
+    "url": "https://deepmind.google/research/",
+    "category": "ai",
+    "description": "官方论文与研究，未接入网页采集",
+    "verification": "primary",
+    "reviewedAt": "2026-11-27",
+    "note": "页面核验，含 publications、frontier safety 入口",
+    "references": [
+      {
+        "id": "Z4",
+        "title": "高质量的 AI 技术网站、社区、博客",
+        "url": "https://zhuanlan.zhihu.com/p/1889713359533889288"
+      },
+      {
+        "id": "Z5",
+        "title": "AI 前沿技术博客与动态网站盘点",
+        "url": "https://zhuanlan.zhihu.com/p/2062748683502883827"
+      }
+    ]
+  },
+  {
+    "id": "source_43",
+    "name": "Transformer Circuits",
+    "url": "https://transformer-circuits.pub/",
+    "category": "research",
+    "description": "机制可解释性一手研究；低频更新有价值",
+    "verification": "primary",
+    "reviewedAt": "2026-11-27",
+    "note": "页面核验，明确为 Anthropic 可解释性团队；看到 2026-10 更新",
+    "references": [
+      {
+        "id": "Z5",
+        "title": "AI 前沿技术博客与动态网站盘点",
+        "url": "https://zhuanlan.zhihu.com/p/2062748683502883827"
+      }
+    ]
+  },
+  {
+    "id": "mit_ai",
+    "name": "MIT AI News",
+    "url": "https://news.mit.edu/rss",
+    "category": "research",
+    "description": "研究成果、跨学科应用；校方新闻仍需关联论文",
+    "verification": "primary",
+    "reviewedAt": "2026-11-27",
+    "note": "已采集；官方 Artificial intelligence RSS",
+    "references": [
+      {
+        "id": "Z1",
+        "title": "AI 领域有哪些值得关注的博主或网站？",
+        "url": "https://www.zhihu.com/question/439891521/answer/3394027625"
+      }
+    ]
+  },
+  {
+    "id": "stanford_sail",
+    "name": "Stanford AI Lab",
+    "url": "https://ai.stanford.edu/blog/",
+    "category": "research",
+    "description": "主页有 2026-11 文章但 feed 落后，应做源健康提示，不能宣称已拿到最新内容",
+    "verification": "primary",
+    "reviewedAt": "2026-11-27",
+    "note": "主页核验，RSS 已配置；本次 15 条均早于 90 天窗口",
+    "references": []
+  },
+  {
+    "id": "berkeley_bair",
+    "name": "Berkeley AI Research",
+    "url": "https://bair.berkeley.edu/blog/",
+    "category": "research",
+    "description": "研究解读、会议论文集合、实验室动态",
+    "verification": "primary",
+    "reviewedAt": "2026-11-27",
+    "note": "已采集；/blog/feed.xml，90 天窗口",
+    "references": []
+  },
+  {
+    "id": "source_47",
+    "name": "MIT CSAIL",
+    "url": "https://www.csail.mit.edu/news",
+    "category": "research",
+    "description": "实验室新闻，后续去除与 MIT News 的重叠",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选；本轮只核验 MIT News 上游",
+    "references": []
+  },
+  {
+    "id": "source_48",
+    "name": "Lil’Log",
+    "url": "https://lilianweng.github.io/",
+    "category": "ai",
+    "description": "深度技术综述，不应强求日更",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选",
+    "references": [
+      {
+        "id": "Z1",
+        "title": "AI 领域有哪些值得关注的博主或网站？",
+        "url": "https://www.zhihu.com/question/439891521/answer/3394027625"
+      },
+      {
+        "id": "Z6",
+        "title": "51 个 AI 信息源阅读地图",
+        "url": "https://zhuanlan.zhihu.com/p/2093292723524654340"
+      }
+    ]
+  },
+  {
+    "id": "source_49",
+    "name": "科学空间",
+    "url": "https://spaces.ac.cn/",
+    "category": "ai",
+    "description": "苏剑林的技术推导与研究笔记",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选",
+    "references": [
+      {
+        "id": "Z1",
+        "title": "AI 领域有哪些值得关注的博主或网站？",
+        "url": "https://www.zhihu.com/question/439891521/answer/3394027625"
+      }
+    ]
+  },
+  {
+    "id": "source_50",
+    "name": "CoolPapers",
+    "url": "https://papers.cool/",
+    "category": "ai",
+    "description": "论文发现与辅助阅读，应回溯 arXiv",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选",
+    "references": [
+      {
+        "id": "Z1",
+        "title": "AI 领域有哪些值得关注的博主或网站？",
+        "url": "https://www.zhihu.com/question/439891521/answer/3394027625"
+      }
+    ]
+  },
+  {
+    "id": "source_51",
+    "name": "Hugging Face Papers",
+    "url": "https://huggingface.co/papers",
+    "category": "ai",
+    "description": "社区精选论文；不等于全部论文或客观影响力排名",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选",
+    "references": [
+      {
+        "id": "Z1",
+        "title": "AI 领域有哪些值得关注的博主或网站？",
+        "url": "https://www.zhihu.com/question/439891521/answer/3394027625"
+      },
+      {
+        "id": "R3",
+        "title": "r/MachineLearning：实质性 ML 内容",
+        "url": "https://www.reddit.com/r/MachineLearning/comments/1ko64s6/d_who_do_you_all_follow_for_genuinely_substantial/"
+      },
+      {
+        "id": "R4",
+        "title": "r/MachineLearning：常用 feeds",
+        "url": "https://www.reddit.com/r/MachineLearning/comments/1fpo0z8/d_which_feeds_do_you_look_at/"
+      }
+    ]
+  },
+  {
+    "id": "source_52",
+    "name": "arXiv",
+    "url": "https://arxiv.org/",
+    "category": "ai",
+    "description": "预印本，不等于同行评审；已有会议语料另行保留",
+    "verification": "primary",
+    "reviewedAt": "2026-11-27",
+    "note": "3 路已配置；本次 feed 为 0 条",
+    "references": [
+      {
+        "id": "Z1",
+        "title": "AI 领域有哪些值得关注的博主或网站？",
+        "url": "https://www.zhihu.com/question/439891521/answer/3394027625"
+      },
+      {
+        "id": "R3",
+        "title": "r/MachineLearning：实质性 ML 内容",
+        "url": "https://www.reddit.com/r/MachineLearning/comments/1ko64s6/d_who_do_you_all_follow_for_genuinely_substantial/"
+      },
+      {
+        "id": "R4",
+        "title": "r/MachineLearning：常用 feeds",
+        "url": "https://www.reddit.com/r/MachineLearning/comments/1fpo0z8/d_which_feeds_do_you_look_at/"
+      }
+    ]
+  },
+  {
+    "id": "source_53",
+    "name": "Raschka",
+    "url": "https://magazine.sebastianraschka.com/",
+    "category": "ai",
+    "description": "ML/LLM 研究解读与实践",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选",
+    "references": [
+      {
+        "id": "R3",
+        "title": "r/MachineLearning：实质性 ML 内容",
+        "url": "https://www.reddit.com/r/MachineLearning/comments/1ko64s6/d_who_do_you_all_follow_for_genuinely_substantial/"
+      },
+      {
+        "id": "Z6",
+        "title": "51 个 AI 信息源阅读地图",
+        "url": "https://zhuanlan.zhihu.com/p/2093292723524654340"
+      }
+    ]
+  },
+  {
+    "id": "source_54",
+    "name": "Cameron Wolfe",
+    "url": "https://cameronrwolfe.me/blog",
+    "category": "ai",
+    "description": "深度学习论文解读",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选",
+    "references": [
+      {
+        "id": "R3",
+        "title": "r/MachineLearning：实质性 ML 内容",
+        "url": "https://www.reddit.com/r/MachineLearning/comments/1ko64s6/d_who_do_you_all_follow_for_genuinely_substantial/"
+      }
+    ]
+  },
+  {
+    "id": "source_55",
+    "name": "Sebastian Ruder",
+    "url": "https://newsletter.ruder.io/",
+    "category": "ai",
+    "description": "NLP 与语言模型研究通讯",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选",
+    "references": [
+      {
+        "id": "R3",
+        "title": "r/MachineLearning：实质性 ML 内容",
+        "url": "https://www.reddit.com/r/MachineLearning/comments/1ko64s6/d_who_do_you_all_follow_for_genuinely_substantial/"
+      }
+    ]
+  },
+  {
+    "id": "source_56",
+    "name": "Import AI",
+    "url": "https://jack-clark.net/",
+    "category": "ai",
+    "description": "Jack Clark 的研究、产业与政策摘要",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选",
+    "references": [
+      {
+        "id": "R3",
+        "title": "r/MachineLearning：实质性 ML 内容",
+        "url": "https://www.reddit.com/r/MachineLearning/comments/1ko64s6/d_who_do_you_all_follow_for_genuinely_substantial/"
+      }
+    ]
+  },
+  {
+    "id": "source_57",
+    "name": "Interconnects",
+    "url": "https://www.interconnects.ai/",
+    "category": "ai",
+    "description": "后训练、开放模型与产业分析",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选",
+    "references": [
+      {
+        "id": "R4",
+        "title": "r/MachineLearning：常用 feeds",
+        "url": "https://www.reddit.com/r/MachineLearning/comments/1fpo0z8/d_which_feeds_do_you_look_at/"
+      }
+    ]
+  },
+  {
+    "id": "source_58",
+    "name": "Latent Space AI News",
+    "url": "https://latent.space/news/",
+    "category": "ai",
+    "description": "已有每日简报，适合发现事件；本轮未确认批量复用许可/当前 RSS",
+    "verification": "primary",
+    "reviewedAt": "2026-11-27",
+    "note": "页面核验；旧地址本次跳转至此，近期可见更新",
+    "references": [
+      {
+        "id": "R3",
+        "title": "r/MachineLearning：实质性 ML 内容",
+        "url": "https://www.reddit.com/r/MachineLearning/comments/1ko64s6/d_who_do_you_all_follow_for_genuinely_substantial/"
+      }
+    ]
+  },
+  {
+    "id": "source_59",
+    "name": "AlphaSignal",
+    "url": "https://alphasignal.ai/",
+    "category": "ai",
+    "description": "AI 工程/研究摘要，需评估营销与独立内容比例",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选",
+    "references": [
+      {
+        "id": "R4",
+        "title": "r/MachineLearning：常用 feeds",
+        "url": "https://www.reddit.com/r/MachineLearning/comments/1fpo0z8/d_which_feeds_do_you_look_at/"
+      }
+    ]
+  },
+  {
+    "id": "source_60",
+    "name": "Cerebral Valley",
+    "url": "https://cerebralvalley.ai/",
+    "category": "ai",
+    "description": "AI 社区与产业动态",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选",
+    "references": [
+      {
+        "id": "R4",
+        "title": "r/MachineLearning：常用 feeds",
+        "url": "https://www.reddit.com/r/MachineLearning/comments/1fpo0z8/d_which_feeds_do_you_look_at/"
+      }
+    ]
+  },
+  {
+    "id": "source_61",
+    "name": "PyTorch Blog",
+    "url": "https://pytorch.org/blog/",
+    "category": "ai",
+    "description": "框架工程、发布与生态实践",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选",
+    "references": [
+      {
+        "id": "R4",
+        "title": "r/MachineLearning：常用 feeds",
+        "url": "https://www.reddit.com/r/MachineLearning/comments/1fpo0z8/d_which_feeds_do_you_look_at/"
+      }
+    ]
+  },
+  {
+    "id": "source_62",
+    "name": "The Journal Club",
+    "url": "https://www.thejournal.club/c/pulse/",
+    "category": "ai",
+    "description": "论文发现/阅读入口",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选",
+    "references": [
+      {
+        "id": "R4",
+        "title": "r/MachineLearning：常用 feeds",
+        "url": "https://www.reddit.com/r/MachineLearning/comments/1fpo0z8/d_which_feeds_do_you_look_at/"
+      }
+    ]
+  },
+  {
+    "id": "source_63",
+    "name": "papers-feed",
+    "url": "https://dmarx.github.io/papers-feed/",
+    "category": "ai",
+    "description": "社区论文阅读流",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选",
+    "references": [
+      {
+        "id": "R3",
+        "title": "r/MachineLearning：实质性 ML 内容",
+        "url": "https://www.reddit.com/r/MachineLearning/comments/1ko64s6/d_who_do_you_all_follow_for_genuinely_substantial/"
+      }
+    ]
+  },
+  {
+    "id": "source_64",
+    "name": "智源社区信息源汇总",
+    "url": "https://hub.baai.ac.cn/view/24040",
+    "category": "ai",
+    "description": "原帖称含 Twitter、工具和 newsletter 清单；不直接采用其数量作为本次统计",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "二级汇总候选，未打开全文核验",
+    "references": [
+      {
+        "id": "Z1",
+        "title": "AI 领域有哪些值得关注的博主或网站？",
+        "url": "https://www.zhihu.com/question/439891521/answer/3394027625"
+      }
+    ]
+  },
+  {
+    "id": "source_65",
+    "name": "Alignment Forum",
+    "url": "https://www.alignmentforum.org/",
+    "category": "ai",
+    "description": "AI 对齐讨论，作者观点与实验证据分开",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选",
+    "references": [
+      {
+        "id": "Z4",
+        "title": "高质量的 AI 技术网站、社区、博客",
+        "url": "https://zhuanlan.zhihu.com/p/1889713359533889288"
+      },
+      {
+        "id": "Z5",
+        "title": "AI 前沿技术博客与动态网站盘点",
+        "url": "https://zhuanlan.zhihu.com/p/2062748683502883827"
+      }
+    ]
+  },
+  {
+    "id": "source_66",
+    "name": "LessWrong",
+    "url": "https://www.lesswrong.com/",
+    "category": "ai",
+    "description": "AI 对齐讨论，作者观点与实验证据分开",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选",
+    "references": [
+      {
+        "id": "Z4",
+        "title": "高质量的 AI 技术网站、社区、博客",
+        "url": "https://zhuanlan.zhihu.com/p/1889713359533889288"
+      },
+      {
+        "id": "Z5",
+        "title": "AI 前沿技术博客与动态网站盘点",
+        "url": "https://zhuanlan.zhihu.com/p/2062748683502883827"
+      }
+    ]
+  },
+  {
+    "id": "source_67",
+    "name": "The Gradient",
+    "url": "https://thegradient.pub/",
+    "category": "ai",
+    "description": "AI 技术与研究评论",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选",
+    "references": [
+      {
+        "id": "Z4",
+        "title": "高质量的 AI 技术网站、社区、博客",
+        "url": "https://zhuanlan.zhihu.com/p/1889713359533889288"
+      }
+    ]
+  },
+  {
+    "id": "source_68",
+    "name": "Distill",
+    "url": "https://distill.pub/",
+    "category": "ai",
+    "description": "原帖明确指出停止常规更新，放知识库而非日更资讯源",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "历史资料候选",
+    "references": [
+      {
+        "id": "Z5",
+        "title": "AI 前沿技术博客与动态网站盘点",
+        "url": "https://zhuanlan.zhihu.com/p/2062748683502883827"
+      }
+    ]
+  },
+  {
+    "id": "source_69",
+    "name": "Cybersecurity & Privacy",
+    "url": "https://t.me/s/cibsecurity",
+    "category": "telegram",
+    "description": "优先试点；与已接 THN 高度重叠，需要按原文 URL 去重，不能算两份独立证据",
+    "verification": "primary",
+    "reviewedAt": "2026-11-27",
+    "note": "公开预览可读；最后可见消息为 2026-11-25 UTC；样例标注 Via The Hacker News 并附原文",
+    "references": [
+      {
+        "id": "T1",
+        "title": "Telegram 网络安全社区清单",
+        "url": "https://www.sentinelone.com/blog/top-10-telegram-cybersecurity-groups-you-should-join/"
+      }
+    ]
+  },
+  {
+    "id": "source_70",
+    "name": "Cyber Security News",
+    "url": "https://t.me/s/cyber_security_channel",
+    "category": "telegram",
+    "description": "可试点；将广告标识保留在原文，不把频道订阅数当可信度",
+    "verification": "primary",
+    "reviewedAt": "2026-11-27",
+    "note": "公开预览可读；最后可见消息为 2026-11-27 UTC；有短摘要/原文链接，也有 #ad/#sponsored",
+    "references": [
+      {
+        "id": "T1",
+        "title": "Telegram 网络安全社区清单",
+        "url": "https://www.sentinelone.com/blog/top-10-telegram-cybersecurity-groups-you-should-join/"
+      }
+    ]
+  },
+  {
+    "id": "source_71",
+    "name": "CyberSecurity Experts",
+    "url": "https://t.me/cybersecurityexperts",
+    "category": "telegram",
+    "description": "用户讨论与编辑通报不同，噪声和作者权限需另评估",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选讨论群，未加入",
+    "references": [
+      {
+        "id": "T1",
+        "title": "Telegram 网络安全社区清单",
+        "url": "https://www.sentinelone.com/blog/top-10-telegram-cybersecurity-groups-you-should-join/"
+      }
+    ]
+  },
+  {
+    "id": "source_72",
+    "name": "Cloud & Cybersecurity",
+    "url": "https://t.me/cloudandcybersecurity",
+    "category": "telegram",
+    "description": "核验原文链接与云安全覆盖后再启用",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选，未核验近期内容",
+    "references": [
+      {
+        "id": "T1",
+        "title": "Telegram 网络安全社区清单",
+        "url": "https://www.sentinelone.com/blog/top-10-telegram-cybersecurity-groups-you-should-join/"
+      }
+    ]
+  },
+  {
+    "id": "source_73",
+    "name": "Android Malware",
+    "url": "https://t.me/androidMalware",
+    "category": "telegram",
+    "description": "移动安全垂直方向",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选，未核验近期内容",
+    "references": [
+      {
+        "id": "T1",
+        "title": "Telegram 网络安全社区清单",
+        "url": "https://www.sentinelone.com/blog/top-10-telegram-cybersecurity-groups-you-should-join/"
+      }
+    ]
+  },
+  {
+    "id": "source_74",
+    "name": "Malware Research",
+    "url": "https://t.me/MalwareResearch",
+    "category": "telegram",
+    "description": "仅考虑研究资讯，不下载样本执行",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选，未核验近期内容",
+    "references": [
+      {
+        "id": "T1",
+        "title": "Telegram 网络安全社区清单",
+        "url": "https://www.sentinelone.com/blog/top-10-telegram-cybersecurity-groups-you-should-join/"
+      }
+    ]
+  },
+  {
+    "id": "source_75",
+    "name": "BugCrowd",
+    "url": "https://t.me/BugCrowd",
+    "category": "telegram",
+    "description": "同名不等于官方账号",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选；未验证品牌官方隶属",
+    "references": [
+      {
+        "id": "T1",
+        "title": "Telegram 网络安全社区清单",
+        "url": "https://www.sentinelone.com/blog/top-10-telegram-cybersecurity-groups-you-should-join/"
+      }
+    ]
+  },
+  {
+    "id": "source_76",
+    "name": "Red Team Alerts",
+    "url": "https://t.me/itsecalert",
+    "category": "telegram",
+    "description": "漏洞/技术线索，回溯厂商公告",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选，未核验近期内容",
+    "references": [
+      {
+        "id": "T1",
+        "title": "Telegram 网络安全社区清单",
+        "url": "https://www.sentinelone.com/blog/top-10-telegram-cybersecurity-groups-you-should-join/"
+      }
+    ]
+  },
+  {
+    "id": "source_77",
+    "name": "Reverse Engineering",
+    "url": "https://t.me/reverseengineeringz",
+    "category": "telegram",
+    "description": "适合技术问题发现，不作为默认新闻全文源",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选讨论社区，未加入",
+    "references": [
+      {
+        "id": "T1",
+        "title": "Telegram 网络安全社区清单",
+        "url": "https://www.sentinelone.com/blog/top-10-telegram-cybersecurity-groups-you-should-join/"
+      }
+    ]
+  },
+  {
+    "id": "source_78",
+    "name": "Frida",
+    "url": "https://t.me/fridadotre",
+    "category": "telegram",
+    "description": "适合技术问题发现，不作为默认新闻全文源",
+    "verification": "candidate",
+    "reviewedAt": "2026-11-27",
+    "note": "候选讨论社区，未加入",
+    "references": [
+      {
+        "id": "T1",
+        "title": "Telegram 网络安全社区清单",
+        "url": "https://www.sentinelone.com/blog/top-10-telegram-cybersecurity-groups-you-should-join/"
+      }
+    ]
+  }
+]

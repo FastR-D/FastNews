@@ -3,6 +3,8 @@ import { api, APIError, message, setCSRF } from './api'
 import type { Catalog, Profile } from './types'
 
 const AppContext = createContext<{
+  authReady: boolean
+  requireLogin: boolean
   catalog: Catalog | null
   profile: Profile | null
   catalogError: string
@@ -12,6 +14,8 @@ const AppContext = createContext<{
   notify: (text: string) => void
   notice: string
 }>({
+  authReady: false,
+  requireLogin: true,
   catalog: null,
   profile: null,
   catalogError: '',
@@ -24,6 +28,8 @@ const AppContext = createContext<{
 export const useApp = () => useContext(AppContext)
 
 export function AppProvider({ children }: { children: ReactNode }) {
+  const [authReady, setAuthReady] = useState(false)
+  const [requireLogin, setRequireLogin] = useState(true)
   const [catalog, setCatalog] = useState<Catalog | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [catalogError, setCatalogError] = useState('')
@@ -43,9 +49,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, [])
   useEffect(() => {
-    refresh().catch((error) => notify(message(error)))
+    Promise.all([
+      refresh(),
+      api<{ requireLogin: boolean }>('api/auth/info').then((info) =>
+        setRequireLogin(info.requireLogin),
+      ),
+    ])
+      .catch((error) => notify(message(error)))
+      .finally(() => setAuthReady(true))
   }, [refresh])
   useEffect(() => {
+    if (!authReady || (requireLogin && !profile)) {
+      setCatalog(null)
+      return
+    }
     const abort = new AbortController()
     setCatalog(null)
     setCatalogLoading(true)
@@ -60,7 +77,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         if (!abort.signal.aborted) setCatalogLoading(false)
       })
     return () => abort.abort()
-  }, [profile?.userId, attempt])
+  }, [profile?.userId, attempt, authReady, requireLogin])
   useEffect(() => {
     if (!profile?.userId) return
     const abort = new AbortController()
@@ -83,6 +100,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   return (
     <AppContext.Provider
       value={{
+        authReady,
+        requireLogin,
         catalog,
         profile,
         catalogError,

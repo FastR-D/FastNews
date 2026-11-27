@@ -41,7 +41,6 @@ export default function Inbox() {
     <>
       <PageHeading
         title="私信"
-        description="每天一篇研究论文。优先关注作者，再结合研究印象与标签推荐。"
         action={
           profile && (
             <Button onClick={load} loading={busy}>

@@ -58,6 +58,7 @@ func run() error {
 	root := fs.String("root", c.DataDir, "account data directory")
 	email := fs.String("email", "", "account email")
 	name := fs.String("name", "", "display name")
+	admin := fs.Bool("admin", false, "create an administrator (create only)")
 	if e = fs.Parse(args); e != nil {
 		return e
 	}
@@ -89,6 +90,9 @@ func run() error {
 			password = string(b)
 		}
 		id, e := s.Create(*email, password, *name)
+		if e == nil && *admin {
+			_, e = s.DB.Exec(`UPDATE users SET role='admin' WHERE id=?`, id)
+		}
 		if e == nil {
 			fmt.Println(id)
 		}
@@ -104,6 +108,8 @@ func run() error {
 		if e != nil {
 			return e
 		}
+		defer app.Close()
+		app.StartCollectionScheduler()
 		server := &http.Server{Addr: c.Addr(), Handler: app.Handler(), ReadHeaderTimeout: 10 * time.Second, ReadTimeout: 30 * time.Second, WriteTimeout: 5 * time.Minute, IdleTimeout: 60 * time.Second, MaxHeaderBytes: 1 << 20}
 		ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 		defer stop()

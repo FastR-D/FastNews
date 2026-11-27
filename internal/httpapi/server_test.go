@@ -26,6 +26,24 @@ type harness struct {
 	csrf   string
 }
 
+func TestSourceDirectoryHonorsReportAccess(t *testing.T) {
+	h := fixture(t)
+	h.app.Config.RequireLogin = true
+	status, _, _ := h.request(t, "GET", "/api/sources", nil, "", false)
+	if status != 401 {
+		t.Fatal(status)
+	}
+	h.login(t, "sources@example.com")
+	status, body, _ := h.request(t, "GET", "/api/sources", nil, "", true)
+	if status != 200 || len(body["sources"].([]any)) == 0 {
+		t.Fatal(status, body)
+	}
+	status, _, _ = h.request(t, "POST", "/api/sources", nil, h.csrf, true)
+	if status != 405 {
+		t.Fatal(status)
+	}
+}
+
 func fixture(t *testing.T) *harness {
 	t.Helper()
 	root := t.TempDir()
@@ -34,25 +52,10 @@ func fixture(t *testing.T) *harness {
 			t.Fatal(e)
 		}
 	}
-	for _, name := range []string{"handoff.js", "report.css"} {
-		// CSS is now emitted from FastUI by Vite. The Go contract only needs
-		// a build-output fixture; npm assets are verified by browser tests.
-		data := []byte("/* Generated FastUI stylesheet fixture. */")
-		if name == "handoff.js" {
-			var e error
-			data, e = os.ReadFile(filepath.Join("..", "..", "web/public/reports", name))
-			if e != nil {
-				t.Fatal(e)
-			}
-		}
-		if e := os.WriteFile(filepath.Join(root, "web/dist/reports", name), data, 0600); e != nil {
-			t.Fatal(e)
-		}
-	}
 	os.WriteFile(filepath.Join(root, "web/dist/index.html"), []byte(`<div id="root">React</div>`), 0600)
 	os.WriteFile(filepath.Join(root, "top-conf/data/conferences/usenix_2026.jsonl"), []byte(`{"_id":"paper-a","title":"Prompt Injection in LLM Agents","author":"Alice Researcher","link":"https://example.com/a"}`), 0600)
 	os.WriteFile(filepath.Join(root, "top-conf/data/summary/usenix_2026_summary.jsonl"), []byte(`{"category":"ML/AI Security","paper":{"_id":"paper-a","title":"Prompt Injection in LLM Agents","author":"Alice Researcher","summary_zh":"研究智能体工具调用中的提示注入风险"}}`), 0600)
-	os.WriteFile(filepath.Join(root, "top-conf/data/report/USENIX_2026_Report.html"), []byte(`<h1>Report</h1>`), 0600)
+	os.WriteFile(filepath.Join(root, "top-conf/data/report/USENIX_2026_Report.json"), []byte(`[{"tag":"h2","children":[{"text":"Report"}]}]`), 0600)
 	s, e := store.Open(filepath.Join(root, "private"))
 	if e != nil {
 		t.Fatal(e)
@@ -63,7 +66,7 @@ func fixture(t *testing.T) *harness {
 	}
 	server := httptest.NewServer(app.Handler())
 	h := &harness{app: app, http: server}
-	t.Cleanup(func() { server.Close(); s.Close() })
+	t.Cleanup(func() { server.Close(); app.Close(); s.Close() })
 	return h
 }
 func (h *harness) request(t *testing.T, method, path string, body any, csrf string, auth bool) (int, map[string]any, http.Header) {
@@ -182,7 +185,7 @@ func TestLocalContentIsolationCSRFAndInbox(t *testing.T) {
 }
 func TestCatalogOldRoutesAndPrivateFiles(t *testing.T) {
 	h := fixture(t)
-	for _, p := range []string{"/", "/index.html", "/top-conf/index.html", "/coverage/", "/coverage/index.html", "/field-briefing/index.html", "/summary-brief/index.html", "/inbox/index.html", "/impression/index.html", "/secnews/index.html", "/arxiv/", "/arxiv/index.html", "/trend/", "/trend/index.html", "/login", "/top-conf/data/report/USENIX_2026_Report.html?download=1"} {
+	for _, p := range []string{"/", "/sources/", "/top-conf/", "/coverage/", "/field-briefing/", "/summary-brief/", "/inbox/", "/impression/", "/secnews/", "/arxiv/", "/trend/", "/login", "/report/", "/top-conf/data/report/USENIX_2026_Report.json?download=1"} {
 		resp, e := http.Get(h.http.URL + p)
 		if e != nil {
 			t.Fatal(e)
@@ -192,7 +195,7 @@ func TestCatalogOldRoutesAndPrivateFiles(t *testing.T) {
 			t.Fatal(p, resp.StatusCode)
 		}
 	}
-	for _, p := range []string{"/.env", "/private/accounts.sqlite", "/serve.py", "/top-conf/data/report/../../../private/accounts.sqlite", "/missing.html"} {
+	for _, p := range []string{"/index.html", "/top-conf/index.html", "/reports/handoff.js", "/reports/report.css", "/auth/login", "/.env", "/private/accounts.sqlite", "/serve.py", "/top-conf/data/report/../../../private/accounts.sqlite", "/missing.html"} {
 		resp, e := http.Get(h.http.URL + p)
 		if e != nil {
 			t.Fatal(e)
@@ -322,6 +325,8 @@ func TestNewsScopeSelectsLatestPopulatedArchiveDate(t *testing.T) {
 	h := fixture(t)
 	directory := filepath.Join(h.app.Config.Root, "secnews/data/articles")
 	files := map[string]string{
+		"2026-11-22": `{"_id":"general","title":"World news","source":"research_digest"}`,
+		"2026-11-21": `{"_id":"ai","title":"AI release","source":"openai"}`,
 		"2026-11-20": `{"_id":"news","title":"Security news","source":"bleepingcomputer"}`,
 		"2026-11-18": `{"_id":"paper","title":"Research paper","source":"arxiv_cs_se"}`,
 	}
@@ -334,7 +339,12 @@ func TestNewsScopeSelectsLatestPopulatedArchiveDate(t *testing.T) {
 		query, date, id string
 		count           int
 	}{
-		{"", "2026-11-20", "news", 1},
+		{"", "2026-11-22", "general", 1},
+		{"?source=news", "2026-11-22", "general", 1},
+		{"?source=articles", "2026-11-22", "general", 1},
+		{"?source=ai", "2026-11-21", "ai", 1},
+		{"?source=security&date=2026-11-21", "2026-11-21", "", 0},
+		{"?source=articles&date=2026-11-18", "2026-11-18", "", 0},
 		{"?source=arxiv", "2026-11-18", "paper", 1},
 		{"?source=security", "2026-11-20", "news", 1},
 		{"?source=arxiv&date=2026-11-20", "2026-11-20", "", 0},
@@ -388,7 +398,7 @@ func TestReleaseSymlinkAndReportAssets(t *testing.T) {
 		t.Fatal("release symlink failed", resp.StatusCode)
 	}
 	h.app.Config.PublicPath = "/news"
-	resp, e = http.Get(h.http.URL + "/news/top-conf/data/report/USENIX_2026_Report.html")
+	resp, e = http.Get(h.http.URL + "/news/top-conf/data/report/USENIX_2026_Report.json?download=1")
 	if e != nil {
 		t.Fatal(e)
 	}
@@ -397,19 +407,10 @@ func TestReleaseSymlinkAndReportAssets(t *testing.T) {
 	if e != nil {
 		t.Fatal(e)
 	}
-	if !bytes.Contains(b, []byte("<h1>Report</h1>")) {
+	if !bytes.Contains(b, []byte(`"text":"Report"`)) {
 		t.Fatal("report data changed")
 	}
-	for _, suffix := range []string{"/assets/fastread.js", "/reports/handoff.js", "/assets/fastread.css", "/reports/report.css"} {
-		response, e := http.Get(h.http.URL + "/news" + suffix)
-		if e != nil {
-			t.Fatal(e)
-		}
-		response.Body.Close()
-		if response.StatusCode != 200 {
-			t.Fatal("report resource unavailable", suffix, response.StatusCode)
-		}
-	}
+
 	response, e := http.Get(h.http.URL + "/assets/gate.js")
 	if e != nil {
 		t.Fatal(e)
@@ -429,12 +430,12 @@ func TestRequireLoginProtectsCatalogAndReport(t *testing.T) {
 		t.Fatal("private catalog exposed", status)
 	}
 	client := &http.Client{CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}
-	res, e := client.Get(h.http.URL + "/top-conf/data/report/USENIX_2026_Report.html")
+	res, e := client.Get(h.http.URL + "/top-conf/data/report/USENIX_2026_Report.json")
 	if e != nil {
 		t.Fatal(e)
 	}
 	res.Body.Close()
-	if res.StatusCode != 302 || res.Header.Get("Location") != "/login" {
+	if res.StatusCode != 302 || !strings.HasPrefix(res.Header.Get("Location"), "/login?next=") {
 		t.Fatal("private report exposed", res.StatusCode)
 	}
 	h.login(t, "private@example.com")
@@ -576,5 +577,40 @@ func TestLegacyResearchSSOProfileWritesHandoffAndLogout(t *testing.T) {
 	status, _, headers := h.request(t, "POST", "/api/content/logout", map[string]any{}, csrf, true)
 	if status != 200 || !strings.Contains(headers.Get("Set-Cookie"), "Max-Age=0") {
 		t.Fatal("legacy logout cookie not cleared", status, headers)
+	}
+}
+
+func TestPrivateWorkspaceProtectsNativeReportAndRawData(t *testing.T) {
+	h := fixture(t)
+	h.app.Config.RequireLogin = true
+	for _, path := range []string{"/api/report?path=top-conf/data/report/USENIX_2026_Report.json", "/api/papers", "/api/sources", "/api/reports", "/api/trend"} {
+		status, _, _ := h.request(t, "GET", path, nil, "", false)
+		if status != 401 {
+			t.Fatal(path, status)
+		}
+	}
+	status, info, _ := h.request(t, "GET", "/api/auth/info", nil, "", false)
+	if status != 200 || info["requireLogin"] != true {
+		t.Fatal(info)
+	}
+	client := &http.Client{CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}
+	for _, path := range []string{"/", "/sources/", "/report/?path=top-conf/data/report/USENIX_2026_Report.json", "/top-conf/data/report/USENIX_2026_Report.json", "/top-conf/data/conferences/usenix_2026.jsonl"} {
+		res, err := client.Get(h.http.URL + path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		res.Body.Close()
+		if res.StatusCode != 302 || !strings.HasPrefix(res.Header.Get("Location"), "/login?next=") {
+			t.Fatal(path, res.StatusCode)
+		}
+	}
+	h.login(t, "reader@example.com")
+	status, body, _ := h.request(t, "GET", "/api/report?path=top-conf/data/report/USENIX_2026_Report.json", nil, "", true)
+	if status != 200 || len(body["content"].([]any)) != 1 {
+		t.Fatal(status, body)
+	}
+	status, _, _ = h.request(t, "GET", "/api/report?path=../../private/accounts.sqlite", nil, "", true)
+	if status != 404 {
+		t.Fatal(status)
 	}
 }

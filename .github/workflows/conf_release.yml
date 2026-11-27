@@ -76,8 +76,8 @@ jobs:
           esac
           REPORT="top-conf/data/report/${PREFIX}_${YEAR}_Report"
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
-            gh release upload "$RELEASE_TAG" "$REPORT.html" "$REPORT.pdf" --clobber
+            gh release upload "$RELEASE_TAG" "$REPORT.json" "$REPORT.pdf" --clobber
           else
-            gh release create "$RELEASE_TAG" "$REPORT.html" "$REPORT.pdf" \
+            gh release create "$RELEASE_TAG" "$REPORT.json" "$REPORT.pdf" \
               --target main --title "$PREFIX $YEAR Summary" --notes '会议论文分类与中文报告。'
           fi

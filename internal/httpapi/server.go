@@ -39,6 +39,7 @@ type Server struct {
 	trends       trend.Service
 	locks        [64]sync.Mutex
 	workspaceCAS workspaceProvider
+	collection   *collectionManager
 }
 
 func New(c config.Config, s *store.Store) (*Server, error) {
@@ -47,7 +48,15 @@ func New(c config.Config, s *store.Store) (*Server, error) {
 	if e != nil {
 		return nil, e
 	}
-	return &Server{Config: c, Store: s, Catalog: cat, AI: &ai.Service{Config: c, Catalog: cat, RAG: &rag.Retriever{Config: c}}, CAS: cas, trends: trend.Service{Catalog: cat}}, nil
+	dir := c.DataDir
+	if dir == "" {
+		dir = filepath.Join(c.Root, ".fastnews-data")
+	}
+	collection, e := newCollectionManager(dir)
+	if e != nil {
+		return nil, e
+	}
+	return &Server{collection: collection, Config: c, Store: s, Catalog: cat, AI: &ai.Service{Config: c, Catalog: cat, RAG: &rag.Retriever{Config: c}}, CAS: cas, trends: trend.Service{Catalog: cat}}, nil
 }
 func (w *Server) Handler() http.Handler { return http.HandlerFunc(w.serve) }
 func reply(w http.ResponseWriter, r *http.Request, status int, v any) {
@@ -174,6 +183,8 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request) {
 		e = s.fastreadIntegration(w, r, p)
 	case p == "/api/integrations/fastresearch/workspace":
 		e = s.workspaceHTTP(w, r)
+	case p == "/api/admin/collection" || strings.HasPrefix(p, "/api/admin/collection/"):
+		e = s.adminCollection(w, r, p)
 	case p == "/api/admin/users" || strings.HasPrefix(p, "/api/admin/users/"):
 		e = s.adminUsers(w, r, p)
 	case strings.HasPrefix(p, "/api/auth/fastcas/"):
@@ -182,7 +193,7 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request) {
 		e = s.auth(w, r, p)
 	case strings.HasPrefix(p, "/api/content/"):
 		e = s.content(w, r, p)
-	case p == "/api/catalog" || p == "/api/papers" || p == "/api/news" || p == "/api/reports" || p == "/api/trend" || p == "/api/coverage":
+	case p == "/api/catalog" || p == "/api/papers" || p == "/api/news" || p == "/api/report" || p == "/api/reports" || p == "/api/trend" || p == "/api/coverage" || p == "/api/sources":
 		if e = s.viewer(r); e == nil {
 			e = s.catalogHTTP(w, r, p)
 		}
@@ -242,6 +253,12 @@ func (s *Server) catalogHTTP(w http.ResponseWriter, r *http.Request, p string) e
 		return store.Fail(405, "Method not allowed")
 	}
 	switch p {
+	case "/api/sources":
+		directory, err := s.Catalog.SourceDirectory()
+		if err != nil {
+			return err
+		}
+		reply(w, r, 200, directory)
 	case "/api/coverage":
 		coverage, err := s.Catalog.Coverage()
 		if err != nil {
@@ -260,6 +277,12 @@ func (s *Server) catalogHTTP(w http.ResponseWriter, r *http.Request, p string) e
 			return err
 		}
 		reply(w, r, 200, report)
+	case "/api/report":
+		v, err := s.Catalog.ReadReport(r.URL.Query().Get("path"))
+		if err != nil {
+			return store.Fail(404, "报告不存在")
+		}
+		reply(w, r, 200, v)
 	case "/api/reports":
 		v, e := s.Catalog.Reports()
 		if e != nil {
@@ -268,7 +291,7 @@ func (s *Server) catalogHTTP(w http.ResponseWriter, r *http.Request, p string) e
 		reply(w, r, 200, map[string]any{"reports": v})
 	case "/api/news":
 		source := r.URL.Query().Get("source")
-		if source != "" && source != "all" && source != "arxiv" && source != "security" {
+		if source != "" && source != "all" && source != "articles" && !catalog.ValidNewsChannel(source) {
 			return store.Fail(400, "资讯来源范围无效")
 		}
 		selectRows := func(rows []map[string]any) []map[string]any {
@@ -277,7 +300,8 @@ func (s *Server) catalogHTTP(w http.ResponseWriter, r *http.Request, p string) e
 			}
 			selected := []map[string]any{}
 			for _, row := range rows {
-				if catalog.IsArxivSource(catalog.Str(row, "source")) == (source == "arxiv") {
+				channel := catalog.NewsChannel(row)
+				if channel == source || (source == "articles" && channel != "arxiv") {
 					selected = append(selected, row)
 				}
 			}
@@ -431,7 +455,7 @@ func (s *Server) static(w http.ResponseWriter, r *http.Request, p string) error 
 		http.Redirect(w, r, s.Config.PublicPath+p, 302)
 		return nil
 	}
-	public := p == "/login" || p == "/auth/login" || p == "/auth/account" || (strings.HasPrefix(p, "/assets/") || strings.HasPrefix(p, "/reports/") || p == "/favicon.svg")
+	public := p == "/login" || (strings.HasPrefix(p, "/assets/") || p == "/favicon.svg")
 	if s.Config.RequireLogin && !public {
 		v, _ := s.session(r)
 		if v == nil {
@@ -441,7 +465,12 @@ func (s *Server) static(w http.ResponseWriter, r *http.Request, p string) error 
 				_, _, err = identity.Research(r.Context(), s.Config.ResearchURL, "GET", "/api/content/me", legacy, nil)
 			}
 			if legacy == "" || err != nil {
-				http.Redirect(w, r, s.Config.PublicPath+"/login", 302)
+				http.Redirect(w, r, s.Config.PublicPath+"/login?next="+url.QueryEscape(p+func() string {
+					if r.URL.RawQuery != "" {
+						return "?" + r.URL.RawQuery
+					}
+					return ""
+				}()), 302)
 				return nil
 			}
 		}
@@ -451,20 +480,14 @@ func (s *Server) static(w http.ResponseWriter, r *http.Request, p string) error 
 	allowedData := strings.HasPrefix(p, "/top-conf/data/conferences/") || strings.HasPrefix(p, "/top-conf/data/summary/") || strings.HasPrefix(p, "/secnews/data/articles/") || strings.HasPrefix(p, "/secnews/data/daily_summaries/")
 	root := s.Config.WebDir
 	rel := strings.TrimPrefix(p, "/")
-	if report || allowedData {
+	if report && (strings.HasSuffix(p, ".json") || strings.HasSuffix(p, ".pdf")) || allowedData {
 		root = s.Config.Root
-	} else if replacement, ok := map[string]string{
-		"/assets/fastread.js":  "reports/handoff.js",
-		"/assets/fastread.css": "reports/report.css",
-		"/assets/favicon.svg":  "favicon.svg",
-	}[p]; ok {
-		rel = replacement
-	} else if strings.HasPrefix(p, "/assets/") || strings.HasPrefix(p, "/reports/") || p == "/favicon.svg" {
+	} else if strings.HasPrefix(p, "/assets/") || p == "/favicon.svg" {
 		// These files belong to the built frontend; never fall back to source.
 
 	} else {
 		switch strings.TrimSuffix(p, "/") {
-		case "", "/index.html", "/top-conf", "/top-conf/index.html", "/coverage", "/coverage/index.html", "/field-briefing", "/field-briefing/index.html", "/summary-brief", "/summary-brief/index.html", "/inbox", "/inbox/index.html", "/impression", "/impression/index.html", "/secnews", "/secnews/index.html", "/arxiv", "/arxiv/index.html", "/trend", "/trend/index.html", "/authors", "/login", "/auth/login", "/auth/account":
+		case "", "/report", "/admin/users", "/admin/processes", "/sources", "/top-conf", "/coverage", "/field-briefing", "/summary-brief", "/inbox", "/impression", "/secnews", "/arxiv", "/trend", "/authors", "/login":
 			rel = "index.html"
 		default:
 			return store.Fail(404, "Not found")

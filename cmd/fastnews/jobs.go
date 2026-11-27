@@ -21,7 +21,12 @@ func job(ctx context.Context, c config.Config, command string, args []string) er
 		return searchPapers(ctx, c, args)
 	}
 	fs := flag.NewFlagSet(command, flag.ContinueOnError)
-	source := fs.String("source", "bleepingcomputer", "RSS source or RAG source")
+	defaultSource := "bleepingcomputer"
+	if command == "fetch-news" {
+		defaultSource = "all"
+	}
+	source := fs.String("source", defaultSource, "feed ID, all/news/security/ai/arxiv, or RAG source")
+	sourcesFile := fs.String("sources-file", "", "RSS source overrides JSON (default: config/news-sources.json if present)")
 	day := fs.String("date", "", "article date")
 	conf := fs.String("conference", "usenix", "conference identifier")
 	year := fs.Int("year", 2026, "conference year")
@@ -44,7 +49,7 @@ func job(ctx context.Context, c config.Config, command string, args []string) er
 	case "enrich-metrics":
 		return p.Metrics(ctx, *conf, *year, *limit)
 	case "fetch-news":
-		return p.FetchNews(ctx, *source, *rawURL)
+		return p.FetchNewsConfigured(ctx, *source, *rawURL, *sourcesFile)
 	case "daily-summary":
 		if *all {
 			return p.DailyAll(ctx)

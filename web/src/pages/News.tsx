@@ -1,61 +1,62 @@
+import CollectionDate from '../components/CollectionDate'
 import { useEffect, useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
+import { EmptyState } from '@fastrd/ui-react'
 import {
-  Badge,
-  Button,
-  EmptyState,
-  InspectorSection,
-  SegmentedControl,
-  Toolbar,
-} from '@fastrd/ui-react'
-import { ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react'
+  ReadingButton as Button,
+  ReadingSurface as Section,
+  ReadingTabs as SegmentedControl,
+  ReadingSelect as Select,
+  ReadingInput as TextField,
+  ReadingHeader,
+} from '../components/ReadingLayout'
+import {
+  ArrowRight,
+  BookOpen,
+  ExternalLink,
+  Library,
+  Search,
+  SlidersHorizontal,
+} from 'lucide-react'
 import { api, message, safeURL } from '../api'
 import { useApp } from '../context'
 import type { NewsArticle } from '../types'
-import { Busy, ErrorMessage, PageHeading, Panel, ReportList } from '../components/Common'
-const sourceLabels: Record<string, string> = {
-  thehackernews: 'The Hacker News',
-  securityweek: 'SecurityWeek',
-}
-function channel(a: NewsArticle) {
-  const source = a.source.toLowerCase()
-  if (source.includes('bleepingcomputer')) return 'bleepingcomputer'
-  return 'other'
-}
-function score(a: NewsArticle) {
-  const provided = a.recommendation_score ?? a.importance ?? a.score
-  return typeof provided === 'number' &&
-    Number.isFinite(provided) &&
-    provided >= 0 &&
-    provided <= 10
-    ? provided
-    : null
-}
+import { Busy, ErrorMessage, Pagination, Panel, ReportList } from '../components/Common'
+import NewsArchive from '../components/NewsArchive'
+import { ArticleMeta, articleScore, NewsReader, newsChannels } from '../components/NewsReading'
+
+const pageSize = 20
 export default function News() {
   const { catalog } = useApp()
   const [params, setParams] = useSearchParams()
   const requestedDate = params.get('date') || ''
+  const kind = newsChannels[params.get('channel') || ''] ? params.get('channel')! : 'all'
+  const publisher = params.get('publisher') || ''
+  const q = params.get('q') || ''
+  const order = params.get('sort') === 'latest' ? 'latest' : 'recommended'
+  const showAll = params.get('view') === 'all'
+  const page = Math.max(1, Math.floor(Number(params.get('page')) || 1))
+  const reading = params.get('article') || ''
+  const [query, setQuery] = useState(q)
+  const [filtersOpen, setFiltersOpen] = useState(false)
   const [resolvedDate, setResolvedDate] = useState('')
+  const [articles, setArticles] = useState<NewsArticle[]>([])
+  const [busy, setBusy] = useState(true)
+  const [error, setError] = useState('')
+  const [retry, setRetry] = useState(0)
   const date = requestedDate || resolvedDate
-  const [month, setMonth] = useState(''),
-    [articles, setArticles] = useState<NewsArticle[]>([]),
-    [busy, setBusy] = useState(false),
-    [error, setError] = useState(''),
-    [kind, setKind] = useState('all'),
-    [showAll, setShowAll] = useState(false)
+  useEffect(() => setQuery(q), [q])
   useEffect(() => {
     const abort = new AbortController()
     setBusy(true)
     setError('')
     setArticles([])
-    setShowAll(false)
     api<{ date: string; articles: NewsArticle[] }>(
-      `api/news?${new URLSearchParams({ source: 'security', ...(requestedDate ? { date: requestedDate } : {}) })}`,
+      `api/news?${new URLSearchParams({ source: kind === 'all' ? 'articles' : kind, ...(requestedDate ? { date: requestedDate } : {}) })}`,
       { signal: abort.signal },
     )
       .then((v) => {
         setResolvedDate(v.date)
-        setMonth(v.date.slice(0, 7))
         setArticles(v.articles)
       })
       .catch((e) => {
@@ -65,190 +66,299 @@ export default function News() {
         if (!abort.signal.aborted) setBusy(false)
       })
     return () => abort.abort()
-  }, [requestedDate])
-  const available = useMemo(() => new Set(catalog?.dates || []), [catalog])
-  const first = new Date(
-    `${month || date.slice(0, 7) || new Date().toISOString().slice(0, 7)}-01T00:00:00`,
-  )
-  const days = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate()
-  const offset = (first.getDay() + 6) % 7
-  function move(delta: number) {
-    const next = new Date(first.getFullYear(), first.getMonth() + delta, 1)
-    setMonth(`${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, '0')}`)
+  }, [requestedDate, kind, retry])
+  function update(values: Record<string, string>) {
+    setParams((previous) => {
+      const next = new URLSearchParams(previous)
+      next.delete('page')
+      next.delete('article')
+      for (const [key, value] of Object.entries(values)) {
+        if (value) next.set(key, value)
+        else next.delete(key)
+      }
+      return next
+    })
   }
-  const boards = !showAll
-    ? ['top']
-    : kind === 'all'
-      ? ['bleepingcomputer', ...(articles.some((a) => channel(a) === 'other') ? ['other'] : [])]
-      : [kind]
-  return (
-    <>
-      <PageHeading
-        title="安全资讯"
-        description="按日期浏览安全新闻，查看每日导读和重点推荐。预印本请进入 arXiv 导读。"
+  const sources = useMemo(
+    () =>
+      [...new Map(articles.map((a) => [a.source, a.source_name || a.source])).entries()].sort(
+        (a, b) => a[1].localeCompare(b[1]),
+      ),
+    [articles],
+  )
+  const filtered = useMemo(
+    () =>
+      articles
+        .filter(
+          (a) =>
+            (!publisher || a.source === publisher) &&
+            (!q ||
+              [a.title, a.title_zh, a.summary_zh, a.description, a.source_name].some((value) =>
+                value?.toLocaleLowerCase().includes(q.toLocaleLowerCase()),
+              )),
+        )
+        .sort(
+          (a, b) =>
+            (order === 'recommended' ? (articleScore(b) ?? -1) - (articleScore(a) ?? -1) : 0) ||
+            (Date.parse(b.published || '') || 0) - (Date.parse(a.published || '') || 0),
+        ),
+    [articles, publisher, q, order],
+  )
+  const scored = filtered.filter((a) => articleScore(a) !== null)
+  const recommended = order === 'recommended' && scored.length ? scored : filtered
+  const currentPage = Math.min(page, Math.max(1, Math.ceil(filtered.length / pageSize)))
+  const visible = showAll
+    ? filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+    : recommended.slice(0, 10)
+  const active = articles.find((a) => (a._id || a.link) === reading)
+  const readingIndex = filtered.findIndex((a) => (a._id || a.link) === reading)
+  const readerURL = (a: NewsArticle) => {
+    const next = new URLSearchParams(params)
+    // Pin the archive day so a saved reading link remains stable tomorrow.
+    if (date) next.set('date', date)
+    next.set('article', a._id || a.link)
+    return `?${next}`
+  }
+  const closeReader = () =>
+    setParams((previous) => {
+      const next = new URLSearchParams(previous)
+      next.delete('article')
+      return next
+    })
+  const openNext = () => {
+    const next = filtered[readingIndex + 1]
+    if (next) setParams(readerURL(next).slice(1))
+  }
+  if (reading && !busy && active)
+    return (
+      <NewsReader
+        article={active}
+        onClose={closeReader}
+        onNext={readingIndex >= 0 && readingIndex < filtered.length - 1 ? openNext : undefined}
+        position={
+          readingIndex >= 0 ? `${readingIndex + 1} / ${filtered.length} 篇` : '当前归档文章'
+        }
       />
-      <div className="grid min-[1100px]:grid-cols-[260px_minmax(0,1fr)] gap-4 items-start">
-        <aside>
-          <Panel title="资讯日历">
-            <div data-testid="calendar" className="p-3">
-              <div className="flex items-center justify-between mb-3">
-                <Button
-                  variant="icon"
-                  aria-label="上个月"
-                  disabled={
-                    !!catalog?.dates.length &&
-                    month <= catalog.dates[catalog.dates.length - 1].slice(0, 7)
-                  }
-                  onClick={() => move(-1)}
-                >
-                  <ChevronLeft size={16} />
-                </Button>
-                <strong>{month.replace('-', ' 年 ')} 月</strong>
-                <Button
-                  variant="icon"
-                  aria-label="下个月"
-                  disabled={!!catalog?.dates.length && month >= catalog.dates[0].slice(0, 7)}
-                  onClick={() => move(1)}
-                >
-                  <ChevronRight size={16} />
-                </Button>
-              </div>
-              <div className="grid grid-cols-7 gap-1">
-                {'一二三四五六日'.split('').map((d) => (
-                  <span className="text-center text-[var(--fastui-muted)]" key={d}>
-                    {d}
-                  </span>
-                ))}
-                {Array.from({ length: offset }, (_, i) => (
-                  <span key={`empty-${i}`} />
-                ))}
-                {Array.from({ length: days }, (_, i) => {
-                  const day = `${month}-${String(i + 1).padStart(2, '0')}`
-                  return (
-                    <Button
-                      key={day}
-                      variant={day === date ? 'primary' : 'quiet'}
-                      title={available.has(day) ? '当天有采集档案' : '当天无采集档案'}
-                      aria-label={day}
-                      aria-pressed={day === date}
-                      disabled={!available.has(day)}
-                      onClick={() => setParams({ date: day })}
-                    >
-                      {i + 1}
-                    </Button>
-                  )
-                })}
-              </div>
-              <p className="text-[var(--fastui-muted)]">可选日期为已归档的采集日</p>
-            </div>
-          </Panel>
-          <Panel title="安全资讯周报">
-            <ReportList reports={catalog?.reports.filter((r) => r.kind === 'secnews') || []} />
-          </Panel>
-        </aside>
-        <Panel
-          title={date ? `${date} · 每日资讯` : '每日资讯'}
-          action={<Badge>{articles.length} 条</Badge>}
+    )
+
+  return (
+    <div className="page-content">
+      <ReadingHeader
+        title="研究资讯"
+        action={
+          <Link className="reading-action" to="/sources/">
+            <Library size={16} />
+            信源目录
+          </Link>
+        }
+      />
+      <Section className="mb-5 p-4 sm:p-5 flex flex-col gap-4">
+        <div className="overflow-x-auto pb-1">
+          <SegmentedControl
+            label="资讯频道"
+            options={[
+              { value: 'all', label: '全部' },
+              ...Object.entries(newsChannels).map(([value, label]) => ({ value, label })),
+            ]}
+            value={kind}
+            onChange={(value) =>
+              update({ channel: value === 'all' ? '' : value, publisher: '', view: '' })
+            }
+          />
+        </div>
+        <form
+          role="search"
+          aria-label="资讯搜索与筛选"
+          className="flex gap-2"
+          onSubmit={(e) => {
+            e.preventDefault()
+            update({ q: query.trim(), view: 'all' })
+          }}
         >
-          <Toolbar label="资讯筛选">
-            <SegmentedControl
-              label="资讯频道"
-              options={[
-                { value: 'all', label: '全部' },
-                { value: 'bleepingcomputer', label: 'BleepingComputer' },
-                { value: 'other', label: '更多安全来源' },
-              ]}
-              value={kind}
-              onChange={(value) => {
-                setKind(value)
-                setShowAll(true)
-              }}
+          <div className="flex flex-1 gap-2 min-w-0">
+            <TextField
+              className="flex-1 min-w-0"
+              aria-label="搜索资讯"
+              placeholder="搜索标题、摘要或来源…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
             />
-            <Button onClick={() => setShowAll(!showAll)}>
-              {showAll ? '收起详情' : '查看全部详情'}
+            <Button type="submit" aria-label="搜索资讯结果">
+              <Search size={16} />
             </Button>
-          </Toolbar>
-          <ErrorMessage error={error} />
+          </div>
+          <Button
+            type="button"
+            className="sm:hidden"
+            aria-label="展开资讯筛选"
+            aria-expanded={filtersOpen}
+            aria-controls="news-filters"
+            onClick={() => setFiltersOpen((value) => !value)}
+          >
+            <SlidersHorizontal size={16} />
+          </Button>
+        </form>
+        <div
+          id="news-filters"
+          className={`${filtersOpen ? 'flex' : 'hidden'} sm:flex flex-wrap items-center gap-3`}
+        >
+          <CollectionDate value={date} onChange={(value) => update({ date: value, view: '' })} />
+          <Select
+            className="min-w-0 max-w-full"
+            aria-label="资讯来源"
+            value={publisher}
+            onChange={(e) => update({ publisher: e.target.value, view: 'all' })}
+          >
+            <option value="">全部来源</option>
+            {publisher && !sources.some(([id]) => id === publisher) && (
+              <option value={publisher}>{publisher}（当日无记录）</option>
+            )}
+            {sources.map(([id, name]) => (
+              <option key={id} value={id}>
+                {name}
+              </option>
+            ))}
+          </Select>
+          <Select
+            className="min-w-0 max-w-full"
+            aria-label="资讯排序"
+            value={order}
+            onChange={(e) => update({ sort: e.target.value })}
+          >
+            <option value="recommended">优先推荐</option>
+            <option value="latest">最新发布</option>
+          </Select>
+        </div>
+        {(q || publisher) && (
+          <div className="flex flex-wrap items-center gap-3 text-xs text-[var(--fastui-muted)]">
+            <span>
+              筛选结果 {q && ` · ${q}`}{' '}
+              {publisher && ` · ${sources.find(([id]) => id === publisher)?.[1] || publisher}`}
+            </span>
+            <Button variant="quiet" onClick={() => update({ q: '', publisher: '' })}>
+              清除筛选
+            </Button>
+          </div>
+        )}
+      </Section>
+      <ErrorMessage error={error} />
+      {error && <Button onClick={() => setRetry((n) => n + 1)}>重新加载资讯</Button>}
+      {reading && !busy && !active && !error && (
+        <EmptyState
+          title="归档中未找到这篇资讯"
+          action={<Button onClick={closeReader}>返回资讯列表</Button>}
+        />
+      )}
+      <div className="grid min-[1200px]:grid-cols-[minmax(0,1fr)_248px] gap-5 items-start">
+        <section className="min-w-0" aria-label="资讯列表">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+            <div>
+              <h2 className="text-base font-semibold m-0">
+                {date ? `${date} · 每日资讯` : '每日资讯'}
+              </h2>
+            </div>
+            <Button variant="quiet" onClick={() => update({ view: showAll ? '' : 'all' })}>
+              {showAll ? '精选资讯' : '全部资讯'}
+            </Button>
+          </div>
           {busy ? (
             <Busy />
-          ) : articles.length === 0 ? (
-            <EmptyState title="当天暂无资讯" />
           ) : (
-            <div className="grid">
-              {boards.map((board) => {
-                const sorted = articles
-                  .filter((a) =>
-                    board === 'top' ? kind === 'all' || channel(a) === kind : channel(a) === board,
-                  )
-                  .sort(
-                    (a, b) =>
-                      (score(b) ?? -1) - (score(a) ?? -1) ||
-                      (Date.parse(b.published || '') || 0) - (Date.parse(a.published || '') || 0),
-                  )
-                const scored = sorted.filter((article) => score(article) !== null)
-                const prioritised = !showAll && scored.length ? scored : sorted
-                return (
-                  <InspectorSection
-                    key={board}
-                    open
-                    label={`${board === 'top' ? (scored.length ? '优先推荐 · Top 10' : '最新资讯 · 尚未评分') : board === 'bleepingcomputer' ? 'BleepingComputer' : '其他来源'} · ${prioritised.length} 条`}
-                  >
-                    {(showAll ? prioritised : prioritised.slice(0, 10)).map((a, i) => (
-                      <article
-                        data-testid="news-row"
-                        className="flex gap-3 p-4 border-b border-b-solid border-b-[var(--fastui-border)]"
-                        key={a._id || a.link}
+            !error &&
+            (visible.length ? (
+              <>
+                <Section className="px-4 sm:px-6">
+                  {visible.map((article, index) => (
+                    <article
+                      key={article._id || article.link}
+                      data-testid="news-row"
+                      className="py-5 sm:py-6 border-b border-b-solid border-b-[var(--fastui-border)] last:border-b-0 min-w-0"
+                    >
+                      <ArticleMeta article={article} />
+                      <h3
+                        className={`${index === 0 && !showAll ? 'text-lg sm:text-xl' : 'text-base sm:text-lg'} font-semibold leading-snug tracking-tight my-3 break-words`}
                       >
-                        <div className="text-[var(--fastui-muted)] tabular-nums shrink-0">
-                          {String(i + 1).padStart(2, '0')}
+                        <Link className="news-title" to={readerURL(article)}>
+                          {article.title_zh || article.title}
+                        </Link>
+                      </h3>
+                      <p className="m-0 text-sm leading-6 text-[var(--fastui-secondary)] break-words line-clamp-3">
+                        {article.summary_zh ||
+                          article.description ||
+                          '摘要暂缺，前往原文了解详情。'}
+                      </p>
+                      <div className="flex flex-wrap items-center justify-between gap-3 mt-4 text-xs text-[var(--fastui-muted)]">
+                        <span title={article.score_reason}>
+                          {articleScore(article) === null
+                            ? ''
+                            : `价值 ${articleScore(article)!.toFixed(1)}`}
+                          {article.summary_zh ? ' · AI 导读' : ''}
+                        </span>
+                        <div className="flex items-center gap-4">
+                          <Link
+                            className="fastui-link inline-flex items-center gap-1 no-underline"
+                            to={readerURL(article)}
+                          >
+                            <BookOpen size={13} />
+                            阅读导读
+                          </Link>
+                          <a
+                            className="fastui-link inline-flex items-center gap-1 no-underline"
+                            href={safeURL(article.link)}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            原文 <ExternalLink size={12} />
+                          </a>
                         </div>
-                        <div className="min-w-0">
-                          <h3 className="fastui-heading my-2">
-                            <a
-                              className="fastui-link break-words"
-                              href={safeURL(a.link)}
-                              target="_blank"
-                              rel="noreferrer"
-                            >
-                              {a.title_zh || a.title}
-                              <ExternalLink size={12} />
-                            </a>
-                          </h3>
-                          {(a.summary_zh || a.description) && (
-                            <p className="leading-loose text-[var(--fastui-secondary)] break-words">
-                              {showAll
-                                ? a.summary_zh || a.description
-                                : (a.summary_zh || a.description)?.slice(0, 220)}
-                            </p>
-                          )}
-                          <div className="flex flex-wrap items-center gap-2 text-[var(--fastui-muted)]">
-                            <Badge>
-                              {channel(a) === 'bleepingcomputer'
-                                ? 'BleepingComputer'
-                                : sourceLabels[a.source] || '其他来源'}
-                            </Badge>
-                            <span title={a.score_reason}>
-                              {score(a) === null ? '尚未评分' : `价值 ${score(a)!.toFixed(1)}`}
-                            </span>
-                            <span>{a.published?.slice(0, 10)}</span>
-                            {a.author && <span>{a.author}</span>}
-                          </div>
-                        </div>
-                      </article>
-                    ))}
-                    {!showAll && prioritised.length > 10 && (
-                      <Button className="m-3" onClick={() => setShowAll(true)}>
-                        展开全部 {sorted.length} 条资讯
+                      </div>
+                    </article>
+                  ))}
+                </Section>
+                {showAll ? (
+                  <Pagination
+                    page={currentPage}
+                    total={filtered.length}
+                    size={pageSize}
+                    onChange={(n) => {
+                      update({ page: String(n) })
+                      document
+                        .querySelector('[aria-label="资讯列表"]')
+                        ?.scrollIntoView({ block: 'start' })
+                    }}
+                  />
+                ) : (
+                  filtered.length > visible.length && (
+                    <div className="py-6 text-center">
+                      <Button onClick={() => update({ view: 'all' })}>
+                        浏览全部 {filtered.length} 条 <ArrowRight size={14} />
                       </Button>
-                    )}
-                    {sorted.length === 0 && <EmptyState title="该频道当天暂无资讯" />}
-                  </InspectorSection>
-                )
-              })}
-            </div>
+                    </div>
+                  )
+                )}
+              </>
+            ) : (
+              <EmptyState title={q || publisher ? '没有匹配的资讯' : '当天暂无资讯'}>
+                {q || publisher
+                  ? '试试其他关键词或来源，或切换采集日期。'
+                  : '可以切换日期或频道继续阅读。'}
+              </EmptyState>
+            ))
           )}
-        </Panel>
+        </section>
+        <aside className="min-w-0 min-[1200px]:sticky min-[1200px]:top-20" aria-label="阅读导航">
+          <NewsArchive
+            date={date}
+            dates={catalog?.dates || []}
+            onSelect={(day) => update({ date: day, view: '' })}
+          />
+          <Panel title="资讯周报">
+            <ReportList
+              reports={(catalog?.reports.filter((r) => r.kind === 'secnews') || []).slice(0, 3)}
+            />
+          </Panel>
+        </aside>
       </div>
-    </>
+    </div>
   )
 }

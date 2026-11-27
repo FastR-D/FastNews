@@ -66,7 +66,9 @@ async function login(page: Page, baseURL: string | undefined) {
   await page.getByLabel('邮箱', { exact: true }).fill('browser-test@example.com')
   await page.getByLabel('密码', { exact: true }).fill('browser-test-password-123')
   await page.getByRole('form', { name: '本地账号' }).locator('button[type=submit]').click()
-  await expect(page.getByText('当前账号', { exact: true })).toBeVisible()
+  await expect(page.getByRole('heading', { name: '研究工作台', exact: true })).toBeVisible()
+  await visit(page, baseURL, 'login')
+  await expect(page.getByRole('heading', { name: '账号信息', exact: true })).toBeVisible()
 }
 test('research trends rank the selected archive and expose original evidence', async ({
   page,
@@ -129,7 +131,7 @@ test('arXiv navigation, dated corpus, fields, pagination and reading use real AP
   await expect(page.getByRole('heading', { name: 'arXiv 最新导读', level: 1 })).toBeVisible()
   const latestArxiv = await (await page.request.get(route(baseURL, 'api/news?source=arxiv'))).json()
   await expect(page.getByLabel('采集日期', { exact: true })).toHaveValue(latestArxiv.date)
-  await page.getByLabel('采集日期', { exact: true }).selectOption(date)
+  await page.getByLabel('采集日期', { exact: true }).fill(date)
   await expect(page.getByTestId('paper-row')).toHaveCount(12)
   await expect(page.getByTestId('paper-row').first()).toContainText(papers[0].title)
   await page.getByRole('button', { name: '下一页', exact: true }).click()
@@ -162,7 +164,7 @@ test('arXiv navigation, dated corpus, fields, pagination and reading use real AP
   expect(destination.redirect).not.toContain('sso=')
   expect(destination.paper.title).toBe(matching[0].title)
   const nextDate = catalog.dates[1]
-  await page.getByLabel('采集日期', { exact: true }).selectOption(nextDate)
+  await page.getByLabel('采集日期', { exact: true }).fill(nextDate)
   expect(new URL(page.url()).searchParams.get('category')).toBeNull()
   const next = await (await page.request.get(route(baseURL, `api/news?date=${nextDate}`))).json()
   const nextPapers = next.articles.filter((article: { source: string }) =>
@@ -172,8 +174,10 @@ test('arXiv navigation, dated corpus, fields, pagination and reading use real AP
   await page.reload()
   await expect(page.getByLabel('采集日期', { exact: true })).toHaveValue(nextDate)
   await visit(page, baseURL, `secnews/?date=${date}`)
-  await page.getByRole('button', { name: '查看全部详情', exact: true }).click()
-  await expect(page.getByTestId('news-row')).toHaveCount(articles.length - papers.length)
+  await page.getByRole('button', { name: '全部资讯', exact: true }).click()
+  await expect(page.getByTestId('news-row')).toHaveCount(
+    Math.min(20, articles.length - papers.length),
+  )
   await expect(page.getByRole('button', { name: 'arXiv', exact: true })).toHaveCount(0)
 })
 test('all old entries, real catalog, downloads, calendar, theme and responsive layout', async ({
@@ -183,7 +187,7 @@ test('all old entries, real catalog, downloads, calendar, theme and responsive l
   const errors: string[] = []
   page.on('pageerror', (e) => errors.push(e.message))
   await visit(page, baseURL, '')
-  await expect(page.getByRole('heading', { name: '安全研究报告工作台' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: '研究工作台' })).toBeVisible()
   await expect(page.getByRole('heading', { name: '顶会报告', exact: true })).toBeVisible()
   const catalogResponse = await page.request.get(route(baseURL, 'api/catalog'))
   const catalog = await catalogResponse.json()
@@ -205,11 +209,11 @@ test('all old entries, real catalog, downloads, calendar, theme and responsive l
   await expect(page.locator('html')).toHaveAttribute('data-fastui-theme', 'dark')
   await page.getByRole('button', { name: '切换浅色模式' }).click()
   for (const [path, title] of [
-    ['top-conf/index.html', '顶会论文总结'],
-    ['field-briefing/index.html', '领域导读'],
-    ['summary-brief/index.html', '总结汇报'],
-    ['secnews/index.html', '安全资讯'],
-    ['inbox/index.html', '私信'],
+    ['top-conf/', '顶会论文总结'],
+    ['field-briefing/', '领域导读'],
+    ['summary-brief/', '总结汇报'],
+    ['secnews/', '研究资讯'],
+    ['inbox/', '私信'],
   ]) {
     await visit(page, baseURL, path)
     await expect(page.getByRole('heading', { name: title, exact: true, level: 1 })).toBeVisible()
@@ -228,15 +232,16 @@ test('all old entries, real catalog, downloads, calendar, theme and responsive l
     'aria-current',
     'page',
   )
-  const download = page.getByTestId('report-row').locator('h3 a').first()
-  const response = await page.request.get(
-    ((await download.getAttribute('href')) || '') + '?download=1',
-  )
+  const download = page
+    .getByTestId('report-row')
+    .getByRole('link', { name: /下载.*PDF/ })
+    .first()
+  const response = await page.request.get((await download.getAttribute('href')) || '')
   expect(response.status()).toBe(200)
   expect(response.headers()['content-disposition']).toContain('attachment')
   await visit(page, baseURL, 'secnews/')
   const latestSecurity = await (
-    await page.request.get(route(baseURL, 'api/news?source=security'))
+    await page.request.get(route(baseURL, 'api/news?source=articles'))
   ).json()
   await expect(
     page.getByRole('heading', { name: `${latestSecurity.date} · 每日资讯`, exact: true }),
@@ -311,7 +316,8 @@ test('local login, impression, authors, inbox and logout persist across reloads'
   await expect(page.getByRole('heading', { name: '今日推送', exact: true })).toBeVisible()
   await expect(page.getByTestId('paper-row')).toHaveCount(1)
   await visit(page, baseURL, 'login')
-  await page.getByRole('button', { name: '退出登录', exact: true }).click()
+  await page.getByRole('button', { name: '账号菜单', exact: true }).click()
+  await page.getByRole('menuitem', { name: '退出登录', exact: true }).click()
   await expect(page.getByLabel('邮箱', { exact: true })).toBeVisible()
   await visit(page, baseURL, 'authors')
   await expect(page.getByText('登录后管理个人内容', { exact: true })).toBeVisible()
@@ -325,7 +331,6 @@ test('author UI shows pending and saved homepage results and survives report tab
   await visit(page, baseURL, '')
   await page.getByRole('button', { name: '添加作者', exact: true }).click()
   const editor = page.getByRole('dialog', { name: '新增作者' })
-  await expect(editor.getByText(/目前不会按标签自动过滤/)).toBeVisible()
   const name = `Homepage ${info.project.name}`
   await editor.getByLabel('姓名', { exact: true }).fill(name)
   await editor.getByLabel('主页链接', { exact: true }).fill('https://example.com/author')
@@ -352,12 +357,11 @@ test('author UI shows pending and saved homepage results and survives report tab
   await expect(row.getByRole('status')).toContainText('正在抓取并解析')
   release()
   await expect(row.getByRole('status')).toContainText('主页解析完成，已保存 1 个论文链接')
-  for (const tab of ['安全资讯周报', '全部下载', '顶会报告']) {
+  for (const tab of ['资讯周报', 'PDF 报告', '顶会报告']) {
     await page.getByRole('tab', { name: new RegExp(tab) }).click()
     await expect(row).toBeVisible()
   }
-  await page.locator('summary').filter({ hasText: '浏览报告与下载' }).click()
-  await expect(page.getByRole('tabpanel')).not.toBeVisible()
+  await expect(page.getByRole('tabpanel')).toBeVisible()
   await expect(row).toBeVisible()
   await page.reload()
   await expect(row).toContainText('Selected research links')
@@ -368,50 +372,32 @@ test('author UI shows pending and saved homepage results and survives report tab
   )
 })
 
-test('historical report uses maintained handoff assets and the correct API prefix', async ({
+test('reports read inside the workspace without legacy HTML or scripts', async ({
   page,
   baseURL,
-}) => {
-  const errors: string[] = []
-  page.on('pageerror', (error) => errors.push(error.message))
-  const response = await page.request.get(route(baseURL, 'api/reports'))
-  expect(response.ok()).toBeTruthy()
-  const { reports } = await response.json()
-  const report = reports.find((item: { html: string }) =>
-    item.html.endsWith('USENIX_2025_Report.html'),
+}, info) => {
+  const { reports } = await (await page.request.get(route(baseURL, 'api/reports'))).json()
+  const report = reports.find((r: { path: string }) => r.path.endsWith('USENIX_2025_Report.json'))
+  await visit(page, baseURL, `report/?path=${encodeURIComponent(report.path)}`)
+  await expect(page.getByTestId('workspace-header')).toBeVisible()
+  const doc = page.getByTestId('report-document')
+  await expect(doc.locator('article').first()).toBeVisible()
+  await expect(doc.locator('iframe,script,style')).toHaveCount(0)
+  await expect(page.getByRole('link', { name: '返回报告库' })).toBeVisible()
+  await page.route('**/api/fastread', async (r) =>
+    r.fulfill({ status: 409, json: { error: '阅读授权需要连接 Research' } }),
   )
-  expect(report).toBeTruthy()
-  const resourceResponses: number[] = []
-  page.on('response', (resource) => {
-    if (/\/assets\/fastread\.(js|css)$/.test(resource.url()))
-      resourceResponses.push(resource.status())
-  })
-  await page.route('**/api/fastread', async (request) => {
-    expect(request.request().url()).toBe(route(baseURL, 'api/fastread'))
-    expect(request.request().method()).toBe('POST')
-    expect(request.request().postDataJSON().title.length).toBeGreaterThan(0)
-    await request.fulfill({ status: 409, json: { error: '阅读授权需要连接 Research' } })
-  })
-  await visit(page, baseURL, report.html)
-  await expect(page.getByRole('link', { name: '返回报告工作台' })).toHaveAttribute(
-    'href',
-    new URL(baseURL!).pathname,
-  )
-  const secondCategory = page.locator('section.category').nth(1)
-  await expect(secondCategory.locator('details')).not.toHaveAttribute('open')
-  await secondCategory.locator('summary').click()
-  await expect(secondCategory.locator('details')).toHaveAttribute('open')
-  await secondCategory.locator('summary').click()
-  await page.goto(route(baseURL, report.html) + '#cat-2')
-  await expect(secondCategory.locator('details')).toHaveAttribute('open')
-  await page.getByRole('button', { name: '回到顶部', exact: true }).click()
-  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0)
-  await expect(page.locator('button[data-fastread]').first()).toBeVisible()
-  await page.locator('button[data-fastread]').first().click()
-  await expect(page.getByRole('alert')).toHaveText('阅读授权需要连接 Research')
-  await expect(page.locator('button[data-fastread]').first()).toBeEnabled()
-  expect(resourceResponses.sort()).toEqual([200, 200])
-  expect(errors).toEqual([])
+  await doc.getByRole('button', { name: '阅读论文', exact: true }).first().click()
+  await expect(doc.getByRole('alert')).toHaveText('阅读授权需要连接 Research')
+  await page.screenshot({ path: `test-results/${info.project.name}-report.png` })
+  await page.reload()
+  await expect(doc.locator('article').first()).toBeVisible()
+  expect((await page.request.get(route(baseURL, 'reports/handoff.js'))).status()).toBe(404)
+  expect(
+    (
+      await page.request.get(route(baseURL, 'top-conf/data/report/USENIX_2025_Report.html'))
+    ).status(),
+  ).toBe(404)
 })
 
 test('subpath application accepts independent-domain root and login entries', async ({
@@ -422,7 +408,7 @@ test('subpath application accepts independent-domain root and login entries', as
   const origin = new URL(baseURL!).origin
   await page.goto(origin + '/?date=2026-09-04#reports')
   await expect(page).toHaveURL(origin + '/news/?date=2026-09-04#reports')
-  await expect(page.getByRole('heading', { name: '安全研究报告工作台', exact: true })).toBeVisible()
+  await expect(page.getByRole('heading', { name: '研究工作台', exact: true })).toBeVisible()
   await page.goto(origin + '/login?from=entry')
   await expect(page).toHaveURL(origin + '/news/login?from=entry')
   await expect(page.getByLabel('邮箱', { exact: true })).toBeVisible()
@@ -445,7 +431,7 @@ test('FastUI report tabs support keyboard selection, filtering and downloads', a
   await search.fill('USENIX')
   const reports = page.getByRole('tabpanel').getByTestId('report-row')
   await expect(reports.first()).toContainText('USENIX')
-  await expect(reports.first().getByRole('link', { name: /下载.*HTML/ })).toHaveAttribute(
+  await expect(reports.first().getByRole('link', { name: /下载.*PDF/ })).toHaveAttribute(
     'href',
     /\?download=1$/,
   )
@@ -467,10 +453,10 @@ test('workspace navigation collapses on desktop and opens as a FastUI dialog on 
     const dialog = page.getByRole('dialog', { name: '工作空间导航' })
     await expect(dialog).toBeVisible()
     await expect(trigger).toHaveAttribute('aria-expanded', 'true')
-    await dialog.getByRole('link', { name: '安全资讯', exact: true }).click()
+    await dialog.getByRole('link', { name: '研究资讯', exact: true }).click()
     await expect(dialog).not.toBeVisible()
     await expect(
-      page.getByRole('heading', { name: '安全资讯', exact: true, level: 1 }),
+      page.getByRole('heading', { name: '研究资讯', exact: true, level: 1 }),
     ).toBeVisible()
     await trigger.click()
     await page.getByRole('button', { name: '关闭导航' }).click()
@@ -547,21 +533,214 @@ test('news recommendations use stored scores and show unscored records honestly'
   )
   if (scored.length) {
     for (const row of await page.getByTestId('news-row').all()) {
-      const link = await row.locator('h3 a').getAttribute('href')
-      expect(scored.some((article) => article.link === link)).toBeTruthy()
+      const link = await row.getByRole('link', { name: '原文', exact: true }).getAttribute('href')
+      expect(scored.some((article) => new URL(article.link).href === link)).toBeTruthy()
     }
   }
-  await page.getByRole('button', { name: '查看全部详情', exact: true }).click()
-  await expect(page.getByTestId('news-row')).toHaveCount(articles.length)
+  await page.getByRole('button', { name: '全部资讯', exact: true }).click()
+  await expect(page.getByTestId('news-row')).toHaveCount(Math.min(20, articles.length))
   for (const row of await page.getByTestId('news-row').all()) {
-    const link = await row.locator('h3 a').getAttribute('href')
-    const article = articles.find((article) => article.link === link)!
+    const link = await row.getByRole('link', { name: '原文', exact: true }).getAttribute('href')
+    const article = articles.find((article) => new URL(article.link).href === link)!
     expect(article).toBeTruthy()
     if (hasScore(article)) {
       await expect(row).toContainText(`价值 ${storedScore(article)!.toFixed(1)}`)
     } else {
-      await expect(row).toContainText('尚未评分')
+      await expect(row).not.toContainText('价值 ')
       await expect(row).not.toContainText(/价值 \d/)
     }
   }
+})
+
+test('news channels keep source attribution and survive reloads', async ({ page, baseURL }) => {
+  await visit(page, baseURL, 'secnews/')
+  const picker = page.getByRole('group', { name: '资讯频道', exact: true })
+  for (const [channel, label] of [
+    ['security', '安全资讯'],
+    ['ai', 'AI 资讯'],
+  ]) {
+    const response = page.waitForResponse((item) => {
+      const url = new URL(item.url())
+      return url.pathname.endsWith('/api/news') && url.searchParams.get('source') === channel
+    })
+    await picker.getByRole('button', { name: label, exact: true }).click()
+    const result = await (await response).json()
+    expect(
+      result.articles.every((article: NewsArticle) => article.channel === channel),
+    ).toBeTruthy()
+    await expect(picker.getByRole('button', { name: label, exact: true })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
+    await expect(page).toHaveURL(new RegExp(`channel=${channel}`))
+    if (result.articles.length) {
+      await page.getByRole('button', { name: '全部资讯', exact: true }).click()
+      await expect(page.getByTestId('news-row')).toHaveCount(Math.min(20, result.articles.length))
+      expect((await page.getByTestId('news-row').first().innerText()).length).toBeGreaterThan(0)
+    } else {
+      await expect(page.getByText('当天暂无资讯', { exact: true })).toBeVisible()
+    }
+  }
+  await page.reload()
+  await expect(picker.getByRole('button', { name: 'AI 资讯', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1),
+  ).toBeTruthy()
+})
+
+test('reading filters, pagination and focused article survive navigation', async ({
+  page,
+  baseURL,
+}, info) => {
+  await visit(page, baseURL, 'secnews/?view=all')
+  const rows = page.getByTestId('news-row')
+  await expect(rows).toHaveCount(20)
+  const first = await rows.first().locator('h3').innerText()
+  await page.getByRole('button', { name: '下一页', exact: true }).click()
+  await expect(page).toHaveURL(/page=2/)
+  await expect(rows.first().locator('h3')).not.toHaveText(first)
+  await page.reload()
+  await expect(page.getByRole('button', { name: '2', exact: true })).toHaveAttribute(
+    'aria-current',
+    'page',
+  )
+  if (info.project.name === 'mobile')
+    await page.getByRole('button', { name: '展开资讯筛选' }).click()
+  await page.getByLabel('资讯来源', { exact: true }).selectOption('openai')
+  await expect(page).not.toHaveURL(/page=2/)
+  await expect(rows.first()).toContainText('OpenAI News')
+  const title = await rows.first().locator('h3').innerText()
+  await page.getByLabel('搜索资讯', { exact: true }).fill(title)
+  await page.getByRole('button', { name: '搜索资讯结果', exact: true }).click()
+  await expect(rows).toHaveCount(1)
+  await rows.first().getByRole('link', { name: '阅读导读', exact: true }).click()
+  const reader = page.getByTestId('news-reader')
+  await expect(reader.getByRole('heading', { level: 1 })).toHaveText(title)
+  await expect(reader.getByRole('link', { name: '前往原文' })).toHaveAttribute('target', '_blank')
+  await page.getByRole('button', { name: '舒适字号' }).click()
+  await page.reload()
+  await expect(page.getByRole('button', { name: '舒适字号' })).toHaveAttribute(
+    'aria-pressed',
+    'false',
+  )
+  await expect(reader.getByRole('heading', { level: 1 })).toHaveText(title)
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
+  ).toBeTruthy()
+  await page.screenshot({ path: `test-results/${info.project.name}-reader.png` })
+  await page.getByRole('button', { name: '返回资讯列表' }).click()
+  await expect(rows).toHaveCount(1)
+  await expect(page.getByLabel('资讯来源', { exact: true })).toHaveValue('openai')
+  await page.getByRole('button', { name: '清除筛选', exact: true }).click()
+  await expect(rows).toHaveCount(20)
+  await visit(page, baseURL, 'secnews/')
+  await expect(page.getByTestId('news-row').first()).toBeVisible()
+  await expect(page.getByRole('button', { name: '展开资讯筛选' })).toBeVisible({
+    visible: info.project.name === 'mobile',
+  })
+  await page.screenshot({ path: `test-results/${info.project.name}-news.png` })
+  await page.getByRole('button', { name: '切换深色模式' }).click()
+  await page.screenshot({
+    path: `test-results/${info.project.name}-news-dark.png`,
+    animations: 'disabled',
+  })
+})
+
+test('source directory preserves provenance and distinguishes configured feeds from candidates', async ({
+  page,
+  baseURL,
+}, info) => {
+  await visit(page, baseURL, 'sources/')
+  await expect(page.getByRole('heading', { name: '信源目录', exact: true, level: 1 })).toBeVisible()
+  const result = await (await page.request.get(route(baseURL, 'api/sources'))).json()
+  await expect(page.getByTestId('source-card')).toHaveCount(result.sources.length)
+  await page.getByLabel('搜索信源', { exact: true }).fill('Krebs')
+  await page.getByRole('button', { name: '查找信源' }).click()
+  const card = page.getByTestId('source-card')
+  await expect(card).toHaveCount(1)
+  await expect(card).toContainText('已配置采集')
+  await expect(card.locator('summary')).toHaveCount(0)
+  await expect(page.getByText('如何看待这些来源')).toHaveCount(0)
+  await expect(page.getByRole('link', { name: '浏览归档资讯' })).toHaveCount(0)
+  await page.reload()
+  await expect(page.getByLabel('搜索信源', { exact: true })).toHaveValue('Krebs')
+  await page.getByRole('button', { name: '清除目录筛选' }).click()
+  await page
+    .getByRole('group', { name: '信源领域' })
+    .getByRole('button', { name: /CVE 与漏洞/ })
+    .click()
+  const cve = result.sources.filter((source: { category: string }) => source.category === 'cve')
+  await expect(page.getByTestId('source-card')).toHaveCount(cve.length)
+  await expect(
+    page.getByTestId('source-card').getByText('已配置采集', { exact: true }),
+  ).toHaveCount(0)
+  await page.getByLabel('信源状态', { exact: true }).selectOption('active')
+  await expect(page.getByText('没有匹配的信源', { exact: true })).toBeVisible()
+  await page.getByRole('button', { name: '清除目录筛选' }).click()
+  await page.getByLabel('信源状态', { exact: true }).selectOption('active')
+  await expect(page.getByTestId('source-card')).toHaveCount(
+    result.sources.filter(
+      (s: { configured: boolean; disabled: boolean }) => s.configured && !s.disabled,
+    ).length,
+  )
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
+  ).toBeTruthy()
+  await page.screenshot({ path: `test-results/${info.project.name}-sources.png` })
+  if (info.project.name === 'mobile') {
+    await page.setViewportSize({ width: 320, height: 740 })
+    await visit(page, baseURL, 'secnews/')
+    await expect(page.getByTestId('news-row').first()).toBeVisible()
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
+    ).toBeTruthy()
+    const headerControls = page.getByTestId('workspace-header').locator('button:visible, a:visible')
+    for (const control of await headerControls.all()) {
+      const box = await control.boundingBox()
+      expect(box).not.toBeNull()
+      expect(box!.x).toBeGreaterThanOrEqual(0)
+      expect(box!.x + box!.width).toBeLessThanOrEqual(320)
+    }
+    await page.screenshot({ path: 'test-results/mobile-news-320.png' })
+  }
+})
+
+test('paper cards place reading actions above the abstract and align briefing fields', async ({
+  page,
+  baseURL,
+}, info) => {
+  await visit(page, baseURL, 'top-conf/')
+  const card = page.getByTestId('paper-row').first()
+  await expect(card).toBeVisible()
+  await expect(card).toHaveCSS('border-top-style', 'solid')
+  const original = card.getByRole('link', { name: '阅读原文' })
+  const fastread = card.getByRole('button', { name: '跳转 FastRead' })
+  await expect(original).toHaveAttribute('target', '_blank')
+  const summary = card.getByRole('region', { name: '摘要' })
+  await expect(summary).toBeVisible()
+  expect((await original.boundingBox())!.y).toBeLessThan((await summary.boundingBox())!.y)
+  expect((await fastread.boundingBox())!.y).toBeLessThan(
+    (await card.locator('h3').boundingBox())!.y,
+  )
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
+  ).toBeTruthy()
+  await page.screenshot({
+    path: `../output/ui-review/${info.project.name}-paper-cards.png`,
+    animations: 'disabled',
+  })
+  await page.getByRole('button', { name: '切换深色模式' }).click()
+  await page.screenshot({
+    path: `../output/ui-review/${info.project.name}-paper-cards-dark.png`,
+    animations: 'disabled',
+  })
+  await visit(page, baseURL, 'field-briefing/')
+  const direction = await page.getByLabel('研究方向', { exact: true }).boundingBox()
+  const source = await page.getByLabel('语料来源', { exact: true }).boundingBox()
+  expect(Math.abs(direction!.x - source!.x)).toBeLessThan(1)
+  await visit(page, baseURL, 'arxiv/')
+  await expect(page.getByLabel('采集日期', { exact: true })).toHaveAttribute('type', 'date')
 })

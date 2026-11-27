@@ -1,17 +1,7 @@
+import { ReadingSurface } from './ReadingLayout'
 import { useId, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import {
-  Alert,
-  Badge,
-  Button,
-  EmptyState,
-  InspectorSection,
-  Loading,
-  ListRow,
-  PanelHeader,
-  Section,
-  Toolbar,
-} from '@fastrd/ui-react'
+import { Alert, Badge, Button, EmptyState, Loading, ListRow, Toolbar } from '@fastrd/ui-react'
 import { ArrowUpRight, BookOpen, Download, ChevronLeft, ChevronRight, FileText } from 'lucide-react'
 import { api, asset, message, safeURL } from '../api'
 import type { Paper, Report } from '../types'
@@ -24,24 +14,10 @@ export function ErrorMessage({ error }: { error: string }) {
     </Alert>
   ) : null
 }
-export function PageHeading({
-  title,
-  description,
-  action,
-}: {
-  title: string
-  description: string
-  action?: ReactNode
-}) {
+export function PageHeading({ title, action }: { title: string; action?: ReactNode }) {
   return (
-    <header className="flex flex-wrap items-start justify-between gap-4 mb-6">
-      <div className="min-w-0">
-        <span className="text-[var(--fastui-muted)] text-10px tracking-widest">
-          RESEARCH WORKSPACE
-        </span>
-        <h1 className="fastui-heading text-xl sm:text-2xl mt-1 mb-2">{title}</h1>
-        <p className="text-[var(--fastui-secondary)] m-0">{description}</p>
-      </div>
+    <header className="page-heading">
+      <h1>{title}</h1>
       {action}
     </header>
   )
@@ -59,13 +35,20 @@ export function Panel({
 }) {
   const id = useId()
   return (
-    <Section className={`min-w-0 overflow-hidden mb-4 ${className}`} aria-labelledby={id}>
-      <PanelHeader>
-        <h2 id={id}>{title}</h2>
-        <div className="ml-auto min-w-0 flex items-center gap-2">{action}</div>
-      </PanelHeader>
+    <ReadingSurface
+      className={`min-w-0 overflow-hidden mb-4 ${className}`}
+      aria-labelledby={title ? id : undefined}
+    >
+      {(title || action) && (
+        <header className="flex flex-wrap items-center gap-3 px-5 pt-5 pb-3">
+          <h2 id={id} className="m-0 text-sm font-semibold">
+            {title}
+          </h2>
+          <div className="ml-auto min-w-0 flex items-center gap-2">{action}</div>
+        </header>
+      )}
       {children}
-    </Section>
+    </ReadingSurface>
   )
 }
 export function LoginHint() {
@@ -147,90 +130,75 @@ export function PaperCard({ paper }: { paper: Paper }) {
     }
   }
   return (
-    <article
-      data-testid="paper-row"
-      className="min-w-0 p-4 grid gap-3 border-b border-b-solid border-b-[var(--fastui-border)]"
-    >
-      <div className="flex flex-wrap items-center gap-2 text-[var(--fastui-muted)]">
-        <Badge>{paper.category || paper.source}</Badge>
-        <span>{[paper.year, paper.venue].filter(Boolean).join(' · ')}</span>
-        {paper.cited_by !== undefined && <span>引用 {paper.cited_by}</span>}
-        {paper.award && <Badge tone="warning">杰出论文</Badge>}
+    <article data-testid="paper-row" className="paper-card">
+      <div className="paper-card-top">
+        <div className="paper-meta">
+          <Badge>{paper.category || paper.source}</Badge>
+          <span>{[paper.year, paper.venue].filter(Boolean).join(' · ')}</span>
+          {paper.cited_by !== undefined && <span>引用 {paper.cited_by}</span>}
+          {paper.award && <Badge tone="warning">杰出论文</Badge>}
+        </div>
+        <div className="paper-actions">
+          {href && (
+            <a
+              className="fastui-button fastui-button--quiet"
+              href={href}
+              target="_blank"
+              rel="noreferrer"
+            >
+              阅读原文 <ArrowUpRight size={14} />
+            </a>
+          )}
+          <Button loading={busy} onClick={open}>
+            <BookOpen size={14} />
+            跳转 FastRead
+          </Button>
+        </div>
       </div>
-      <h3 className="fastui-heading m-0 text-sm break-words">
+      <h3 className="paper-title">
         {href ? (
-          <a className="fastui-link no-underline" href={href} target="_blank" rel="noreferrer">
-            {paper.title} <ArrowUpRight className="inline" size={12} />
+          <a href={href} target="_blank" rel="noreferrer">
+            {paper.title}
           </a>
         ) : (
           paper.title
         )}
       </h3>
-      {paper.title_zh && <p className="m-0">{paper.title_zh}</p>}
+      {paper.title_zh && <p className="paper-translation">{paper.title_zh}</p>}
       {(paper.author || paper.authors) && (
-        <p className="m-0 text-[var(--fastui-muted)] break-words">
-          {paper.author || paper.authors}
-        </p>
+        <p className="paper-authors">{paper.author || paper.authors}</p>
       )}
       {paper.summary && (
-        <InspectorSection label="摘要">
-          <p className="m-0 leading-loose">{paper.summary}</p>
-        </InspectorSection>
+        <section className="paper-abstract" aria-label="摘要">
+          <h4>摘要</h4>
+          <p>{paper.summary}</p>
+        </section>
       )}
       {paper.reason && <Alert tone="info">{paper.reason}</Alert>}
-      <div>
-        <Button size="xs" loading={busy} onClick={open}>
-          <BookOpen size={13} />
-          跳转 FastRead
-        </Button>
-      </div>
       <ErrorMessage error={error} />
     </article>
   )
 }
-export function ReportList({
-  reports,
-  download = false,
-}: {
-  reports: Report[]
-  download?: boolean
-}) {
+export function ReportList({ reports }: { reports: Report[]; download?: boolean }) {
   return (
     <div>
       {reports.length === 0 ? (
         <EmptyState title="暂无报告" />
       ) : (
         reports.map((report) => (
-          <ListRow data-testid="report-row" className="flex-wrap" key={report.html}>
+          <ListRow data-testid="report-row" className="flex-wrap" key={report.path}>
             <FileText size={17} className="shrink-0 text-[var(--fastui-muted)]" />
             <div className="flex-1 min-w-0">
-              <h3 className="m-0 text-xs font-semibold break-words">
-                <a
-                  className="fastui-link no-underline"
-                  href={asset(report.html)}
-                  target="_blank"
-                  rel="noreferrer"
+              <h3 className="m-0 text-sm font-semibold break-words">
+                <Link
+                  className="news-title"
+                  to={`/report/?path=${encodeURIComponent(report.path)}`}
                 >
-                  {report.title} <ArrowUpRight className="inline" size={12} />
-                </a>
+                  {report.title}
+                </Link>
               </h3>
-              <p className="m-0 mt-1 text-11px text-[var(--fastui-muted)]">
-                {(report.size / 1024).toFixed(1)} KB ·{' '}
-                {new Date(report.updated).toLocaleDateString('zh-CN', {
-                  timeZone: 'Asia/Shanghai',
-                })}
-              </p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <a
-                className="fastui-button fastui-button--xs no-underline"
-                href={asset(report.html) + (download ? '?download=1' : '')}
-                download={download || undefined}
-                aria-label={`${download ? '下载' : '打开'} ${report.title} HTML`}
-              >
-                <Download size={12} />
-                HTML
-              </a>
               {report.pdf && (
                 <a
                   className="fastui-button fastui-button--xs no-underline"
@@ -257,7 +225,7 @@ export function Metrics({
   return (
     <section className="grid grid-cols-2 xl:grid-cols-4 gap-3 mb-6" aria-label="概览统计">
       {items.map((item) => (
-        <Section className="p-4 min-w-0" key={item.label}>
+        <ReadingSurface className="p-4 min-w-0" key={item.label}>
           <div className="flex items-center justify-between gap-2 text-[var(--fastui-muted)]">
             {item.label}
             {item.icon}
@@ -265,8 +233,7 @@ export function Metrics({
           <strong className="block text-2xl font-semibold tabular-nums my-2">
             {typeof item.value === 'number' ? item.value.toLocaleString('zh-CN') : item.value}
           </strong>
-          {item.detail && <small className="text-[var(--fastui-muted)]">{item.detail}</small>}
-        </Section>
+        </ReadingSurface>
       ))}
     </section>
   )

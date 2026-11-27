@@ -15,10 +15,32 @@ import (
 )
 
 func (s *Server) auth(w http.ResponseWriter, r *http.Request, p string) error {
+	if p == "/api/auth/profile" {
+		if r.Method != "POST" {
+			return store.Fail(405, "Method not allowed")
+		}
+		current, err := s.require(r)
+		if err != nil {
+			return err
+		}
+		if err = s.csrf(r, current.CSRF); err != nil {
+			return err
+		}
+		var input store.ProfileInput
+		if err = decode(w, r, &input, 8192); err != nil {
+			return err
+		}
+		user, err := s.Store.UpdateProfile(current, input, peer(r))
+		if err != nil {
+			return err
+		}
+		reply(w, r, 200, user)
+		return nil
+	}
 	if r.Method == "GET" {
 		switch p {
 		case "/api/auth/info":
-			reply(w, r, 200, map[string]any{"local": true, "registration": false, "fastcas": s.Config.CASEnabled})
+			reply(w, r, 200, map[string]any{"local": true, "registration": false, "fastcas": s.Config.CASEnabled, "requireLogin": s.Config.RequireLogin})
 			return nil
 		case "/api/auth/session-init":
 			csrf := store.Random()

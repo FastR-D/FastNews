@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   Mail,
   Newspaper,
+  Library,
   TrendingUp,
   Users,
   UserRound,
@@ -34,10 +35,17 @@ export const navigation = [
   },
   {
     to: '/secnews/',
-    label: '安全资讯',
+    label: '研究资讯',
     icon: Newspaper,
     group: '发现与研究',
-    description: '安全资讯',
+    description: '安全与 AI 研究动态',
+  },
+  {
+    to: '/sources/',
+    label: '信源目录',
+    icon: Library,
+    group: '发现与研究',
+    description: '官方、学术与社区推荐信源',
   },
   {
     to: '/field-briefing/',
@@ -73,12 +81,14 @@ export const navigation = [
 export function currentPage(path: string) {
   return (
     navigation.find((item) =>
-      item.to === '/'
-        ? path === '/' || path === '/index.html'
-        : path.startsWith(item.to.replace(/\/$/, '')),
+      item.to === '/' ? path === '/' : path.startsWith(item.to.replace(/\/$/, '')),
     ) || {
       to: '/login',
-      label: path.startsWith('/admin') ? '用户管理' : '账号设置',
+      label: path.startsWith('/admin/processes')
+        ? '进程管理'
+        : path.startsWith('/admin/users')
+          ? '用户管理'
+          : '账号设置',
       icon: UserRound,
       group: '个人空间',
       description: 'FastNews 账号',

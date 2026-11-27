@@ -1,0 +1,35 @@
+[
+  {
+    "id": "stanford_sail",
+    "name": "Stanford AI Lab",
+    "url": "https://ai.stanford.edu/blog/feed.xml",
+    "channel": "ai",
+    "max_age_days": 90
+  },
+  {
+    "id": "berkeley_bair",
+    "name": "Berkeley AI Research",
+    "url": "https://bair.berkeley.edu/blog/feed.xml",
+    "channel": "ai",
+    "max_age_days": 90
+  },
+  {
+    "id": "mit_ai",
+    "name": "MIT News — Artificial Intelligence",
+    "url": "https://news.mit.edu/topic/mitartificial-intelligence2-rss.xml",
+    "channel": "ai"
+  },
+  {
+    "id": "trailofbits",
+    "name": "Trail of Bits",
+    "url": "https://blog.trailofbits.com/index.xml",
+    "channel": "security",
+    "max_age_days": 90
+  },
+  {
+    "id": "cisco_talos",
+    "name": "Cisco Talos",
+    "url": "https://blog.talosintelligence.com/rss/",
+    "channel": "security"
+  }
+]

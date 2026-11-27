@@ -1,24 +1,12 @@
 import { useEffect, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
-import {
-  Badge,
-  Button,
-  Checkbox,
-  InspectorSection,
-  SegmentedControl,
-  TextField,
-} from '@fastrd/ui-react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { Button, SegmentedControl, TextField } from '@fastrd/ui-react'
 import { api, asset, message, setCSRF, safeURL } from '../api'
 import { useApp } from '../context'
 import { ErrorMessage, PageHeading, Panel } from '../components/Common'
-import FastReadConnection from '../components/FastReadConnection'
 type CASStatus = { enabled: boolean; login_enabled: boolean; link_enabled: boolean }
-type Connection = {
-  researchAccountId: string
-  importedAt: number
-  counts: { authors: number; inbox: number }
-}
 export default function Account() {
+  const navigate = useNavigate()
   const { profile, refresh, notify } = useApp()
   const [params] = useSearchParams()
   const [mode, setMode] = useState(params.get('mode') === 'register' ? 'register' : 'login'),
@@ -30,23 +18,28 @@ export default function Account() {
     [busy, setBusy] = useState(false),
     [cas, setCAS] = useState<CASStatus | null>(null),
     [link, setLink] = useState<{ id: string; state: string } | null>(null),
-    [proof, setProof] = useState(''),
-    [key, setKey] = useState(''),
-    [replace, setReplace] = useState(false),
-    [connection, setConnection] = useState<Connection | null>(null),
-    [casLive, setCASLive] = useState(false),
-    [live, setLive] = useState<unknown>(null)
+    [proof, setProof] = useState('')
+  const [details, setDetails] = useState({
+    name: '',
+    email: '',
+    currentPassword: '',
+    newPassword: '',
+  })
+  useEffect(() => {
+    if (profile)
+      setDetails({
+        name: profile.person,
+        email: profile.email,
+        currentPassword: '',
+        newPassword: '',
+      })
+  }, [profile?.userId, profile?.person, profile?.email])
   async function preauth() {
     const v = await api<{ csrf: string }>('api/auth/session-init')
     setCSRF(v.csrf)
   }
   async function status() {
     if (!profile || profile.source === 'research') return
-    const research = await api<{ connection: Connection | null; casLive: boolean }>(
-      'api/auth/research/status',
-    )
-    setConnection(research.connection)
-    setCASLive(research.casLive)
     if (cas?.enabled) {
       const c = await api<{ link: { id: string; state: string } | null }>('api/auth/fastcas/status')
       setLink(c.link)
@@ -104,7 +97,11 @@ export default function Account() {
       setToken('')
       if (mode === 'login') {
         await refresh()
-        notify('已登录 FastNews')
+        const next = params.get('next') || '/'
+        navigate(
+          next.startsWith('/') && !next.startsWith('//') && !next.includes('\\') ? next : '/',
+          { replace: true },
+        )
       } else {
         setMode('login')
         notify('账号已更新，请使用邮箱和密码登录')
@@ -146,25 +143,22 @@ export default function Account() {
     await status()
     notify('FastCAS 状态已更新')
   }
-  async function importResearch(sync = false) {
-    await api(`api/auth/research/${sync ? 'sync' : 'import'}`, {
-      method: 'POST',
-      body: JSON.stringify(sync ? { replace } : { key, replace }),
-    })
-    setKey('')
+  async function saveProfile() {
+    await api('api/auth/profile', { method: 'POST', body: JSON.stringify(details) })
+    setDetails((value) => ({ ...value, currentPassword: '', newPassword: '' }))
     await refresh()
-    await status()
-    notify('Research 内容已复制到本地账号')
+    notify('账号信息已更新')
   }
   return (
     <>
       <PageHeading
-        title="FastNews 账号"
-        description="使用本地账号或 FastCAS 登录，个人内容归当前账号所有。"
+        title={profile ? '账号设置' : '登录 FastNews'}
         action={
-          <Link className="fastui-link" to="/">
-            返回总览
-          </Link>
+          profile && (
+            <Link className="fastui-link" to="/">
+              返回总览
+            </Link>
+          )
         }
       />
       {params.get('fastcas') === 'failed' && (
@@ -174,9 +168,9 @@ export default function Account() {
         <p className="text-[var(--fastui-success)]">FastCAS 认证已完成。</p>
       )}
       <ErrorMessage error={error} />
-      <div className="grid lg:grid-cols-2 gap-4 items-start">
+      <div className={profile ? 'grid lg:grid-cols-2 gap-5 items-start' : 'grid gap-5'}>
         {!profile ? (
-          <Panel title="登录与恢复">
+          <Panel title="">
             <form
               aria-label="本地账号"
               className="grid gap-4 p-4 sm:p-6"
@@ -262,175 +256,133 @@ export default function Account() {
                   使用 FastCAS 登录
                 </a>
               )}
-              <p className="text-[var(--fastui-muted)]">
-                已有账号可登录后绑定 FastCAS。恢复凭证由管理员发放。
-              </p>
             </form>
           </Panel>
         ) : (
-          <Panel title="当前账号" action={<Badge tone="success">已登录</Badge>}>
-            <div className="grid gap-4 p-4 sm:p-6">
-              <strong>{profile.person}</strong>
-              <p>{profile.email}</p>
-              <p className="text-[var(--fastui-muted)]">
-                登录来源：
-                {profile.source === 'fastcas'
-                  ? 'FastCAS'
-                  : profile.source === 'research'
-                    ? 'Research Key'
-                    : '本地密码'}
-              </p>
-              <Button
-                loading={busy}
-                onClick={() =>
-                  action(async () => {
-                    await api(
-                      profile.source === 'research' ? 'api/content/logout' : 'api/auth/logout',
-                      { method: 'POST', body: '{}' },
-                    )
-                    await refresh()
-                    setLink(null)
-                    setConnection(null)
-                    setLive(null)
-                    await preauth()
-                  })
-                }
-              >
-                退出登录
-              </Button>
-            </div>
-          </Panel>
-        )}
-        {profile && profile.source !== 'research' && <FastReadConnection key={profile.userId} />}
-        {profile && profile.source !== 'research' && (
-          <Panel title="账号认证" className="account-cas-panel">
-            <div id="fastcas" className="p-4 sm:p-6">
-              <div className="rd-account-section">
-                <h2>FastCAS 认证</h2>
-                {cas?.enabled ? (
-                  <p className={link ? 'rd-account-banner' : undefined} role="status">
-                    {link?.state === 'active'
-                      ? '已通过 FastCAS 认证'
-                      : link
-                        ? '认证待完成'
-                        : '尚未绑定 FastCAS 身份'}
-                  </p>
-                ) : (
-                  <p>此实例未启用 FastCAS，本地登录照常可用。</p>
-                )}
-              </div>
-              <div className="rd-account-section">
-                <h2>修改信息</h2>
-                {cas?.enabled && (
-                  <>
-                    <label className="fastui-field">
-                      本地密码
-                      <TextField
-                        type="password"
-                        autoComplete="current-password"
-                        value={proof}
-                        onChange={(e) => setProof(e.target.value)}
-                      />
-                    </label>
-                    <div className="flex flex-wrap items-center gap-2">
-                      {!link && cas.link_enabled && (
-                        <Button
-                          variant="primary"
-                          loading={busy}
-                          disabled={!proof}
-                          onClick={() => action(() => casAction('link'))}
-                        >
-                          认证已有账号
-                        </Button>
-                      )}
-                      {link && (
-                        <Button
-                          variant="danger"
-                          loading={busy}
-                          disabled={!proof}
-                          onClick={() => action(() => casAction('revoke'))}
-                        >
-                          解除认证
-                        </Button>
-                      )}
-                      {link?.state === 'prepared' && cas.link_enabled && (
-                        <Button loading={busy} onClick={() => action(() => casAction('reconcile'))}>
-                          重试待完成认证
-                        </Button>
-                      )}
-                    </div>
-                    {cas.login_enabled && (
-                      <a className="fastui-link" href={asset('api/auth/fastcas/login')}>
-                        使用 FastCAS 重新登录
-                      </a>
-                    )}
-                  </>
-                )}
-              </div>
-            </div>
-          </Panel>
-        )}
-        {profile && profile.source !== 'research' && (
-          <Panel title="Research 内容连接" className="col-span-full">
-            <div className="grid gap-4 p-4 sm:p-6">
-              {connection && (
-                <p className="text-[var(--fastui-success)]">
-                  已导入 {connection.counts.authors} 位作者、{connection.counts.inbox} 条私信 ·{' '}
-                  {new Date(connection.importedAt * 1000).toLocaleString('zh-CN', {
-                    timeZone: 'Asia/Shanghai',
-                  })}
-                </p>
-              )}
-              <p className="text-[var(--fastui-muted)]">
-                输入 Research Key，验证后复制关注作者、研究印象与收件箱。复制后两边各自保存。
-              </p>
+          <Panel title="账号信息">
+            <form
+              className="grid gap-4 p-4 sm:p-6"
+              aria-label="账号信息"
+              onSubmit={(event) => {
+                event.preventDefault()
+                void action(saveProfile)
+              }}
+            >
               <label className="fastui-field">
-                Research Key
+                姓名
                 <TextField
-                  type="password"
-                  autoComplete="off"
-                  value={key}
-                  onChange={(e) => setKey(e.target.value)}
+                  required
+                  maxLength={120}
+                  value={details.name}
+                  onChange={(event) => setDetails({ ...details, name: event.target.value })}
                 />
               </label>
-              <label className="flex items-center gap-2">
-                <Checkbox checked={replace} onChange={(e) => setReplace(e.target.checked)} />
-                明确替换本地已有作者、研究印象和私信
+              <label className="fastui-field">
+                邮箱
+                <TextField
+                  type="email"
+                  autoComplete="username"
+                  required
+                  value={details.email}
+                  onChange={(event) => setDetails({ ...details, email: event.target.value })}
+                />
               </label>
-              <div className="flex flex-wrap items-center gap-2">
-                <Button
-                  variant="primary"
-                  disabled={!key}
-                  loading={busy}
-                  onClick={() => action(() => importResearch())}
-                >
-                  验证并导入快照
+              <label className="fastui-field">
+                当前密码
+                <TextField
+                  type="password"
+                  autoComplete="current-password"
+                  required
+                  maxLength={256}
+                  value={details.currentPassword}
+                  onChange={(event) =>
+                    setDetails({ ...details, currentPassword: event.target.value })
+                  }
+                />
+              </label>
+              <label className="fastui-field">
+                新密码
+                <TextField
+                  type="password"
+                  autoComplete="new-password"
+                  placeholder="留空则不修改密码"
+                  minLength={12}
+                  maxLength={256}
+                  value={details.newPassword}
+                  onChange={(event) => setDetails({ ...details, newPassword: event.target.value })}
+                />
+              </label>
+              <div>
+                <Button type="submit" variant="primary" loading={busy}>
+                  保存账号信息
                 </Button>
-                {casLive && (
-                  <>
-                    <Button
-                      loading={busy}
-                      onClick={() =>
-                        action(async () => {
-                          const v = await api('api/auth/research/live')
-                          setLive(v)
-                        })
-                      }
-                    >
-                      实时读取 Research
-                    </Button>
-                    <Button loading={busy} onClick={() => action(() => importResearch(true))}>
-                      同步本次快照到本地
-                    </Button>
-                  </>
-                )}
               </div>
-              {live !== null && (
-                <InspectorSection open label="Research 实时内容">
-                  <pre className="overflow-auto max-h-90 whitespace-pre-wrap break-all p-4 text-xs bg-[var(--fastui-raised)]">
-                    {JSON.stringify(live, null, 2)}
-                  </pre>
-                </InspectorSection>
+            </form>
+          </Panel>
+        )}
+        {profile && (
+          <Panel title="FastCAS 认证" className="account-cas-panel">
+            <div id="fastcas" className="grid gap-4 p-4 sm:p-6">
+              {cas?.enabled ? (
+                <>
+                  <p className="m-0" role="status">
+                    {link?.state === 'active'
+                      ? '已认证'
+                      : link?.state === 'prepared'
+                        ? '认证待完成'
+                        : '未认证'}
+                  </p>
+                  {profile.source !== 'research' && (
+                    <>
+                      <label className="fastui-field">
+                        验证当前密码
+                        <TextField
+                          type="password"
+                          autoComplete="current-password"
+                          value={proof}
+                          onChange={(event) => setProof(event.target.value)}
+                        />
+                      </label>
+                      <div className="flex flex-wrap items-center gap-2">
+                        {(!link || link.state === 'revoked') && cas.link_enabled && (
+                          <Button
+                            variant="primary"
+                            loading={busy}
+                            disabled={!proof}
+                            onClick={() => action(() => casAction('link'))}
+                          >
+                            认证已有账号
+                          </Button>
+                        )}
+                        {link?.state === 'active' && (
+                          <Button
+                            variant="danger"
+                            loading={busy}
+                            disabled={!proof}
+                            onClick={() => action(() => casAction('revoke'))}
+                          >
+                            解除认证
+                          </Button>
+                        )}
+                        {link?.state === 'prepared' && cas.link_enabled && (
+                          <Button
+                            loading={busy}
+                            onClick={() => action(() => casAction('reconcile'))}
+                          >
+                            重试认证
+                          </Button>
+                        )}
+                      </div>
+                    </>
+                  )}
+                  {cas.login_enabled && (
+                    <a className="fastui-link" href={asset('api/auth/fastcas/login')}>
+                      使用 FastCAS 登录
+                    </a>
+                  )}
+                </>
+              ) : (
+                <p className="m-0 text-[var(--fastui-muted)]">此实例尚未启用 FastCAS。</p>
               )}
             </div>
           </Panel>

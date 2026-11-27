@@ -42,7 +42,7 @@ type Paper struct {
 type Report struct {
 	Title   string `json:"title"`
 	Kind    string `json:"kind"`
-	HTML    string `json:"html"`
+	Path    string `json:"path"`
 	PDF     string `json:"pdf,omitempty"`
 	Size    int64  `json:"size"`
 	Updated string `json:"updated"`
@@ -284,6 +284,26 @@ func (c *Catalog) News(day string) ([]map[string]any, error) {
 	if rows == nil {
 		rows = []map[string]any{}
 	}
+	// Broad news/community feeds are outside this research workspace. Preserve the
+	// historical files but remove these publishers from every API view.
+	selected := rows[:0]
+	for _, row := range rows {
+		id := Str(row, "source")
+		if id != "bbc_world" && id != "hackernews" && id != "https://feeds.bbci.co.uk/news/world/rss.xml" && id != "https://news.ycombinator.com/rss" {
+			selected = append(selected, row)
+		}
+	}
+	rows = selected
+	// Routing comes from the feed metadata, not an old model-generated label.
+	channels, names := map[string]string{}, map[string]string{}
+	for _, row := range rows {
+		id := First(Str(row, "_id"), Str(row, "link"))
+		channels[id] = NewsChannel(row)
+		names[id] = Str(row, "source_name")
+		if source, ok := FindNewsSource(Str(row, "source")); ok && names[id] == "" {
+			names[id] = source.Name
+		}
+	}
 	var summaries struct {
 		Articles []map[string]any `json:"articles"`
 	}
@@ -304,12 +324,17 @@ func (c *Catalog) News(day string) ([]map[string]any, error) {
 			}
 		}
 	}
+	for _, row := range rows {
+		id := First(Str(row, "_id"), Str(row, "link"))
+		row["channel"] = channels[id]
+		row["source_name"] = First(names[id], Str(row, "source"))
+	}
 	return rows, nil
 }
 func (c *Catalog) Reports() ([]Report, error) {
 	out := []Report{}
 	for _, kind := range []string{"top-conf", "secnews"} {
-		files, e := filepath.Glob(filepath.Join(c.Root, kind, "data/report/*.html"))
+		files, e := filepath.Glob(filepath.Join(c.Root, kind, "data/report/*.json"))
 		if e != nil {
 			return nil, e
 		}
@@ -319,14 +344,14 @@ func (c *Catalog) Reports() ([]Report, error) {
 				return nil, e
 			}
 			name := filepath.Base(f)
-			title := strings.TrimSuffix(strings.TrimSuffix(name, ".html"), "_Report")
+			title := strings.TrimSuffix(strings.TrimSuffix(name, ".json"), "_Report")
 			title = strings.TrimSuffix(title, "-report")
 			title = strings.ReplaceAll(title, "_", " ")
 			for k, label := range map[string]string{"USENIX": "USENIX Security", "IEEE-SP": "IEEE S&P", "CCS": "ACM CCS"} {
 				title = strings.ReplaceAll(title, k, label)
 			}
-			v := Report{Title: title, Kind: kind, HTML: kind + "/data/report/" + name, Size: info.Size(), Updated: info.ModTime().UTC().Format(time.RFC3339)}
-			pdf := strings.TrimSuffix(f, ".html") + ".pdf"
+			v := Report{Title: title, Kind: kind, Path: kind + "/data/report/" + name, Size: info.Size(), Updated: info.ModTime().UTC().Format(time.RFC3339)}
+			pdf := strings.TrimSuffix(f, ".json") + ".pdf"
 			if _, e := os.Stat(pdf); e == nil {
 				v.PDF = kind + "/data/report/" + filepath.Base(pdf)
 			}

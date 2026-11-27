@@ -109,14 +109,7 @@ export default function Generate({ kind }: { kind: 'field-briefing' | 'summary-b
   }
   return (
     <>
-      <PageHeading
-        title={isSummary ? '总结汇报' : '领域导读'}
-        description={
-          isSummary
-            ? '基于顶会中文摘要，生成有证据支撑的数据实证简报。'
-            : '结合顶会中文摘要与近期 arXiv，分类综述研究现状并推荐高相关论文。'
-        }
-      />
+      <PageHeading title={isSummary ? '总结汇报' : '领域导读'} />
       <Panel
         title={isSummary ? '生成实证简报' : '探索研究方向'}
         action={<Badge>{catalog?.papers || '—'} 篇本地论文</Badge>}
@@ -142,7 +135,7 @@ export default function Generate({ kind }: { kind: 'field-briefing' | 'summary-b
               maxLength={4000}
             />
           </label>
-          <div className="grid sm:grid-cols-3 gap-3 p-3">
+          <div className="grid sm:grid-cols-3 gap-3">
             <label className="fastui-field">
               语料来源
               <Select

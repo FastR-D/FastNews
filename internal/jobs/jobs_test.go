@@ -52,15 +52,15 @@ func TestReportEscapesSourceAndCreatesDownload(t *testing.T) {
 	if e := p.ConferenceReport("usenix", 2026, false); e != nil {
 		t.Fatal(e)
 	}
-	b, e := os.ReadFile(filepath.Join(root, "top-conf/data/report/USENIX_2026_Report.html"))
+	b, e := os.ReadFile(filepath.Join(root, "top-conf/data/report/USENIX_2026_Report.json"))
 	if e != nil {
 		t.Fatal(e)
 	}
 	if strings.Contains(string(b), "<script>evil()</script>") || strings.Contains(string(b), `href="javascript:`) {
 		t.Fatal("unsafe source rendered")
 	}
-	if !strings.Contains(string(b), "data-fastread-title=") {
-		t.Fatal("FastRead handoff missing")
+	if !strings.Contains(string(b), `"paper":`) {
+		t.Fatal("native reader paper metadata missing")
 	}
 }
 func TestDailyCheckpointResumesWithoutRepeatLLM(t *testing.T) {

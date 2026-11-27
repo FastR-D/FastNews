@@ -106,11 +106,7 @@ export default function Papers() {
   }
   return (
     <>
-      <PageHeading
-        title="顶会论文总结"
-        description="按研究方向浏览安全、软件工程与机器学习会议论文。"
-        action={<Badge>多领域会议</Badge>}
-      />
+      <PageHeading title="顶会论文总结" action={<Badge>多领域会议</Badge>} />
       <Metrics
         items={[
           { label: '已总结论文', value: catalog?.topPapers || '—', detail: '中文摘要与原文链接' },

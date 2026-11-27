@@ -1,6 +1,6 @@
 # FastNews
 
-安全研究报告工作台：Go 后端与 React / TypeScript 前端分离，前端使用 **FastUI 0.3.0**。总览、安全资讯、多领域会议论文、领域导读、总结汇报、关注作者、每日私信及账号管理共用同一套 JSON API。
+研究报告与资讯工作台：Go 后端与 React / TypeScript 前端分离，前端使用 **FastUI 0.3.0**。总览、安全与 AI 研究资讯、多领域会议论文、领域导读、总结汇报、关注作者、每日私信及账号管理共用同一套 JSON API。
 
 ## 开发
 
@@ -14,7 +14,7 @@ make build
 FASTNEWS_COOKIE_SECURE=false ./bin/fastnews serve
 ```
 
-打开 `http://127.0.0.1:4173`。报告默认公开；个人内容需要登录。设置 `FASTNEWS_REQUIRE_LOGIN=true` 后报告页面也要求会话。
+打开 `http://127.0.0.1:4173`。全站默认需要登录，包括业务 API、报告和原始数据。先用 `./bin/fastnews create --admin --email admin@example.com --name 管理员` 创建管理员；密码交互输入。
 
 前后端分别开发：
 
@@ -36,7 +36,8 @@ Go 可直接提供构建后的 SPA，也可由 nginx / 静态服务器提供 `we
 | 数据覆盖 | `/coverage/` | 论文数、原始摘要和有效/过期总结计数、最近落盘与任务成功时间、任务失败类别 |
 | 领域导读 | `/field-briefing/` | 印象补全方向、向量召回、分类综述、综述/SoK、论文推荐 |
 | 总结汇报 | `/summary-brief/` | 全景或主题简报、发现、统计表与条形图、问答、局限与讨论 |
-| 安全资讯 | `/secnews/` | 资讯日历、Top 10、BleepingComputer、The Hacker News、SecurityWeek、价值分、详情折叠 |
+| 新闻与资讯 | `/secnews/` | 安全/AI 频道、搜索/来源筛选、分页、独立阅读与字号；筛选及当前文章随 URL 保存 |
+| 信源目录 | `/sources/` | 按领域、名称和配置状态查找来源，按领域、状态筛选科研来源 |
 | arXiv 导读 | `/arxiv/` | 按采集日期浏览预印本、论文领域筛选、分页、摘要与 FastRead 阅读跳转 |
 | 研究趋势 | `/trend/` | AI、安全与软件工程的 7 / 14 / 30 天热度榜、占比变化、关键词与原论文证据 |
 | 关注作者 | `/authors` | 增删改、研究标签、主页解析、解析结果与论文链接 |
@@ -44,9 +45,9 @@ Go 可直接提供构建后的 SPA，也可由 nginx / 静态服务器提供 `we
 | 研究印象 | `/impression/` 或顶栏 | 最长 4000 字，按当前账号保存 |
 | 账号 | `/login` | 本地登录、邀请注册、恢复、FastCAS、Research 导入及持续连接 |
 
-arXiv 导读默认打开最近有预印本的采集日。`GET /api/news?source=arxiv` 与 `source=security` 分别返回对应范围的最近非空日期及内容；指定 `date` 时保留该日期，即使该范围当天为空。不指定来源时保留总览使用的全部资讯行为。
+arXiv 导读默认打开最近有预印本的采集日。`GET /api/news?source=arxiv|news|security|ai|articles` 分别返回对应范围的最近非空日期及内容，其中 `articles` 为全部非 arXiv 资讯；指定 `date` 时保留该日期，即使该范围当天为空。不指定来源时保留总览使用的全部资讯行为。旧调用若需要全部非 arXiv 内容，应从 `source=security` 改为 `source=articles`。
 
-原 `/index.html`、各栏目 `/index.html`、`/auth/login`、`/auth/account` 和 `?date=YYYY-MM-DD` 继续可用。原 `top-conf/data/report/`、`secnews/data/report/` 下的 HTML/PDF 地址保持；`?download=1` 返回附件。前端已重构为 FastUI 工作台：分组导航面板、页签报告库和手机导航弹窗；旧自定义 CSS 已全部删除。视觉与控件直接使用 FastUI，宿主布局使用 UnoCSS 工具类，论文筛选条件随 URL 保存。实现约定见 [FastUI 接入说明](docs/FASTUI.md)。
+前端统一页面边距、卡片与控件，使用 HarmonyOS Sans SC CDN 字体和亮暗主题。报告在 `/report/?path=…` 站内阅读，历史报告已转换为 JSON 文档数据；旧独立 HTML、阅读脚本和兼容页面入口已删除。实现约定见 [界面规范](docs/FASTUI.md)。
 
 研究趋势使用已有 arXiv 采集档案，不请求外部模型。`GET /api/trend?scope=ai&days=30` 按 UTC 采集日比较相邻等长窗口，以档案最新论文日为统计终点。按 arXiv ID 去重，覆盖现有 AI/NLP、安全和软件工程订阅及其中的交叉分类，不代表全量 arXiv 或引用影响力。
 
@@ -66,9 +67,9 @@ arXiv 导读默认打开最近有预印本的采集日。`GET /api/news?source=a
 
 FastCAS 使用正式 Go SDK **v0.1.2**，需要同时配置 issuer / client ID / secret / redirect URI。本地账号独立存在；同名或同邮箱不会自动合并。绑定需要本地会话、密码、CSRF 与浏览器绑定。撤销、身份停用和后端退出事件只影响 CAS 来源会话，事件提交失败可重试。
 
-Research Key 导入为显式快照复制，不保存 Key 或临时 Research 会话；默认拒绝覆盖已有本地内容。可选委托读取需要 FastCAS consent、`research:read` / `offline_access` 和独立的 32 字节 AES-GCM vault key。详见 [迁移与验收](docs/go-react-migration.md) 和 [账号与 FastCAS](docs/fastcas-integration.md)。
+账号设置只保留账号信息修改与 FastCAS 认证。修改资料需要当前密码；变更邮箱或密码会撤销其他登录会话。Read 与 Research 的服务联动复用同一 FastCAS 身份，不再在账号页提供连接码、Research Key 或快照导入设置。服务端仍按绑定状态、服务令牌与 scope 校验权限，未配置 FastCAS 时不会显示已认证。详见 [账号与 FastCAS](docs/fastcas-integration.md)。
 
-FastRead 入口支持本地账号交接论文元数据和 CAS 登录跳转；旧 Research 会话继续申请 `fast-read` 一次性票据。账户页可直达 CAS 联动设置，研究方向同步沿用账号隔离。配置与验证见 [FastRead 联动](docs/fastread-integration.md)。
+论文入口可以向 FastRead 交接元数据，已绑定 CAS 时携带 `auth=cas` 进入统一认证流程。配置与验证见 [FastRead 联动](docs/fastread-integration.md)。
 
 ## 向量检索与生成
 
@@ -84,7 +85,7 @@ FastRead 入口支持本地账号交接论文元数据和 CAS 登录跳转；旧
 
 ## Go 数据任务
 
-现有 JSON/JSONL 无需转换，CLI 按原目录与命名写入。任务可从仓库根目录运行，或设置 `FASTNEWS_ROOT` 指向语料目录。默认 Web 服务没有可触发这些写入任务的 HTTP 接口。
+现有 JSON/JSONL 无需转换，CLI 按原目录与命名写入。任务可从仓库根目录运行，或设置 `FASTNEWS_ROOT` 指向语料目录。服务首次启动时自动采集一次 RSS/Atom，随后默认每 6 小时采集。管理员从侧栏「进程管理」查看定时计划、下次执行时间、逐信源进度和历史，调整或暂停计划，也可手动补采、停止当前任务。其他数据任务仍使用 CLI。
 
 ```bash
 ./bin/fastnews fetch-news --source bleepingcomputer
@@ -94,6 +95,8 @@ FastRead 入口支持本地账号交接论文元数据和 CAS 登录跳转；旧
 ./bin/fastnews fetch-news --source arxiv_cs_ai
 ./bin/fastnews fetch-news --source arxiv_cs_se
 ./bin/fastnews fetch-news --source all              # 逐源采集，失败源不阻止其他源落盘，最后汇总错误
+./bin/fastnews fetch-news --source ai               # 官方博客与已配置的研究机构
+./bin/fastnews fetch-news --source security         # 安全媒体与研究团队
 ./bin/fastnews daily-summary                       # 最新资讯日期
 ./bin/fastnews daily-summary --date 2026-09-04
 ./bin/fastnews daily-summary --all                 # 全历史，逐篇保存检查点
@@ -118,6 +121,8 @@ FastRead 入口支持本地账号交接论文元数据和 CAS 登录跳转；旧
 采集地址可通过 `--url` 指定同协议、同年份格式的来源，PMLR 来源同时需要可访问的 `assets/rss/feed.xml`。来源要求登录、返回验证页、分页或论文集合不完整、会议/年份不符时返回错误并保留已有文件。新闻以 ID / URL 去重，结构化会议记录和论文摘要按稳定 ID 续跑：PMLR 有官方 OpenReview 交叉链接时复用该身份，否则使用论文页面 URL；NeurIPS 使用官方论文页面 URL，不按标题猜测旧 OpenReview 记录是否等价。日报保持原 `source_hash` 检查点算法。`update-range` 仍按原安全四会运行，其他会议按 `fetch-conf → summarize-conf → conference-report` 单独选择年份；手动报告工作流支持全部已接入会议，ICML/NeurIPS 请显式选择已验证年份。`enrich-metrics` 使用 OpenAlex 并要求标题规范化后完全匹配。
 
 HTML 报告由 Go 模板生成。PDF 使用 Chromium，通过 `FASTNEWS_CHROME` 指定可执行文件；不请求 PDF 时不需要浏览器。周报同时输出到 `output/` 及 `secnews/data/report/`。CI 的采集、摘要与报告工作流已改为 Go CLI。
+
+新闻来源可用 `config/news-sources.json` 或 `--sources-file` 扩展/禁用，按来源固定频道，默认仅导入近 14 天文章并跨全部历史去重。机构研究源可独立扩大时间窗口。配置、16 路来源及实测限制见 [资讯采集](docs/news-collection.md)。[同类产品调研](docs/competitive-research-2026-11-27.md) 与[社区信源调研](docs/source-research-2026-11-27.md) 保留原帖和官方出处。可选 [Telegram 个人读取准备](docs/telegram-sources.md) 独立运行，只保存本地私有快照，不改变 Go/React 服务依赖。
 
 NeurIPS 原始摘要补全读取官方论文详情页，按 PDF 路径中的论文 ID 和卷号核对身份，不用出版日期推断会议年份。每篇成功结果追加到 `top-conf/data/abstracts/<conf>_<year>.jsonl` 并同步落盘；后续运行只请求缺少摘要的文章，失败保留此前进度。默认每次补全 12 篇，`--limit 0` 或 `--all` 处理全部缺失文章。摘要来源与正文合并后提供给分类器；已有总结若对应旧材料则不会作为当前总结进入目录/报告，重新执行 `summarize-conf` 只更新材料发生变化的记录。未补全语料的既有断点保持原行为；这里的摘要补全不调用 LLM。
 
@@ -148,7 +153,7 @@ internal/ai/          证据约束生成、离线整理与统计
 internal/httpapi/     HTTP、CSRF、静态报告和 SPA 适配
 internal/jobs/        RSS、顶会、摘要、指标、HTML/PDF
 web/src/              React 页面、组件、类型与 API 客户端
-web/public/reports/   新生成与历史报告共用的阅读跳转资源
+web/src/pages/ReportReader.tsx   原生报告阅读页
 web/pnpm-lock.yaml    前端唯一依赖锁文件
 deployments/         systemd、nginx 与 FastDeploy 原生配置样例
 ```

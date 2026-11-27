@@ -56,7 +56,6 @@ export default function Coverage() {
     <>
       <PageHeading
         title="数据覆盖"
-        description="查看当前本地论文、原始摘要和有效总结。刷新可查看已保存的采集进度；统计不代表会议全量收录。"
         action={
           <Button loading={busy} onClick={load}>
             刷新覆盖率

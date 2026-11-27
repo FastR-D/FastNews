@@ -51,7 +51,7 @@ export interface Profile {
 export interface Report {
   title: string
   kind: string
-  html: string
+  path: string
   pdf?: string
   size: number
   updated: string
@@ -67,6 +67,7 @@ export interface Catalog {
   publicReports: boolean
 }
 export interface NewsArticle {
+  source_name?: string
   categories?: string[]
   score_reason?: string
   _id: string
@@ -82,6 +83,21 @@ export interface NewsArticle {
   recommendation_score?: number
   importance?: number
   score?: number
+}
+export interface DirectorySource {
+  id: string
+  name: string
+  url: string
+  category: string
+  description: string
+  verification: 'primary' | 'candidate' | 'unreviewed'
+  reviewedAt?: string
+  note?: string
+  references: { id: string; title: string; url: string }[]
+  configured: boolean
+  disabled: boolean
+  channel?: string
+  recentCount: number
 }
 export interface ConferenceCoverage {
   conference: string

@@ -49,8 +49,8 @@ jobs:
           TAG="release-$(date -u +'%Y-%m-%d')"
           TITLE="FastNews 安全资讯周报 $(date -u +'%Y-%m-%d')"
           if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG" output/*.html output/*.pdf --clobber
+            gh release upload "$TAG" output/*.json output/*.pdf --clobber
           else
-            gh release create "$TAG" output/*.html output/*.pdf \
+            gh release create "$TAG" output/*.json output/*.pdf \
               --target main --title "$TITLE" --notes '安全资讯周报 PDF 与 HTML。'
           fi

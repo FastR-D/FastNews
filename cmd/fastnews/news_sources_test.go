@@ -24,7 +24,7 @@ func (f newsTransport) RoundTrip(r *http.Request) (*http.Response, error) { retu
 func TestNewsSourcesThroughCLIAndWeeklyReport(t *testing.T) {
 	// Real CLI dispatch, fetch/parser, persistence, catalog, newspaper and HTML report.
 	// Only the public HTTP transport is redirected to recorded RSS/Atom protocols.
-	want := []string{"bleepingcomputer", "thehackernews", "securityweek", "arxiv_cs_cr", "arxiv_cs_ai", "arxiv_cs_se"}
+	want := []string{"bleepingcomputer", "thehackernews", "securityweek", "arxiv_cs_cr", "arxiv_cs_ai", "arxiv_cs_se", "krebs", "openai", "huggingface"}
 	var failBleeping atomic.Bool
 	failBleeping.Store(true)
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -43,27 +43,11 @@ func TestNewsSourcesThroughCLIAndWeeklyReport(t *testing.T) {
 	local, _ := url.Parse(upstream.URL)
 	original := http.DefaultTransport
 	http.DefaultTransport = newsTransport(func(r *http.Request) (*http.Response, error) {
-		source := ""
-		switch r.URL.Host {
-		case "www.bleepingcomputer.com":
-			source = "bleepingcomputer"
-		case "feeds.feedburner.com":
-			source = "thehackernews"
-		case "www.securityweek.com":
-			source = "securityweek"
-		case "rss.arxiv.org":
-			switch r.URL.Path {
-			case "/atom/cs.cr":
-				source = "arxiv_cs_cr"
-			case "/atom/cs.ai+cs.cl":
-				source = "arxiv_cs_ai"
-			case "/atom/cs.se":
-				source = "arxiv_cs_se"
-			}
-		}
-		if source == "" {
+		definition, ok := catalog.FindNewsSource(r.URL.String())
+		if !ok {
 			return nil, fmt.Errorf("unexpected upstream: %s", r.URL)
 		}
+		source := definition.ID
 		request := r.Clone(r.Context())
 		request.URL = local
 		request.Header.Set("X-Fixture-Source", source)
@@ -95,6 +79,10 @@ func TestNewsSourcesThroughCLIAndWeeklyReport(t *testing.T) {
 		for _, row := range rows {
 			if catalog.Str(row, "source") == source {
 				found = true
+				definition, _ := catalog.FindNewsSource(source)
+				if catalog.Str(row, "channel") != definition.Channel {
+					t.Errorf("%s lost its channel", source)
+				}
 				if catalog.Str(row, "author") == "" {
 					t.Errorf("%s lost its RSS/Atom author", source)
 				}
@@ -110,7 +98,7 @@ func TestNewsSourcesThroughCLIAndWeeklyReport(t *testing.T) {
 	if err := job(ctx, c, "weekly-report", nil); err != nil {
 		t.Fatal(err)
 	}
-	reports, err := filepath.Glob(filepath.Join(c.Root, "secnews/data/report/*.html"))
+	reports, err := filepath.Glob(filepath.Join(c.Root, "secnews/data/report/*.json"))
 	if err != nil || len(reports) != 1 {
 		t.Fatalf("report artifact: %v, %v", reports, err)
 	}

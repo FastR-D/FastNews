@@ -254,9 +254,7 @@ export default function Authors({ embedded = false }: { embedded?: boolean }) {
   )
   return (
     <div id="authors">
-      {!embedded && (
-        <PageHeading title="关注作者" description="维护作者主页和研究方向，持续跟踪研究动态。" />
-      )}
+      {!embedded && <PageHeading title="关注作者" />}
       {content}
       <Dialog
         open={open}
@@ -303,9 +301,7 @@ export default function Authors({ embedded = false }: { embedded?: boolean }) {
           </div>
           <fieldset className="fastui-fieldset">
             <legend className="fastui-legend">研究方向</legend>
-            <p className="text-[var(--fastui-secondary)]">
-              只勾选你希望关注这位作者的方向，可多选或添加自定义标签。这些标签记录你的关注范围；主页解析会列出识别到的论文链接，目前不会按标签自动过滤。
-            </p>
+            <p className="text-[var(--fastui-secondary)]"></p>
             <div className="grid sm:grid-cols-2 gap-3">
               {Array.from(new Set([...defaultTags, ...customTags, ...(editing?.tags || [])])).map(
                 (t) => (

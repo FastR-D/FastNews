@@ -1,10 +1,8 @@
 # FastRead 连接
 
-在账号页的 **FastRead 联动** 卡片生成连接码，将连接码粘贴到 FastRead 的 FastNews 设置。FastRead 可以读取当前个人印象，并将所选论文提炼出的方向追加或替换到这里。个人印象最多 4000 字。
+账号页只保留 FastCAS 认证，不再展示单独的 FastRead 连接码配置。跨应用服务根据已绑定的同一 FastCAS 身份授权；个人印象仍按账号隔离，最多 4000 字。
 
-连接码只在生成时显示，归当前 FastNews 本地账号所有。重新生成立即替换旧连接码；撤销连接后，原连接码立即失效。FastCAS 登录的已绑定账号也使用同一份本地个人内容。
-
-## 接口
+以下连接码接口作为已有服务调用的兼容接口保留，页面不再提供生成、复制和撤销连接码操作。推荐使用下文的 CAS 服务认证。
 
 | 接口 | 认证 | 内容 |
 | --- | --- | --- |
@@ -18,7 +16,7 @@
 
 ## 同一 CAS 身份连接
 
-两端认证同一 CAS 账号后，可在 FastRead「设置 → 应用联动」一键连接，账户页提供直达入口。接收端新增 `POST /api/integrations/fastread/cas-connect`，仅接收服务身份 `fastread-sync`、scope `fastread:connect`、audience 为本应用实际 CAS client ID 的有效令牌。中心需将本应用 client ID 加入该服务身份 resources；其密钥只配置在 Read 的 `FASTREAD_SYNC_CLIENT_SECRET`。
+两端认证同一 CAS 账号后，服务间通过 CAS 身份建立连接，FastNews 账号页不再暴露应用联动设置。接收端新增 `POST /api/integrations/fastread/cas-connect`，仅接收服务身份 `fastread-sync`、scope `fastread:connect`、audience 为本应用实际 CAS client ID 的有效令牌。中心需将本应用 client ID 加入该服务身份 resources；其密钥只配置在 Read 的 `FASTREAD_SYNC_CLIENT_SECRET`。
 
 subject 由 Read 从当前登录账号绑定确定；News 校验中心与本地绑定一致，不按邮箱映射或自动开户。连接凭证固定 CAS 绑定 ID 与版本，每次使用复核。解绑、重绑或账号停用使旧连接失效。手动连接方式保留。
 

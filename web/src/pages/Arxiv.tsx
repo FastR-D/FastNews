@@ -2,12 +2,11 @@ import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { EmptyState, Select, Toolbar } from '@fastrd/ui-react'
 import { api, message } from '../api'
-import { useApp } from '../context'
+import CollectionDate from '../components/CollectionDate'
 import type { NewsArticle } from '../types'
 import { Busy, ErrorMessage, PageHeading, Pagination, Panel, PaperCard } from '../components/Common'
 
 export default function Arxiv() {
-  const { catalog } = useApp()
   const [params, setParams] = useSearchParams()
   const requestedDate = params.get('date') || ''
   const [resolvedDate, setResolvedDate] = useState('')
@@ -55,27 +54,13 @@ export default function Arxiv() {
   const page = Math.min(requestedPage, Math.max(1, Math.ceil(filtered.length / 12)))
   return (
     <>
-      <PageHeading
-        title="arXiv 最新导读"
-        description="按采集日期查看预印本，筛选论文领域，阅读摘要并进入 FastRead。"
-      />
+      <PageHeading title="arXiv 最新导读" />
       <Panel title="每日论文">
         <Toolbar label="arXiv 筛选">
-          <label className="fastui-field">
+          <div className="fastui-field">
             采集日期
-            <Select
-              aria-label="采集日期"
-              value={date}
-              onChange={(event) => filter('date', event.target.value)}
-            >
-              <option value="" disabled>
-                选择采集日期
-              </option>
-              {(catalog?.dates || []).map((day) => (
-                <option key={day}>{day}</option>
-              ))}
-            </Select>
-          </label>
+            <CollectionDate value={date} onChange={(value) => filter('date', value)} />
+          </div>
           <label className="fastui-field">
             论文领域
             <Select
