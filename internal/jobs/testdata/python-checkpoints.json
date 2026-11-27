@@ -1,0 +1,28 @@
+[
+  {
+    "article": {
+      "_id": "synthetic-1",
+      "title": "安全 <研究> & AI",
+      "description": "First line\n第二行 Next end",
+      "link": "https://example.org/paper?a=1&b=2",
+      "source": "fixture"
+    },
+    "source_hash": "ed37db76310ce42ecd93f32ae4d6de87f66407c3610232ce2f23e759da8912a5"
+  },
+  {
+    "article": {
+      "_id": "synthetic-2",
+      "title": "Minimal article"
+    },
+    "source_hash": "1e1d4f9d8e2202c23b7bc95855595834d61fb4b3e5a39a1bd9b469c96be8912f"
+  },
+  {
+    "article": {
+      "_id": "synthetic-3",
+      "title": "Quoted \"title\"",
+      "description": null,
+      "link": "https://example.org/3"
+    },
+    "source_hash": "eb4086c803cef2cf422bba5a1ce0fea24e03c308bbfddf2d5245dbc9ad8eaee6"
+  }
+]

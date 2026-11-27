@@ -112,36 +112,26 @@ func TestLegacyArticleHash(t *testing.T) {
 	}
 }
 
-func TestExistingDailyCheckpointHash(t *testing.T) {
-	root := filepath.Join("..", "..")
-	rows, e := catalog.Rows(filepath.Join(root, "secnews/data/articles/2026-09-04.jsonl"))
-	if e != nil {
-		t.Fatal(e)
+// Hashes in this synthetic fixture were generated with Python json.dumps and
+// hashlib.sha256; compatibility must not depend on a collected production corpus.
+func TestPythonCheckpointFixtureHash(t *testing.T) {
+	var cases []struct {
+		Article    map[string]any `json:"article"`
+		SourceHash string         `json:"source_hash"`
 	}
-	var summary struct {
-		Articles []map[string]any `json:"articles"`
+	raw, err := os.ReadFile("testdata/python-checkpoints.json")
+	if err != nil {
+		t.Fatal(err)
 	}
-	b, e := os.ReadFile(filepath.Join(root, "secnews/data/daily_summaries/2026-09-04.json"))
-	if e != nil {
-		t.Fatal(e)
+	if err = json.Unmarshal(raw, &cases); err != nil {
+		t.Fatal(err)
 	}
-	if e = json.Unmarshal(b, &summary); e != nil {
-		t.Fatal(e)
+	if len(cases) != 3 {
+		t.Fatal("missing compatibility fixtures")
 	}
-	index := map[string]map[string]any{}
-	for _, row := range rows {
-		index[catalog.Str(row, "_id")] = row
-	}
-	checked := 0
-	for _, row := range summary.Articles {
-		if source := index[catalog.Str(row, "_id")]; source != nil {
-			if ArticleHash(source) != catalog.Str(row, "source_hash") {
-				t.Fatal("existing Python checkpoint would be regenerated", catalog.Str(row, "_id"))
-			}
-			checked++
+	for _, item := range cases {
+		if ArticleHash(item.Article) != item.SourceHash {
+			t.Errorf("Python checkpoint would be regenerated: %s", catalog.Str(item.Article, "_id"))
 		}
-	}
-	if checked == 0 {
-		t.Fatal("no legacy checkpoint verified")
 	}
 }
