@@ -80,7 +80,10 @@ test('research trends rank the selected archive and expose original evidence', a
   expect(trend.topics.length).toBeGreaterThan(0)
   await visit(page, baseURL, '/')
   if (info.project.name === 'mobile') await page.getByRole('button', { name: '打开导航' }).click()
-  await page.getByRole('link', { name: '研究趋势', exact: true }).click()
+  await page
+    .getByRole('navigation', { name: '主导航', exact: true })
+    .getByRole('link', { name: '研究趋势', exact: true })
+    .click()
   await expect(page.getByRole('heading', { name: '研究趋势', level: 1 })).toBeVisible()
   const ranking = page.getByRole('list', { name: '研究方向排名' })
   const leader = ranking.locator('summary').first()
@@ -223,17 +226,22 @@ test('all old entries, real catalog, report links, calendar, theme and responsiv
   await expect(page.getByRole('heading', { name: '顶会报告', exact: true })).toBeVisible()
   const catalogResponse = await page.request.get(route(baseURL, 'api/catalog'))
   const catalog = await catalogResponse.json()
-  const latestResponse = await page.request.get(route(baseURL, `api/news?date=${catalog.dates[0]}`))
-  const { articles } = await latestResponse.json()
+  const latestResponse = await page.request.get(
+    route(baseURL, 'api/news?source=articles&preview=3'),
+  )
+  const { articles, date } = await latestResponse.json()
   const latest = page.getByRole('region', { name: '最新快讯', exact: true })
-  for (const article of articles.slice(0, 5)) {
+  for (const article of articles) {
     await expect(
-      latest.getByRole('link', { name: article.title_zh || article.title, exact: true }),
-    ).toHaveAttribute('href', article.link)
+      latest.getByRole('link', { name: new RegExp(article.title_zh || article.title) }),
+    ).toHaveAttribute(
+      'href',
+      `${new URL(baseURL!).pathname}updates/?${new URLSearchParams({ date, article: article._id || article.link })}`,
+    )
   }
   await expect(latest.getByRole('link', { name: '查看全部资讯' })).toHaveAttribute(
     'href',
-    `${new URL(baseURL!).pathname}updates/?date=${catalog.dates[0]}`,
+    `${new URL(baseURL!).pathname}updates/?date=${date}`,
   )
   await page.getByRole('button', { name: '切换深色模式' }).click()
   await expect(page.locator('html')).toHaveAttribute('data-fastui-theme', 'dark')
@@ -353,12 +361,13 @@ test('local login, impression, authors, inbox and logout persist across reloads'
   await expect(page.getByText('登录后管理个人内容', { exact: true })).toBeVisible()
 })
 
-test('author UI shows pending and saved homepage results and survives report tabs and folding', async ({
+test('author updates persist on the dedicated page and appear on the home overview', async ({
   page,
   baseURL,
 }, info) => {
   await login(page, baseURL)
   await visit(page, baseURL, '')
+  await page.getByRole('link', { name: '管理关注', exact: true }).click()
   await page.getByRole('button', { name: '添加作者', exact: true }).click()
   const editor = page.getByRole('dialog', { name: '新增作者' })
   const name = `Homepage ${info.project.name}`
@@ -387,11 +396,9 @@ test('author UI shows pending and saved homepage results and survives report tab
   await expect(row.getByRole('status')).toContainText('正在抓取并解析')
   release()
   await expect(row.getByRole('status')).toContainText('主页解析完成，已保存 1 个论文链接')
-  for (const tab of ['资讯周报', '顶会报告']) {
-    await page.getByRole('tab', { name: new RegExp(tab) }).click()
-    await expect(row).toBeVisible()
-  }
-  await expect(page.getByRole('tabpanel')).toBeVisible()
+  await visit(page, baseURL, '')
+  await expect(page.getByRole('region', { name: '关注作者', exact: true })).toContainText(name)
+  await page.getByRole('link', { name: '管理关注', exact: true }).click()
   await expect(row).toBeVisible()
   await page.reload()
   await expect(row).toContainText('Selected research links')
@@ -453,28 +460,30 @@ test('subpath application accepts independent-domain root and login entries', as
   await expect(page.getByLabel('邮箱', { exact: true })).toBeVisible()
 })
 
-test('FastUI report tabs support keyboard selection and filtering without PDF entries', async ({
+test('home overview shows four update cards and routes to dedicated research pages', async ({
   page,
   baseURL,
 }) => {
   await visit(page, baseURL, '')
-  const tabs = page.getByRole('tab')
-  await expect(tabs).toHaveCount(2)
-  await tabs.nth(0).focus()
-  await page.keyboard.press('ArrowRight')
-  await expect(tabs.nth(1)).toHaveAttribute('aria-selected', 'true')
-  await expect(page.getByRole('tabpanel')).toHaveAttribute('aria-labelledby', 'weekly')
-  await page.keyboard.press('Home')
-  await expect(tabs.nth(0)).toHaveAttribute('aria-selected', 'true')
-  const search = page.getByLabel('搜索报告', { exact: true })
-  await search.fill('USENIX')
-  const reports = page.getByRole('tabpanel').getByTestId('report-row')
-  await expect(reports.first()).toContainText('USENIX')
-  await expect(page.getByRole('link', { name: /PDF/ })).toHaveCount(0)
-  await search.fill('no-matching-report-xyz')
-  await expect(page.getByRole('tabpanel').getByText('暂无报告')).toBeVisible()
-  await search.clear()
-  await expect(reports.first()).toBeVisible()
+  await expect(page.locator('.home-card')).toHaveCount(4)
+  await expect(page.getByRole('tab')).toHaveCount(0)
+  await expect(page.getByLabel('搜索报告', { exact: true })).toHaveCount(0)
+  await expect(page.getByText('已总结论文', { exact: true })).toHaveCount(0)
+  await expect(page.getByTestId('author-row')).toHaveCount(0)
+  const card = page.getByRole('region', { name: '顶会报告', exact: true })
+  await expect(card.getByRole('link', { name: /USENIX/ })).toHaveAttribute(
+    'href',
+    /\/top-conf\/usenix\/2025\/$/,
+  )
+  await card.getByRole('link', { name: '资讯周报', exact: true }).click()
+  await expect(page.getByTestId('report-document')).toBeVisible()
+  await visit(page, baseURL, '')
+  await card.getByRole('link', { name: '浏览论文', exact: true }).click()
+  await expect(page.getByRole('heading', { name: '顶会论文', level: 1 })).toBeVisible()
+  await visit(page, baseURL, '')
+  const news = page.getByRole('region', { name: '最新快讯', exact: true })
+  await news.locator('.home-update').first().click()
+  await expect(page.getByTestId('news-reader')).toBeVisible()
 })
 
 test('workspace navigation collapses on desktop and opens as a FastUI dialog on mobile', async ({
@@ -645,7 +654,11 @@ test('reading filters, pagination and focused article survive navigation', async
   )
   if (info.project.name === 'mobile')
     await page.getByRole('button', { name: '展开资讯筛选' }).click()
-  await page.getByLabel('资讯来源', { exact: true }).selectOption('openai')
+  await page.getByRole('combobox', { name: '资讯来源', exact: true }).click()
+  await page
+    .getByRole('listbox', { name: '资讯来源', exact: true })
+    .getByRole('option', { name: 'OpenAI News', exact: true })
+    .click()
   await expect(page).not.toHaveURL(/page=2/)
   await expect(rows.first()).toContainText('OpenAI News')
   const title = await rows.first().locator('h3').innerText()
@@ -825,7 +838,8 @@ test('topic filters, author and institution pages, following and back-to-top wor
   await expect(page.getByRole('button', { name: '取消关注', exact: true })).toBeVisible()
   await page.reload()
   await expect(page.getByText('研究软件工程与智能体的示例机构。', { exact: true })).toBeVisible()
-  await page.evaluate(() => window.scrollTo(0, 1800))
+  await page.getByTestId('paper-row').last().scrollIntoViewIfNeeded()
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(480)
   await page.getByRole('button', { name: '回到顶部', exact: true }).click()
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThan(5)
   expect(

@@ -28,7 +28,7 @@ const defaultTags = [
   'TEE',
   '侧信道',
 ]
-export default function Authors({ embedded = false }: { embedded?: boolean }) {
+export default function Authors() {
   const { profile, refresh, notify } = useApp()
   const [editing, setEditing] = useState<Author | null>(null),
     [open, setOpen] = useState(false),
@@ -254,7 +254,7 @@ export default function Authors({ embedded = false }: { embedded?: boolean }) {
   )
   return (
     <div id="authors">
-      {!embedded && <PageHeading title="关注作者" />}
+      <PageHeading title="关注作者" />
       {content}
       <Dialog
         open={open}

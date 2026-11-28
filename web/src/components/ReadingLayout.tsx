@@ -1,4 +1,4 @@
-import { Button } from '@fastrd/ui-react'
+import { Button, Select } from '@fastrd/ui-react'
 import type { ComponentProps, HTMLAttributes, ReactNode } from 'react'
 import { Globe2, ShieldCheck, Sparkles } from 'lucide-react'
 import './Reading.css'
@@ -22,8 +22,8 @@ export function ReadingButton({
 export function ReadingInput({ className = '', ...props }: ComponentProps<'input'>) {
   return <input className={`reading-field ${className}`} {...props} />
 }
-export function ReadingSelect({ className = '', ...props }: ComponentProps<'select'>) {
-  return <select className={`reading-field ${className}`} {...props} />
+export function ReadingSelect({ className = '', ...props }: ComponentProps<typeof Select>) {
+  return <Select className={`reading-field ${className}`} {...props} />
 }
 export function ReadingHeader({ title, action }: { title: string; action?: ReactNode }) {
   return (

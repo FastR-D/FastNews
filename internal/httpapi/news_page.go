@@ -27,6 +27,15 @@ func newsPageNumber(r *http.Request, key string, fallback, maximum int) (int, er
 // explicit page parameters. Filter the complete day's corpus before slicing.
 func (s *Server) replyNews(w http.ResponseWriter, r *http.Request, day string, rows []map[string]any) error {
 	if r.URL.Query().Get("source") != "arxiv" {
+		if r.URL.Query().Has("preview") {
+			limit, err := newsPageNumber(r, "preview", 3, 10)
+			if err != nil {
+				return err
+			}
+			rows = append([]map[string]any{}, rows...)
+			sort.SliceStable(rows, func(i, j int) bool { return catalog.Str(rows[i], "published") > catalog.Str(rows[j], "published") })
+			rows = rows[:min(limit, len(rows))]
+		}
 		reply(w, r, 200, map[string]any{"date": day, "articles": rows})
 		return nil
 	}

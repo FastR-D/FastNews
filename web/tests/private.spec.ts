@@ -427,8 +427,30 @@ test('administrator configures model connections and per-scene assignments', asy
   await page.getByRole('form', { name: '本地账号' }).locator('button[type=submit]').click()
   await page.getByRole('link', { name: '大模型配置', exact: true }).click()
   await expect(page.getByRole('heading', { name: '大模型配置', level: 1 })).toBeVisible()
+  const sceneTab = page.getByRole('tab', { name: '场景分配', exact: true })
+  await sceneTab.focus()
+  await sceneTab.press('ArrowRight')
+  await expect(page.getByRole('tab', { name: '模型连接', exact: true })).toBeFocused()
+  await page.keyboard.press('Home')
+  await expect(sceneTab).toBeFocused()
+  await expect(sceneTab).toHaveAttribute('aria-selected', 'true')
   await page.getByRole('button', { name: '添加模型' }).click()
   const dialog = page.getByRole('dialog', { name: '模型连接' })
+  const kind = dialog.getByRole('combobox', { name: '模型类型', exact: true })
+  const popup = page.getByRole('listbox', { name: '模型类型', exact: true })
+  await kind.click()
+  await expect(popup).toBeVisible()
+  await page.screenshot({
+    path: '../output/ui-review/admin-model-select-popup.png',
+    animations: 'disabled',
+  })
+  await popup.getByRole('option', { name: '向量模型', exact: true }).click()
+  await expect(kind).toHaveValue('embedding')
+  await expect(dialog.getByLabel('温度', { exact: true })).toHaveCount(0)
+  await kind.click()
+  await popup.getByRole('option', { name: '聊天模型', exact: true }).click()
+  await expect(kind).toHaveValue('chat')
+  await expect(dialog.getByLabel('温度', { exact: true })).toBeVisible()
   await dialog.getByLabel('连接名称', { exact: true }).fill('研究模型')
   await dialog.getByLabel('API 地址', { exact: true }).fill('http://127.0.0.1:9/v1')
   await dialog.getByLabel('模型名称', { exact: true }).fill('research-model')
@@ -468,6 +490,21 @@ test('administrator configures model connections and per-scene assignments', asy
   await page.setViewportSize({ width: 390, height: 844 })
   await page.evaluate(() => document.documentElement.setAttribute('data-fastui-theme', 'dark'))
   await page.getByRole('button', { name: '编辑 研究模型', exact: true }).click()
+  await kind.click()
+  await expect(popup).toBeVisible()
+  const bounds = await popup.boundingBox()
+  expect(bounds).not.toBeNull()
+  expect(bounds!.x).toBeGreaterThanOrEqual(0)
+  expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(390)
+  expect(bounds!.y).toBeGreaterThanOrEqual(0)
+  expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(844)
+  await page.screenshot({
+    path: '../output/ui-review/admin-model-select-mobile-dark.png',
+    animations: 'disabled',
+  })
+  await kind.press('Escape')
+  await expect(popup).not.toBeVisible()
+  await expect(dialog).toBeVisible()
   await page.screenshot({
     path: '../output/ui-review/admin-model-dialog-mobile-dark.png',
     animations: 'disabled',

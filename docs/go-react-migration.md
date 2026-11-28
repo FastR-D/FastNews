@@ -4,7 +4,7 @@
 
 - 同级 FastTask：根 Go module、`cmd/` / `internal/` / `web/`、Go 1.26.8、SQLite、独立账号与 FastCAS Go SDK。
 - 同级 FastCAS：原生 HTTP 适配、可选身份提供器、事务持久化、签名通知与来源隔离。
-- 同级 FastUI 0.3.0：React 控件和工作台组件、UnoCSS preset 按需样式、语义 token、浅深色与触控适配。没有导入已删除的框架全量样式入口，也没有源码 alias 或同级目录依赖。
+- npm 发布的 FastUI 0.5.0：React 控件和工作台组件、UnoCSS preset 按需样式、语义 token、浅深色与触控适配。没有导入已删除的框架全量样式入口，也没有源码 alias 或同级目录依赖。
 - [Go 官方目录组织](https://go.dev/doc/modules/layout) 与 [React 官方 TypeScript 指南](https://react.dev/learn/typescript)。
 
 ## 功能对应

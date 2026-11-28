@@ -1,206 +1,257 @@
-import { ButtonTabs } from '../components/ButtonTabs'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import {
-  Badge,
-  Button,
-  EmptyState,
-  InspectorSection,
-  ListRow,
-  TextField,
-  Toolbar,
-} from '@fastrd/ui-react'
-import {
-  ArrowRight,
-  ArrowUpRight,
-  BookOpen,
-  FileText,
-  GraduationCap,
-  Search,
-  Users,
-} from 'lucide-react'
+import { Button } from '@fastrd/ui-react'
+import { ArrowRight, ArrowUpRight, BookOpen, Mail, Sparkles, TrendingUp } from 'lucide-react'
 import { useApp } from '../context'
-import { api, message, safeURL } from '../api'
-import type { NewsArticle } from '../types'
-import {
-  Busy,
-  CatalogState,
-  ErrorMessage,
-  Metrics,
-  PageHeading,
-  Panel,
-  ReportList,
-} from '../components/Common'
-import Authors from './Authors'
+import { api, message } from '../api'
+import type { NewsArticle, Paper } from '../types'
+import { CatalogState, ErrorMessage, PageHeading } from '../components/Common'
+import { entityPath } from '../components/EntityLink'
 
+type Updates = { date: string; articles: NewsArticle[] }
 export default function Home({ onEditImpression }: { onEditImpression: () => void }) {
   const { catalog, profile } = useApp()
-  const [news, setNews] = useState<NewsArticle[]>([])
+  const [updates, setUpdates] = useState<Updates>({ date: '', articles: [] })
   const [newsError, setNewsError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [tab, setTab] = useState('conference')
-  const [search, setSearch] = useState('')
+  const [loading, setLoading] = useState(true)
+  const [inbox, setInbox] = useState<Paper[]>([])
+  const [inboxError, setInboxError] = useState('')
   useEffect(() => {
-    if (!catalog?.dates[0]) return
+    if (!catalog) return
     const abort = new AbortController()
     setLoading(true)
-    setNewsError('')
-    api<{ articles: NewsArticle[] }>(`api/news?date=${catalog.dates[0]}`, { signal: abort.signal })
-      .then((value) => setNews(value.articles))
-      .catch((error) => {
-        if (!abort.signal.aborted) setNewsError(message(error))
+    api<Updates>('api/news?source=articles&preview=3', { signal: abort.signal })
+      .then(setUpdates)
+      .catch((e) => {
+        if (!abort.signal.aborted) setNewsError(message(e))
       })
       .finally(() => {
         if (!abort.signal.aborted) setLoading(false)
       })
     return () => abort.abort()
-  }, [catalog?.dates[0]])
+  }, [catalog])
+  useEffect(() => {
+    setInbox([])
+    if (!profile?.userId) return
+    const abort = new AbortController()
+    api<{ items: Paper[] }>('api/content/inbox', { signal: abort.signal })
+      .then((value) =>
+        setInbox(
+          [...value.items]
+            .sort((a, b) =>
+              (b.receivedAt || b.date || '').localeCompare(a.receivedAt || a.date || ''),
+            )
+            .slice(0, 2),
+        ),
+      )
+      .catch((e) => {
+        if (!abort.signal.aborted) setInboxError(message(e))
+      })
+    return () => abort.abort()
+  }, [profile?.userId])
   if (!catalog) return <CatalogState />
-  const top = catalog.reports.filter((report) => report.kind === 'top-conf')
-  const weekly = catalog.reports.filter((report) => report.kind === 'secnews')
-  const reports = (tab === 'conference' ? top : weekly).filter((report) =>
-    report.title.toLowerCase().includes(search.toLowerCase()),
-  )
+  const reports = [...catalog.reports].sort((a, b) => b.updated.localeCompare(a.updated))
+  const top = reports.filter((r) => r.kind === 'top-conf').slice(0, 3)
+  const weekly = reports.find((r) => r.kind === 'secnews')
+  const authors = [...(profile?.authors || [])]
+    .sort((a, b) => (b.lastFetchedAt || '').localeCompare(a.lastFetchedAt || ''))
+    .slice(0, 3)
+  const updatesURL = `/updates/${updates.date ? `?date=${updates.date}` : ''}`
   return (
     <>
       <PageHeading title="研究工作台" />
-      <Metrics
-        items={[
-          {
-            label: '已总结论文',
-            value: catalog.topPapers,
-            detail: '多领域会议 · 中文摘要',
-            icon: <GraduationCap size={16} />,
-          },
-          {
-            label: '研究报告',
-            value: catalog.reports.length,
-            detail: `${top.length} 份顶会报告 · ${weekly.length} 份资讯周报`,
-            icon: <FileText size={16} />,
-          },
-          {
-            label: '研究类别',
-            value: catalog.categories.length,
-            detail: `${catalog.years.length} 个年份的研究积累`,
-            icon: <BookOpen size={16} />,
-          },
-          {
-            label: '关注作者',
-            value: profile?.authors.length || 0,
-            detail: profile ? '持续跟进感兴趣的研究者' : '登录后建立个人研究网络',
-            icon: <Users size={16} />,
-          },
-        ]}
-      />
-      <div className="grid min-[1200px]:grid-cols-[minmax(0,1fr)_300px] gap-5 items-start">
-        <div className="min-w-0">
-          <Panel
-            title="顶会报告"
-            action={
-              <Link className="reading-action" to="/top-conf/">
-                浏览论文 <ArrowRight size={12} />
-              </Link>
-            }
-          >
-            <div className="p-4">
-              <ButtonTabs
-                label="报告分类"
-                tabs={[
-                  {
-                    id: 'conference',
-                    label: `顶会报告 · ${top.length}`,
-                    controls: 'report-results',
-                  },
-                  {
-                    id: 'weekly',
-                    label: `资讯周报 · ${weekly.length}`,
-                    controls: 'report-results',
-                  },
-                ]}
-                activeId={tab}
-                onSelect={setTab}
-              />
-              <Toolbar label="报告筛选">
-                <Search size={14} />
-                <TextField
-                  className="flex-1"
-                  aria-label="搜索报告"
-                  placeholder="按报告名称筛选…"
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                />
-                <span className="text-[var(--fastui-muted)]">{reports.length} 份报告</span>
-              </Toolbar>
-              <div id="report-results" role="tabpanel" aria-labelledby={tab}>
-                <ReportList reports={reports} />
-              </div>
-            </div>
-          </Panel>
-          <Authors embedded />
-        </div>
-        <aside className="min-w-0">
-          <Panel
-            title="最新快讯"
-            action={<Badge tone="success">{catalog.dates[0] || '暂无日期'}</Badge>}
-          >
-            <ErrorMessage error={newsError} />
-            {loading ? (
-              <Busy />
-            ) : news.length ? (
-              <div>
-                {news.slice(0, 5).map((article, index) => (
-                  <ListRow key={article._id || article.link} className="items-start">
-                    <span className="text-[var(--fastui-muted)] tabular-nums">
-                      {String(index + 1).padStart(2, '0')}
-                    </span>
-                    <div>
-                      <a
-                        className="fastui-link no-underline break-words"
-                        href={safeURL(article.link)}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        {article.title_zh || article.title}
-                      </a>
-                      <small className="block mt-2 text-[var(--fastui-muted)]">
-                        {article.source_name || article.source}
-                      </small>
-                    </div>
-                  </ListRow>
-                ))}
-              </div>
-            ) : (
-              !newsError && <EmptyState title="暂无最新资讯" />
-            )}
-            <div className="p-4">
-              <Link
-                className="reading-action w-full"
-                to={`/updates/${catalog.dates[0] ? `?date=${catalog.dates[0]}` : ''}`}
-              >
-                查看全部资讯 <ArrowRight size={14} />
-              </Link>
-            </div>
-          </Panel>
-          <Panel title="我的研究">
-            <div className="p-4 grid gap-3">
-              <Link className="reading-action" to="/inbox/">
-                查看今日私信 <ArrowRight size={12} />
-              </Link>
-            </div>
-            <InspectorSection label="研究印象" open>
-              <p className="m-0 break-words">{profile?.impression.text}</p>
-              {profile ? (
-                <Button variant="quiet" onClick={onEditImpression}>
-                  编辑研究印象 <ArrowUpRight size={12} />
-                </Button>
-              ) : (
-                <Link className="reading-action" to="/login">
-                  登录并完善印象
+      <div className="home-grid">
+        <section className="home-card home-card--reports" aria-labelledby="home-reports-title">
+          <header className="home-card-heading">
+            <h2 id="home-reports-title">顶会报告</h2>
+            <Link className="reading-action" to="/top-conf/">
+              浏览论文 <ArrowRight size={14} />
+            </Link>
+          </header>
+          <div className="home-updates">
+            {top.length ? (
+              top.map((report) => (
+                <Link className="home-update" key={report.path} to={report.url}>
+                  <span className="home-update-mark">
+                    <BookOpen size={18} />
+                  </span>
+                  <span className="home-update-copy">
+                    <strong>{report.title}</strong>
+                    <span>最新报告{report.updated ? ` · ${report.updated.slice(0, 10)}` : ''}</span>
+                  </span>
+                  <ArrowUpRight size={16} />
                 </Link>
-              )}
-            </InspectorSection>
-          </Panel>
-        </aside>
+              ))
+            ) : (
+              <p className="home-empty">报告生成后，会在这里展示最新内容。</p>
+            )}
+          </div>
+          <nav className="home-card-actions" aria-label="报告与论文入口">
+            <Link className="reading-action" to="/top-conf/">
+              顶会论文
+            </Link>
+            {weekly && (
+              <Link className="reading-action" to={weekly.url}>
+                资讯周报 <ArrowUpRight size={14} />
+              </Link>
+            )}
+            <Link className="reading-action" to="/arxiv/">
+              arXiv 导读
+            </Link>
+          </nav>
+        </section>
+        <section className="home-card" aria-labelledby="home-news-title">
+          <header className="home-card-heading">
+            <h2 id="home-news-title">最新快讯</h2>
+            {updates.date && <time>{updates.date}</time>}
+          </header>
+          <ErrorMessage error={newsError} />
+          <div className="home-updates">
+            {loading ? (
+              <p className="home-empty" role="status">
+                正在获取最新资讯…
+              </p>
+            ) : updates.articles.length ? (
+              updates.articles.map((article) => (
+                <Link
+                  className="home-update"
+                  key={article._id || article.link}
+                  to={`/updates/?${new URLSearchParams({ date: updates.date, article: article._id || article.link })}`}
+                >
+                  <span className="home-update-copy">
+                    <strong>{article.title_zh || article.title}</strong>
+                    <span>
+                      {article.source_name || article.source}
+                      {article.published ? ` · ${article.published.slice(0, 10)}` : ''}
+                    </span>
+                  </span>
+                  <ArrowUpRight size={16} />
+                </Link>
+              ))
+            ) : (
+              !newsError && <p className="home-empty">暂无新资讯，可以先浏览信源。</p>
+            )}
+          </div>
+          <nav className="home-card-actions" aria-label="资讯入口">
+            <Link className="reading-action" to={updatesURL}>
+              查看全部资讯 <ArrowRight size={14} />
+            </Link>
+            <Link className="reading-action" to="/sources/">
+              发现信源
+            </Link>
+            <Link className="reading-action" to="/trends/">
+              研究趋势 <TrendingUp size={14} />
+            </Link>
+          </nav>
+        </section>
+        <section className="home-card" aria-labelledby="home-authors-title">
+          <header className="home-card-heading">
+            <h2 id="home-authors-title">关注作者</h2>
+            <Link className="reading-action" to="/following/">
+              管理关注 <ArrowRight size={14} />
+            </Link>
+          </header>
+          <div className="home-updates">
+            {authors.length ? (
+              authors.map((author) => (
+                <Link
+                  className="home-update"
+                  key={author.id}
+                  to={entityPath({ name: author.name, url: author.homepage }, author.kind)}
+                >
+                  <span className="home-avatar" aria-hidden="true">
+                    {Array.from(author.name).slice(0, 1)}
+                  </span>
+                  <span className="home-update-copy">
+                    <strong>{author.name}</strong>
+                    <span className="home-clamp">
+                      {author.papers?.[0]?.title ||
+                        author.fetchSummary ||
+                        author.bio ||
+                        author.research ||
+                        author.tags?.join(' · ') ||
+                        '查看研究主页与论文'}
+                    </span>
+                  </span>
+                  <ArrowUpRight size={16} />
+                </Link>
+              ))
+            ) : (
+              <div className="home-empty">
+                <h3>从感兴趣的研究者开始</h3>
+                <p>关注作者后，在这里查看主页更新和近期论文。</p>
+                <Link className="reading-action" to="/following/">
+                  添加关注 <ArrowRight size={14} />
+                </Link>
+              </div>
+            )}
+          </div>
+          <nav className="home-card-actions" aria-label="作者研究入口">
+            <Link className="reading-action" to="/following/">
+              作者动态
+            </Link>
+            <Link className="reading-action" to="/top-conf/">
+              从论文发现作者
+            </Link>
+          </nav>
+        </section>
+        <section className="home-card home-card--personal" aria-labelledby="home-personal-title">
+          <header className="home-card-heading">
+            <h2 id="home-personal-title">我的研究</h2>
+            <Link className="reading-action" to="/inbox/">
+              查看今日私信 <ArrowRight size={14} />
+            </Link>
+          </header>
+          <ErrorMessage error={inboxError} />
+          <div className="home-updates">
+            {inbox.length ? (
+              inbox.map((paper) => (
+                <Link className="home-update" key={paper.id} to="/inbox/">
+                  <span className="home-update-mark">
+                    <Mail size={18} />
+                  </span>
+                  <span className="home-update-copy">
+                    <strong>{paper.title_zh || paper.title}</strong>
+                    <span>
+                      {paper.read ? '论文推荐' : '未读推荐'}
+                      {paper.date ? ` · ${paper.date}` : ''}
+                    </span>
+                  </span>
+                  <ArrowUpRight size={16} />
+                </Link>
+              ))
+            ) : (
+              <div className="home-empty">
+                <h3>继续你的研究方向</h3>
+                <p className="home-clamp">
+                  {profile?.impression.text || '补充研究兴趣，接收相关论文推荐。'}
+                </p>
+                {profile ? (
+                  <Button onClick={onEditImpression} variant="secondary">
+                    编辑研究印象
+                  </Button>
+                ) : (
+                  <Link className="reading-action" to="/login">
+                    登录并完善印象
+                  </Link>
+                )}
+              </div>
+            )}
+          </div>
+          <nav className="home-card-actions" aria-label="个人研究入口">
+            <Link className="reading-action" to="/brief/">
+              领域导读 <Sparkles size={14} />
+            </Link>
+            <Link className="reading-action" to="/summary/">
+              总结汇报
+            </Link>
+            {profile && (
+              <Button variant="quiet" onClick={onEditImpression}>
+                研究印象
+              </Button>
+            )}
+          </nav>
+        </section>
       </div>
     </>
   )

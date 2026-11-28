@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       '@fastrd/ui-foundation':
-        specifier: 0.3.0
-        version: 0.3.0(unocss@66.12.0(@oxc-project/types@0.156.0)(cac@7.1.0)(rolldown@1.2.19)(rollup@4.68.2)(srvx@1.0.8)(vite@8.3.8(@types/node@26.6.6)(jiti@2.7.0)))
+        specifier: 0.5.0
+        version: 0.5.0(unocss@66.12.0(@oxc-project/types@0.156.0)(cac@7.1.0)(rolldown@1.2.19)(rollup@4.68.2)(srvx@1.0.8)(vite@8.3.8(@types/node@26.6.6)(jiti@2.7.0)))
       '@fastrd/ui-react':
-        specifier: 0.3.0
-        version: 0.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(unocss@66.12.0(@oxc-project/types@0.156.0)(cac@7.1.0)(rolldown@1.2.19)(rollup@4.68.2)(srvx@1.0.8)(vite@8.3.8(@types/node@26.6.6)(jiti@2.7.0)))
+        specifier: 0.5.0
+        version: 0.5.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(unocss@66.12.0(@oxc-project/types@0.156.0)(cac@7.1.0)(rolldown@1.2.19)(rollup@4.68.2)(srvx@1.0.8)(vite@8.3.8(@types/node@26.6.6)(jiti@2.7.0)))
       lucide-react:
         specifier: ^1.72.0
         version: 1.72.0(@types/react@19.3.0)(react@19.3.1)
@@ -75,16 +75,16 @@ packages:
   '@emnapi/wasi-threads@2.2.0':
     resolution: {integrity: sha512-JP7OYH38Q7+pyTAe14raZHLQIK7BDKbdwji+Xi3pcd/6QkJYQH3SX4wu6EplGrGJWRepoNzedfm0G3B9Z4e9Rw==}
 
-  '@fastrd/ui-foundation@0.3.0':
-    resolution: {integrity: sha512-GRyPlXiVpZlCYsAbQykUScxWDjn846U5lsa2GymwICJbH0fuqc9Xwn8pSdOWmzpPOC1sdT6WVKoMgAhtUw438w==}
+  '@fastrd/ui-foundation@0.5.0':
+    resolution: {integrity: sha512-kPZOfJ9coiAH1Won4tllGUou7ByzlrliM/F/LV1jLIEUA2sBsJE9NJxRkVkjJoQnrRpOTc5BVBQ8ecKzMYHS2Q==}
     peerDependencies:
       unocss: ^66.12.0
     peerDependenciesMeta:
       unocss:
         optional: true
 
-  '@fastrd/ui-react@0.3.0':
-    resolution: {integrity: sha512-wb2ylB+1R38DwKKo6GmKz7z/7UmOtma9egJGtMtNypX0YUVB8wmHcCUgKZQLf1CLygtGqW7DNpIMU+6YVKeJ6Q==}
+  '@fastrd/ui-react@0.5.0':
+    resolution: {integrity: sha512-/5zEMIO/zntMlVqPz5myGmQAmuwyT1ozY22rbpXuT/2fsaliK80yMbH8UX9czUICCzpvW7uQgWzPDn9jleFYpg==}
     peerDependencies:
       react: ^18.3.0 || ^19.0.0
       react-dom: ^18.3.0 || ^19.0.0
@@ -1470,13 +1470,13 @@ snapshots:
       tslib: 2.9.1
     optional: true
 
-  '@fastrd/ui-foundation@0.3.0(unocss@66.12.0(@oxc-project/types@0.156.0)(cac@7.1.0)(rolldown@1.2.19)(rollup@4.68.2)(srvx@1.0.8)(vite@8.3.8(@types/node@26.6.6)(jiti@2.7.0)))':
+  '@fastrd/ui-foundation@0.5.0(unocss@66.12.0(@oxc-project/types@0.156.0)(cac@7.1.0)(rolldown@1.2.19)(rollup@4.68.2)(srvx@1.0.8)(vite@8.3.8(@types/node@26.6.6)(jiti@2.7.0)))':
     optionalDependencies:
       unocss: 66.12.0(@oxc-project/types@0.156.0)(cac@7.1.0)(rolldown@1.2.19)(rollup@4.68.2)(srvx@1.0.8)(vite@8.3.8(@types/node@26.6.6)(jiti@2.7.0))
 
-  '@fastrd/ui-react@0.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(unocss@66.12.0(@oxc-project/types@0.156.0)(cac@7.1.0)(rolldown@1.2.19)(rollup@4.68.2)(srvx@1.0.8)(vite@8.3.8(@types/node@26.6.6)(jiti@2.7.0)))':
+  '@fastrd/ui-react@0.5.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(unocss@66.12.0(@oxc-project/types@0.156.0)(cac@7.1.0)(rolldown@1.2.19)(rollup@4.68.2)(srvx@1.0.8)(vite@8.3.8(@types/node@26.6.6)(jiti@2.7.0)))':
     dependencies:
-      '@fastrd/ui-foundation': 0.3.0(unocss@66.12.0(@oxc-project/types@0.156.0)(cac@7.1.0)(rolldown@1.2.19)(rollup@4.68.2)(srvx@1.0.8)(vite@8.3.8(@types/node@26.6.6)(jiti@2.7.0)))
+      '@fastrd/ui-foundation': 0.5.0(unocss@66.12.0(@oxc-project/types@0.156.0)(cac@7.1.0)(rolldown@1.2.19)(rollup@4.68.2)(srvx@1.0.8)(vite@8.3.8(@types/node@26.6.6)(jiti@2.7.0)))
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
     transitivePeerDependencies:

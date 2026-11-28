@@ -89,3 +89,30 @@ func TestArxivPaginationOrdersNewestFirst(t *testing.T) {
 		t.Fatal(status, body)
 	}
 }
+
+func TestHomeNewsPreviewIsBoundedAndRecent(t *testing.T) {
+	h := fixture(t)
+	dir := filepath.Join(h.app.Config.Root, "secnews/data/articles")
+	var data strings.Builder
+	for i := 0; i < 12; i++ {
+		raw, _ := json.Marshal(map[string]any{"_id": fmt.Sprintf("news-%02d", i), "source": "openai", "title": fmt.Sprintf("News %02d", i), "published": fmt.Sprintf("2026-11-28T%02d:00:00Z", i)})
+		data.Write(raw)
+		data.WriteByte('\n')
+	}
+	if err := os.WriteFile(filepath.Join(dir, "2026-11-28.jsonl"), []byte(data.String()), 0600); err != nil {
+		t.Fatal(err)
+	}
+	status, res, _ := h.request(t, "GET", "/api/news?source=articles&preview=3", nil, "", false)
+	if status != 200 {
+		t.Fatal(status, res)
+	}
+	rows := res["articles"].([]any)
+	if len(rows) != 3 || rows[0].(map[string]any)["_id"] != "news-11" {
+		t.Fatal(rows)
+	}
+	for _, value := range []string{"0", "11", "x"} {
+		if status, _, _ := h.request(t, "GET", "/api/news?source=articles&preview="+value, nil, "", false); status != 400 {
+			t.Fatal(value, status)
+		}
+	}
+}
