@@ -342,7 +342,7 @@ function Workspace() {
                     <EmptyState
                       title="页面不存在"
                       action={
-                        <Link className="fastui-link" to="/">
+                        <Link className="reading-action" to="/">
                           返回总览
                         </Link>
                       }

@@ -1,3 +1,4 @@
+import { ButtonTabs } from '../components/ButtonTabs'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
@@ -6,7 +7,6 @@ import {
   EmptyState,
   InspectorSection,
   ListRow,
-  TabBar,
   TextField,
   Toolbar,
 } from '@fastrd/ui-react'
@@ -97,13 +97,13 @@ export default function Home({ onEditImpression }: { onEditImpression: () => voi
           <Panel
             title="顶会报告"
             action={
-              <Link className="fastui-link inline-flex items-center gap-1" to="/top-conf/">
+              <Link className="reading-action" to="/top-conf/">
                 浏览论文 <ArrowRight size={12} />
               </Link>
             }
           >
             <div className="p-4">
-              <TabBar
+              <ButtonTabs
                 label="报告分类"
                 tabs={[
                   {
@@ -172,16 +172,18 @@ export default function Home({ onEditImpression }: { onEditImpression: () => voi
             ) : (
               !newsError && <EmptyState title="暂无最新资讯" />
             )}
-            <Link
-              className="fastui-link flex items-center justify-center gap-2 p-3"
-              to={`/updates/${catalog.dates[0] ? `?date=${catalog.dates[0]}` : ''}`}
-            >
-              查看全部资讯 <ArrowRight size={13} />
-            </Link>
+            <div className="p-4">
+              <Link
+                className="reading-action w-full"
+                to={`/updates/${catalog.dates[0] ? `?date=${catalog.dates[0]}` : ''}`}
+              >
+                查看全部资讯 <ArrowRight size={14} />
+              </Link>
+            </div>
           </Panel>
           <Panel title="我的研究">
             <div className="p-4 grid gap-3">
-              <Link className="fastui-link inline-flex items-center gap-1" to="/inbox/">
+              <Link className="reading-action" to="/inbox/">
                 查看今日私信 <ArrowRight size={12} />
               </Link>
             </div>
@@ -192,7 +194,7 @@ export default function Home({ onEditImpression }: { onEditImpression: () => voi
                   编辑研究印象 <ArrowUpRight size={12} />
                 </Button>
               ) : (
-                <Link className="fastui-link" to="/login">
+                <Link className="reading-action" to="/login">
                   登录并完善印象
                 </Link>
               )}

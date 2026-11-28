@@ -295,15 +295,12 @@ export default function News() {
                           {article.summary_zh ? ' · AI 导读' : ''}
                         </span>
                         <div className="flex items-center gap-4">
-                          <Link
-                            className="fastui-link inline-flex items-center gap-1 no-underline"
-                            to={readerURL(article)}
-                          >
+                          <Link className="reading-action" to={readerURL(article)}>
                             <BookOpen size={13} />
                             阅读导读
                           </Link>
                           <a
-                            className="fastui-link inline-flex items-center gap-1 no-underline"
+                            className="reading-action"
                             href={safeURL(article.link)}
                             target="_blank"
                             rel="noreferrer"

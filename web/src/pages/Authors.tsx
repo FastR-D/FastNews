@@ -206,7 +206,7 @@ export default function Authors({ embedded = false }: { embedded?: boolean }) {
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <a
-                  className="fastui-link"
+                  className="reading-action reading-action--icon"
                   href={safeURL(a.homepage)}
                   target="_blank"
                   rel="noreferrer"

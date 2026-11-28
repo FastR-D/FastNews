@@ -1,3 +1,4 @@
+import { Button } from '@fastrd/ui-react'
 import type { ComponentProps, HTMLAttributes, ReactNode } from 'react'
 import { Globe2, ShieldCheck, Sparkles } from 'lucide-react'
 import './Reading.css'
@@ -64,16 +65,16 @@ export function ReadingTabs({
   label: string
 }) {
   return (
-    <div role="group" aria-label={label} className="reading-tabs">
+    <div role="group" aria-label={label} className="button-tabs reading-tabs">
       {options.map((option) => (
-        <button
-          type="button"
+        <Button
+          variant={value === option.value ? 'primary' : 'secondary'}
           key={option.value}
           aria-pressed={value === option.value}
           onClick={() => onChange(option.value)}
         >
           {option.label}
-        </button>
+        </Button>
       ))}
     </div>
   )

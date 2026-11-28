@@ -140,7 +140,7 @@ export function NewsReader({
             前往原文 <ExternalLink size={14} />
           </a>
           <Link
-            className="fastui-link text-sm"
+            className="reading-action"
             to={`/sources/?q=${encodeURIComponent(article.source_name || article.source)}`}
           >
             了解这个信源

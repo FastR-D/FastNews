@@ -57,7 +57,7 @@ export function LoginHint() {
     <EmptyState
       title="登录后管理个人内容"
       action={
-        <Link className="fastui-link inline-flex items-center gap-1" to="/login">
+        <Link className="reading-action" to="/login">
           进入账号页 <ArrowUpRight size={13} />
         </Link>
       }

@@ -1,5 +1,6 @@
+import { ButtonTabs } from '../components/ButtonTabs'
 import { useEffect, useState } from 'react'
-import { Button, Dialog, EmptyState, Select, TabBar, TextField } from '@fastrd/ui-react'
+import { Button, Dialog, EmptyState, Select, TextField } from '@fastrd/ui-react'
 import { Check, FlaskConical, Pencil, Plus, Trash2, X } from 'lucide-react'
 import { api, message } from '../api'
 import { useApp } from '../context'
@@ -136,7 +137,7 @@ export default function Models() {
       ) : (
         <>
           <div className="model-tabs">
-            <TabBar
+            <ButtonTabs
               label="大模型配置"
               tabs={[
                 { id: 'scenes', label: '场景分配', controls: 'model-panel' },
@@ -146,11 +147,7 @@ export default function Models() {
               onSelect={setTab}
             />
           </div>
-          <div
-            id="model-panel"
-            role="tabpanel"
-            aria-label={tab === 'scenes' ? '场景分配' : '模型连接'}
-          >
+          <div id="model-panel" role="tabpanel" aria-labelledby={tab}>
             {tab === 'scenes' ? (
               <>
                 <section className="model-default model-card">

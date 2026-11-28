@@ -81,7 +81,7 @@ export default function ImpressionDialog({
           </>
         ) : (
           <p>
-            <Link className="fastui-link" to="/login" onClick={onClose}>
+            <Link className="reading-action" to="/login" onClick={onClose}>
               请先登录 FastNews 账号
             </Link>
           </p>

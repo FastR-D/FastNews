@@ -162,7 +162,7 @@ export default function Account() {
         title={profile ? '账号设置' : '登录 FastNews'}
         action={
           profile && (
-            <Link className="fastui-link" to="/">
+            <Link className="reading-action" to="/">
               返回总览
             </Link>
           )
@@ -384,7 +384,7 @@ export default function Account() {
                     </>
                   )}
                   {cas.login_enabled && (
-                    <a className="fastui-link" href={asset('api/auth/fastcas/login')}>
+                    <a className="reading-action" href={asset('api/auth/fastcas/login')}>
                       使用 FastCAS 登录
                     </a>
                   )}

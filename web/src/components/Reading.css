@@ -49,6 +49,13 @@
 }
 .reading-action {
   text-decoration: none;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+}
+.reading-action > svg {
+  flex-shrink: 0;
 }
 .reading-action:hover {
   background: var(--fastui-hover);
@@ -85,31 +92,6 @@
 .news-title:focus-visible {
   outline: 2px solid var(--fastui-focus);
   outline-offset: 3px;
-}
-.reading-tabs {
-  display: flex;
-  gap: 24px;
-  overflow: auto;
-  scrollbar-width: thin;
-}
-.reading-tabs button {
-  flex-shrink: 0;
-  background: transparent;
-  border: 0;
-  border-bottom: 2px solid transparent;
-  color: var(--fastui-secondary);
-  padding: 0 1px 13px;
-  font: inherit;
-  font-size: 14px;
-  cursor: pointer;
-}
-.reading-tabs button:hover {
-  color: var(--fastui-focus);
-}
-.reading-tabs button[aria-pressed='true'] {
-  color: var(--fastui-focus);
-  font-weight: 600;
-  border-bottom-color: var(--fastui-focus);
 }
 .workspace-navlink {
   display: flex;
@@ -210,16 +192,6 @@
     min-height: 44px;
   }
 }
-@media (max-width: 639px) {
-  .reading-tabs {
-    gap: 20px;
-  }
-  .reading-tabs button {
-    font-size: 13px;
-    padding-bottom: 10px;
-  }
-}
-
 /* Workspace theme: shared geometry and semantic surfaces across every route. */
 :root {
   --fastui-font:
@@ -393,23 +365,47 @@ textarea {
   padding: 4px;
   border-radius: 12px;
 }
-.fastui-tab-bar {
-  border: 0;
-  background: var(--fastui-raised);
-  border-radius: 12px;
-  padding: 4px;
-  gap: 4px;
+/* Button-based page tabs use the same controls as other workspace actions. */
+.button-tabs {
+  max-width: 420px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
-.fastui-tab-bar [role='tab'] {
-  font-size: 14px;
-  border: 0;
-  border-radius: 9px;
-  padding: 8px 14px;
+.button-tabs > .fastui-button {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 40px;
+  border-radius: 11px;
+  padding: 9px 18px;
+  white-space: normal;
+  text-align: center;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
 }
-.fastui-tab-bar [aria-selected='true'] {
-  color: var(--fastui-text);
+.button-tabs > .fastui-button[aria-selected='false'],
+.button-tabs > .fastui-button[aria-pressed='false'] {
   background: var(--fastui-surface);
-  box-shadow: 0 2px 5px rgb(0 0 0 / 0.06);
+  border: 1px solid var(--fastui-border-strong);
+  color: var(--fastui-secondary);
+}
+.button-tabs > .fastui-button[aria-selected='false']:hover,
+.button-tabs > .fastui-button[aria-pressed='false']:hover {
+  background: var(--fastui-hover);
+  color: var(--fastui-text);
+}
+.button-tabs > .fastui-button[aria-selected='true'],
+.button-tabs > .fastui-button[aria-pressed='true'] {
+  border: 1px solid transparent;
+  background: var(--fastui-primary);
+  color: var(--fastui-on-primary);
+  box-shadow: 0 2px 5px rgb(0 0 0 / 0.08);
+}
+.button-tabs > .fastui-button:focus-visible {
+  outline: 2px solid var(--fastui-focus);
+  outline-offset: 3px;
 }
 .workspace-navlink {
   padding: 11px 14px;
