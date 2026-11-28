@@ -9,8 +9,10 @@ import (
 	"time"
 	"unicode/utf8"
 
+	"github.com/FastR-D/FastNews/internal/ai"
 	"github.com/FastR-D/FastNews/internal/catalog"
 	"github.com/FastR-D/FastNews/internal/identity"
+	"github.com/FastR-D/FastNews/internal/modelconfig"
 	"github.com/FastR-D/FastNews/internal/store"
 )
 
@@ -560,7 +562,11 @@ func (s *Server) pick(r *http.Request, im string, a map[string]any, items []map[
 	}
 	p := hits[0]
 	reason := catalog.First(p.Reason, "根据研究印象与关注方向，从本地语料向量召回。")
-	if s.Config.LLMKey != "" {
+	model, err := modelconfig.Resolve(s.AI.Config, "daily-paper")
+	if err != nil {
+		return nil, store.Fail(503, "模型配置不可用，请联系管理员")
+	}
+	if model.Enabled {
 		var pick struct {
 			ID      string `json:"id"`
 			TitleZH string `json:"title_zh"`
@@ -568,7 +574,7 @@ func (s *Server) pick(r *http.Request, im string, a map[string]any, items []map[
 			Reason  string `json:"reason"`
 		}
 		evidence, _ := json.Marshal(hits)
-		if e = s.AI.Complete(r.Context(), `根据研究方向选择一篇论文，只能使用候选 id。返回 JSON {"id":"候选id","title_zh":"中文标题","summary":"中文摘要","reason":"具体推荐理由"}。`, query+"\n"+string(evidence), &pick); e == nil {
+		if e = ai.CompleteModel(r.Context(), model, `根据研究方向选择一篇论文，只能使用候选 id。返回 JSON {"id":"候选id","title_zh":"中文标题","summary":"中文摘要","reason":"具体推荐理由"}。`, query+"\n"+string(evidence), &pick); e == nil {
 			for _, candidate := range hits {
 				if candidate.ID == pick.ID {
 					p = candidate

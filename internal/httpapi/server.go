@@ -183,6 +183,8 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request) {
 		e = s.fastreadIntegration(w, r, p)
 	case p == "/api/integrations/fastresearch/workspace":
 		e = s.workspaceHTTP(w, r)
+	case p == "/api/admin/models" || p == "/api/admin/models/test":
+		e = s.adminModels(w, r, p)
 	case p == "/api/admin/collection" || strings.HasPrefix(p, "/api/admin/collection/"):
 		e = s.adminCollection(w, r, p)
 	case p == "/api/admin/users" || strings.HasPrefix(p, "/api/admin/users/"):
@@ -500,7 +502,7 @@ func (s *Server) static(w http.ResponseWriter, r *http.Request, p string) error 
 
 	} else {
 		switch strings.TrimSuffix(p, "/") {
-		case "", "/admin/users", "/admin/jobs", "/sources", "/top-conf", "/coverage", "/brief", "/summary", "/inbox", "/updates", "/arxiv", "/trends", "/following", "/login", "/account":
+		case "", "/admin/models", "/admin/users", "/admin/jobs", "/sources", "/top-conf", "/coverage", "/brief", "/summary", "/inbox", "/updates", "/arxiv", "/trends", "/following", "/login", "/account":
 			rel = "index.html"
 		default:
 			parts := strings.Split(strings.Trim(strings.TrimPrefix(r.URL.EscapedPath(), s.Config.PublicPath), "/"), "/")

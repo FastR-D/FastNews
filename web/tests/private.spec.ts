@@ -419,3 +419,75 @@ test('account settings have a dedicated protected URL and evenly spaced login ta
   await expect(page).toHaveURL(/\/account\/\?fastcas=complete$/)
   await expect(page.getByText('FastCAS 认证已完成。', { exact: true })).toBeVisible()
 })
+
+test('administrator configures model connections and per-scene assignments', async ({ page }) => {
+  await page.goto('/login')
+  await page.getByLabel('邮箱', { exact: true }).fill('browser-admin@example.com')
+  await page.getByLabel('密码', { exact: true }).fill('browser-test-password-123')
+  await page.getByRole('form', { name: '本地账号' }).locator('button[type=submit]').click()
+  await page.getByRole('link', { name: '大模型配置', exact: true }).click()
+  await expect(page.getByRole('heading', { name: '大模型配置', level: 1 })).toBeVisible()
+  await page.getByRole('button', { name: '添加模型' }).click()
+  const dialog = page.getByRole('dialog', { name: '模型连接' })
+  await dialog.getByLabel('连接名称', { exact: true }).fill('研究模型')
+  await dialog.getByLabel('API 地址', { exact: true }).fill('http://127.0.0.1:9/v1')
+  await dialog.getByLabel('模型名称', { exact: true }).fill('research-model')
+  await dialog.getByLabel('API 密钥', { exact: true }).fill('browser-private-model-key')
+  await page.screenshot({
+    path: '../output/ui-review/admin-model-dialog.png',
+    animations: 'disabled',
+  })
+  await dialog.getByRole('button', { name: '保存连接' }).click()
+  await expect(dialog).not.toBeVisible()
+  await page
+    .getByLabel('默认聊天模型', { exact: true })
+    .selectOption({ label: '研究模型 · research-model' })
+  await page.getByLabel('资讯翻译与摘要模型', { exact: true }).selectOption('disabled')
+  await expect(page.getByLabel('向量检索模型', { exact: true }).locator('option')).toHaveCount(2)
+  await page.getByRole('button', { name: '保存分配' }).click()
+  await expect(page.getByRole('button', { name: '保存分配' })).toBeDisabled()
+  await page.reload()
+  await expect(page.getByLabel('默认聊天模型', { exact: true })).not.toHaveValue('')
+  await expect(page.getByLabel('资讯翻译与摘要模型', { exact: true })).toHaveValue('disabled')
+  await page.screenshot({
+    path: '../output/ui-review/admin-model-scenes.png',
+    animations: 'disabled',
+  })
+  await page.getByRole('tab', { name: '模型连接', exact: true }).click()
+  await expect(page.getByRole('button', { name: '删除 研究模型', exact: true })).toBeDisabled()
+  await expect(page.getByText('密钥已配置', { exact: true })).toBeVisible()
+  await page.getByRole('button', { name: '编辑 研究模型', exact: true }).click()
+  await expect(dialog.getByLabel('API 密钥', { exact: true })).toHaveValue('')
+  await dialog.getByRole('button', { name: '测试连接' }).click()
+  await expect(dialog.getByText('连接测试失败，请检查 API 地址、模型名称和密钥')).toBeVisible()
+  await dialog.getByRole('button', { name: '保存连接' }).click()
+  await expect(dialog).not.toBeVisible()
+  await expect(page.getByText('密钥已配置', { exact: true })).toBeVisible()
+  const result = await (await page.request.get('/api/admin/models')).json()
+  expect(JSON.stringify(result)).not.toContain('browser-private-model-key')
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.evaluate(() => document.documentElement.setAttribute('data-fastui-theme', 'dark'))
+  await page.getByRole('button', { name: '编辑 研究模型', exact: true }).click()
+  await page.screenshot({
+    path: '../output/ui-review/admin-model-dialog-mobile-dark.png',
+    animations: 'disabled',
+  })
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
+  ).toBeTruthy()
+  await dialog.getByRole('button', { name: '关闭模型编辑' }).click()
+  await page.getByRole('tab', { name: '场景分配', exact: true }).click()
+  await page.screenshot({
+    path: '../output/ui-review/admin-model-mobile-dark.png',
+    animations: 'disabled',
+  })
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
+  ).toBeTruthy()
+  await page.getByLabel('默认聊天模型', { exact: true }).selectOption('')
+  await page.getByRole('button', { name: '保存分配' }).click()
+  await expect(page.getByRole('button', { name: '保存分配' })).toBeDisabled()
+  await page.getByRole('tab', { name: '模型连接', exact: true }).click()
+  await page.getByRole('button', { name: '删除 研究模型', exact: true }).click()
+  await expect(page.getByText('添加第一个模型连接', { exact: true })).toBeVisible()
+})

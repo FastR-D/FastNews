@@ -12,6 +12,7 @@ import (
 
 	"github.com/FastR-D/FastNews/internal/catalog"
 	"github.com/FastR-D/FastNews/internal/config"
+	"github.com/FastR-D/FastNews/internal/modelconfig"
 	"github.com/FastR-D/FastNews/internal/store"
 )
 
@@ -79,7 +80,12 @@ func TestDailyCheckpointResumesWithoutRepeatLLM(t *testing.T) {
 		json.NewEncoder(w).Encode(map[string]any{"choices": []any{map[string]any{"finish_reason": "stop", "message": map[string]string{"content": `{"title_zh":"中文论文","summary_zh":"安全研究方法","recommendation_score":7,"channel":"security"}`}}}})
 	}))
 	defer upstream.Close()
-	p := New(config.Config{Root: root, LLMKey: "test", LLMURL: upstream.URL})
+	c := config.Config{Root: root}
+	_, err := modelconfig.Save(c, modelconfig.Settings{Profiles: []modelconfig.Profile{{ID: "summary", Name: "Summary", Kind: "chat", BaseURL: upstream.URL, Model: "job-model", APIKey: "test", MaxTokens: 1024, TimeoutSeconds: 10}}, Assignments: map[string]string{"news-summary": "summary"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	p := New(c)
 	if e := p.Daily(context.Background(), "2026-11-12"); e == nil {
 		t.Fatal("expected interrupted run")
 	}

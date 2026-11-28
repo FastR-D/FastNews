@@ -273,7 +273,7 @@ func (p *Pipeline) SummarizeConference(ctx context.Context, conf string, year in
 			"software": "Coding Agents、代码生成、程序修复、软件测试、程序分析、需求与设计、软件维护、实证软件工程等",
 		}[catalog.Conferences[conf].Domain]
 		prompt := fmt.Sprintf(`你是%s论文编辑。仅根据提供的标题、摘要与关键词归纳问题、方法、结果与局限；无摘要时明确说明仅据标题，禁止捏造实验。按论文实际贡献给出具体研究类别，参考方向：%s。返回JSON {"category":"具体研究类别","summary_zh":"中文深度摘要"}。`, catalog.Labels[conf], taxonomy)
-		if e = p.AI.Complete(ctx, prompt, string(b), &result); e != nil {
+		if e = p.AI.CompleteFor(ctx, "paper-summary", prompt, string(b), &result); e != nil {
 			return e
 		}
 		if result.Category == "" || result.Summary == "" {

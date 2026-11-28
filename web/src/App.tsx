@@ -16,6 +16,7 @@ import {
   Sun,
   UserRound,
   Users,
+  SlidersHorizontal,
   Activity,
   X,
   Newspaper,
@@ -39,6 +40,7 @@ const Authors = lazy(() => import('./pages/Authors'))
 const Inbox = lazy(() => import('./pages/Inbox'))
 const Account = lazy(() => import('./pages/Account'))
 const UsersPage = lazy(() => import('./pages/Users'))
+const Models = lazy(() => import('./pages/Models'))
 const Processes = lazy(() => import('./pages/Processes'))
 
 function Workspace() {
@@ -124,6 +126,16 @@ function Workspace() {
                 <span className="flex items-center gap-2 w-full">
                   <Users size={16} />
                   用户管理
+                </span>
+              </NavLink>
+              <NavLink
+                className="workspace-navlink"
+                to="/admin/models/"
+                aria-pressed={location.pathname.startsWith('/admin/models/')}
+              >
+                <span className="flex items-center gap-2 w-full">
+                  <SlidersHorizontal size={16} />
+                  大模型配置
                 </span>
               </NavLink>
               <NavLink
@@ -322,6 +334,7 @@ function Workspace() {
                 <Route path="/login" element={<Account />} />
                 <Route path="/account/" element={<Account />} />
                 <Route path="/admin/users/" element={<UsersPage />} />
+                <Route path="/admin/models/" element={<Models />} />
                 <Route path="/admin/jobs/" element={<Processes />} />
                 <Route
                   path="*"

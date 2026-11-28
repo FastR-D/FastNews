@@ -2127,3 +2127,106 @@ textarea {
     order: 2;
   }
 }
+
+.model-tabs {
+  margin-bottom: 20px;
+  max-width: 360px;
+}
+.model-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.model-card {
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid var(--fastui-border);
+  background: var(--fastui-surface);
+  border-radius: 16px;
+}
+.model-card-heading,
+.model-card-footer,
+.model-form-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.model-card-heading {
+  margin-bottom: 20px;
+}
+.model-card-heading h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+.model-status {
+  font-size: 12px;
+  color: var(--fastui-muted);
+  flex-shrink: 0;
+}
+.model-status.is-active {
+  color: var(--fastui-focus);
+}
+.model-effective {
+  color: var(--fastui-muted);
+  overflow-wrap: anywhere;
+  font-size: 13px;
+  margin: 14px 0 0;
+}
+.model-name {
+  font-size: 16px;
+  font-weight: 550;
+  overflow-wrap: anywhere;
+  margin: 0;
+}
+.model-card-footer {
+  margin-top: 22px;
+}
+.model-default {
+  display: flex;
+  align-items: end;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.model-default > label {
+  flex: 1;
+  min-width: 0;
+}
+.model-form {
+  padding: 0 24px 24px;
+}
+.model-scene > .fastui-select {
+  width: 100%;
+}
+.model-fields {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  min-width: 0;
+}
+.model-wide {
+  grid-column: 1 / -1;
+}
+.model-form-footer {
+  margin-top: 24px;
+}
+@media (max-width: 640px) {
+  .model-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .model-card {
+    padding: 18px;
+  }
+  .model-default {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .model-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

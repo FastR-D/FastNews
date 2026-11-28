@@ -84,17 +84,19 @@ export function currentPage(path: string) {
       item.to === '/' ? path === '/' : path.startsWith(item.to.replace(/\/$/, '')),
     ) || {
       to: path,
-      label: path.startsWith('/admin/jobs/')
-        ? '进程管理'
-        : path.startsWith('/admin/users')
-          ? '用户管理'
-          : path.startsWith('/authors/')
-            ? '学者'
-            : path.startsWith('/institutions/')
-              ? '机构'
-              : path.startsWith('/login')
-                ? '登录'
-                : '账号设置',
+      label: path.startsWith('/admin/models/')
+        ? '大模型配置'
+        : path.startsWith('/admin/jobs/')
+          ? '进程管理'
+          : path.startsWith('/admin/users')
+            ? '用户管理'
+            : path.startsWith('/authors/')
+              ? '学者'
+              : path.startsWith('/institutions/')
+                ? '机构'
+                : path.startsWith('/login')
+                  ? '登录'
+                  : '账号设置',
       icon: UserRound,
       group: '个人空间',
       description: 'FastNews 账号',

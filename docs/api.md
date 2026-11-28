@@ -64,3 +64,11 @@
 所有接口检查管理员会话，写操作额外校验 CSRF。同一服务实例只能运行一个采集任务，重复启动返回 409；任务最多运行 30 分钟。状态包括 running/stopping/completed/partial/failed/cancelled/interrupted，各信源提供读取、过期和新增条数及错误。任务历史原子写入账号数据目录的 `collection-runs.json`（0600），重启将未结束任务标记为中断。页面每 2.5 秒更新，监控本服务定时触发和工作台手动触发的采集；外部 CLI、GitHub Actions 和其他机器任务不在此列表中。
 
 `POST /api/admin/collection/schedule` 保存 `{enabled,intervalHours,source}`，间隔 1–168 小时，仍要求管理员与 CSRF。首次启动默认立即采集一次，此后每 6 小时运行；管理员可以修改频率/范围、暂停或恢复。配置保存在账号数据目录 `collection-schedule.json`（0600），与浏览器是否打开无关。服务每 30 秒检查到期任务；当前有采集时等待其结束再执行，服务离线期间错过多个周期只补采一次。手动补采不改变下次定时时间，修改计划从保存时重新计时。记录的 `trigger` 区分 `scheduled/manual`；生产只在一个服务实例启用调度，多实例的其他进程可设置 `FASTNEWS_COLLECTION_DISABLED=true`。
+
+### 管理员模型配置
+
+- `GET /api/admin/models`：返回 `settings`、`scenes` 和 `environment`。模型密钥不回传，只提供 `hasKey`。
+- `PUT /api/admin/models`：保存 `{revision,default,profiles,assignments}`。需管理员会话与 CSRF；版本冲突返回 409。`default` 为空沿用环境配置，场景分配为空继承默认，`disabled` 使用该场景本地模式。
+- `POST /api/admin/models/test`：测试一个模型连接，需管理员会话与 CSRF；支持未保存连接，空密钥会按连接 ID 读取已保存密钥。发送一次短文本测试，返回 `{ok:true}` 或脱敏错误。
+
+连接字段：`id,name,kind,baseUrl,model,apiKey?,clearKey?,temperature,maxTokens,timeoutSeconds`。`kind` 为 `chat` 或 `embedding`；API 地址为 OpenAI 兼容接口根地址（例如以 `/v1` 结尾），向量接口也支持完整 `/embeddings` 地址。输出上限和温度仅用于聊天。连接删除或类型更改前须解除冲突的场景/默认分配。

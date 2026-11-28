@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"github.com/FastR-D/FastNews/internal/catalog"
 	"github.com/FastR-D/FastNews/internal/config"
+	"github.com/FastR-D/FastNews/internal/modelconfig"
 	"golang.org/x/crypto/blake2b"
 	"io"
 	"math"
@@ -87,26 +88,25 @@ type Retriever struct {
 	provider string
 }
 
-func (r *Retriever) remote(ctx context.Context, texts []string) ([][]float64, error) {
+func (r *Retriever) remote(ctx context.Context, model modelconfig.Resolved, texts []string) ([][]float64, error) {
 	out := [][]float64{}
-	endpoint := r.Config.EmbeddingURL
-	if endpoint == "" {
-		endpoint = r.Config.LLMURL
-	}
+	endpoint := model.BaseURL
 	endpoint = strings.TrimRight(endpoint, "/")
 	if !strings.HasSuffix(endpoint, "/embeddings") {
 		endpoint += "/embeddings"
 	}
 	for start := 0; start < len(texts); start += 64 {
 		end := min(start+64, len(texts))
-		b, _ := json.Marshal(map[string]any{"model": r.Config.EmbeddingModel, "input": texts[start:end]})
+		b, _ := json.Marshal(map[string]any{"model": model.Model, "input": texts[start:end]})
 		req, e := http.NewRequestWithContext(ctx, "POST", endpoint, bytes.NewReader(b))
 		if e != nil {
 			return nil, e
 		}
-		req.Header.Set("Authorization", "Bearer "+r.Config.LLMKey)
+		if model.APIKey != "" {
+			req.Header.Set("Authorization", "Bearer "+model.APIKey)
+		}
 		req.Header.Set("Content-Type", "application/json")
-		client := &http.Client{Timeout: 90 * time.Second}
+		client := &http.Client{Timeout: time.Duration(model.TimeoutSeconds) * time.Second, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}
 		resp, e := client.Do(req)
 		if e != nil {
 			return nil, e
@@ -152,12 +152,16 @@ func (r *Retriever) Search(ctx context.Context, papers []catalog.Paper, query st
 		texts[i] = Text(p)
 		all.WriteString(p.ID + texts[i])
 	}
+	model, err := modelconfig.Resolve(r.Config, "embedding")
+	if err != nil {
+		return nil, "", fmt.Errorf("向量模型配置不可用")
+	}
+	// A model/endpoint/key change must never reuse incompatible vector spaces.
+	identity, _ := json.Marshal(model)
+	all.Write(identity)
 	digest := blake2b.Sum256([]byte(all.String()))
 	key := hex.EncodeToString(digest[:])
-	remote := r.Config.EmbeddingURL != "" || r.Config.EmbeddingProvider == "openai" || r.Config.EmbeddingProvider == "remote"
-	if r.Config.EmbeddingProvider == "hash" || r.Config.EmbeddingProvider == "offline" || r.Config.EmbeddingProvider == "local" {
-		remote = false
-	}
+	remote := model.Enabled
 	var q []float64
 	if r.key != key {
 		if r.cache == nil {
@@ -182,7 +186,7 @@ func (r *Retriever) Search(ctx context.Context, papers []catalog.Paper, query st
 		r.provider = "hash"
 		r.vectors = nil
 		if remote {
-			v, e := r.remote(ctx, texts)
+			v, e := r.remote(ctx, model, texts)
 			if e == nil {
 				r.vectors = v
 				r.provider = "openai"
@@ -196,7 +200,7 @@ func (r *Retriever) Search(ctx context.Context, papers []catalog.Paper, query st
 		r.key = key
 	}
 	if r.provider == "openai" {
-		v, e := r.remote(ctx, []string{query})
+		v, e := r.remote(ctx, model, []string{query})
 		if e == nil && len(v[0]) == len(r.vectors[0]) {
 			q = v[0]
 		} else { // Rebuild both sides together; never compare remote and offline vectors.
@@ -221,4 +225,12 @@ func (r *Retriever) Search(ctx context.Context, papers []catalog.Paper, query st
 		return out[i].Score > out[j].Score
 	})
 	return out[:min(max(limit, 0), len(out))], r.provider, nil
+}
+
+func TestModel(ctx context.Context, model modelconfig.Resolved) error {
+	_, err := (&Retriever{}).remote(ctx, model, []string{"FastNews connection test"})
+	if err != nil {
+		return fmt.Errorf("向量模型连接测试失败，请检查地址、模型和密钥")
+	}
+	return nil
 }
