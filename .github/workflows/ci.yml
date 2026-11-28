@@ -1,11 +1,10 @@
-name: Go and React CI and deployment
+name: Go and React CI
 
 on:
   pull_request:
     branches: [main]
   push:
     branches: [main]
-    tags: ['v*']
   workflow_dispatch:
 
 permissions:
@@ -29,7 +28,7 @@ jobs:
     timeout-minutes: 30
     concurrency:
       group: fastnews-ci-${{ github.ref }}
-      cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+      cancel-in-progress: true
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -46,77 +45,13 @@ jobs:
           cache-dependency-path: web/pnpm-lock.yaml
       - run: make install
       - run: make test
-      - run: bash -n scripts/upload-release.sh
       - run: pnpm --dir web format:check
       - run: pnpm --dir web exec playwright install --with-deps chromium
       - name: Desktop, mobile, subpath and private-report browser contracts
         run: make test-browser
-      - name: Build the production release
-        run: make build-release
-        env:
-          FASTNEWS_PUBLIC_PATH: /news
-      - name: Package native runtime
-        run: ./scripts/package-release.sh "$RUNNER_TEMP/fastnews-release"
-      - uses: actions/upload-artifact@v4
-        with:
-          name: release-${{ github.sha }}
-          path: ${{ runner.temp }}/fastnews-release/
-          if-no-files-found: error
-          retention-days: 7
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: browser-diagnostics
           path: web/test-results/
           if-no-files-found: ignore
-
-  release:
-    needs: validate
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    permissions:
-      contents: write
-    concurrency:
-      group: fastnews-release-${{ github.ref }}
-      cancel-in-progress: false
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: release-${{ github.sha }}
-          path: release
-      - name: Publish the tested native release
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-          RELEASE_TAG: ${{ github.ref_name }}
-        run: |
-          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
-            gh release upload "$RELEASE_TAG" release/release.tar.gz release/manifest.json --clobber
-          else
-            gh release create "$RELEASE_TAG" release/release.tar.gz release/manifest.json \
-              --verify-tag --title "FastNews $RELEASE_TAG" --generate-notes
-          fi
-
-  deploy:
-    needs: validate
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-24.04
-    timeout-minutes: 25
-    environment: production
-    concurrency:
-      group: fastdeploy-fastnews-production
-      cancel-in-progress: false
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - uses: actions/download-artifact@v4
-        with:
-          name: release-${{ github.sha }}
-          path: release
-      - name: Upload over HTTPS and confirm activation
-        env:
-          FASTNEWS_DEPLOY_URL: ${{ vars.FASTNEWS_DEPLOY_URL }}
-          FASTNEWS_DEPLOY_TOKEN: ${{ secrets.FASTNEWS_DEPLOY_TOKEN }}
-        run: bash scripts/upload-release.sh release

@@ -124,7 +124,7 @@ FastCAS 使用正式 Go SDK **v0.1.2**，需要同时配置 issuer / client ID /
 
 采集地址可通过 `--url` 指定同协议、同年份格式的来源，PMLR 来源同时需要可访问的 `assets/rss/feed.xml`。来源要求登录、返回验证页、分页或论文集合不完整、会议/年份不符时返回错误并保留已有文件。新闻以 ID / URL 去重，结构化会议记录和论文摘要按稳定 ID 续跑：PMLR 有官方 OpenReview 交叉链接时复用该身份，否则使用论文页面 URL；NeurIPS 使用官方论文页面 URL，不按标题猜测旧 OpenReview 记录是否等价。日报保持原 `source_hash` 检查点算法。`update-range` 仍按原安全四会运行，其他会议按 `fetch-conf → summarize-conf → conference-report` 单独选择年份；手动报告工作流支持全部已接入会议，ICML/NeurIPS 请显式选择已验证年份。`enrich-metrics` 使用 OpenAlex 并要求标题规范化后完全匹配。
 
-HTML 报告由 Go 模板生成。PDF 使用 Chromium，通过 `FASTNEWS_CHROME` 指定可执行文件；不请求 PDF 时不需要浏览器。周报同时输出到 `output/` 及 `secnews/data/report/`。CI 的采集、摘要与报告工作流已改为 Go CLI。
+HTML 报告由 Go 模板生成。PDF 使用 Chromium，通过 `FASTNEWS_CHROME` 指定可执行文件；不请求 PDF 时不需要浏览器。周报同时输出到 `output/` 及 `secnews/data/report/`。采集、摘要与报告任务由服务器上的 Go CLI 执行。
 
 新闻来源可用 `config/news-sources.json` 或 `--sources-file` 扩展/禁用，按来源固定频道，默认仅导入近 14 天文章并跨全部历史去重。机构研究源可独立扩大时间窗口。配置、16 路来源及实测限制见 [资讯采集](docs/news-collection.md)。[同类产品调研](docs/competitive-research-2026-11-27.md) 与[社区信源调研](docs/source-research-2026-11-27.md) 保留原帖和官方出处。可选 [Telegram 个人读取准备](docs/telegram-sources.md) 独立运行，只保存本地私有快照，不改变 Go/React 服务依赖。
 
@@ -169,6 +169,6 @@ FASTNEWS_PUBLIC_PATH=/news make build
 FASTNEWS_PUBLIC_PATH=/news FASTNEWS_PORT=8788 ./bin/fastnews serve
 ```
 
-`ci.yml` 在 PR、main、`v*` 标签和手动运行时执行 Go、React 与浏览器检查并打包；推送 `v*` 标签会在检查通过后发布同一份原生包到 GitHub Releases，并通过 HTTPS 上传到生产接收端，由服务器上的 FastDeploy 激活。采集与报告生成由服务器执行，结果保存在独立语料目录；不再通过 Actions 提交数据。
+`ci.yml` 仅在 main 的 PR、推送和手动运行时执行 Go、React 与浏览器检查。自动 Release、发布包上传和生产部署已移除，推送标签不会触发发布。采集与报告生成由服务器执行，结果保存在独立语料目录。
 
-旧 Python、serverless API、模板、静态应用页面、依赖和对应测试已删除。历史语料、报告与账号数据保留；历史报告资源 URL 由 Go 映射到当前前端资源。失效的旧部署与回滚入口已移除。普通 main 提交只验证；标签部署由 FastDeploy 原子切换版本并检查健康，失败时恢复前态。配置见 [部署说明](docs/fastdeploy.md)。
+旧 Python、serverless API、模板、静态应用页面、依赖和对应测试已删除。历史语料、报告与账号数据保留；历史报告资源 URL 由 Go 映射到当前前端资源。失效的旧部署与回滚入口已移除。代码提交只验证；服务器发布由管理员单独执行，使用 FastDeploy 原子切换版本并检查健康，失败时恢复前态。配置见 [部署说明](docs/fastdeploy.md)。

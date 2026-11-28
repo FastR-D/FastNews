@@ -12,17 +12,17 @@ FASTNEWS_PUBLIC_PATH=/news make build-release
 ./scripts/package-release.sh
 ```
 
-包位于 `dist/release/release.tar.gz`，`manifest.json` 记录 repository、commit SHA 与 archive SHA256。正式发布使用 CI 对确切提交构建的包。
+包位于 `dist/release/release.tar.gz`，`manifest.json` 记录 repository、commit SHA 与 archive SHA256。发布前对确切提交完成检查、构建并核对包的校验值。
 
 ## GitHub Actions
 
 | 工作流 | 触发 | 行为 |
 | --- | --- | --- |
-| `ci.yml` | main 的 PR / 推送、`v*` 标签、手动 | Go race / vet、格式检查、桌面/手机/子路径/私有报告浏览器测试、原生构建和产物上传；标签检查通过后发布 GitHub Release 并部署 fastrd |
+| `ci.yml` | main 的 PR / 推送、手动 | Go race / vet、PostgreSQL 兼容测试、格式检查、桌面/手机/子路径/私有报告浏览器测试；仅失败时上传诊断 |
 
 采集、摘要检查点和报告全部由服务器保存，`top-conf/data/` 与 `secnews/data/` 不受 Git 跟踪。旧的数据提交 Actions 和 `commit-data.sh` 已删除。定时与手动采集统一由管理员进程页管理；中文总结与报告生成也可在服务器执行 Go CLI，使用服务器运行环境中的模型配置。
 
-CI 产物保留七天，`v*` 标签的包发布到 GitHub Releases。普通 main 提交和手动验证不部署。推送 `v*` 标签后，CI 通过 production Environment 用 HTTPS 上传经过验证的原生包。服务器仍由固定版本的 FastDeploy 原子切换、启动服务并进行健康检查，失败时恢复前态。
+2026-11-28 起移除 Release CI：Actions 不再打包发布产物、创建 GitHub Release、上传生产包或部署；`v*` 标签不触发工作流。发布与回滚由管理员在服务器单独执行。以下接收端配置保留用于维护既有部署设施，不会因提交或标签自动运行。
 
 ## FastDeploy 接入
 
@@ -66,22 +66,15 @@ systemctl --user enable --now fastnews-deploy.service
 
 将 `deployments/nginx-upload.conf` 的精确路径配置加入部署域名的 **HTTPS** server 块，执行 `nginx -t` 后再 reload。接收器默认监听 `127.0.0.1:8790`，可以用 `--listen` 指定反代或 SSH relay 对应的回环地址和端口。只代理该路径，保持接收端口仅限回环。入口应直接到 TLS 反代，前置 CDN 的请求时限短于激活时间时可使用专用 TLS 域名。反代日志应排除 Authorization 请求头。
 
-在 GitHub 仓库的 `production` Environment 中添加变量 `FASTNEWS_DEPLOY_URL`（例如 `https://news.fastrd.io/__fastnews/deploy`），并把服务器 `token` 文件的值设为 Secret `FASTNEWS_DEPLOY_TOKEN`。该令牌具有生产发布权限，不提供给应用或其他仓库。FastCAS、模型等密钥只放在服务器的 `runtime.json`，轮换时更新本地文件并重启接收端。原有组织 SSH Secrets 仍可能被其他项目使用，不需要删除。
+接收端令牌与运行配置由服务器管理员保管。既有 GitHub production Environment 配置仅作为历史配置保留，当前工作流不读取发布 Secret；其他项目共享的凭据不变。FastCAS、模型等密钥只放在服务器运行配置中。
 
-打新标签前，对 HTTPS 入口发一个无令牌的空 `POST`，预期返回 401；404 表示路由未接入，502 表示接收端不可用。正式部署返回 200 才表示 FastDeploy 完成激活和本机健康检查。上传或激活失败时查看 `journalctl --user -u fastnews-deploy.service`；不要用同一个运行强行覆盖失败后保留的发布目录。
+使用接收端前，对 HTTPS 入口发一个无令牌的空 `POST`，预期返回 401；404 表示路由未接入，502 表示接收端不可用。正式部署返回 200 才表示 FastDeploy 完成激活和本机健康检查。上传或激活失败时查看 `journalctl --user -u fastnews-deploy.service`；不要用同一个运行强行覆盖失败后保留的发布目录。
 
 ```bash
 curl -sS -o /dev/null -w '%{http_code}\n' -X POST https://news.fastrd.io/__fastnews/deploy
 ```
 
-确认新工作流已推送到 GitHub，再从包含这次改动的提交打新标签。例如：
-
-```bash
-git tag -a v2026.11.19.2 -m "Deploy FastNews over HTTPS"
-git push origin v2026.11.19.2
-```
-
-每次部署使用新的版本标签，不移动或复用已发布标签。news 独立域名的根入口由浏览器规范化到 `/news/`，兼容网关 strip-prefix；API 与 FastCAS 回调同时支持原根路径。
+标签仅标识版本，不会自动发布或部署。不要移动或复用已发布标签。news 独立域名的根入口由浏览器规范化到 `/news/`，兼容网关 strip-prefix；API 与 FastCAS 回调同时支持原根路径。
 
 生产 `runtime.json` 的基础配置示例：
 
@@ -113,7 +106,7 @@ Go 默认同时提供 SPA。前后端独立部署时，nginx 提供 `web/dist`�
 
 报告与信源配置位于 `FASTNEWS_ROOT` 的共享语料目录，不包含在运行时包内。首次升级前，从服务器现有数据目录或备份迁移报告，并单独部署 `config/news-sources.json`；已有报告应先比较校验值，不能覆盖服务器独有内容。迁移期间保留旧 HTML 以支持旧版本回滚，新版本不会公开旧 HTML。要启用全站登录保护，同时将接收端运行配置的 `FASTNEWS_REQUIRE_LOGIN` 设为 `true`。
 
-激活失败的目录保留用于排查。通常使用新提交和新标签触发新 run；若核验后确认仅是服务器 profile 过期，可将未激活的失败目录移动到私有恢复目录，备份 profile 和运行配置，再重跑原 run 的失败 job。不得移动 current 指向的目录、覆盖已激活发布或改动已有标签。2026-11-27 已按此方式恢复 run 45984638543，保留原发布身份与失败包备份。
+激活失败的目录保留用于排查；修复前先备份 profile 和运行配置。不得覆盖 current 指向的目录、已激活发布或改动已有标签。2026-11-27 的 CI run 45984638543 曾通过接收端恢复；该流程是历史记录，当前已移除自动发布工作流。
 
 ## 服务器持久语料
 
