@@ -181,7 +181,7 @@ func (s *Store) Limit(action, peer string) error {
 	var n int
 	key := Digest(action + ":" + peer)
 	now := Now()
-	e := s.DB.QueryRow(`INSERT INTO limits VALUES(?,1,?) ON CONFLICT(id) DO UPDATE SET attempts=CASE WHEN expires>? THEN attempts+1 ELSE 1 END,expires=CASE WHEN expires>? THEN expires ELSE excluded.expires END RETURNING attempts`, key, now+900, now, now).Scan(&n)
+	e := s.DB.QueryRow(`INSERT INTO limits VALUES(?,1,?) ON CONFLICT(id) DO UPDATE SET attempts=CASE WHEN limits.expires>? THEN limits.attempts+1 ELSE 1 END,expires=CASE WHEN limits.expires>? THEN limits.expires ELSE excluded.expires END RETURNING attempts`, key, now+900, now, now).Scan(&n)
 	if e != nil {
 		return e
 	}

@@ -135,3 +135,29 @@ func TestConcurrentPersonalUpdate(t *testing.T) {
 		t.Fatalf("lost update: %d %v", n, e)
 	}
 }
+
+func TestRateLimitUpsertAndExpiredWindow(t *testing.T) {
+	s, err := Open(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer s.Close()
+	for range 12 {
+		if err = s.Limit("login:test", "peer"); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err = s.Limit("login:test", "peer"); err == nil {
+		t.Fatal("rate limit not enforced")
+	}
+	if _, err = s.DB.Exec(`UPDATE limits SET expires=? WHERE id=?`, Now()-1, Digest("login:test:peer")); err != nil {
+		t.Fatal(err)
+	}
+	if err = s.Limit("login:test", "peer"); err != nil {
+		t.Fatal("expired window did not reset", err)
+	}
+	var attempts int
+	if err = s.DB.QueryRow(`SELECT attempts FROM limits WHERE id=?`, Digest("login:test:peer")).Scan(&attempts); err != nil || attempts != 1 {
+		t.Fatal(attempts, err)
+	}
+}

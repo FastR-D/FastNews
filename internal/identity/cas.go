@@ -205,7 +205,18 @@ func (c *CAS) Validate(ctx context.Context, s *store.Session) error {
 	if e != nil || !same(local, remote) || remote.State != "active" || remote.Version != local.Version {
 		return store.Fail(401, "无法确认 FastCAS 认证，请使用本地登录")
 	}
-	result, e := c.Store.DB.Exec(`UPDATE sessions SET provider=json_set(provider,'$.checked',?) WHERE hash=? AND expires>? AND EXISTS(SELECT 1 FROM cas_links WHERE issuer=? AND id=? AND state='active' AND version=?)`, store.Now(), s.Hash, store.Now(), c.Config.CASIssuer, local.ID, local.Version)
+	// Serialize JSON in Go: SQLite json_set is unavailable for PostgreSQL JSONB.
+	// Preserve provider extensions while retaining the link/version guard against revocation.
+	provider := map[string]any{}
+	if e = json.Unmarshal([]byte(s.Provider), &provider); e != nil {
+		return store.Fail(401, "FastCAS 会话无效")
+	}
+	provider["checked"] = store.Now()
+	encoded, e := json.Marshal(provider)
+	if e != nil {
+		return e
+	}
+	result, e := c.Store.DB.Exec(`UPDATE sessions SET provider=? WHERE hash=? AND expires>? AND EXISTS(SELECT 1 FROM cas_links WHERE issuer=? AND id=? AND state='active' AND version=?)`, string(encoded), s.Hash, store.Now(), c.Config.CASIssuer, local.ID, local.Version)
 	if e != nil {
 		return e
 	}

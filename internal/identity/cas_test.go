@@ -4,6 +4,9 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"os"
 	"sync"
 	"testing"
 	"time"
@@ -136,5 +139,99 @@ func TestVaultCipherIsSessionBound(t *testing.T) {
 	var v map[string]any
 	if e = json.Unmarshal([]byte(provider), &v); e != nil {
 		t.Fatal(e)
+	}
+}
+
+func TestSessionRefreshPreservesProviderAcrossDatabases(t *testing.T) {
+	for _, backend := range []string{"sqlite", "postgres"} {
+		t.Run(backend, func(t *testing.T) {
+			var s *store.Store
+			var err error
+			if backend == "postgres" {
+				dsn := os.Getenv("FASTNEWS_TEST_POSTGRES_DSN")
+				if dsn == "" {
+					t.Skip("isolated PostgreSQL test database not configured")
+				}
+				s, err = store.OpenPostgres(dsn)
+			} else {
+				s, err = store.Open(t.TempDir())
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer s.Close()
+			user, err := s.Create("refresh-"+store.Random()+"@example.com", "test-password-12345", "")
+			if err != nil {
+				t.Fatal(err)
+			}
+			var email string
+			if err = s.DB.QueryRow(`SELECT email FROM users WHERE id=?`, user).Scan(&email); err != nil {
+				t.Fatal(err)
+			}
+			for range 2 {
+				if err = s.Limit("refresh-test:"+user, "test"); err != nil {
+					t.Fatal(err)
+				}
+			}
+			raw, _, err := s.Login(email, "test-password-12345", "test")
+			if err != nil {
+				t.Fatal(err)
+			}
+			link := &fastcas.Link{ID: "link-" + store.Random(), ClientID: "news", Subject: user, LocalRef: user, State: "active", Version: 1}
+			calls := 0
+			upstream := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				calls++
+				w.Header().Set("Content-Type", "application/json")
+				json.NewEncoder(w).Encode(link)
+			}))
+			defer upstream.Close()
+			cfg := config.Config{CASEnabled: true, CASIssuer: upstream.URL, CASClientID: "news", CASSecret: "test", CASRedirect: "https://news.example.org/callback"}
+			c, err := New(cfg, s)
+			if err != nil {
+				t.Fatal(err)
+			}
+			c.Client, err = fastcas.New(fastcas.Config{Issuer: upstream.URL, ClientID: "news", ClientSecret: "test", RedirectURI: cfg.CASRedirect, HTTPClient: upstream.Client()}, c)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err = c.Accept(link); err != nil {
+				t.Fatal(err)
+			}
+			provider, _ := json.Marshal(map[string]any{"issuer": upstream.URL, "link_id": link.ID, "link_version": 1, "checked": 0, "extension": "preserve-me"})
+			if _, err = s.DB.Exec(`UPDATE sessions SET source='fastcas',provider=? WHERE hash=?`, string(provider), store.Digest(raw)); err != nil {
+				t.Fatal(err)
+			}
+			for range 2 {
+				session, e := s.Session(raw)
+				if e != nil {
+					t.Fatal(e)
+				}
+				if e = c.Validate(context.Background(), session); e != nil {
+					t.Fatal(e)
+				}
+			}
+			if calls != 1 {
+				t.Fatal("validation cache not used", calls)
+			}
+			session, err := s.Session(raw)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var saved map[string]any
+			if err = json.Unmarshal([]byte(session.Provider), &saved); err != nil {
+				t.Fatal(err)
+			}
+			if saved["extension"] != "preserve-me" || saved["checked"].(float64) < store.Now()-10 {
+				t.Fatal(saved)
+			}
+			link.State = "revoked"
+			link.Version = 2
+			if err = c.Accept(link); err != nil {
+				t.Fatal(err)
+			}
+			if err = c.Validate(context.Background(), session); err == nil {
+				t.Fatal("revoked link accepted")
+			}
+		})
 	}
 }
