@@ -280,13 +280,9 @@ func (s *Server) catalogHTTP(w http.ResponseWriter, r *http.Request, p string) e
 	case "/api/entities":
 		return s.entity(w, r)
 	case "/api/report":
-		path := r.URL.Query().Get("path")
-		if route := r.URL.Query().Get("route"); route != "" {
-			var err error
-			path, err = s.Catalog.ReportPath(route)
-			if err != nil {
-				return store.Fail(404, "报告不存在")
-			}
+		path, err := s.Catalog.ReportPath(r.URL.Query().Get("route"))
+		if err != nil {
+			return store.Fail(404, "报告不存在")
 		}
 		v, err := s.Catalog.ReadReport(path)
 		if err != nil {
@@ -504,7 +500,7 @@ func (s *Server) static(w http.ResponseWriter, r *http.Request, p string) error 
 
 	} else {
 		switch strings.TrimSuffix(p, "/") {
-		case "", "/entity", "/report", "/admin/users", "/admin/processes", "/sources", "/top-conf", "/coverage", "/field-briefing", "/summary-brief", "/inbox", "/impression", "/secnews", "/arxiv", "/trend", "/authors", "/login", "/account":
+		case "", "/entity", "/admin/users", "/admin/processes", "/sources", "/top-conf", "/coverage", "/field-briefing", "/summary-brief", "/inbox", "/impression", "/secnews", "/arxiv", "/trend", "/authors", "/login", "/account":
 			rel = "index.html"
 		default:
 			if _, err := s.Catalog.ReportPath(p); err != nil {

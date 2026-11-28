@@ -185,7 +185,7 @@ func TestLocalContentIsolationCSRFAndInbox(t *testing.T) {
 }
 func TestCatalogOldRoutesAndPrivateFiles(t *testing.T) {
 	h := fixture(t)
-	for _, p := range []string{"/", "/sources/", "/top-conf/", "/coverage/", "/field-briefing/", "/summary-brief/", "/inbox/", "/impression/", "/secnews/", "/arxiv/", "/trend/", "/login", "/account/", "/top-conf/usenix/2026/", "/report/", "/top-conf/data/report/USENIX_2026_Report.json?download=1"} {
+	for _, p := range []string{"/", "/sources/", "/top-conf/", "/coverage/", "/field-briefing/", "/summary-brief/", "/inbox/", "/impression/", "/secnews/", "/arxiv/", "/trend/", "/login", "/account/", "/top-conf/usenix/2026/", "/top-conf/data/report/USENIX_2026_Report.json?download=1"} {
 		resp, e := http.Get(h.http.URL + p)
 		if e != nil {
 			t.Fatal(e)
@@ -195,7 +195,7 @@ func TestCatalogOldRoutesAndPrivateFiles(t *testing.T) {
 			t.Fatal(p, resp.StatusCode)
 		}
 	}
-	for _, p := range []string{"/index.html", "/top-conf/index.html", "/reports/handoff.js", "/reports/report.css", "/auth/login", "/.env", "/private/accounts.sqlite", "/serve.py", "/top-conf/data/report/../../../private/accounts.sqlite", "/missing.html"} {
+	for _, p := range []string{"/report/?path=top-conf/data/report/USENIX_2026_Report.json", "/index.html", "/top-conf/index.html", "/reports/handoff.js", "/reports/report.css", "/auth/login", "/.env", "/private/accounts.sqlite", "/serve.py", "/top-conf/data/report/../../../private/accounts.sqlite", "/missing.html"} {
 		resp, e := http.Get(h.http.URL + p)
 		if e != nil {
 			t.Fatal(e)
@@ -583,7 +583,7 @@ func TestLegacyResearchSSOProfileWritesHandoffAndLogout(t *testing.T) {
 func TestPrivateWorkspaceProtectsNativeReportAndRawData(t *testing.T) {
 	h := fixture(t)
 	h.app.Config.RequireLogin = true
-	for _, path := range []string{"/api/report?path=top-conf/data/report/USENIX_2026_Report.json", "/api/papers", "/api/sources", "/api/reports", "/api/trend"} {
+	for _, path := range []string{"/api/report?route=/top-conf/usenix/2026/", "/api/papers", "/api/sources", "/api/reports", "/api/trend"} {
 		status, _, _ := h.request(t, "GET", path, nil, "", false)
 		if status != 401 {
 			t.Fatal(path, status)
@@ -594,7 +594,7 @@ func TestPrivateWorkspaceProtectsNativeReportAndRawData(t *testing.T) {
 		t.Fatal(info)
 	}
 	client := &http.Client{CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}
-	for _, path := range []string{"/", "/account/", "/top-conf/usenix/2026/", "/sources/", "/report/?path=top-conf/data/report/USENIX_2026_Report.json", "/top-conf/data/report/USENIX_2026_Report.json", "/top-conf/data/conferences/usenix_2026.jsonl"} {
+	for _, path := range []string{"/", "/account/", "/top-conf/usenix/2026/", "/sources/", "/top-conf/data/report/USENIX_2026_Report.json", "/top-conf/data/conferences/usenix_2026.jsonl"} {
 		res, err := client.Get(h.http.URL + path)
 		if err != nil {
 			t.Fatal(err)
@@ -605,7 +605,7 @@ func TestPrivateWorkspaceProtectsNativeReportAndRawData(t *testing.T) {
 		}
 	}
 	h.login(t, "reader@example.com")
-	status, body, _ := h.request(t, "GET", "/api/report?path=top-conf/data/report/USENIX_2026_Report.json", nil, "", true)
+	status, body, _ := h.request(t, "GET", "/api/report?route=/top-conf/usenix/2026/", nil, "", true)
 	if status != 200 || len(body["content"].([]any)) != 1 {
 		t.Fatal(status, body)
 	}
@@ -622,6 +622,10 @@ func TestReportCanonicalRoutes(t *testing.T) {
 		if status != 200 || body["report"].(map[string]any)["url"] != "/top-conf/usenix/2026/" {
 			t.Fatal(status, body)
 		}
+	}
+	status, _, _ := h.request(t, "GET", "/api/report?path=top-conf/data/report/USENIX_2026_Report.json", nil, "", false)
+	if status != 404 {
+		t.Fatal("legacy report query accepted", status)
 	}
 	for _, route := range []string{"/top-conf/usenix/1900/", "/top-conf/../private/accounts.sqlite/"} {
 		status, _, _ := h.request(t, "GET", "/api/report?route="+route, nil, "", false)

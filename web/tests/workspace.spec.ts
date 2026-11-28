@@ -409,7 +409,7 @@ test('reports read inside the workspace without legacy HTML or scripts', async (
   const { reports } = await (await page.request.get(route(baseURL, 'api/reports'))).json()
   const report = reports.find((r: { path: string }) => r.path.endsWith('USENIX_2025_Report.json'))
   expect(report.url).toBe('/top-conf/usenix/2025/')
-  await visit(page, baseURL, `report/?path=${encodeURIComponent(report.path)}`)
+  await visit(page, baseURL, report.url)
   await expect(page).toHaveURL(/\/top-conf\/usenix\/2025\/$/)
   await expect(page.getByTestId('workspace-header')).toBeVisible()
   const doc = page.getByTestId('report-document')
@@ -425,6 +425,13 @@ test('reports read inside the workspace without legacy HTML or scripts', async (
   await page.reload()
   await expect(doc.locator('article').first()).toBeVisible()
   expect((await page.request.get(route(baseURL, 'reports/handoff.js'))).status()).toBe(404)
+  expect(
+    (
+      await page.request.get(
+        route(baseURL, 'report/?path=top-conf/data/report/USENIX_2025_Report.json'),
+      )
+    ).status(),
+  ).toBe(404)
   expect(
     (
       await page.request.get(route(baseURL, 'top-conf/data/report/USENIX_2025_Report.html'))
@@ -938,7 +945,7 @@ test('report search filters content and directory, with stable deep links', asyn
   baseURL,
   isMobile,
 }) => {
-  await visit(page, baseURL, 'report/?path=top-conf%2Fdata%2Freport%2FUSENIX_2025_Report.json')
+  await visit(page, baseURL, 'top-conf/usenix/2025/')
   await expect(page).toHaveURL(/\/top-conf\/usenix\/2025\/$/)
   const doc = page.getByTestId('report-document')
   await expect(doc.locator('.paper-card')).toHaveCount(16)

@@ -310,7 +310,6 @@ function Workspace() {
                 />
                 <Route path="/secnews/" element={<News />} />
                 <Route path="/sources/" element={<Sources />} />
-                <Route path="/report/" element={<ReportReader />} />
                 <Route path="/top-conf/:conference/:year/" element={<ReportReader />} />
                 <Route path="/reports/:kind/:slug/" element={<ReportReader />} />
                 <Route path="/arxiv/" element={<Arxiv />} />

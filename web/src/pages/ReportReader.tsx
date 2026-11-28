@@ -1,5 +1,5 @@
 import { createElement, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, BookOpen, Search, X, List } from 'lucide-react'
 import { api, message, safeURL } from '../api'
 import { ReadingButton, ReadingInput } from '../components/ReadingLayout'
@@ -103,9 +103,6 @@ function contents(nodes: DocumentNode[]): { id: string; title: string }[] {
 export default function ReportReader() {
   const [params, setParams] = useSearchParams()
   const location = useLocation()
-  const changeRoute = useNavigate()
-  const legacy = location.pathname.replace(/\/$/, '') === '/report'
-  const path = params.get('path') || ''
   const query = params.get('q') || ''
   const [result, setResult] = useState<{ report: Report; content: DocumentNode[] } | null>(null)
   const [error, setError] = useState('')
@@ -123,7 +120,7 @@ export default function ReportReader() {
     setError('')
     setTocOpen(false)
     api<{ report: Report; content: DocumentNode[] }>(
-      `api/report?${new URLSearchParams(legacy ? { path } : { route: location.pathname })}`,
+      `api/report?${new URLSearchParams({ route: location.pathname })}`,
       { signal: abort.signal },
     )
       .then((value) => {
@@ -133,16 +130,7 @@ export default function ReportReader() {
         if (!abort.signal.aborted) setError(message(e))
       })
     return () => abort.abort()
-  }, [path, legacy, location.pathname])
-  useEffect(() => {
-    if (!result?.report.url || !legacy) return
-    const next = new URLSearchParams(params)
-    next.delete('path')
-    changeRoute(
-      { pathname: result.report.url, search: next.toString(), hash: location.hash },
-      { replace: true },
-    )
-  }, [result, legacy, params, location.hash, changeRoute])
+  }, [location.pathname])
   useEffect(() => {
     const entries = toc
       .map((item) => document.getElementById(item.id))
