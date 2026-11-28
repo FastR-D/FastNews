@@ -69,6 +69,7 @@ export interface Profile {
   inboxUnread: number
 }
 export interface Report {
+  url: string
   title: string
   kind: string
   path: string

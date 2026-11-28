@@ -208,10 +208,7 @@ export function ReportList({ reports }: { reports: Report[] }) {
             <FileText size={17} className="shrink-0 text-[var(--fastui-muted)]" />
             <div className="flex-1 min-w-0">
               <h3 className="m-0 text-sm font-semibold break-words">
-                <Link
-                  className="news-title"
-                  to={`/report/?path=${encodeURIComponent(report.path)}`}
-                >
+                <Link className="news-title" to={report.url}>
                   {report.title}
                 </Link>
               </h3>

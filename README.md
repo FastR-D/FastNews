@@ -43,11 +43,12 @@ Go 可直接提供构建后的 SPA，也可由 nginx / 静态服务器提供 `we
 | 关注作者 | `/authors` | 增删改、研究标签、主页解析、解析结果与论文链接 |
 | 私信 | `/inbox/` | 上海日历日每天一篇、关注作者优先、去重、已读和历史 |
 | 研究印象 | `/impression/` 或顶栏 | 最长 4000 字，按当前账号保存 |
-| 账号 | `/login` | 账号信息修改与 FastCAS 认证 |
+| 登录 | `/login` | 登录、邀请注册、恢复账号 |
+| 账号设置 | `/account/` | 账号信息修改与 FastCAS 认证 |
 
-arXiv 导读默认打开最近有预印本的采集日。`GET /api/news?source=arxiv|news|security|ai|articles` 分别返回对应范围的最近非空日期及内容，其中 `articles` 为全部非 arXiv 资讯；指定 `date` 时保留该日期，即使该范围当天为空。不指定来源时保留总览使用的全部资讯行为。旧调用若需要全部非 arXiv 内容，应从 `source=security` 改为 `source=articles`。
+arXiv 导读默认打开最近有预印本的采集日。`source=arxiv` 始终由服务端分页，默认每页 12 篇；`page` 从 1 开始，`page_size` 最大 50。`q` 搜索标题、作者、摘要和分类，`category` 精确筛选领域，先过滤整天语料再分页，按发表时间倒序；响应提供 `total/page/pageSize/pages/categories`，其中分类选项来自整天语料。日期、搜索、领域、每页条数和翻页在同一工具栏，手机自动换行。`GET /api/news?source=arxiv|news|security|ai|articles` 分别返回对应范围的最近非空日期及内容，其中 `articles` 为全部非 arXiv 资讯；指定 `date` 时保留该日期，即使该范围当天为空。不指定来源时保留总览使用的全部资讯行为。旧调用若需要全部非 arXiv 内容，应从 `source=security` 改为 `source=articles`。
 
-前端统一页面边距、卡片与控件，使用 HarmonyOS Sans SC CDN 字体和亮暗主题。报告在 `/report/?path=…` 站内阅读，历史报告已转换为 JSON 文档数据；旧独立 HTML、阅读脚本和兼容页面入口已删除。实现约定见 [界面规范](docs/FASTUI.md)。
+前端统一页面边距、卡片与控件，使用 HarmonyOS Sans SC CDN 字体和亮暗主题。会议报告在 `/top-conf/<conference>/<year>/` 站内阅读，例如 `/top-conf/usenix/2026/`；旧 `/report/?path=…` 链接自动切换到新地址并保留搜索和目录锚点。其他报告使用 `/reports/<kind>/<slug>/`。历史报告已转换为 JSON 文档数据；旧独立 HTML、阅读脚本和兼容页面入口已删除。实现约定见 [界面规范](docs/FASTUI.md)。
 
 研究趋势使用已有 arXiv 采集档案，不请求外部模型。`GET /api/trend?scope=ai&days=30` 按 UTC 采集日比较相邻等长窗口，以档案最新论文日为统计终点。按 arXiv ID 去重，覆盖现有 AI/NLP、安全和软件工程订阅及其中的交叉分类，不代表全量 arXiv 或引用影响力。
 

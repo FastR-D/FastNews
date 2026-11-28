@@ -226,7 +226,7 @@ function Workspace() {
                 name={profile.person}
                 detail={profile.email}
                 actions={[
-                  { label: '账号设置', onSelect: () => navigate('/login') },
+                  { label: '账号设置', onSelect: () => navigate('/account/') },
                   {
                     label: '退出登录',
                     danger: true,
@@ -311,12 +311,15 @@ function Workspace() {
                 <Route path="/secnews/" element={<News />} />
                 <Route path="/sources/" element={<Sources />} />
                 <Route path="/report/" element={<ReportReader />} />
+                <Route path="/top-conf/:conference/:year/" element={<ReportReader />} />
+                <Route path="/reports/:kind/:slug/" element={<ReportReader />} />
                 <Route path="/arxiv/" element={<Arxiv />} />
                 <Route path="/trend/" element={<Trend />} />
                 <Route path="/inbox/" element={<Inbox />} />
                 <Route path="/authors" element={<Authors />} />
                 <Route path="/impression/" element={<Home />} />
                 <Route path="/login" element={<Account />} />
+                <Route path="/account/" element={<Account />} />
                 <Route path="/admin/users" element={<UsersPage />} />
                 <Route path="/admin/processes" element={<Processes />} />
                 <Route

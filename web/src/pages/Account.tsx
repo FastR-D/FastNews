@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { Button, SegmentedControl, TextField } from '@fastrd/ui-react'
 import { api, asset, message, setCSRF, safeURL } from '../api'
 import { useApp } from '../context'
@@ -7,6 +7,7 @@ import { ErrorMessage, PageHeading, Panel } from '../components/Common'
 type CASStatus = { enabled: boolean; login_enabled: boolean; link_enabled: boolean }
 export default function Account() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { profile, refresh, notify } = useApp()
   const [params] = useSearchParams()
   const [mode, setMode] = useState(params.get('mode') === 'register' ? 'register' : 'login'),
@@ -25,6 +26,10 @@ export default function Account() {
     currentPassword: '',
     newPassword: '',
   })
+  useEffect(() => {
+    if (profile && !busy && location.pathname.replace(/\/$/, '') === '/login')
+      navigate({ pathname: '/account/', search: location.search }, { replace: true })
+  }, [profile?.userId, busy, location.pathname, location.search, navigate])
   useEffect(() => {
     if (profile)
       setDetails({
@@ -96,11 +101,13 @@ export default function Account() {
       setPassword('')
       setToken('')
       if (mode === 'login') {
-        await refresh()
         const next = params.get('next') || '/'
-        navigate(
-          next.startsWith('/') && !next.startsWith('//') && !next.includes('\\') ? next : '/',
-          { replace: true },
+        // Reload after setting the session cookie so the private shell and profile
+        // initialize together, without racing the legacy login redirect.
+        window.location.replace(
+          asset(
+            next.startsWith('/') && !next.startsWith('//') && !next.includes('\\') ? next : '/',
+          ),
         )
       } else {
         setMode('login')
@@ -180,6 +187,7 @@ export default function Account() {
               }}
             >
               <SegmentedControl
+                className="account-operation-tabs"
                 label="账号操作"
                 options={[
                   { value: 'login', label: '登录' },

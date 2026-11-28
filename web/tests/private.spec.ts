@@ -388,3 +388,34 @@ test('collection task filters and pagination work with searchable bounded source
     true,
   )
 })
+
+test('account settings have a dedicated protected URL and evenly spaced login tabs', async ({
+  page,
+}) => {
+  await page.goto('/account/')
+  await expect(page).toHaveURL(/login\?next=%2Faccount%2F/)
+  const tabs = page.getByRole('group', { name: '账号操作' })
+  const buttons = tabs.getByRole('button')
+  await expect(buttons).toHaveCount(3)
+  const widths = await buttons.evaluateAll((nodes) =>
+    nodes.map((node) => node.getBoundingClientRect().width),
+  )
+  expect(Math.max(...widths) - Math.min(...widths)).toBeLessThan(1)
+  await expect(tabs).toHaveCSS('border-radius', '14px')
+  for (const button of await buttons.all()) await expect(button).toHaveCSS('border-radius', '10px')
+  await buttons.getByText('恢复账号', { exact: true }).click()
+  await expect(buttons.getByText('恢复账号', { exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
+  await buttons.getByText('登录', { exact: true }).click()
+  await page.getByLabel('邮箱', { exact: true }).fill('browser-test@example.com')
+  await page.getByLabel('密码', { exact: true }).fill('browser-test-password-123')
+  await page.getByRole('form', { name: '本地账号' }).locator('button[type=submit]').click()
+  await expect(page).toHaveURL(/\/account\/$/)
+  await page.reload()
+  await expect(page.getByRole('heading', { name: '账号信息', exact: true })).toBeVisible()
+  await page.goto('/login?fastcas=complete')
+  await expect(page).toHaveURL(/\/account\/\?fastcas=complete$/)
+  await expect(page.getByText('FastCAS 认证已完成。', { exact: true })).toBeVisible()
+})

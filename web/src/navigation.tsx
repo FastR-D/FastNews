@@ -83,7 +83,7 @@ export function currentPage(path: string) {
     navigation.find((item) =>
       item.to === '/' ? path === '/' : path.startsWith(item.to.replace(/\/$/, '')),
     ) || {
-      to: '/login',
+      to: path.startsWith('/login') ? '/login' : '/account/',
       label: path.startsWith('/admin/processes')
         ? '进程管理'
         : path.startsWith('/admin/users')

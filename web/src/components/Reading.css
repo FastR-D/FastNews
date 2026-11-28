@@ -2029,3 +2029,101 @@ textarea {
     flex-basis: 100%;
   }
 }
+
+/* Equal-width account tabs with a shared inset and concentric corners. */
+.account-operation-tabs.fastui-segments {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 4px;
+  width: 100%;
+  padding: 4px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--fastui-raised);
+}
+.account-operation-tabs .fastui-segment {
+  min-width: 0;
+  min-height: 42px;
+  padding: 9px 8px;
+  border: 0;
+  border-radius: 10px;
+  font: inherit;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--fastui-secondary);
+  background: transparent;
+}
+.account-operation-tabs .fastui-segment[aria-pressed='true'] {
+  color: var(--fastui-focus);
+  background: var(--fastui-surface);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.06);
+}
+.account-operation-tabs .fastui-segment:focus-visible {
+  outline: 2px solid var(--fastui-focus);
+  outline-offset: -2px;
+}
+.arxiv-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 16px 20px;
+}
+.arxiv-date-control,
+.arxiv-search,
+.arxiv-paging {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.arxiv-date-control,
+.arxiv-paging {
+  flex-shrink: 0;
+  white-space: nowrap;
+  font-size: 13px;
+  color: var(--fastui-secondary);
+}
+.arxiv-toolbar > .fastui-select {
+  width: auto;
+  max-width: 140px;
+}
+.arxiv-search {
+  flex: 1 1 180px;
+  gap: 0;
+  border-radius: 10px;
+  background: var(--fastui-raised);
+}
+.arxiv-search .fastui-input {
+  width: 100%;
+  min-width: 0;
+  background: transparent;
+}
+.arxiv-search .fastui-button,
+.arxiv-paging .fastui-button {
+  flex-shrink: 0;
+  min-width: 32px;
+  padding: 7px;
+}
+.arxiv-paging {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 640px) {
+  .arxiv-toolbar {
+    padding: 14px;
+    gap: 10px 8px;
+  }
+  .arxiv-date-control {
+    flex: 1;
+  }
+  .arxiv-search {
+    flex-basis: 100%;
+    order: 1;
+  }
+  .arxiv-toolbar > .fastui-select[aria-label='每页论文数'],
+  .arxiv-paging {
+    order: 2;
+  }
+}

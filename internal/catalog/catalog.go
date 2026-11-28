@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"golang.org/x/text/unicode/norm"
 	"math"
+	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -49,6 +50,7 @@ type Report struct {
 	Title   string `json:"title"`
 	Kind    string `json:"kind"`
 	Path    string `json:"path"`
+	URL     string `json:"url"`
 	PDF     string `json:"pdf,omitempty"`
 	Size    int64  `json:"size"`
 	Updated string `json:"updated"`
@@ -373,6 +375,35 @@ func (c *Catalog) News(day string) ([]map[string]any, error) {
 	}
 	return rows, nil
 }
+
+var conferenceReportName = regexp.MustCompile(`^([A-Za-z0-9-]+)_([0-9]{4})_Report\.json$`)
+
+func reportURL(kind, name string) string {
+	if match := conferenceReportName.FindStringSubmatch(name); kind == "top-conf" && match != nil {
+		return "/top-conf/" + strings.ToLower(match[1]) + "/" + match[2] + "/"
+	}
+	return "/reports/" + kind + "/" + url.PathEscape(strings.TrimSuffix(name, ".json")) + "/"
+}
+
+// Resolve only indexed reports, never arbitrary filesystem paths from route segments.
+func (c *Catalog) ReportPath(route string) (string, error) {
+	reports, err := c.Reports()
+	if err != nil {
+		return "", err
+	}
+	decodedRoute, err := url.PathUnescape(route)
+	if err != nil {
+		return "", err
+	}
+	for _, report := range reports {
+		decodedURL, err := url.PathUnescape(report.URL)
+		if err == nil && strings.TrimSuffix(decodedURL, "/") == strings.TrimSuffix(decodedRoute, "/") {
+			return report.Path, nil
+		}
+	}
+	return "", fmt.Errorf("report not found")
+}
+
 func (c *Catalog) Reports() ([]Report, error) {
 	out := []Report{}
 	for _, kind := range []string{"top-conf", "secnews"} {
@@ -392,7 +423,7 @@ func (c *Catalog) Reports() ([]Report, error) {
 			for k, label := range map[string]string{"USENIX": "USENIX Security", "IEEE-SP": "IEEE S&P", "CCS": "ACM CCS"} {
 				title = strings.ReplaceAll(title, k, label)
 			}
-			v := Report{Title: title, Kind: kind, Path: kind + "/data/report/" + name, Size: info.Size(), Updated: info.ModTime().UTC().Format(time.RFC3339)}
+			v := Report{URL: reportURL(kind, name), Title: title, Kind: kind, Path: kind + "/data/report/" + name, Size: info.Size(), Updated: info.ModTime().UTC().Format(time.RFC3339)}
 			pdf := strings.TrimSuffix(f, ".json") + ".pdf"
 			if _, e := os.Stat(pdf); e == nil {
 				v.PDF = kind + "/data/report/" + filepath.Base(pdf)

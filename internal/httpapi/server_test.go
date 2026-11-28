@@ -185,7 +185,7 @@ func TestLocalContentIsolationCSRFAndInbox(t *testing.T) {
 }
 func TestCatalogOldRoutesAndPrivateFiles(t *testing.T) {
 	h := fixture(t)
-	for _, p := range []string{"/", "/sources/", "/top-conf/", "/coverage/", "/field-briefing/", "/summary-brief/", "/inbox/", "/impression/", "/secnews/", "/arxiv/", "/trend/", "/login", "/report/", "/top-conf/data/report/USENIX_2026_Report.json?download=1"} {
+	for _, p := range []string{"/", "/sources/", "/top-conf/", "/coverage/", "/field-briefing/", "/summary-brief/", "/inbox/", "/impression/", "/secnews/", "/arxiv/", "/trend/", "/login", "/account/", "/top-conf/usenix/2026/", "/report/", "/top-conf/data/report/USENIX_2026_Report.json?download=1"} {
 		resp, e := http.Get(h.http.URL + p)
 		if e != nil {
 			t.Fatal(e)
@@ -594,7 +594,7 @@ func TestPrivateWorkspaceProtectsNativeReportAndRawData(t *testing.T) {
 		t.Fatal(info)
 	}
 	client := &http.Client{CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}
-	for _, path := range []string{"/", "/sources/", "/report/?path=top-conf/data/report/USENIX_2026_Report.json", "/top-conf/data/report/USENIX_2026_Report.json", "/top-conf/data/conferences/usenix_2026.jsonl"} {
+	for _, path := range []string{"/", "/account/", "/top-conf/usenix/2026/", "/sources/", "/report/?path=top-conf/data/report/USENIX_2026_Report.json", "/top-conf/data/report/USENIX_2026_Report.json", "/top-conf/data/conferences/usenix_2026.jsonl"} {
 		res, err := client.Get(h.http.URL + path)
 		if err != nil {
 			t.Fatal(err)
@@ -612,5 +612,30 @@ func TestPrivateWorkspaceProtectsNativeReportAndRawData(t *testing.T) {
 	status, _, _ = h.request(t, "GET", "/api/report?path=../../private/accounts.sqlite", nil, "", true)
 	if status != 404 {
 		t.Fatal(status)
+	}
+}
+
+func TestReportCanonicalRoutes(t *testing.T) {
+	h := fixture(t)
+	for _, route := range []string{"/top-conf/usenix/2026/", "/top-conf/usenix/2026"} {
+		status, body, _ := h.request(t, "GET", "/api/report?route="+route, nil, "", false)
+		if status != 200 || body["report"].(map[string]any)["url"] != "/top-conf/usenix/2026/" {
+			t.Fatal(status, body)
+		}
+	}
+	for _, route := range []string{"/top-conf/usenix/1900/", "/top-conf/../private/accounts.sqlite/"} {
+		status, _, _ := h.request(t, "GET", "/api/report?route="+route, nil, "", false)
+		if status != 404 {
+			t.Fatal(route, status)
+		}
+	}
+	h.app.Config.PublicPath = "/news"
+	res, err := http.Get(h.http.URL + "/news/top-conf/usenix/2026/")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer res.Body.Close()
+	if res.StatusCode != 200 {
+		t.Fatal(res.StatusCode)
 	}
 }

@@ -130,6 +130,8 @@ test('arXiv navigation, dated corpus, fields, pagination and reading use real AP
   await page.getByRole('link', { name: 'arXiv 导读', exact: true }).click()
   await expect(page.getByRole('heading', { name: 'arXiv 最新导读', level: 1 })).toBeVisible()
   const latestArxiv = await (await page.request.get(route(baseURL, 'api/news?source=arxiv'))).json()
+  expect(latestArxiv.articles.length).toBeLessThanOrEqual(12)
+  expect(latestArxiv.total).toBeGreaterThan(12)
   await expect(page.getByLabel('采集日期', { exact: true })).toHaveValue(latestArxiv.date)
   await page.getByLabel('采集日期', { exact: true }).fill(date)
   await expect(page.getByTestId('paper-row')).toHaveCount(12)
@@ -173,6 +175,36 @@ test('arXiv navigation, dated corpus, fields, pagination and reading use real AP
   await expect(page.getByTestId('paper-row')).toHaveCount(Math.min(12, nextPapers.length))
   await page.reload()
   await expect(page.getByLabel('采集日期', { exact: true })).toHaveValue(nextDate)
+  await visit(page, baseURL, `arxiv/?date=${date}&page=2`)
+  await expect(page.getByRole('button', { name: '2', exact: true })).toBeVisible()
+  await page.getByLabel('搜索 arXiv 论文', { exact: true }).fill(papers[12].title)
+  await page.getByRole('button', { name: '搜索论文', exact: true }).click()
+  await expect(page.getByTestId('paper-row').first()).toContainText(papers[12].title)
+  expect(new URL(page.url()).searchParams.get('page')).toBeNull()
+  await page.reload()
+  await expect(page.getByLabel('搜索 arXiv 论文', { exact: true })).toHaveValue(papers[12].title)
+  await page.getByLabel('搜索 arXiv 论文', { exact: true }).fill('no-match-unique-keyword')
+  await page.getByRole('button', { name: '搜索论文', exact: true }).click()
+  await expect(page.getByTestId('paper-row')).toHaveCount(0)
+  await expect(page.getByText('当天暂无匹配的 arXiv 论文', { exact: true })).toBeVisible()
+  await page.getByRole('button', { name: '清除论文搜索', exact: true }).click()
+  await expect(page.getByTestId('paper-row')).toHaveCount(12)
+  if (info.project.name !== 'mobile') {
+    const controls = await page.locator('.arxiv-toolbar > *').evaluateAll((nodes) =>
+      nodes.map((node) => {
+        const r = node.getBoundingClientRect()
+        return r.y + r.height / 2
+      }),
+    )
+    expect(Math.max(...controls) - Math.min(...controls)).toBeLessThan(2)
+  }
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
+  ).toBeTruthy()
+  await page.screenshot({
+    path: `../output/ui-review/${info.project.name}-arxiv-toolbar.png`,
+    animations: 'disabled',
+  })
   await visit(page, baseURL, `secnews/?date=${date}`)
   await page.getByRole('button', { name: '全部资讯', exact: true }).click()
   await expect(page.getByTestId('news-row')).toHaveCount(
@@ -376,7 +408,9 @@ test('reports read inside the workspace without legacy HTML or scripts', async (
 }, info) => {
   const { reports } = await (await page.request.get(route(baseURL, 'api/reports'))).json()
   const report = reports.find((r: { path: string }) => r.path.endsWith('USENIX_2025_Report.json'))
+  expect(report.url).toBe('/top-conf/usenix/2025/')
   await visit(page, baseURL, `report/?path=${encodeURIComponent(report.path)}`)
+  await expect(page).toHaveURL(/\/top-conf\/usenix\/2025\/$/)
   await expect(page.getByTestId('workspace-header')).toBeVisible()
   const doc = page.getByTestId('report-document')
   await expect(doc.locator('article').first()).toBeVisible()
@@ -905,6 +939,7 @@ test('report search filters content and directory, with stable deep links', asyn
   isMobile,
 }) => {
   await visit(page, baseURL, 'report/?path=top-conf%2Fdata%2Freport%2FUSENIX_2025_Report.json')
+  await expect(page).toHaveURL(/\/top-conf\/usenix\/2025\/$/)
   const doc = page.getByTestId('report-document')
   await expect(doc.locator('.paper-card')).toHaveCount(16)
   await expect(doc.locator('.paper-card').first()).toHaveCSS('border-top-width', '0px')

@@ -280,7 +280,15 @@ func (s *Server) catalogHTTP(w http.ResponseWriter, r *http.Request, p string) e
 	case "/api/entities":
 		return s.entity(w, r)
 	case "/api/report":
-		v, err := s.Catalog.ReadReport(r.URL.Query().Get("path"))
+		path := r.URL.Query().Get("path")
+		if route := r.URL.Query().Get("route"); route != "" {
+			var err error
+			path, err = s.Catalog.ReportPath(route)
+			if err != nil {
+				return store.Fail(404, "报告不存在")
+			}
+		}
+		v, err := s.Catalog.ReadReport(path)
 		if err != nil {
 			return store.Fail(404, "报告不存在")
 		}
@@ -322,14 +330,12 @@ func (s *Server) catalogHTTP(w http.ResponseWriter, r *http.Request, p string) e
 				}
 				rows = selectRows(rows)
 				if source == "" || source == "all" || len(rows) > 0 {
-					reply(w, r, 200, map[string]any{"date": candidate, "articles": rows})
-					return nil
+					return s.replyNews(w, r, candidate, rows)
 				}
 			}
 		}
 		if day == "" {
-			reply(w, r, 200, map[string]any{"date": "", "articles": []any{}})
-			return nil
+			return s.replyNews(w, r, "", []map[string]any{})
 		}
 		if _, e := time.Parse("2006-01-02", day); e != nil {
 			return store.Fail(400, "日期格式无效")
@@ -338,7 +344,7 @@ func (s *Server) catalogHTTP(w http.ResponseWriter, r *http.Request, p string) e
 		if e != nil {
 			return e
 		}
-		reply(w, r, 200, map[string]any{"date": day, "articles": selectRows(v)})
+		return s.replyNews(w, r, day, selectRows(v))
 	default:
 		papers, e := s.Catalog.Papers()
 		if e != nil {
@@ -498,10 +504,13 @@ func (s *Server) static(w http.ResponseWriter, r *http.Request, p string) error 
 
 	} else {
 		switch strings.TrimSuffix(p, "/") {
-		case "", "/entity", "/report", "/admin/users", "/admin/processes", "/sources", "/top-conf", "/coverage", "/field-briefing", "/summary-brief", "/inbox", "/impression", "/secnews", "/arxiv", "/trend", "/authors", "/login":
+		case "", "/entity", "/report", "/admin/users", "/admin/processes", "/sources", "/top-conf", "/coverage", "/field-briefing", "/summary-brief", "/inbox", "/impression", "/secnews", "/arxiv", "/trend", "/authors", "/login", "/account":
 			rel = "index.html"
 		default:
-			return store.Fail(404, "Not found")
+			if _, err := s.Catalog.ReportPath(p); err != nil {
+				return store.Fail(404, "Not found")
+			}
+			rel = "index.html"
 		}
 	}
 	ext := strings.ToLower(filepath.Ext(rel))
