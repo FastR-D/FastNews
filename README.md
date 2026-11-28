@@ -48,7 +48,7 @@ Go 可直接提供构建后的 SPA，也可由 nginx / 静态服务器提供 `we
 
 arXiv 导读默认打开最近有预印本的采集日。`source=arxiv` 始终由服务端分页，默认每页 12 篇；`page` 从 1 开始，`page_size` 最大 50。`q` 搜索标题、作者、摘要和分类，`category` 精确筛选领域，先过滤整天语料再分页，按发表时间倒序；响应提供 `total/page/pageSize/pages/categories`，其中分类选项来自整天语料。日期、搜索、领域、每页条数和翻页在同一工具栏，手机自动换行。`GET /api/news?source=arxiv|news|security|ai|articles` 分别返回对应范围的最近非空日期及内容，其中 `articles` 为全部非 arXiv 资讯；指定 `date` 时保留该日期，即使该范围当天为空。不指定来源时保留总览使用的全部资讯行为。旧调用若需要全部非 arXiv 内容，应从 `source=security` 改为 `source=articles`。
 
-前端统一页面边距、卡片与控件，使用 HarmonyOS Sans SC CDN 字体和亮暗主题。会议报告在 `/top-conf/<conference>/<year>/` 站内阅读，例如 `/top-conf/usenix/2026/`；旧 `/report/?path=…` 链接自动切换到新地址并保留搜索和目录锚点。其他报告使用 `/reports/<kind>/<slug>/`。历史报告已转换为 JSON 文档数据；旧独立 HTML、阅读脚本和兼容页面入口已删除。实现约定见 [界面规范](docs/FASTUI.md)。
+前端统一页面边距、卡片与控件，使用 HarmonyOS Sans SC CDN 字体和亮暗主题。会议报告在 `/top-conf/<conference>/<year>/` 站内阅读，例如 `/top-conf/usenix/2026/`；旧 `/report/?path=…` 路由与 `api/report?path=…` 接口已移除，不做兼容跳转。其他报告使用 `/reports/<kind>/<slug>/`。历史报告已转换为 JSON 文档数据；旧独立 HTML、阅读脚本和兼容页面入口已删除。实现约定见 [界面规范](docs/FASTUI.md)。
 
 研究趋势使用已有 arXiv 采集档案，不请求外部模型。`GET /api/trend?scope=ai&days=30` 按 UTC 采集日比较相邻等长窗口，以档案最新论文日为统计终点。按 arXiv ID 去重，覆盖现有 AI/NLP、安全和软件工程订阅及其中的交叉分类，不代表全量 arXiv 或引用影响力。
 
@@ -170,6 +170,6 @@ FASTNEWS_PUBLIC_PATH=/news make build
 FASTNEWS_PUBLIC_PATH=/news FASTNEWS_PORT=8788 ./bin/fastnews serve
 ```
 
-`ci.yml` 仅在 main 的 PR、推送和手动运行时执行 Go、React 与浏览器检查。自动 Release、发布包上传和生产部署已移除，推送标签不会触发发布。采集与报告生成由服务器执行，结果保存在独立语料目录。
+`ci.yml` 在 main 的 PR、推送和手动运行时执行 Go、React 与浏览器检查；推送 `v*` 标签时，对该提交完成相同校验后构建生产包，通过 HTTPS 接收端部署。GitHub Release 发布 job 已移除，不创建 Release 或上传 Release 附件。采集与报告生成由服务器执行，结果保存在独立语料目录。
 
-旧 Python、serverless API、模板、静态应用页面、依赖和对应测试已删除。历史语料、报告与账号数据保留；历史报告资源 URL 由 Go 映射到当前前端资源。失效的旧部署与回滚入口已移除。代码提交只验证；服务器发布由管理员单独执行，使用 FastDeploy 原子切换版本并检查健康，失败时恢复前态。配置见 [部署说明](docs/fastdeploy.md)。
+旧 Python、serverless API、模板、静态应用页面、依赖和对应测试已删除。历史语料、报告与账号数据保留；历史报告资源 URL 由 Go 映射到当前前端资源。失效的旧部署与回滚入口已移除。main 提交只验证；版本标签触发正常部署，使用 FastDeploy 原子切换版本并检查健康，失败时恢复前态。配置见 [部署说明](docs/fastdeploy.md)。

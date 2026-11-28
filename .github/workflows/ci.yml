@@ -1,10 +1,11 @@
-name: Go and React CI
+name: Go and React CI and deployment
 
 on:
   pull_request:
     branches: [main]
   push:
     branches: [main]
+    tags: ['v*']
   workflow_dispatch:
 
 permissions:
@@ -28,7 +29,7 @@ jobs:
     timeout-minutes: 30
     concurrency:
       group: fastnews-ci-${{ github.ref }}
-      cancel-in-progress: true
+      cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/v') }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -45,13 +46,52 @@ jobs:
           cache-dependency-path: web/pnpm-lock.yaml
       - run: make install
       - run: make test
+      - run: bash -n scripts/upload-release.sh
       - run: pnpm --dir web format:check
       - run: pnpm --dir web exec playwright install --with-deps chromium
       - name: Desktop, mobile, subpath and private-report browser contracts
         run: make test-browser
+      - name: Build the production runtime
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+        run: make build-release
+        env:
+          FASTNEWS_PUBLIC_PATH: /news
+      - name: Package native runtime
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+        run: ./scripts/package-release.sh "$RUNNER_TEMP/fastnews-release"
+      - uses: actions/upload-artifact@v4
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+        with:
+          name: deploy-${{ github.sha }}
+          path: ${{ runner.temp }}/fastnews-release/
+          if-no-files-found: error
+          retention-days: 7
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: browser-diagnostics
           path: web/test-results/
           if-no-files-found: ignore
+
+  deploy:
+    needs: validate
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    environment: production
+    concurrency:
+      group: fastdeploy-fastnews-production
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: deploy-${{ github.sha }}
+          path: release
+      - name: Upload over HTTPS and confirm activation
+        env:
+          FASTNEWS_DEPLOY_URL: ${{ vars.FASTNEWS_DEPLOY_URL }}
+          FASTNEWS_DEPLOY_TOKEN: ${{ secrets.FASTNEWS_DEPLOY_TOKEN }}
+        run: bash scripts/upload-release.sh release
