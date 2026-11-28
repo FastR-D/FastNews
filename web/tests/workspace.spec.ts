@@ -266,7 +266,7 @@ test('all old entries, real catalog, report links, calendar, theme and responsiv
   )
   await expect(page.getByTestId('report-row').first().getByRole('link')).toHaveAttribute(
     'href',
-    /report\/\?path=/,
+    /\/top-conf\/usenix\/2025\/$/,
   )
   await expect(page.getByRole('link', { name: /下载.*PDF/ })).toHaveCount(0)
   await visit(page, baseURL, 'secnews/')
