@@ -870,28 +870,6 @@ textarea {
   padding: 0 24px 24px;
 }
 
-.schedule-overview {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 24px;
-  padding: 8px 20px 24px;
-}
-.schedule-overview > div {
-  display: grid;
-  gap: 10px;
-  flex: 1;
-  min-width: 220px;
-}
-.schedule-overview > div > span {
-  color: var(--fastui-muted);
-  font-size: 12px;
-}
-.schedule-overview strong {
-  font-size: 17px;
-  font-weight: 600;
-}
-
 /* Reading controls and research identities share the workspace surfaces. */
 .back-to-top {
   position: fixed;
@@ -1811,5 +1789,243 @@ textarea {
   }
   .report-reader .report-document {
     padding: 16px;
+  }
+}
+
+/* Compact collection controls and bounded, searchable source selection. */
+.schedule-compact {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+.schedule-compact-main {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  min-width: 0;
+  font-size: 13px;
+}
+.schedule-compact-main > svg {
+  color: var(--fastui-focus);
+}
+.schedule-compact .task-status {
+  flex: none;
+  width: auto;
+}
+.schedule-scope {
+  color: var(--fastui-secondary);
+  overflow-wrap: anywhere;
+}
+.schedule-next {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--fastui-secondary);
+}
+.schedule-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+.collection-controls {
+  align-items: center;
+}
+.collection-source-trigger {
+  display: flex;
+  justify-content: space-between;
+  text-align: left;
+  gap: 16px;
+  flex: 1;
+  min-width: 0;
+  max-width: 600px;
+  padding: 14px 16px;
+  height: auto;
+  border-radius: 12px;
+}
+.collection-source-trigger > span {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.collection-source-trigger strong {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+.collection-source-label {
+  font-size: 12px;
+  color: var(--fastui-muted);
+}
+.collection-source-trigger > svg {
+  flex: none;
+  color: var(--fastui-focus);
+}
+.collection-picker-dialog {
+  width: min(680px, calc(100% - 24px));
+}
+.collection-detail-dialog {
+  width: min(1000px, calc(100% - 24px));
+}
+.collection-dialog-body {
+  padding: 24px;
+  min-width: 0;
+}
+.collection-dialog-body > input {
+  width: 100%;
+  box-sizing: border-box;
+}
+.collection-source-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 16px 0;
+}
+.collection-source-tabs button {
+  border-radius: 20px;
+}
+.collection-source-tabs button[aria-pressed='true'] {
+  color: var(--fastui-focus);
+  background: var(--fastui-selected);
+}
+.collection-source-list {
+  display: grid;
+  gap: 6px;
+  max-height: min(420px, 45dvh);
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 3px;
+  scrollbar-width: thin;
+}
+.collection-source-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 14px;
+  text-align: left;
+  font: inherit;
+  color: var(--fastui-text);
+  background: var(--fastui-surface);
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.collection-source-option > span {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.collection-source-option strong {
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.collection-source-option span span {
+  font-size: 12px;
+  color: var(--fastui-muted);
+}
+.collection-source-option > svg {
+  flex: none;
+  color: var(--fastui-muted);
+}
+.collection-source-option:hover {
+  background: var(--fastui-raised);
+}
+.collection-source-option[aria-pressed='true'] {
+  background: var(--fastui-selected);
+  color: var(--fastui-focus);
+}
+.collection-source-option:focus-visible {
+  outline: 2px solid var(--fastui-focus);
+  outline-offset: 1px;
+}
+.collection-task-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 20px 20px;
+}
+.collection-task-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 260px;
+  min-width: 0;
+  color: var(--fastui-muted);
+}
+.collection-task-search input {
+  min-width: 0;
+  width: 100%;
+}
+.collection-task-filters select {
+  max-width: 100%;
+}
+.collection-detail-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--fastui-secondary);
+}
+.collection-detail-summary > strong {
+  font-size: 16px;
+  color: var(--fastui-text);
+  overflow-wrap: anywhere;
+}
+.collection-detail-counts {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding: 20px 0;
+  color: var(--fastui-secondary);
+}
+.collection-detail-counts strong {
+  font-size: 20px;
+  margin-left: 6px;
+  color: var(--fastui-text);
+}
+.collection-detail-dialog .fastui-table-scroll {
+  max-height: 50dvh;
+  overflow: auto;
+}
+.collection-detail-dialog th {
+  position: sticky;
+  top: 0;
+  background: var(--fastui-raised);
+  z-index: 1;
+}
+.collection-detail-dialog td:first-child {
+  min-width: 180px;
+  white-space: normal;
+}
+@media (max-width: 639px) {
+  .schedule-compact {
+    padding: 16px;
+    gap: 12px;
+  }
+  .schedule-actions {
+    margin-left: 0;
+  }
+  .collection-controls {
+    padding: 8px 16px 16px;
+  }
+  .collection-controls .collection-source-trigger {
+    flex-basis: 100%;
+  }
+  .collection-dialog-body {
+    padding: 16px;
+  }
+  .collection-task-filters {
+    padding: 8px 16px 16px;
+  }
+  .collection-task-search {
+    flex-basis: 100%;
   }
 }

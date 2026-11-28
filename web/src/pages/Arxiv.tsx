@@ -39,7 +39,11 @@ export default function Arxiv() {
     )
       .then((value) => {
         setResolvedDate(value.date)
-        setArticles(value.articles)
+        setArticles(
+          [...value.articles].sort(
+            (a, b) => (Date.parse(b.published || '') || 0) - (Date.parse(a.published || '') || 0),
+          ),
+        )
       })
       .catch((error) => {
         if (!abort.signal.aborted) setError(message(error))

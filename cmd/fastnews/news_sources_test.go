@@ -34,7 +34,7 @@ func TestNewsSourcesThroughCLIAndWeeklyReport(t *testing.T) {
 			return
 		}
 		if strings.HasPrefix(source, "arxiv_") {
-			fmt.Fprintf(w, `<feed xmlns="http://www.w3.org/2005/Atom"><entry><id>%s</id><title>%s article</title><link rel="alternate" href="https://papers.example/%s"/><summary>Research abstract</summary><author><name>Alice</name></author></entry></feed>`, source, source, source)
+			fmt.Fprintf(w, `<feed xmlns="http://www.w3.org/2005/Atom" xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/"><opensearch:totalResults>1</opensearch:totalResults><opensearch:startIndex>0</opensearch:startIndex><entry><id>%s</id><title>%s article</title><link rel="alternate" href="https://papers.example/%s"/><summary>Research abstract</summary><author><name>Alice</name></author></entry></feed>`, source, source, source)
 		} else {
 			fmt.Fprintf(w, `<rss version="2.0"><channel><item><guid>%s</guid><title>%s article</title><link>https://news.example/%s</link><description>News abstract</description><author>Editor</author></item></channel></rss>`, source, source, source)
 		}
@@ -44,6 +44,15 @@ func TestNewsSourcesThroughCLIAndWeeklyReport(t *testing.T) {
 	original := http.DefaultTransport
 	http.DefaultTransport = newsTransport(func(r *http.Request) (*http.Response, error) {
 		definition, ok := catalog.FindNewsSource(r.URL.String())
+		if r.URL.Hostname() == "export.arxiv.org" && r.URL.Path == "/api/query" {
+			query := r.URL.Query().Get("search_query")
+			for category, id := range map[string]string{"cat:cs.CR": "arxiv_cs_cr", "cat:cs.AI": "arxiv_cs_ai", "cat:cs.SE": "arxiv_cs_se"} {
+				if strings.Contains(query, category) {
+					definition, ok = catalog.FindNewsSource(id)
+					break
+				}
+			}
+		}
 		if !ok {
 			return nil, fmt.Errorf("unexpected upstream: %s", r.URL)
 		}

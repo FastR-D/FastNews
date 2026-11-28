@@ -177,16 +177,26 @@ test('administrator can monitor, stop and inspect collection failures', async ({
   await expect(page.getByText('已暂停', { exact: true })).toBeVisible()
   await page.getByRole('button', { name: '恢复定时采集', exact: true }).click()
   await expect(page.getByText('已启用', { exact: true })).toBeVisible()
-  await page.getByLabel('采集范围', { exact: true }).selectOption('ai')
+  await page.getByRole('button', { name: '采集范围', exact: true }).click()
+  const picker = page.getByRole('dialog', { name: '选择采集范围' })
+  await picker.getByLabel('搜索采集范围', { exact: true }).fill('AI')
+  await picker
+    .getByRole('group', { name: '可选采集范围' })
+    .getByRole('button', { name: 'AI 研究 组合采集', exact: true })
+    .click()
   await page.getByRole('button', { name: '开始采集', exact: true }).click()
   await expect(page.getByRole('button', { name: '开始采集', exact: true })).toBeDisabled()
   await expect(page.getByRole('progressbar', { name: '采集进度' })).toHaveAttribute('max', '1')
+  await expect(page.getByRole('dialog', { name: '采集任务详情' })).not.toBeVisible()
+  await page.getByRole('button', { name: '详情', exact: true }).click()
+  await expect(page.getByRole('dialog', { name: '采集任务详情' })).toBeVisible()
   await expect(page.getByRole('table', { name: '信源结果' })).toContainText('研究团队')
   await page.screenshot({ path: '../output/ui-review/admin-processes.png', animations: 'disabled' })
-  await page.getByRole('button', { name: '详情', exact: true }).click()
+  await page.getByRole('button', { name: '关闭任务详情' }).click()
   await expect(page.getByRole('table', { name: '信源结果' })).toHaveCount(0)
   await page.getByRole('button', { name: '详情', exact: true }).click()
   await expect(page.getByRole('table', { name: '信源结果' })).toBeVisible()
+  await page.keyboard.press('Escape')
   await page.getByRole('button', { name: '停止采集', exact: true }).click()
   await expect(page.getByRole('table', { name: '采集任务' })).toContainText('已停止')
   await expect(page.getByRole('button', { name: '开始采集', exact: true })).toBeEnabled()
@@ -196,7 +206,9 @@ test('administrator can monitor, stop and inspect collection failures', async ({
   entry.state = 'failed'
   entry.error = 'HTTP 503'
   await page.getByRole('button', { name: '刷新', exact: true }).click()
+  await page.getByRole('button', { name: '详情', exact: true }).click()
   await expect(page.getByRole('table', { name: '信源结果' })).toContainText('HTTP 503')
+  await page.getByRole('button', { name: '关闭任务详情' }).click()
   await expect(page.getByRole('table', { name: '采集任务' })).toContainText('定时采集')
   await page.getByRole('button', { name: '切换深色模式' }).click()
   await page.setViewportSize({ width: 390, height: 844 })
@@ -293,4 +305,86 @@ test('administrator can disable a configured subscription and preserve the chang
   await page.reload()
   await expect(card).toContainText('已停用')
   await expect(card.getByRole('button', { name: '将Hugging Face Blog纳入采集队列' })).toBeEnabled()
+})
+
+test('collection task filters and pagination work with searchable bounded source selection', async ({
+  page,
+}) => {
+  const sources = Array.from({ length: 35 }, (_, i) => ({
+    id: `team_${i}`,
+    name: `Research Team ${i} with a very long official academic institution name`,
+    channel: 'ai',
+  }))
+  const runs = Array.from({ length: 25 }, (_, i) => ({
+    id: `archive-${i}`,
+    selection: `team_${i}`,
+    status: i % 2 ? 'failed' : 'completed',
+    trigger: i % 3 ? 'manual' : 'scheduled',
+    startedAt: new Date(2026, 10, 27, 10, i).toISOString(),
+    finishedAt: new Date(2026, 10, 27, 10, i + 1).toISOString(),
+    sources: [
+      {
+        source: `team_${i}`,
+        name: sources[i].name,
+        state: i % 2 ? 'failed' : 'completed',
+        fetched: 3,
+        added: 1,
+        stale: 0,
+      },
+    ],
+  }))
+  await page.route('**/api/admin/collection', (route) =>
+    route.fulfill({
+      json: {
+        runs,
+        sources,
+        schedulerRunning: true,
+        schedule: {
+          enabled: true,
+          intervalHours: 6,
+          source: 'all',
+          nextRunAt: new Date().toISOString(),
+        },
+      },
+    }),
+  )
+  await page.goto('/login')
+  await page.getByLabel('邮箱', { exact: true }).fill('browser-admin@example.com')
+  await page.getByLabel('密码', { exact: true }).fill('browser-test-password-123')
+  await page.getByRole('form', { name: '本地账号' }).locator('button[type=submit]').click()
+  await page.getByRole('link', { name: '进程管理', exact: true }).click()
+  const table = page.getByRole('table', { name: '采集任务', exact: true })
+  await expect(table.locator('tbody tr')).toHaveCount(10)
+  await page.getByRole('button', { name: '下一页', exact: true }).click()
+  await expect(table).toContainText('Research Team 10 ')
+  await page.getByLabel('搜索采集任务').fill('Team 24 ')
+  await expect(table.locator('tbody tr')).toHaveCount(1)
+  await table.getByRole('button', { name: '详情', exact: true }).click()
+  const detail = page.getByRole('dialog', { name: '采集任务详情' })
+  await expect(detail).toContainText('Research Team 24 ')
+  await page.keyboard.press('Escape')
+  await expect(detail).not.toBeVisible()
+  await page.getByLabel('搜索采集任务').clear()
+  await page.getByLabel('任务状态', { exact: true }).selectOption('failed')
+  await page.getByLabel('触发方式', { exact: true }).selectOption('scheduled')
+  await expect(table.locator('tbody tr')).toHaveCount(4)
+  await page.getByLabel('搜索采集任务').fill('absent-source')
+  await expect(page.getByText('没有匹配的采集任务')).toBeVisible()
+  await page.getByRole('button', { name: '清除筛选', exact: true }).click()
+  await expect(table.locator('tbody tr')).toHaveCount(10)
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.getByRole('button', { name: '采集范围', exact: true }).click()
+  const picker = page.getByRole('dialog', { name: '选择采集范围' })
+  await picker.getByLabel('搜索采集范围', { exact: true }).fill('Team 34 ')
+  const option = picker.getByRole('group', { name: '可选采集范围' }).getByRole('button')
+  await expect(option).toHaveCount(1)
+  expect(await picker.evaluate((el) => el.scrollWidth <= el.clientWidth + 1)).toBe(true)
+  await page.screenshot({ path: '../output/ui-review/collection-picker-mobile.png' })
+  await option.click()
+  await expect(page.getByRole('button', { name: '采集范围', exact: true })).toContainText(
+    'Team 34 ',
+  )
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(
+    true,
+  )
 })

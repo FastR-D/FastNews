@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 
@@ -34,10 +35,16 @@ func (p *Pipeline) newsSources(file string) ([]catalog.NewsSource, error) {
 	return catalog.LoadNewsSources(p.Config.Root, file)
 }
 
+var arxivVersionSuffix = regexp.MustCompile(`v[0-9]+$`)
+
 func newsLinkKey(raw string) string {
 	u, err := url.Parse(raw)
 	if err != nil || u.Host == "" {
 		return raw
+	}
+	if (strings.EqualFold(u.Hostname(), "arxiv.org") || strings.EqualFold(u.Hostname(), "www.arxiv.org")) && strings.HasPrefix(u.Path, "/abs/") {
+		id := arxivVersionSuffix.ReplaceAllString(strings.TrimPrefix(u.Path, "/abs/"), "")
+		return "arxiv:" + id
 	}
 	u.Fragment = ""
 	u.Host = strings.ToLower(u.Host)
@@ -117,10 +124,17 @@ func (p *Pipeline) FetchNewsSources(ctx context.Context, selected []catalog.News
 			return errors.Join(append(failures, err)...)
 		}
 		p.newsProgress(NewsProgress{Source: source.ID, State: "running"})
-		raw, transport, err := p.fetchSource(ctx, source)
 		var rows []map[string]any
-		if err == nil {
-			rows, err = parseNewsSource(raw, source)
+		var transport string
+		var err error
+		if query := arxivQuery(source, time.Now()); query != "" {
+			rows, transport, err = p.fetchArxiv(ctx, source, query)
+		} else {
+			var raw []byte
+			raw, transport, err = p.fetchSource(ctx, source)
+			if err == nil {
+				rows, err = parseNewsSource(raw, source)
+			}
 		}
 		if err != nil {
 			if errors.Is(ctx.Err(), context.Canceled) {
