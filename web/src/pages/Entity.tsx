@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { Button, TextField } from '@fastrd/ui-react'
 import { ArrowLeft, ArrowUpRight, RefreshCw } from 'lucide-react'
 import { api, message, safeURL } from '../api'
@@ -24,11 +24,11 @@ type Preview = {
   profiles: { title: string; url: string }[]
   papers: { title: string; url: string }[]
 }
-export default function EntityPage() {
-  const [params, setParams] = useSearchParams()
+export default function EntityPage({ kind: requestedKind }: { kind: string }) {
+  const [params] = useSearchParams()
+  const route = useParams()
   const { profile, refresh, notify } = useApp()
-  const name = params.get('name') || '',
-    requestedKind = params.get('kind') || 'author',
+  const name = route.name || '',
     ref = params.get('ref') || ''
   const [data, setData] = useState<Result | null>(null),
     [error, setError] = useState(''),
@@ -55,18 +55,6 @@ export default function EntityPage() {
     return () => abort.abort()
   }, [name, requestedKind, ref])
   const kind = data?.kind || requestedKind
-  useEffect(() => {
-    if (data && data.kind !== requestedKind) {
-      setParams(
-        (previous) => {
-          const next = new URLSearchParams(previous)
-          next.set('kind', data.kind)
-          return next
-        },
-        { replace: true },
-      )
-    }
-  }, [data, requestedKind, setParams])
   useEffect(() => {
     setFetching(false)
     if (!ref || !safeURL(ref)) return

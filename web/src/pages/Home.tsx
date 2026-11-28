@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Badge,
+  Button,
   EmptyState,
   InspectorSection,
   ListRow,
@@ -32,7 +33,7 @@ import {
 } from '../components/Common'
 import Authors from './Authors'
 
-export default function Home() {
+export default function Home({ onEditImpression }: { onEditImpression: () => void }) {
   const { catalog, profile } = useApp()
   const [news, setNews] = useState<NewsArticle[]>([])
   const [newsError, setNewsError] = useState('')
@@ -173,7 +174,7 @@ export default function Home() {
             )}
             <Link
               className="fastui-link flex items-center justify-center gap-2 p-3"
-              to={`/secnews/${catalog.dates[0] ? `?date=${catalog.dates[0]}` : ''}`}
+              to={`/updates/${catalog.dates[0] ? `?date=${catalog.dates[0]}` : ''}`}
             >
               查看全部资讯 <ArrowRight size={13} />
             </Link>
@@ -186,9 +187,15 @@ export default function Home() {
             </div>
             <InspectorSection label="研究印象" open>
               <p className="m-0 break-words">{profile?.impression.text}</p>
-              <Link className="fastui-link" to={profile ? '/impression/' : '/login'}>
-                {profile ? '编辑研究印象' : '登录并完善印象'} <ArrowUpRight size={12} />
-              </Link>
+              {profile ? (
+                <Button variant="quiet" onClick={onEditImpression}>
+                  编辑研究印象 <ArrowUpRight size={12} />
+                </Button>
+              ) : (
+                <Link className="fastui-link" to="/login">
+                  登录并完善印象
+                </Link>
+              )}
             </InspectorSection>
           </Panel>
         </aside>

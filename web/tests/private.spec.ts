@@ -48,7 +48,7 @@ test('page spacing and dark navigation are consistent', async ({ page }) => {
   await page.getByRole('form', { name: '本地账号' }).locator('button[type=submit]').click()
   await expect(page.getByRole('heading', { name: '研究工作台', exact: true })).toBeVisible()
   let left: number | undefined
-  for (const path of ['/', '/secnews/', '/sources/', '/top-conf/', '/field-briefing/']) {
+  for (const path of ['/', '/updates/', '/sources/', '/top-conf/', '/brief/']) {
     await page.goto(path)
     const heading = page.locator('#main-content h1').first()
     await expect(heading).toBeVisible()

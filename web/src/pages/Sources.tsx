@@ -243,7 +243,7 @@ export default function Sources() {
       <ReadingHeader
         title="信源目录"
         action={
-          <Link className="reading-action" to="/secnews/">
+          <Link className="reading-action" to="/updates/">
             <ArrowLeft size={15} />
             回到阅读
           </Link>

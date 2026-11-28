@@ -500,9 +500,14 @@ func (s *Server) static(w http.ResponseWriter, r *http.Request, p string) error 
 
 	} else {
 		switch strings.TrimSuffix(p, "/") {
-		case "", "/entity", "/admin/users", "/admin/processes", "/sources", "/top-conf", "/coverage", "/field-briefing", "/summary-brief", "/inbox", "/impression", "/secnews", "/arxiv", "/trend", "/authors", "/login", "/account":
+		case "", "/admin/users", "/admin/jobs", "/sources", "/top-conf", "/coverage", "/brief", "/summary", "/inbox", "/updates", "/arxiv", "/trends", "/following", "/login", "/account":
 			rel = "index.html"
 		default:
+			parts := strings.Split(strings.Trim(strings.TrimPrefix(r.URL.EscapedPath(), s.Config.PublicPath), "/"), "/")
+			if len(parts) == 2 && (parts[0] == "authors" || parts[0] == "institutions") && strings.TrimSpace(parts[1]) != "" {
+				rel = "index.html"
+				break
+			}
 			if _, err := s.Catalog.ReportPath(p); err != nil {
 				return store.Fail(404, "Not found")
 			}

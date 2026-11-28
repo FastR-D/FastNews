@@ -185,7 +185,7 @@ func TestLocalContentIsolationCSRFAndInbox(t *testing.T) {
 }
 func TestCatalogOldRoutesAndPrivateFiles(t *testing.T) {
 	h := fixture(t)
-	for _, p := range []string{"/", "/sources/", "/top-conf/", "/coverage/", "/field-briefing/", "/summary-brief/", "/inbox/", "/impression/", "/secnews/", "/arxiv/", "/trend/", "/login", "/account/", "/top-conf/usenix/2026/", "/top-conf/data/report/USENIX_2026_Report.json?download=1"} {
+	for _, p := range []string{"/", "/sources/", "/top-conf/", "/coverage/", "/brief/", "/summary/", "/inbox/", "/following/", "/authors/Alice%20Researcher/", "/institutions/Example%20University/", "/admin/jobs/", "/updates/", "/arxiv/", "/trends/", "/login", "/account/", "/top-conf/usenix/2026/", "/top-conf/data/report/USENIX_2026_Report.json?download=1"} {
 		resp, e := http.Get(h.http.URL + p)
 		if e != nil {
 			t.Fatal(e)
@@ -195,7 +195,7 @@ func TestCatalogOldRoutesAndPrivateFiles(t *testing.T) {
 			t.Fatal(p, resp.StatusCode)
 		}
 	}
-	for _, p := range []string{"/report/?path=top-conf/data/report/USENIX_2026_Report.json", "/index.html", "/top-conf/index.html", "/reports/handoff.js", "/reports/report.css", "/auth/login", "/.env", "/private/accounts.sqlite", "/serve.py", "/top-conf/data/report/../../../private/accounts.sqlite", "/missing.html"} {
+	for _, p := range []string{"/secnews/", "/field-briefing/", "/summary-brief/", "/trend/", "/authors", "/entity/?kind=author&name=Alice", "/impression/", "/admin/processes", "/report/?path=top-conf/data/report/USENIX_2026_Report.json", "/index.html", "/top-conf/index.html", "/reports/handoff.js", "/reports/report.css", "/auth/login", "/.env", "/private/accounts.sqlite", "/serve.py", "/top-conf/data/report/../../../private/accounts.sqlite", "/missing.html"} {
 		resp, e := http.Get(h.http.URL + p)
 		if e != nil {
 			t.Fatal(e)
@@ -226,7 +226,7 @@ func TestTrendAPI(t *testing.T) {
 	var corpus bytes.Buffer
 	for index := range 3 {
 		err := json.NewEncoder(&corpus).Encode(map[string]any{
-			"source": "arxiv_cs_ai", "title": fmt.Sprintf("Study %d of LLM agents", index),
+			"categories": []string{"cs.AI"}, "source": "arxiv_cs_ai", "title": fmt.Sprintf("Study %d of LLM agents", index),
 			"link": fmt.Sprintf("https://arxiv.org/abs/2601.%05d", index),
 		})
 		if err != nil {
@@ -328,7 +328,7 @@ func TestNewsScopeSelectsLatestPopulatedArchiveDate(t *testing.T) {
 		"2026-11-22": `{"_id":"general","title":"World news","source":"research_digest"}`,
 		"2026-11-21": `{"_id":"ai","title":"AI release","source":"openai"}`,
 		"2026-11-20": `{"_id":"news","title":"Security news","source":"bleepingcomputer"}`,
-		"2026-11-18": `{"_id":"paper","title":"Research paper","source":"arxiv_cs_se"}`,
+		"2026-11-18": `{"_id":"paper","title":"Research paper","source":"arxiv_cs_se","categories":["cs.SE"]}`,
 	}
 	for day, content := range files {
 		if err := os.WriteFile(filepath.Join(directory, day+".jsonl"), []byte(content), 0600); err != nil {

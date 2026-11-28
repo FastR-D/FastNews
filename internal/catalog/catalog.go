@@ -325,6 +325,13 @@ func (c *Catalog) News(day string) ([]map[string]any, error) {
 	if e != nil {
 		return nil, e
 	}
+	scoped := make([]map[string]any, 0, len(rows))
+	for _, row := range rows {
+		if InResearchScope(row) {
+			scoped = append(scoped, row)
+		}
+	}
+	rows = scoped
 	if rows == nil {
 		rows = []map[string]any{}
 	}

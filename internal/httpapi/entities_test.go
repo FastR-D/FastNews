@@ -61,12 +61,16 @@ func TestPaperPlansShareManualAndScheduledSelection(t *testing.T) {
 	}
 }
 
-func TestInstitutionFormerlyLinkedAsAuthorResolvesToPapers(t *testing.T) {
+func TestInstitutionRoutesDoNotReinterpretAuthorNames(t *testing.T) {
 	h := fixture(t)
 	os.WriteFile(filepath.Join(h.app.Config.Root, "top-conf/data/conferences/usenix_2026.jsonl"), []byte(`{"_id":"ruhr-paper","title":"Example institution paper","link":"https://example.org/ruhr","author":"Alice, Bob, and Carol, Ruhr University Bochum"}`), 0600)
 	h.app.Catalog.Invalidate()
-	status, v, _ := h.request(t, "GET", "/api/entities?kind=author&name=Ruhr+University+Bochum", nil, "", false)
+	status, v, _ := h.request(t, "GET", "/api/entities?kind=institution&name=Ruhr+University+Bochum", nil, "", false)
 	if status != 200 || v["kind"] != "institution" || v["total"] != float64(1) {
+		t.Fatal(status, v)
+	}
+	status, v, _ = h.request(t, "GET", "/api/entities?kind=author&name=Ruhr+University+Bochum", nil, "", false)
+	if status != 200 || v["kind"] != "author" || v["total"] != float64(0) {
 		t.Fatal(status, v)
 	}
 	for _, name := range []string{"Alice", "Bob", "Carol"} {

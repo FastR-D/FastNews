@@ -47,7 +47,7 @@ test('conference panorama uses the full selected corpus instead of a saved perso
   await dialog.getByRole('button', { name: '保存印象', exact: true }).click()
   await expect(dialog).not.toBeVisible()
   const catalog = await (await page.request.get(route(baseURL, 'api/catalog'))).json()
-  await visit(page, baseURL, 'summary-brief/')
+  await visit(page, baseURL, 'summary/')
   const response = page.waitForResponse(
     (item) => item.url().endsWith('/api/summary-brief') && item.request().method() === 'POST',
   )
@@ -205,7 +205,7 @@ test('arXiv navigation, dated corpus, fields, pagination and reading use real AP
     path: `../output/ui-review/${info.project.name}-arxiv-toolbar.png`,
     animations: 'disabled',
   })
-  await visit(page, baseURL, `secnews/?date=${date}`)
+  await visit(page, baseURL, `updates/?date=${date}`)
   await page.getByRole('button', { name: '全部资讯', exact: true }).click()
   await expect(page.getByTestId('news-row')).toHaveCount(
     Math.min(20, articles.length - papers.length),
@@ -233,7 +233,7 @@ test('all old entries, real catalog, report links, calendar, theme and responsiv
   }
   await expect(latest.getByRole('link', { name: '查看全部资讯' })).toHaveAttribute(
     'href',
-    `${new URL(baseURL!).pathname}secnews/?date=${catalog.dates[0]}`,
+    `${new URL(baseURL!).pathname}updates/?date=${catalog.dates[0]}`,
   )
   await page.getByRole('button', { name: '切换深色模式' }).click()
   await expect(page.locator('html')).toHaveAttribute('data-fastui-theme', 'dark')
@@ -242,9 +242,9 @@ test('all old entries, real catalog, report links, calendar, theme and responsiv
   await page.getByRole('button', { name: '切换浅色模式' }).click()
   for (const [path, title] of [
     ['top-conf/', '顶会论文'],
-    ['field-briefing/', '领域导读'],
-    ['summary-brief/', '总结汇报'],
-    ['secnews/', '研究资讯'],
+    ['brief/', '领域导读'],
+    ['summary/', '总结汇报'],
+    ['updates/', '研究资讯'],
     ['inbox/', '私信'],
   ]) {
     await visit(page, baseURL, path)
@@ -269,7 +269,7 @@ test('all old entries, real catalog, report links, calendar, theme and responsiv
     /\/top-conf\/usenix\/2025\/$/,
   )
   await expect(page.getByRole('link', { name: /下载.*PDF/ })).toHaveCount(0)
-  await visit(page, baseURL, 'secnews/')
+  await visit(page, baseURL, 'updates/')
   const latestSecurity = await (
     await page.request.get(route(baseURL, 'api/news?source=articles'))
   ).json()
@@ -279,7 +279,7 @@ test('all old entries, real catalog, report links, calendar, theme and responsiv
   await expect(page.getByTestId('news-row').first()).toBeVisible()
   await page.getByRole('button', { name: '上个月' }).click()
   await expect(page.getByTestId('calendar')).toBeVisible()
-  await visit(page, baseURL, 'field-briefing/')
+  await visit(page, baseURL, 'brief/')
   await page.getByLabel('研究方向', { exact: true }).fill('LLM jailbreak')
   const generation = page.waitForResponse(
     (response) =>
@@ -317,7 +317,7 @@ test('local login, impression, authors, inbox and logout persist across reloads'
     `LLM prompt injection ${info.project.name}`,
   )
   await page.getByRole('button', { name: '关闭个人印象', exact: true }).click()
-  await visit(page, baseURL, 'authors')
+  await visit(page, baseURL, 'following/')
   await page.getByRole('button', { name: '添加作者', exact: true }).click()
   const editor = page.getByRole('dialog', { name: '新增作者' })
   await editor.getByRole('button', { name: '取消', exact: true }).click()
@@ -349,7 +349,7 @@ test('local login, impression, authors, inbox and logout persist across reloads'
   await page.getByRole('button', { name: '账号菜单', exact: true }).click()
   await page.getByRole('menuitem', { name: '退出登录', exact: true }).click()
   await expect(page.getByLabel('邮箱', { exact: true })).toBeVisible()
-  await visit(page, baseURL, 'authors')
+  await visit(page, baseURL, 'following/')
   await expect(page.getByText('登录后管理个人内容', { exact: true })).toBeVisible()
 })
 
@@ -562,7 +562,7 @@ test('news recommendations use stored scores and show unscored records honestly'
     }
   }
   expect(date).not.toBe('')
-  await visit(page, baseURL, `secnews/?date=${date}`)
+  await visit(page, baseURL, `updates/?date=${date}`)
   const scored = articles.filter(hasScore)
   await expect(page.getByTestId('news-row')).toHaveCount(
     Math.min(10, scored.length || articles.length),
@@ -589,7 +589,7 @@ test('news recommendations use stored scores and show unscored records honestly'
 })
 
 test('news channels keep source attribution and survive reloads', async ({ page, baseURL }) => {
-  await visit(page, baseURL, 'secnews/')
+  await visit(page, baseURL, 'updates/')
   const picker = page.getByRole('group', { name: '资讯频道', exact: true })
   for (const [channel, label] of [
     ['security', '安全资讯'],
@@ -631,7 +631,7 @@ test('reading filters, pagination and focused article survive navigation', async
   page,
   baseURL,
 }, info) => {
-  await visit(page, baseURL, 'secnews/?view=all')
+  await visit(page, baseURL, 'updates/?view=all')
   const rows = page.getByTestId('news-row')
   await expect(rows).toHaveCount(20)
   const first = await rows.first().locator('h3').innerText()
@@ -672,7 +672,7 @@ test('reading filters, pagination and focused article survive navigation', async
   await expect(page.getByLabel('资讯来源', { exact: true })).toHaveValue('openai')
   await page.getByRole('button', { name: '清除筛选', exact: true }).click()
   await expect(rows).toHaveCount(20)
-  await visit(page, baseURL, 'secnews/')
+  await visit(page, baseURL, 'updates/')
   await expect(page.getByTestId('news-row').first()).toBeVisible()
   await expect(page.getByRole('button', { name: '展开资讯筛选' })).toBeVisible({
     visible: info.project.name === 'mobile',
@@ -728,7 +728,7 @@ test('source directory preserves provenance and distinguishes configured feeds f
   await page.screenshot({ path: `test-results/${info.project.name}-sources.png` })
   if (info.project.name === 'mobile') {
     await page.setViewportSize({ width: 320, height: 740 })
-    await visit(page, baseURL, 'secnews/')
+    await visit(page, baseURL, 'updates/')
     await expect(page.getByTestId('news-row').first()).toBeVisible()
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
@@ -773,7 +773,7 @@ test('paper cards place reading actions above the abstract and align briefing fi
     path: `../output/ui-review/${info.project.name}-paper-cards-dark.png`,
     animations: 'disabled',
   })
-  await visit(page, baseURL, 'field-briefing/')
+  await visit(page, baseURL, 'brief/')
   const direction = await page.getByLabel('研究方向', { exact: true }).boundingBox()
   const source = await page.getByLabel('语料来源', { exact: true }).boundingBox()
   expect(Math.abs(direction!.x - source!.x)).toBeLessThan(1)
@@ -894,7 +894,7 @@ test('expired session redirects once and restores the requested page after login
   await expect(page.getByRole('alert')).toHaveCount(0)
 })
 
-test('publisher authors and affiliations have independent links and old institution routes recover', async ({
+test('publisher authors and affiliations have dedicated profile routes', async ({
   page,
   baseURL,
 }) => {
@@ -913,10 +913,10 @@ test('publisher authors and affiliations have independent links and old institut
   const unit = person.getByRole('link', { name: 'Georgia Institute of Technology', exact: true })
   await expect(name).toHaveCSS('text-decoration-line', 'underline')
   await expect(unit).toHaveCSS('text-decoration-line', 'underline')
-  await expect(name).toHaveAttribute('href', /kind=author&name=Hugo\+Hue$/)
+  await expect(name).toHaveAttribute('href', /\/authors\/Hugo%20Hue\/$/)
   await expect(unit).toHaveAttribute(
     'href',
-    /kind=institution&name=Georgia\+Institute\+of\+Technology$/,
+    /\/institutions\/Georgia%20Institute%20of%20Technology\/$/,
   )
   await expect(card.locator('.paper-person')).toHaveCount(5)
   await expect(
@@ -930,8 +930,8 @@ test('publisher authors and affiliations have independent links and old institut
   ).toBeVisible()
   await name.click()
   await expect(page.getByRole('heading', { name: '收录论文 · 1', exact: true })).toBeVisible()
-  await visit(page, baseURL, 'entity/?kind=author&name=Ruhr+University+Bochum')
-  await expect(page).toHaveURL(/kind=institution/)
+  await visit(page, baseURL, 'institutions/Ruhr%20University%20Bochum/')
+  await expect(page).toHaveURL(/\/institutions\//)
   await expect(page.getByRole('heading', { name: '机构资料', exact: true })).toBeVisible()
   await expect(page.getByRole('heading', { name: '收录论文 · 1', exact: true })).toBeVisible()
   await expect(page.getByRole('link', { name: 'ROR 机构检索' })).toBeVisible()

@@ -67,7 +67,7 @@ func TestDailyCheckpointResumesWithoutRepeatLLM(t *testing.T) {
 	root := t.TempDir()
 	dir := filepath.Join(root, "secnews/data/articles")
 	os.MkdirAll(dir, 0755)
-	os.WriteFile(filepath.Join(dir, "2026-11-12.jsonl"), []byte("{\"_id\":\"a\",\"title\":\"Paper A\",\"source\":\"arxiv_cs_cr\"}\n{\"_id\":\"b\",\"title\":\"Paper B\",\"source\":\"arxiv_cs_ai\"}\n"), 0644)
+	os.WriteFile(filepath.Join(dir, "2026-11-12.jsonl"), []byte("{\"_id\":\"a\",\"title\":\"Paper A\",\"source\":\"arxiv_cs_cr\",\"categories\":[\"cs.CR\"]}\n{\"_id\":\"b\",\"title\":\"Paper B\",\"source\":\"arxiv_cs_ai\",\"categories\":[\"cs.AI\"]}\n"), 0644)
 	calls := 0
 	fail := true
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

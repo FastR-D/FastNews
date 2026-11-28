@@ -14,7 +14,7 @@
 
 首页保留统计、报告库、研究资讯和个人研究内容。信源目录只展示来源、主题、状态和简介；调研证据仍在仓库文档及 API 数据中，不放进日常浏览界面。错误信息、表单标签、来源、日期和研究证据限制属于必要信息；宣传、重复说明和实现细节不展示。
 
-报告通过 `/report/?path=…` 在 React 工作台内阅读。报告数据是有限标签的文档树，React 创建节点，不使用 iframe、`dangerouslySetInnerHTML` 或归档脚本。论文阅读调用现有 FastRead API，PDF 使用下载链接。19 份历史报告已转换为 JSON，旧 HTML 页面、handoff 脚本、报告样式和旧 `/index.html`、`/auth/login` 等兼容入口已删除。新的报告任务直接生成 JSON；HTML 仅作为 PDF 导出的临时打印输入。
+报告通过 `/top-conf/<conference>/<year>/` 在 React 工作台内阅读。报告数据是有限标签的文档树，React 创建节点，不使用 iframe、`dangerouslySetInnerHTML` 或归档脚本。论文阅读调用现有 FastRead API，报告库不显示 PDF 下载入口。19 份历史报告已转换为 JSON，旧 HTML 页面、handoff 脚本、报告样式和旧 `/index.html`、`/auth/login` 等兼容入口已删除。新的报告任务直接生成 JSON；HTML 仅作为 PDF 导出的临时打印输入。
 
 全站默认登录保护。未登录只显示账号表单，业务 API、报告及原始数据都由服务端校验会话；登录后返回原先请求的页面。管理员可以使用 `fastnews create --admin --email … --name …` 配置，密码通过交互输入或 `FASTNEWS_INITIAL_PASSWORD` 传入。
 

@@ -30,7 +30,7 @@ func arxivQuery(source catalog.NewsSource, now time.Time) string {
 	parts := strings.Split(strings.TrimPrefix(strings.TrimPrefix(u.Path, "/atom/"), "/rss/"), "+")
 	terms := []string{}
 	for _, category := range parts {
-		if !arxivCategoryPattern.MatchString(category) {
+		if !arxivCategoryPattern.MatchString(category) || !strings.HasPrefix(strings.ToLower(category), "cs.") {
 			return ""
 		}
 		sections := strings.Split(category, ".")

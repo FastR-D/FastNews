@@ -6,7 +6,8 @@ import { useApp } from '../context'
 import type { Entity, Paper } from '../types'
 
 export function entityPath(entity: Entity, kind = 'author') {
-  return `/entity/?${new URLSearchParams({ kind, name: entity.name, ...(entity.url ? { ref: entity.url } : {}) })}`
+  const path = `/${kind === 'institution' ? 'institutions' : 'authors'}/${encodeURIComponent(entity.name)}/`
+  return entity.url ? `${path}?${new URLSearchParams({ ref: entity.url })}` : path
 }
 export function entityKey(entity: Entity, kind: string) {
   return `entity:${kind}:${entity.url || entity.orcid || entity.ror || entity.name.toLocaleLowerCase()}`

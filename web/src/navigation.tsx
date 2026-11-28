@@ -34,7 +34,7 @@ export const navigation = [
     description: '论文与摘要采集覆盖',
   },
   {
-    to: '/secnews/',
+    to: '/updates/',
     label: '研究资讯',
     icon: Newspaper,
     group: '发现与研究',
@@ -48,7 +48,7 @@ export const navigation = [
     description: '官方、学术与社区推荐信源',
   },
   {
-    to: '/field-briefing/',
+    to: '/brief/',
     label: '领域导读',
     icon: BookOpen,
     group: '发现与研究',
@@ -62,33 +62,39 @@ export const navigation = [
     description: 'arXiv 最新导读',
   },
   {
-    to: '/trend/',
+    to: '/trends/',
     label: '研究趋势',
     icon: TrendingUp,
     group: '发现与研究',
     description: 'arXiv 研究方向热度',
   },
   {
-    to: '/summary-brief/',
+    to: '/summary/',
     label: '总结汇报',
     icon: ChartNoAxesCombined,
     group: '发现与研究',
     description: '总结汇报',
   },
   { to: '/inbox/', label: '私信', icon: Mail, group: '我的研究', description: '私信' },
-  { to: '/authors', label: '关注作者', icon: Users, group: '我的研究', description: '关注作者' },
+  { to: '/following/', label: '关注作者', icon: Users, group: '我的研究', description: '关注作者' },
 ]
 export function currentPage(path: string) {
   return (
     navigation.find((item) =>
       item.to === '/' ? path === '/' : path.startsWith(item.to.replace(/\/$/, '')),
     ) || {
-      to: path.startsWith('/login') ? '/login' : '/account/',
-      label: path.startsWith('/admin/processes')
+      to: path,
+      label: path.startsWith('/admin/jobs/')
         ? '进程管理'
         : path.startsWith('/admin/users')
           ? '用户管理'
-          : '账号设置',
+          : path.startsWith('/authors/')
+            ? '学者'
+            : path.startsWith('/institutions/')
+              ? '机构'
+              : path.startsWith('/login')
+                ? '登录'
+                : '账号设置',
       icon: UserRound,
       group: '个人空间',
       description: 'FastNews 账号',

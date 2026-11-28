@@ -141,6 +141,9 @@ type Feed struct {
 	Items   []FeedItem `xml:"item"`
 }
 type FeedItem struct {
+	PrimaryCategory struct {
+		Term string `xml:"term,attr"`
+	} `xml:"primary_category"`
 	Title       string `xml:"title"`
 	GUID        string `xml:"guid"`
 	ID          string `xml:"id"`
@@ -214,7 +217,7 @@ func parseFeed(raw []byte, source catalog.NewsSource) ([]map[string]any, error) 
 		if doc, err := html.Parse(strings.NewReader(description)); err == nil {
 			description = text(doc)
 		}
-		rows = append(rows, map[string]any{"_id": source.URL + "/" + id, "title": strings.Join(strings.Fields(item.Title), " "), "link": link, "description": description, "author": catalog.First(strings.Join(authors, ", "), item.Creator), "published": catalog.First(item.Published, item.PubDate, item.Updated, item.Date), "source": source.ID, "source_name": source.Name, "channel": source.Channel, "categories": tags, "fetched_at": time.Now().UTC().Format(time.RFC3339)})
+		rows = append(rows, map[string]any{"_id": source.URL + "/" + id, "title": strings.Join(strings.Fields(item.Title), " "), "link": link, "description": description, "author": catalog.First(strings.Join(authors, ", "), item.Creator), "published": catalog.First(item.Published, item.PubDate, item.Updated, item.Date), "source": source.ID, "source_name": source.Name, "channel": source.Channel, "categories": tags, "primary_category": item.PrimaryCategory.Term, "fetched_at": time.Now().UTC().Format(time.RFC3339)})
 	}
 	return rows, nil
 }
@@ -239,6 +242,13 @@ func (p *Pipeline) Daily(ctx context.Context, day string) error {
 	if e != nil {
 		return e
 	}
+	scoped := make([]map[string]any, 0, len(rows))
+	for _, row := range rows {
+		if catalog.InResearchScope(row) {
+			scoped = append(scoped, row)
+		}
+	}
+	rows = scoped
 	if len(rows) == 0 {
 		return fmt.Errorf("no articles on %s", day)
 	}

@@ -130,6 +130,9 @@ func readCorpus(cat *catalog.Catalog, now time.Time) ([]paper, time.Time, error)
 			return nil, time.Time{}, err
 		}
 		for _, row := range rows {
+			if !catalog.InResearchScope(row) {
+				continue
+			}
 			if record, ok := arxivPaper(row, day); ok {
 				if latest.IsZero() {
 					latest, _ = time.Parse(time.DateOnly, day)

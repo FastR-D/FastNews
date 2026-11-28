@@ -14,7 +14,7 @@ func TestArxivURLSourceAndSummaryMerge(t *testing.T) {
 	for _, dir := range []string{"secnews/data/articles", "secnews/data/daily_summaries"} {
 		os.MkdirAll(filepath.Join(root, dir), 0755)
 	}
-	row := map[string]any{"_id": "arxiv-one", "title": "Agent Security", "description": "Original abstract", "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl", "link": "https://arxiv.org/abs/one"}
+	row := map[string]any{"_id": "arxiv-one", "title": "Agent Security", "description": "Original abstract", "categories": []string{"cs.AI"}, "source": "https://rss.arxiv.org/atom/cs.ai+cs.cl", "link": "https://arxiv.org/abs/one"}
 	b, _ := json.Marshal(row)
 	os.WriteFile(filepath.Join(root, "secnews/data/articles", day+".jsonl"), append(b, '\n'), 0644)
 	b, _ = json.Marshal(map[string]any{"articles": []map[string]any{{"_id": "arxiv-one", "title_zh": "智能体安全", "summary_zh": "研究智能体安全边界"}}})

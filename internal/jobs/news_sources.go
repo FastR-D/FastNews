@@ -129,6 +129,8 @@ func (p *Pipeline) FetchNewsSources(ctx context.Context, selected []catalog.News
 		var err error
 		if query := arxivQuery(source, time.Now()); query != "" {
 			rows, transport, err = p.fetchArxiv(ctx, source, query)
+		} else if u, _ := url.Parse(source.URL); source.Channel == "arxiv" && u != nil && u.Hostname() == "rss.arxiv.org" {
+			err = fmt.Errorf("arXiv 只采集 cs.* 主分类，请选择 CS 信源")
 		} else {
 			var raw []byte
 			raw, transport, err = p.fetchSource(ctx, source)
@@ -154,6 +156,9 @@ func (p *Pipeline) FetchNewsSources(ctx context.Context, selected []catalog.News
 		cutoff := time.Now().UTC().AddDate(0, 0, -maxAge)
 		stale := 0
 		for _, row := range rows {
+			if !catalog.InResearchScope(row) {
+				continue
+			}
 			published := feedPublished(catalog.Str(row, "published"))
 			if maxAge > 0 && !published.IsZero() && published.Before(cutoff) {
 				stale++

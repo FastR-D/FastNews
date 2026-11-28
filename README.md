@@ -34,19 +34,19 @@ Go 可直接提供构建后的 SPA，也可由 nginx / 静态服务器提供 `we
 | 总览 | `/` | 最新快讯、统计、研究入口、报告与下载、作者列表 |
 | 顶会报告 | `/top-conf/` | 领域/会议/年份/轨道/细分方向筛选、向量搜索、分页、related work、报告打开与下载 |
 | 数据覆盖 | `/coverage/` | 论文数、原始摘要和有效/过期总结计数、最近落盘与任务成功时间、任务失败类别 |
-| 领域导读 | `/field-briefing/` | 印象补全方向、向量召回、分类综述、综述/SoK、论文推荐 |
-| 总结汇报 | `/summary-brief/` | 全景或主题简报、发现、统计表与条形图、问答、局限与讨论 |
-| 新闻与资讯 | `/secnews/` | 安全/AI 频道、搜索/来源筛选、分页、独立阅读与字号；筛选及当前文章随 URL 保存 |
+| 领域导读 | `/brief/` | 印象补全方向、向量召回、分类综述、综述/SoK、论文推荐 |
+| 总结汇报 | `/summary/` | 全景或主题简报、发现、统计表与条形图、问答、局限与讨论 |
+| 新闻与资讯 | `/updates/` | 安全/AI 频道、搜索/来源筛选、分页、独立阅读与字号；筛选及当前文章随 URL 保存 |
 | 信源目录 | `/sources/` | 按领域、名称和配置状态查找来源，按领域、状态筛选科研来源 |
 | arXiv 导读 | `/arxiv/` | 按采集日期浏览预印本、论文领域筛选、分页、摘要与 FastRead 阅读跳转 |
-| 研究趋势 | `/trend/` | AI、安全与软件工程的 7 / 14 / 30 天热度榜、占比变化、关键词与原论文证据 |
-| 关注作者 | `/authors` | 增删改、研究标签、主页解析、解析结果与论文链接 |
+| 研究趋势 | `/trends/` | AI、安全与软件工程的 7 / 14 / 30 天热度榜、占比变化、关键词与原论文证据 |
+| 关注作者 | `/following/` | 增删改、研究标签、主页解析、解析结果与论文链接 |
 | 私信 | `/inbox/` | 上海日历日每天一篇、关注作者优先、去重、已读和历史 |
-| 研究印象 | `/impression/` 或顶栏 | 最长 4000 字，按当前账号保存 |
+| 研究印象 | 顶栏弹窗 | 最长 4000 字，按当前账号保存 |
 | 登录 | `/login` | 登录、邀请注册、恢复账号 |
 | 账号设置 | `/account/` | 账号信息修改与 FastCAS 认证 |
 
-arXiv 导读默认打开最近有预印本的采集日。`source=arxiv` 始终由服务端分页，默认每页 12 篇；`page` 从 1 开始，`page_size` 最大 50。`q` 搜索标题、作者、摘要和分类，`category` 精确筛选领域，先过滤整天语料再分页，按发表时间倒序；响应提供 `total/page/pageSize/pages/categories`，其中分类选项来自整天语料。日期、搜索、领域、每页条数和翻页在同一工具栏，手机自动换行。`GET /api/news?source=arxiv|news|security|ai|articles` 分别返回对应范围的最近非空日期及内容，其中 `articles` 为全部非 arXiv 资讯；指定 `date` 时保留该日期，即使该范围当天为空。不指定来源时保留总览使用的全部资讯行为。旧调用若需要全部非 arXiv 内容，应从 `source=security` 改为 `source=articles`。
+arXiv 仅采集主分类为 `cs.*` 的论文，其他主分类、仅交叉列入 CS 和缺失分类的记录不入库；历史读取、趋势和摘要同样执行此范围。优先使用官方 `primary_category`，已存官方数据使用第一分类。arXiv 导读默认打开最近有预印本的采集日。`source=arxiv` 始终由服务端分页，默认每页 12 篇；`page` 从 1 开始，`page_size` 最大 50。`q` 搜索标题、作者、摘要和分类，`category` 精确筛选领域，先过滤整天语料再分页，按发表时间倒序；响应提供 `total/page/pageSize/pages/categories`，其中分类选项来自整天语料。日期、搜索、领域、每页条数和翻页在同一工具栏，手机自动换行。`GET /api/news?source=arxiv|news|security|ai|articles` 分别返回对应范围的最近非空日期及内容，其中 `articles` 为全部非 arXiv 资讯；指定 `date` 时保留该日期，即使该范围当天为空。不指定来源时保留总览使用的全部资讯行为。旧调用若需要全部非 arXiv 内容，应从 `source=security` 改为 `source=articles`。
 
 前端统一页面边距、卡片与控件，使用 HarmonyOS Sans SC CDN 字体和亮暗主题。会议报告在 `/top-conf/<conference>/<year>/` 站内阅读，例如 `/top-conf/usenix/2026/`；旧 `/report/?path=…` 路由与 `api/report?path=…` 接口已移除，不做兼容跳转。其他报告使用 `/reports/<kind>/<slug>/`。历史报告已转换为 JSON 文档数据；旧独立 HTML、阅读脚本和兼容页面入口已删除。实现约定见 [界面规范](docs/FASTUI.md)。
 
@@ -173,3 +173,5 @@ FASTNEWS_PUBLIC_PATH=/news FASTNEWS_PORT=8788 ./bin/fastnews serve
 `ci.yml` 在 main 的 PR、推送和手动运行时执行 Go、React 与浏览器检查；推送 `v*` 标签时，对该提交完成相同校验后构建生产包，通过 HTTPS 接收端部署。GitHub Release 发布 job 已移除，不创建 Release 或上传 Release 附件。采集与报告生成由服务器执行，结果保存在独立语料目录。
 
 旧 Python、serverless API、模板、静态应用页面、依赖和对应测试已删除。历史语料、报告与账号数据保留；历史报告资源 URL 由 Go 映射到当前前端资源。失效的旧部署与回滚入口已移除。main 提交只验证；版本标签触发正常部署，使用 FastDeploy 原子切换版本并检查健康，失败时恢复前态。配置见 [部署说明](docs/fastdeploy.md)。
+
+页面统一使用简短路径：`/updates/`、`/brief/`、`/summary/`、`/trends/`、`/following/`、`/admin/jobs/`。人物与机构分别使用 `/authors/<name>/` 和 `/institutions/<name>/`；可选 `ref` 仅用于区分同名资料。旧页面路由已删除，不做别名或跳转适配；研究印象只使用弹窗。会议报告继续使用 `/top-conf/<conference>/<year>/`。

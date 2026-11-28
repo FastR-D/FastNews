@@ -61,7 +61,6 @@ function Workspace() {
   useEffect(() => {
     setMobileOpen(false)
     document.title = `${current.label} · FastNews`
-    if (location.pathname.startsWith('/impression')) setImpressionOpen(true)
     if (location.hash)
       requestAnimationFrame(() => document.getElementById(location.hash.slice(1))?.scrollIntoView())
     else window.scrollTo(0, 0)
@@ -119,7 +118,7 @@ function Workspace() {
             <div className="grid auto-rows-[minmax(38px,auto)] gap-1">
               <NavLink
                 className="workspace-navlink"
-                to="/admin/users"
+                to="/admin/users/"
                 aria-pressed={location.pathname.startsWith('/admin/users')}
               >
                 <span className="flex items-center gap-2 w-full">
@@ -129,8 +128,8 @@ function Workspace() {
               </NavLink>
               <NavLink
                 className="workspace-navlink"
-                to="/admin/processes"
-                aria-pressed={location.pathname.startsWith('/admin/processes')}
+                to="/admin/jobs/"
+                aria-pressed={location.pathname.startsWith('/admin/jobs/')}
               >
                 <span className="flex items-center gap-2 w-full">
                   <Activity size={16} />
@@ -296,31 +295,34 @@ function Workspace() {
             )}
             <Suspense fallback={<Busy />}>
               <Routes>
-                <Route path="/entity/" element={<EntityPage />} />
-                <Route path="/" element={<Home />} />
+                <Route path="/authors/:name/" element={<EntityPage kind="author" />} />
+                <Route path="/institutions/:name/" element={<EntityPage kind="institution" />} />
+                <Route
+                  path="/"
+                  element={<Home onEditImpression={() => setImpressionOpen(true)} />}
+                />
                 <Route path="/top-conf/" element={<Papers />} />
                 <Route path="/coverage/" element={<Coverage />} />
                 <Route
-                  path="/field-briefing/"
+                  path="/brief/"
                   element={<Generate key="field-briefing" kind="field-briefing" />}
                 />
                 <Route
-                  path="/summary-brief/"
+                  path="/summary/"
                   element={<Generate key="summary-brief" kind="summary-brief" />}
                 />
-                <Route path="/secnews/" element={<News />} />
+                <Route path="/updates/" element={<News />} />
                 <Route path="/sources/" element={<Sources />} />
                 <Route path="/top-conf/:conference/:year/" element={<ReportReader />} />
                 <Route path="/reports/:kind/:slug/" element={<ReportReader />} />
                 <Route path="/arxiv/" element={<Arxiv />} />
-                <Route path="/trend/" element={<Trend />} />
+                <Route path="/trends/" element={<Trend />} />
                 <Route path="/inbox/" element={<Inbox />} />
-                <Route path="/authors" element={<Authors />} />
-                <Route path="/impression/" element={<Home />} />
+                <Route path="/following/" element={<Authors />} />
                 <Route path="/login" element={<Account />} />
                 <Route path="/account/" element={<Account />} />
-                <Route path="/admin/users" element={<UsersPage />} />
-                <Route path="/admin/processes" element={<Processes />} />
+                <Route path="/admin/users/" element={<UsersPage />} />
+                <Route path="/admin/jobs/" element={<Processes />} />
                 <Route
                   path="*"
                   element={

@@ -27,11 +27,12 @@ func TestArxivNewsPaginationSearchAndFacets(t *testing.T) {
 		data.Write(raw)
 		data.WriteByte('\n')
 	}
+	data.WriteString(`{"_id":"non-cs","source":"arxiv_cs_ai","title":"Biology cross-list","primary_category":"q-bio.QM","categories":["cs.AI"]}` + "\n")
 	dir := filepath.Join(h.app.Config.Root, "secnews/data/articles")
 	if err := os.WriteFile(filepath.Join(dir, "2026-11-28.jsonl"), []byte(data.String()), 0600); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(filepath.Join(dir, "2026-11-27.jsonl"), []byte(`{"source":"arxiv_cs_ai","title":"older-only"}`), 0600); err != nil {
+	if err := os.WriteFile(filepath.Join(dir, "2026-11-27.jsonl"), []byte(`{"source":"arxiv_cs_ai","categories":["cs.AI"],"title":"older-only"}`), 0600); err != nil {
 		t.Fatal(err)
 	}
 	for _, tc := range []struct {
@@ -78,8 +79,8 @@ func TestArxivNewsPaginationSearchAndFacets(t *testing.T) {
 
 func TestArxivPaginationOrdersNewestFirst(t *testing.T) {
 	h := fixture(t)
-	rows := `{"_id":"old","source":"arxiv_cs_ai","published":"2026-11-20T00:00:00Z"}
-{"_id":"new","source":"arxiv_cs_ai","published":"2026-11-25T00:00:00Z"}`
+	rows := `{"_id":"old","source":"arxiv_cs_ai","categories":["cs.AI"],"published":"2026-11-20T00:00:00Z"}
+{"_id":"new","source":"arxiv_cs_ai","categories":["cs.AI"],"published":"2026-11-25T00:00:00Z"}`
 	if err := os.WriteFile(filepath.Join(h.app.Config.Root, "secnews/data/articles/2026-11-28.jsonl"), []byte(rows), 0600); err != nil {
 		t.Fatal(err)
 	}

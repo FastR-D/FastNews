@@ -117,10 +117,10 @@ func TestArchiveDeduplicationAndScope(t *testing.T) {
 	write("2026-09-04", entry("http://arxiv.org/abs/2609.01234v1", "arxiv_cs_ai", "Evaluating LLM agents", "", "cs.AI"))
 	write("2026-09-11",
 		entry("https://arxiv.org/pdf/2609.01234v2.pdf", "https://rss.arxiv.org/atom/cs.se", "Evaluating LLM agents", "We present an analysis of tool calling.", "cs.SE"),
-		entry("https://arxiv.org/abs/2609.07890", "arxiv_cs_cr", "On privacy leakage", "We study privacy leakage."),
+		entry("https://arxiv.org/abs/2609.07890", "arxiv_cs_cr", "On privacy leakage", "We study privacy leakage.", "cs.CR"),
 		entry("https://arxiv.org/abs/2609.09123", "arxiv_cs_ai", "Test-time scaling", "arXiv:2609.09123v2 Announce Type: replace\nAbstract: Revised."),
 	)
-	write("2026-09-12", entry("https://example.org/news", "securityweek", "Daily news", ""))
+	write("2026-09-12", entry("https://example.org/news", "securityweek", "Daily news", ""), entry("https://arxiv.org/abs/2609.09999", "arxiv_cs_ai", "Non-CS cross list", "", "q-bio.QM", "cs.AI"))
 	write("2026-11-20", entry("https://arxiv.org/abs/2611.01234", "arxiv_cs_ai", "Future paper", "", "cs.AI"))
 	now := time.Date(2026, 11, 19, 0, 0, 0, 0, time.UTC)
 	cat := &catalog.Catalog{Root: root}

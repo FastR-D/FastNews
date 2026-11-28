@@ -86,3 +86,29 @@ func TestSourceConfigRejectsInvalidEntriesBeforeFetching(t *testing.T) {
 		}
 	}
 }
+
+func TestCollectionPersistsOnlyCSPrimaryPapers(t *testing.T) {
+	raw := `<feed xmlns="http://www.w3.org/2005/Atom" xmlns:arxiv="http://arxiv.org/schemas/atom">
+ <entry><title>CS paper</title><link href="https://arxiv.org/abs/2611.00001"/><category term="stat.ML"/><category term="cs.AI"/><arxiv:primary_category term="cs.AI"/></entry>
+ <entry><title>Cross listed biology</title><link href="https://arxiv.org/abs/2611.00002"/><category term="cs.AI"/><arxiv:primary_category term="q-bio.QM"/></entry>
+ <entry><title>Unknown subject</title><link href="https://arxiv.org/abs/2611.00003"/></entry>
+ </feed>`
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { fmt.Fprint(w, raw) }))
+	defer server.Close()
+	for _, channel := range []string{"arxiv", "ai"} {
+		root := t.TempDir()
+		source := catalog.NewsSource{ID: "arxiv_test", URL: server.URL, Channel: channel, MaxAgeDays: -1}
+		p := New(config.Config{Root: root})
+		if err := p.FetchNewsSources(context.Background(), []catalog.NewsSource{source}); err != nil {
+			t.Fatal(err)
+		}
+		rows, err := catalog.Rows(filepath.Join(root, "secnews/data/articles", time.Now().UTC().Format(time.DateOnly)+".jsonl"))
+		if err != nil || len(rows) != 1 || rows[0]["title"] != "CS paper" || rows[0]["primary_category"] != "cs.AI" {
+			t.Fatal(rows, err)
+		}
+	}
+	source := catalog.NewsSource{ID: "arxiv_physics", URL: "https://rss.arxiv.org/atom/physics.med-ph", Channel: "arxiv"}
+	if err := New(config.Config{Root: t.TempDir()}).FetchNewsSources(context.Background(), []catalog.NewsSource{source}); err == nil || !strings.Contains(err.Error(), "cs.*") {
+		t.Fatal("Non-CS source must fail before fetching", err)
+	}
+}
